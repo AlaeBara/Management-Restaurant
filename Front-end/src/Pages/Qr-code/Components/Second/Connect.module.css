@@ -74,6 +74,12 @@
     text-align: center;
 }
 
+.btnBox{
+  display: flex;
+  justify-content: center;
+  gap: 40px;
+}
+
 .btn_next {
     margin-top: 50px;
     padding: 12px 24px;
@@ -86,6 +92,7 @@
     cursor: pointer;
     transition: background-color 0.3s ease;
 }
+
 
 
   

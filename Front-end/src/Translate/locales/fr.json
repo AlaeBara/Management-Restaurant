@@ -1,6 +1,8 @@
 {
     "choose_option": "Choisissez une option",
     "create_account": "Créer un compte",
-    "continue_as_guest": "Continuer en tant qu'invité"
+    "continue_as_guest": "Continuer en tant qu'invité",
+    "Provious": "Précédent"   ,
+    "Next":"Suivant"
 }
   

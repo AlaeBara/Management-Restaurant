@@ -4,6 +4,7 @@ import Language from './Components/First/Language';
 import Connect from './Components/Second/Connect';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from 'react-i18next';
+import Menu from './Components/Menu/Menu';
 
 const Home = () => {
   const [step, setStep] = useState(1);
@@ -24,7 +25,10 @@ const Home = () => {
   return (
     <>
       {step === 1 && <Language nextStep={nextStep} />}
-      {step === 2 && <Connect previousStep={previousStep} />}
+
+      {step === 2 && <Connect previousStep={previousStep} nextStep={nextStep} />}
+
+      {step === 3 && <Menu/>}
     </>
   );
 };

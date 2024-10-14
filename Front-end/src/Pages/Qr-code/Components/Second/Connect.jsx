@@ -3,7 +3,7 @@ import { UserPlus, UserMinus } from 'lucide-react';
 import style from './Connect.module.css';
 import { useTranslation } from 'react-i18next';
 
-const Connect = ({previousStep}) => {
+const Connect = ({previousStep , nextStep}) => {
   const [selectedOption, setSelectedOption] = useState(null);
   const { t } = useTranslation();
 
@@ -13,6 +13,10 @@ const Connect = ({previousStep}) => {
 
   const handleProvuious = () => {
     previousStep()
+  };
+
+  const handleNext = () => {
+    nextStep()
   };
 
   return (
@@ -34,7 +38,10 @@ const Connect = ({previousStep}) => {
           <span className={style.langText}>{t('continue_as_guest')}</span>
         </div>
       </div>
-      <button  className={style.btn_next} onClick={handleProvuious}>Provious</button>
+      <div className={style.btnBox}>
+        <button  className={style.btn_next} onClick={handleProvuious}>{t('Provious')}</button>
+        <button  className={style.btn_next} onClick={handleNext}>{t('Next')}</button>
+      </div>
     </div>
   );
 };

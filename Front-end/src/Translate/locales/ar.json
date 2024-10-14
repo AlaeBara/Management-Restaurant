@@ -1,6 +1,9 @@
 {
     "choose_option": "اختر خيارا",
     "create_account": "إنشاء حساب",
-    "continue_as_guest": "تابع كضيف"
+    "continue_as_guest": "تابع كضيف",
+    "Provious": "الرجوع"   ,
+    "Next":"التالي"
+    
 }
   
