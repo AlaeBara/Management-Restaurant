@@ -3,5 +3,26 @@
     "create_account": "Create Account",
     "continue_as_guest": "Continue as Guest",
     "Provious": "Provious"   ,
-    "Next":"Next"
+    "Next":"Next",
+
+    "title": "Food Menu",
+    "description": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.",
+    "categories": {
+      "all": "All",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "desserts": "Desserts",
+      "beverage": "Beverage"
+    },
+    "items": {
+      "1": "Hamburger Street Food Seafood Fast Food",
+      "2": "Ham Fast Food Sausage European Cuisine",
+      "3": "Hyderabadi Biryani Indian Cuisine Dish Chicken Meat",
+      "4": "Grilled Steak Meal, Beefsteak Teppanyaki Taobao Frying Pan",
+      "5": "European Cuisine Ketogenic Diet Dos And Donts For Beginners",
+      "6": "Fried Chicken, Biryani, Fried Rice, Vegetarian Cuisine, Pilaf"
+    },
+    "addToCart": "Add to Cart",
+    "quantity": "Quantity"
 }

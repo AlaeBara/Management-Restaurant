@@ -3,6 +3,27 @@
     "create_account": "Créer un compte",
     "continue_as_guest": "Continuer en tant qu'invité",
     "Provious": "Précédent"   ,
-    "Next":"Suivant"
+    "Next":"Suivant",
+    
+    "title": "Menu de nourriture",
+    "description": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.",
+    "categories": {
+        "all": "Tout",
+        "breakfast": "Petit-déjeuner",
+        "lunch": "Déjeuner",
+        "dinner": "Dîner",
+        "desserts": "Desserts",
+        "beverage": "Boissons"
+    },
+    "items": {
+        "1": "Hamburger Street Food Fruits de mer Fast Food",
+        "2": "Jambon Fast Food Saucisse Cuisine Européenne",
+        "3": "Biryani Hyderabadi Cuisine Indienne Plat Poulet",
+        "4": "Repas de steak grillé, boeuf Teppanyaki",
+        "5": "Cuisine Européenne Régime Cétogène Conseils",
+        "6": "Poulet Frit, Biryani, Riz Frit, Cuisine Végétarienne"
+    },
+    "addToCart": "Ajouter au panier",
+    "quantity": "Quantité"
 }
   
