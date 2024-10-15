@@ -69,16 +69,19 @@
     color: #34495e;
 }
 
+
 .btn_next {
-    margin-top: 50px;
-    padding: 12px 24px;
-    font-size: 1.1rem;
-    font-weight: bold;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    transition: background-color 0.3s ease;
+  margin-top: 70px;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
 }
+
 
 .btn_next_Active{
     background-color: var(--main_color);

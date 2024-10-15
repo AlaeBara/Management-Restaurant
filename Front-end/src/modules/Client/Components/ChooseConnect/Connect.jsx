@@ -1,46 +1,46 @@
-import React, { useState } from 'react';
-import { UserPlus, UserMinus } from 'lucide-react';
+import React from 'react';
+import { UserPlus, UserMinus , ArrowLeft } from 'lucide-react';
 import style from './Connect.module.css';
+import { useClientPreferences } from '../../../../context/OrderFlowContext';
 import { useTranslation } from 'react-i18next';
 
-const Connect = ({previousStep , nextStep}) => {
-  const [selectedOption, setSelectedOption] = useState(null);
+const Connect = ({ previousStep, nextStep }) => {
+  const { connect, setconnect } = useClientPreferences();
   const { t } = useTranslation();
-
-  const handleOptionChange = (option) => {
-    setSelectedOption(option);
-  };
-
-  const handleProvuious = () => {
-    previousStep()
-  };
-
-  const handleNext = () => {
-    nextStep()
-  };
 
   return (
     <div className={style.container}>
       <h1 className={style.title}>{t('choose_option')}</h1>
+
       <div className={style.ConnectBox}>
         <div
-          className={`${style.box} ${selectedOption === 'create' ? style.selected : ''}`}
-          onClick={() => handleOptionChange('create')}
+          className={`${style.box} ${connect === 'create' ? style.selected : ''}`}
+          onClick={() => setconnect('create')}
         >
           <UserPlus className={style.icon} />
-          <span className={style.langText}>{t('create_account')}</span> 
+          <span className={style.langText}>{t('create_account')}</span>
         </div>
         <div
-          className={`${style.box} ${selectedOption === 'guest' ? style.selected : ''}`}
-          onClick={() => handleOptionChange('guest')}
+          className={`${style.box} ${connect === 'guest' ? style.selected : ''}`}
+          onClick={() => setconnect('guest')}
         >
           <UserMinus className={style.icon} />
           <span className={style.langText}>{t('continue_as_guest')}</span>
         </div>
       </div>
+
       <div className={style.btnBox}>
-        <button  className={style.btn_next} onClick={handleProvuious}>{t('Provious')}</button>
-        <button  className={style.btn_next} onClick={handleNext}>{t('Next')}</button>
+        <button className={style.btn_back} onClick={previousStep}>
+          <ArrowLeft /> {t('Previous')}
+        </button>
+
+        <button
+          className={`${style.btn_next} ${connect ? style.btn_next_Active : style.btn_next_Disable}`}
+          onClick={nextStep}
+          disabled={!connect}
+        >
+          {t('Next')}
+        </button>
       </div>
     </div>
   );

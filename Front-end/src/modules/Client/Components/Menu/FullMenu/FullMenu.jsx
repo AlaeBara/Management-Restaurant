@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { Heart, Star, Plus, Minus, ShoppingCart } from 'lucide-react';
-import styles from './Menu.module.css';
+import styles from './FullMenu.module.css';
 import { useTranslation } from 'react-i18next';
 
 const menuItems = [

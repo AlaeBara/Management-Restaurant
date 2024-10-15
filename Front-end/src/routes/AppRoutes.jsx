@@ -1,19 +1,16 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom';
 import ClientRoutes from './ClientRoutes'; // Import Client Routes
-import { LanguageProvider } from '../context/LanguageContext'; // Import Language Context
-import OfflineNotification from '../components/OfflineNotification'; // Import Offline Notification
+import { ClientPreferencesProvider } from '../context/OrderFlowContext'; // Import Language Context
 
 const AppRoutes = () => {
   return (
-    <LanguageProvider>
-      <OfflineNotification>
+    <ClientPreferencesProvider>
         <Routes>
           {/* Client Routes */}
           <Route path="/*" element={<ClientRoutes />} /> 
         </Routes>
-      </OfflineNotification>
-    </LanguageProvider>
+    </ClientPreferencesProvider>
   );
 };
 

@@ -2,8 +2,12 @@
     "choose_option": "اختر خيارا",
     "create_account": "إنشاء حساب",
     "continue_as_guest": "تابع كضيف",
-    "Provious": "الرجوع"   ,
+    "Previous": "السابق"  ,
     "Next":"التالي",
+
+    "select_menu_type": "اختر نوع القائمة",
+    "full_menu": "القائمة الكاملة",
+    "guided_menu": "قائمة مرشد",
 
     "title": "قائمة الطعام",
     "description": "لوريم إيبسوم دولور سيت أميت، كونسيكتيتور أديبيسينج إيليت.",
