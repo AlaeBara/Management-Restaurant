@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import style from './Home.module.css';
-import Language from './Components/First/Language';
-import Connect from './Components/Second/Connect';
+import Language from './Components/ChooseLanguage/Language';
+import Connect from './Components/ChooseConnect/Connect';
 import { useLanguage } from '../../context/LanguageContext';
 import { useTranslation } from 'react-i18next';
 import Menu from './Components/Menu/Menu';

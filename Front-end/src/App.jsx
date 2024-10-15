@@ -1,19 +1,12 @@
 import React from 'react';
-import { LanguageProvider } from './context/LanguageContext';
-import Home from './Pages/Qr-code/Home';
-
-import OfflineNotification from './components/OfflineNotification';
+import { BrowserRouter as Router } from 'react-router-dom';
+import AppRoutes from './routes/AppRoutes'; 
 
 const App = () => {
- 
   return (
-    <LanguageProvider>
-      < OfflineNotification> 
-
-        <Home />
-        
-      </OfflineNotification>
-    </LanguageProvider>
+    <Router>
+      <AppRoutes />  
+    </Router>
   );
 };
 
