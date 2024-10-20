@@ -36,9 +36,11 @@ const Home = () => {
         typemenu === 'full_menu' ? (
           <FullMenu />
         ) : (
-          <GuidMenu />
+          <GuidMenu previousStep={() => setStep(3)} nextStep={() => setStep(6)} />
         )
       )}
+      
+      {step === 6 && <>Cart</> }
     </>
   );
 };

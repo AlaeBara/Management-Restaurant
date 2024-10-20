@@ -28,5 +28,8 @@
       "6": "Fried Chicken, Biryani, Fried Rice, Vegetarian Cuisine, Pilaf"
     },
     "addToCart": "Add to Cart",
-    "quantity": "Quantity"
+    "quantity": "Quantity",
+    "Starters Menu": "Starters Menu",
+    "Main Menu": "Main Menu",
+    "Dessert Menu": "Dessert Menu"
 }
