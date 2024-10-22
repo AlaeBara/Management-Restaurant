@@ -1,0 +1,16 @@
+services:
+  restaurant-db:
+    image: postgres:17.0
+    ports:
+      - ${DB_PORT:-5434}:5432
+    environment:
+      - POSTGRES_USER=${DB_USER:-restaurant}
+      - POSTGRES_PASSWORD=${DB_PASSWORD:-restaurant}
+      - POSTGRES_DATABASE=${DB_NAME:-restaurant}
+      - PGDATA=/var/lib/restaurant/data/pgdata
+    volumes:
+      - "restaurant-db-data:/var/lib/restaurant/data"
+    env_file: .env
+
+volumes:
+  restaurant-db-data:
