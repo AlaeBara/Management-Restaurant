@@ -31,5 +31,19 @@
     "quantity": "Quantity",
     "Starters Menu": "Starters Menu",
     "Main Menu": "Main Menu",
-    "Dessert Menu": "Dessert Menu"
+    "Dessert Menu": "Dessert Menu",
+
+    "Your Food Cart":"Your Food Cart",
+    "Quantity": "Quantity",
+    "Total": "Total",
+    "Delete": "Delete",
+    "Your cart is empty": "Your cart is empty",
+
+    "Order Summary":"Order Summary",
+
+    "Qty":"Qty",
+    "Item":"Item",
+    "Amount":"Amount",
+
+    "Place Order": "Place Orde"
 }

@@ -31,6 +31,21 @@
     "quantity": "Quantité",
     "Starters Menu": "Menu des Entrées",
     "Main Menu": "Menu Principal",
-    "Dessert Menu": "Menu des Desserts"
+    "Dessert Menu": "Menu des Desserts",
+
+
+    "Your Food Cart":"Votre Panier de Nourriture",
+    "Quantity": "Quantité",
+    "Total": "Total",
+    "Delete": "Supprimer",
+    "Your cart is empty": "Votre panier est vide",
+
+    "Order Summary":"Résumé de la Commande",
+
+    "Qty":"Qté",
+    "Item":"Article",
+    "Amount":"Montant",
+
+    "Place Order": "Passer la commande"
 }
   

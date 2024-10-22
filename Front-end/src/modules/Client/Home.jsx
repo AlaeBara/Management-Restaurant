@@ -7,6 +7,7 @@ import { useTranslation } from 'react-i18next';
 import FullMenu from './Components/Menu/FullMenu/FullMenu';
 import GuidMenu from './Components/Menu/GuidMenu/GuidMenu';
 import Cart from './Components/Cart/Cart';
+import SendCommande from './Components/SendCommande/SendCommande';
 
 const Home = () => {
   const [mainStep, setMainStep] = useState(1);
@@ -56,6 +57,13 @@ const Home = () => {
     setMainStep(6);
   };
 
+  const handelSendComandePrevious= () => {
+    setMainStep(6);
+  };
+
+
+  console.log(mainStep)
+
   return (
     <>
       {mainStep === 1 && (
@@ -95,6 +103,12 @@ const Home = () => {
         <Cart 
           previousStep={handleCartPrevious}
           nextStep={handleMainNext}
+        />
+      )}
+
+      {mainStep === 7 && (
+        <SendCommande 
+          previousStep={handelSendComandePrevious}
         />
       )}
     </>

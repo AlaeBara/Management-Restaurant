@@ -39,8 +39,28 @@ const Menu = ({previousStep, nextStep}) => {
 
   const handleAddToCart = (item) => {
     const quantity = quantities[item.id] || 1;
-    console.log(`Added ${quantity} ${item.name}(s) to cart`);
+  
+    // Retrieve the cart from local storage or initialize an empty array if it doesn't exist
+    const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  
+    // Check if the item is already in the cart
+    const existingItem = cart.find(cartItem => cartItem.id === item.id);
+    
+    if (existingItem) {
+      // Update the quantity of the existing item
+      existingItem.quantity += quantity;
+    } else {
+      // Add the new item to the cart
+      cart.push({ id: item.id, quantity });  // Include the entire item, not just item.id
+    }
+  
+    // Store the updated cart in local storage
+    localStorage.setItem('cart', JSON.stringify(cart));
+  
+    console.log(`Added ${quantity} ${item.category}(s) to cart`);
   };
+  
+  
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 

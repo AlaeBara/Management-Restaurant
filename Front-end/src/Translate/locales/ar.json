@@ -30,9 +30,22 @@
     "addToCart": "أضف إلى السلة",
     "quantity": "الكمية",
 
-  "Starters Menu": "قائمة المقبلات",
+    "Starters Menu": "قائمة المقبلات",
     "Main Menu": "القائمة الرئيسية",
-    "Dessert Menu": "قائمة الحلويات"
-    
+    "Dessert Menu": "قائمة الحلويات",
+
+    "Your Food Cart":"سلة الطعام الخاصة بك",
+    "Quantity": "الكمية",
+    "Total": "المجموع",
+    "Delete": "حذف",
+    "Your cart is empty": "سلتك فارغة",
+
+
+    "Order Summary":"ملخص الطلب",
+    "Qty": "الكمية",
+    "Item":"الصنف",
+    "Amount":"المبلغ",
+
+    "Place Order": "تقديم الطلب"
 }
   
