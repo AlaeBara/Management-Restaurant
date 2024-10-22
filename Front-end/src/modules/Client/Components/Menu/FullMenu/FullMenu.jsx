@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Heart, Star, Plus, Minus, ShoppingCart } from 'lucide-react';
+import {Plus, Minus, ShoppingCart,ArrowLeft } from 'lucide-react';
 import styles from './FullMenu.module.css';
 import { useTranslation } from 'react-i18next';
 
@@ -14,7 +14,7 @@ const menuItems = [
 
 const categories = ["All", "Breakfast", "Lunch", "Dinner", "Desserts", "Beverage"];
 
-const Menu = () => {
+const Menu = ({previousStep, nextStep}) => {
   const { t, i18n } = useTranslation();
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [quantities, setQuantities] = useState({});
@@ -45,65 +45,81 @@ const Menu = () => {
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 
   return (
-    <div className={styles.container} dir={dir}>
-      <h1 className={styles.title}>{t('title')}</h1>
+    <>
+      <div className={styles.container} dir={dir}>
+        <h1 className={styles.title}>{t('title')}</h1>
 
-      <p className={styles.description}>
-        {t('description')}
-      </p>
-      
-      <div className={styles.categories}>
-        {categories.map((category, index) => (
-          <button
-            key={index}
-            className={`${styles.categoryButton} ${selectedCategory === category ? styles.active : ''}`}
-            onClick={() => setSelectedCategory(category)}
-          >
-            {t(`categories.${category.toLowerCase()}`)}
-          </button>
-        ))}
-      </div>
-      
-      <div className={styles.menuGrid}>
-        {filteredItems.map((item) => (
-          <div key={item.id} className={styles.menuItem}>
-            <img src={item.image} alt={item.name} className={styles.itemImage} />
+        <p className={styles.description}>
+          {t('description')}
+        </p>
+        
+        <div className={styles.categories}>
+          {categories.map((category, index) => (
+            <button
+              key={index}
+              className={`${styles.categoryButton} ${selectedCategory === category ? styles.active : ''}`}
+              onClick={() => setSelectedCategory(category)}
+            >
+              {t(`categories.${category.toLowerCase()}`)}
+            </button>
+          ))}
+        </div>
+        
+        <div className={styles.menuGrid}>
+          {filteredItems.map((item) => (
+            <div key={item.id} className={styles.menuItem}>
+              <img src={item.image} alt={item.name} className={styles.itemImage} />
 
-            <div className={styles.itemInfo}>
-              <h3 className={styles.itemName}>{t(`items.${item.id}`)}</h3>
+              <div className={styles.itemInfo}>
+                <h3 className={styles.itemName}>{t(`items.${item.id}`)}</h3>
 
-              <div className={styles.ratingContainer}>
-                <p>{t('description')}</p>
-              </div>
+                <div className={styles.ratingContainer}>
+                  <p>{t('description')}</p>
+                </div>
 
-              <div className={styles.priceAndCart}>
-                <span className={styles.price}>${item.price.toFixed(2)}</span>
+                <div className={styles.priceAndCart}>
+                  <span className={styles.price}>${item.price.toFixed(2)}</span>
 
-                <div className={styles.quantityAndCart}>
-                  <div className={styles.quantityControl}>
-                    <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
-                      <Minus className={styles.icon} />
-                    </button>
+                  <div className={styles.quantityAndCart}>
+                    <div className={styles.quantityControl}>
+                      <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
+                        <Minus className={styles.icon} />
+                      </button>
 
-                    <span className={styles.quantityDisplay}>
-                      {quantities[item.id] || 1}
-                    </span>
+                      <span className={styles.quantityDisplay}>
+                        {quantities[item.id] || 1}
+                      </span>
 
-                    <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
-                      <Plus className={styles.icon} />
+                      <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
+                        <Plus className={styles.icon} />
+                      </button>
+                    </div>
+
+                    <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
+                      <ShoppingCart className={styles.icon} />
                     </button>
                   </div>
-
-                  <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
-                    <ShoppingCart className={styles.icon} />
-                  </button>
                 </div>
               </div>
             </div>
-          </div>
-        ))}
+          ))}
+        </div>
       </div>
-    </div>
+
+      {/* Fixed Navigation Buttons */}
+      <div className={styles.btnBox}>
+        <button className={styles.btn_back} onClick={previousStep}>
+          <ArrowLeft /> {t('Previous')}
+        </button>
+
+        <button
+          className={`${styles.btn_next}`}
+          onClick={nextStep}
+        >
+          {t('Next')}
+        </button>
+      </div>
+    </>
   );
 };
 

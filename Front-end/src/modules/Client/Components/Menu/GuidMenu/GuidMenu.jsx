@@ -1,12 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useClientPreferences } from '../../../../../context/OrderFlowContext';
 import { useTranslation } from 'react-i18next';
 import Starter from './Starters/Starter';
 import Entree from './Entrees/Entree';
-import Dessert from './Desserts/Dessert'
+import Dessert from './Desserts/Dessert';
 
-const GuidMenu = ({ previousStep, nextStep }) => {
-  const [currentStep, setCurrentStep] = useState(1);
+const GuidMenu = ({ previousStep, nextStep, currentStep }) => {
   const { language } = useClientPreferences();
   const { i18n } = useTranslation();
 
@@ -14,40 +13,24 @@ const GuidMenu = ({ previousStep, nextStep }) => {
     i18n.changeLanguage(language);
   }, [language, i18n]);
 
-  const handleNext = () => {
-    if (currentStep < 3) {
-      setCurrentStep(currentStep + 1);
-    } else {
-      nextStep();
-    }
-  };
-
-  const handlePrevious = () => {
-    if (currentStep > 1) {
-      setCurrentStep(currentStep - 1);
-    } else {
-      previousStep();
-    }
-  };
-
   return (
     <>
       {currentStep === 1 && (
         <Starter 
-          previousStep={handlePrevious} 
-          nextStep={handleNext} 
+          previousStep={previousStep} 
+          nextStep={nextStep} 
         />
       )}
       {currentStep === 2 && (
         <Entree 
-          previousStep={handlePrevious} 
-          nextStep={handleNext} 
+          previousStep={previousStep} 
+          nextStep={nextStep} 
         />
       )}
       {currentStep === 3 && (
         <Dessert
-          previousStep={handlePrevious} 
-          nextStep={handleNext} 
+          previousStep={previousStep} 
+          nextStep={nextStep} 
         />
       )}
     </>
