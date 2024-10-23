@@ -36,7 +36,14 @@ $ pnpm install
 
 ```bash
 # development
-$ pnpm run start
+pnpm install
+npx prisma init
+npx prisma generate
+npx prisma migrate dev
+nest start --watch
+
+
+
 
 # watch mode
 $ pnpm run start:dev

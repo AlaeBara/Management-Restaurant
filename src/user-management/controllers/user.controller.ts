@@ -1,4 +1,19 @@
-import { Controller, Get, Post, Body, Patch, Param, Delete } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Post,
+  Body,
+  Patch,
+  Param,
+  Delete,
+  HttpException,
+  HttpStatus,
+  BadRequestException,
+  ConflictException,
+  InternalServerErrorException,
+  ValidationPipe,
+  UsePipes,
+} from '@nestjs/common';
 
 import { CreateUserDto } from '../dto/create-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
@@ -9,8 +24,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  create(@Body() createUserDto: CreateUserDto) {
-    return this.userService.create(createUserDto);
+  async create(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<any> {
+    const user = await this.userService.create(createUserDto);
+    return user;
   }
 
   @Get()
@@ -20,7 +36,7 @@ export class UserController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+    return this.userService.findOne({ id: +id });
   }
 
   @Patch(':id')
