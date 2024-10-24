@@ -1,6 +1,5 @@
-import { Gender } from "@prisma/client";
 import { IsEmail, isEmpty, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
-import { IsUnique } from "src/common/decorators/is-unique-constraint.decorator";
+import { Gender } from "../../enums/gender.enum";
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -12,7 +11,6 @@ export class CreateUserDto {
   
     @IsNotEmpty()
     @IsString()
-    @IsUnique(['User', 'username'])
     username:string;
 
     @IsNotEmpty()
@@ -21,7 +19,6 @@ export class CreateUserDto {
 
     @IsNotEmpty()
     @IsEmail()
-    @IsUnique(['User', 'email'])
     email:string;
 
     @IsNotEmpty()

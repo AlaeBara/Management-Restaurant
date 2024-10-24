@@ -1,45 +1,61 @@
 import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../user/user.service';
 import {
-  Body,
+  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
 } from '@nestjs/common';
-import { LoginDto } from 'src/user-management/dto/login.dto';
-import { PrismaService } from 'prisma/prisma.service';
-import { BaseService } from 'src/common/services/base.service';
-import { User } from '@prisma/client';
+import { LoginDto } from 'src/user-management/dto/authentication/login.dto';
+
 import { verify } from 'argon2';
+import { Repository } from 'typeorm';
+import { User } from 'src/user-management/entity/user.entity';
+import { InjectRepository } from '@nestjs/typeorm';
 
 @Injectable()
-export class AuthenticationService extends BaseService<User> {
+export class AuthenticationService {
   constructor(
     private jwtService: JwtService,
-    private prismaService: PrismaService,
-  ) {
-    super(prismaService, 'user');
-  }
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
   async signIn(loginDto: LoginDto): Promise<any> {
-    const user = await this.findFirst({
-      OR: [
-        { email: loginDto.emailOrUsername },
-        { username: loginDto.emailOrUsername },
-      ],
+    const user = await this.findUserByEmailOrUsername(loginDto.emailOrUsername);
+    await this.verifyPassword(user, loginDto.password);
+    await this.updateLastLogin(user.id);
+    return this.generateAccessToken(user);
+  }
+
+  private async findUserByEmailOrUsername(
+    emailOrUsername: string,
+  ): Promise<any> {
+    const user = await this.userRepository.findOneBy({
+      email: emailOrUsername,
+      username: emailOrUsername,
     });
     if (!user) {
       throw new NotFoundException('credentials are invalid');
     }
+    return user;
+  }
 
-    const isPasswordValid = await verify(user.password, loginDto.password);
+  private async verifyPassword(user: User, password: string): Promise<void> {
+    const isPasswordValid = await verify(user.password, password);
     if (!isPasswordValid) {
       throw new UnauthorizedException('credentials are invalid');
     }
+  }
 
+  private async updateLastLogin(userId: number): Promise<void> {
+    await this.userRepository.update(userId, { lastLogin: new Date() });
+  }
+
+  private async generateAccessToken(
+    user: User,
+  ): Promise<{ access_token: string }> {
     const payload = { sub: user.id, username: user.username };
-    return {
-      access_token: await this.jwtService.signAsync(payload),
-    };
+    const access_token = await this.jwtService.signAsync(payload);
+    return { access_token };
   }
 }

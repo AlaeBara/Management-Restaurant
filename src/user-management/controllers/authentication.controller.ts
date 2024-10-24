@@ -8,10 +8,12 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { AuthenticationService } from '../services/authentication/authentication.service';
-import { LoginDto } from '../dto/login.dto';
+import { LoginDto } from '../dto/authentication/login.dto';
 import { AuthGuard } from 'src/common/auth/auth.guard';
 
+
 @Controller('api/authentication')
+
 export class AuthenticationController {
   constructor(private authenticationService: AuthenticationService) {}
 
@@ -22,7 +24,8 @@ export class AuthenticationController {
 
   @Get('/profile')
   @UseGuards(AuthGuard)
-  profile(@Req() req) {
-    return req.user;
+  async profile() {
+    return "hello"
   }
+
 }

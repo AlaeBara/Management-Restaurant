@@ -1,41 +1,45 @@
-import { Injectable } from '@nestjs/common';
-import { User } from '@prisma/client';
+import { Inject, Injectable } from '@nestjs/common';
+import { InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
-import { PrismaService } from 'prisma/prisma.service';
-import { BaseService } from 'src/common/services/base.service';
-import { CreateUserDto } from 'src/user-management/dto/create-user.dto';
-import { UpdateUserDto } from 'src/user-management/dto/update-user.dto';
+import { CreateUserDto } from 'src/user-management/dto/user/create-user.dto';
+import { UpdateUserDto } from 'src/user-management/dto/user/update-user.dto';
+import { User } from 'src/user-management/entity/user.entity';
+import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-export class UserService extends BaseService<User> {
-  constructor(prisma: PrismaService) {
-    super(prisma, 'user');
-  }
+export class UserService  {
+  constructor(
+    @InjectRepository(User)
+    private userRepository: Repository<User>,
+  ) {}
 
   async create(createUserDto: CreateUserDto) {
     const { password, ...user } = createUserDto;
     const hashedPassword = await hash(password);
-    return await this.prisma.user.create({
-      data: {
-        password: hashedPassword,
-        ...user,
-      },
+    const newUser = this.userRepository.create({
+      password: hashedPassword,
+      ...user,
     });
+    return await this.userRepository.save(newUser);
   }
 
-  findAll() {
-    return super.findAll();
+  async findAll() {
+    return await this.userRepository.find();
   }
 
-  findOne(conditions: Record<string, any>) {
-    return super.findOne(conditions);
+  findOne(id: number) {
+    return this.userRepository.findOneBy({ id });
   }
 
   update(id: number, updateUserDto: UpdateUserDto) {
-    return `This action updates a #${id} user`;
+    return this.userRepository.update(id, updateUserDto);
   }
 
   remove(id: number) {
-    return `This action removes a #${id} user`;
+    return this.userRepository.softDelete(id);
+  }
+
+  restore(id: number) {
+    return this.userRepository.restore(id);
   }
 }

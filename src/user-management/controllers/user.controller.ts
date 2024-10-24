@@ -15,8 +15,8 @@ import {
   UsePipes,
 } from '@nestjs/common';
 
-import { CreateUserDto } from '../dto/create-user.dto';
-import { UpdateUserDto } from '../dto/update-user.dto';
+import { CreateUserDto } from '../dto/user/create-user.dto';
+import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserService } from '../services/user/user.service';
 
 @Controller('api/users')
@@ -24,7 +24,9 @@ export class UserController {
   constructor(private readonly userService: UserService) {}
 
   @Post()
-  async create(@Body(new ValidationPipe()) createUserDto: CreateUserDto): Promise<any> {
+  async create(
+    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+  ): Promise<any> {
     const user = await this.userService.create(createUserDto);
     return user;
   }
@@ -36,7 +38,7 @@ export class UserController {
 
   @Get(':id')
   findOne(@Param('id') id: string) {
-    return this.userService.findOne({ id: +id });
+    return this.userService.findOne(+id);
   }
 
   @Patch(':id')
@@ -47,5 +49,10 @@ export class UserController {
   @Delete(':id')
   remove(@Param('id') id: string) {
     return this.userService.remove(+id);
+  }
+
+  @Patch(':id/restore')
+  restore(@Param('id') id: string) {
+    return this.userService.restore(+id);
   }
 }
