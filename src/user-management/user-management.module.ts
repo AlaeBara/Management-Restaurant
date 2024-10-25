@@ -13,23 +13,13 @@ import { Permission } from './entity/permission.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleController } from './controllers/role.controller';
 import { PermissionController } from './controllers/permission.controller';
-
-import {
-  permissionGenericServiceFactory,
-  roleGenericServiceFactory,
-  userGenericServiceFactory,
-} from './services/generic-factories';
-import { DataSource } from 'typeorm';
+import { AuthGuard } from './guards/auth.guard';
+import { Constants } from '../common/constants/contanst';
 
 @Module({
   imports: [
     CommonModule,
     TypeOrmModule.forFeature([User, Role, Permission]),
-    JwtModule.register({
-      global: true,
-      secret: process.env.JWT_SECRET,
-      signOptions: { expiresIn: '1h' },
-    }),
   ],
   controllers: [
     UserController,
@@ -41,22 +31,8 @@ import { DataSource } from 'typeorm';
     RoleService,
     UserService,
     PermissionService,
+    AuthGuard,
     AuthenticationService,
-   /*  {
-      provide: 'ROLE_GENERIC_SERVICE',
-      useFactory: roleGenericServiceFactory,
-      inject: [DataSource],
-    },
-    {
-      provide: 'PERMISSION_GENERIC_SERVICE',
-      useFactory: permissionGenericServiceFactory,
-      inject: [DataSource],
-    },
-    {
-      provide: 'USER_GENERIC_SERVICE',
-      useFactory: userGenericServiceFactory,
-      inject: [DataSource],
-    }, */
   ],
 })
 export class UserManagementModule {}

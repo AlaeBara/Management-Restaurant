@@ -5,28 +5,27 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { User } from './user-management/entity/user.entity';
 import { Role } from './user-management/entity/role.entity';
 import { Permission } from './user-management/entity/permission.entity';
-import { ConfigModule, ConfigService } from '@nestjs/config';
+import { JwtModule } from '@nestjs/jwt';
+import { Constants } from './common/constants/contanst';
 
 @Module({
   imports: [
-    ConfigModule.forRoot({
-      isGlobal: true,
+    JwtModule.register({
+      global: true,
+      secret: Constants.jwt_secret,
+      signOptions: { expiresIn: '1h' },
     }),
     UserManagementModule,
     CommonModule,
-    TypeOrmModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: (configService: ConfigService) => ({
+    TypeOrmModule.forRoot({
         type: 'postgres',
-        host: configService.get('DB_HOST'),
-        port: configService.get('DB_PORT'),
-        username: configService.get('DB_USERNAME'),
-        password: configService.get('DB_PASSWORD'),
-        database: configService.get('DB_DATABASE'),
+        host: Constants.DB_HOST,
+        port: Constants.DB_PORT,
+        username: Constants.DB_USERNAME,
+        password: Constants.DB_PASSWORD,
+        database: Constants.DB_NAME,
         entities: [User, Role, Permission],
         synchronize: true,
-      }),
-      inject: [ConfigService],
     }),
   ],
   controllers: [],

@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
+import { CreateRoleDto } from 'src/user-management/dto/role/create.dto';
 import { Permission } from 'src/user-management/entity/permission.entity';
 import { Role } from 'src/user-management/entity/role.entity';
 import { DataSource, DeleteResult, Repository, UpdateResult } from 'typeorm';
@@ -42,5 +43,9 @@ export class RoleService extends GenericService<Role> {
 
     role.permissions.push(permission);
     await this.roleRepository.save(role);
+  }
+
+  async toLowerCase(role: CreateRoleDto) {
+    role.name = role.name.toLowerCase();
   }
 }

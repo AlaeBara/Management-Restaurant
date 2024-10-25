@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
 import { Role } from '../entity/role.entity';
@@ -16,6 +17,9 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
+import { Roles } from '../decorators/roles.decorator';
+import { Permissions } from '../decorators/permission.decorator';
+import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('api/roles')
 export class RoleController {
@@ -35,10 +39,14 @@ export class RoleController {
   }
 
   @Post()
+  @UseGuards(AuthGuard)
+  @Roles('Chef')
+  @Permissions('create-role')
   async create(
     @Body(new ValidationPipe()) role: CreateRoleDto,
   ): Promise<Partial<Role>> {
     await this.roleService.throwIfFoundByName(role.name);
+    await this.roleService.toLowerCase(role);
     return this.roleService.create(role);
   }
 

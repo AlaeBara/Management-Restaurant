@@ -11,6 +11,7 @@ import {
 import { Role } from './role.entity';
 import { Gender } from '../enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class User  {
@@ -41,7 +42,7 @@ export class User  {
   @Column({ unique: true })
   email: string;
 
-  @Column({ select: false })
+  @Column({select: false})
   password: string;
 
   @Column({ nullable: true })

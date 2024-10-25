@@ -37,9 +37,6 @@ $ pnpm install
 ```bash
 # development
 pnpm install
-npx prisma init
-npx prisma generate
-npx prisma migrate dev
 nest start --watch
 
 
