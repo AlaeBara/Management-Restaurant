@@ -1,4 +1,4 @@
-import { forwardRef, Module } from '@nestjs/common';
+import { Module } from '@nestjs/common';
 import { RoleService } from './services/role/role.service';
 import { UserService } from './services/user/user.service';
 import { PermissionService } from './services/permission/permission.service';
@@ -13,6 +13,13 @@ import { Permission } from './entity/permission.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleController } from './controllers/role.controller';
 import { PermissionController } from './controllers/permission.controller';
+
+import {
+  permissionGenericServiceFactory,
+  roleGenericServiceFactory,
+  userGenericServiceFactory,
+} from './services/generic-factories';
+import { DataSource } from 'typeorm';
 
 @Module({
   imports: [
@@ -35,6 +42,21 @@ import { PermissionController } from './controllers/permission.controller';
     UserService,
     PermissionService,
     AuthenticationService,
+   /*  {
+      provide: 'ROLE_GENERIC_SERVICE',
+      useFactory: roleGenericServiceFactory,
+      inject: [DataSource],
+    },
+    {
+      provide: 'PERMISSION_GENERIC_SERVICE',
+      useFactory: permissionGenericServiceFactory,
+      inject: [DataSource],
+    },
+    {
+      provide: 'USER_GENERIC_SERVICE',
+      useFactory: userGenericServiceFactory,
+      inject: [DataSource],
+    }, */
   ],
 })
 export class UserManagementModule {}

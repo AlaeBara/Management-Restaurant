@@ -1,4 +1,14 @@
-import { Body, Controller, Delete, Get, NotFoundException, Param, Patch, Post, Put } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Delete,
+  Get,
+  Param,
+  Patch,
+  Post,
+  Put,
+  ValidationPipe,
+} from '@nestjs/common';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entity/permission.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
@@ -8,24 +18,31 @@ export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
   @Get()
-  async findAll(): Promise<Permission[]> {
+  async findAll(): Promise<{
+    data: Permission[];
+    total: number;
+    page: number;
+    limit: number;
+  }> {
     return this.permissionService.findAll();
   }
 
   @Post()
-  async create(@Body() permission: Permission): Promise<Permission> {
+  async create(
+    @Body(new ValidationPipe()) permission: Permission,
+  ): Promise<Partial<Permission>> {
     return this.permissionService.create(permission);
   }
 
   @Get(':id')
   async findOne(@Param('id') id: number): Promise<any> {
-      return this.permissionService.findOne(id);
+    return this.permissionService.findOrThrow(id);
   }
 
   @Put(':id')
   async update(
     @Param('id') id: number,
-    @Body() permission: Permission,
+    @Body(new ValidationPipe()) permission: Permission,
   ): Promise<UpdateResult> {
     return this.permissionService.update(id, permission);
   }

@@ -9,6 +9,7 @@ import {
   JoinTable,
 } from 'typeorm';
 import { Permission } from './permission.entity';
+import { Exclude } from 'class-transformer';
 
 @Entity()
 export class Role {
@@ -21,10 +22,12 @@ export class Role {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({select: false})
+  @Exclude()
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({select: false})
+  @Exclude()
   deletedAt: Date;
 
   @ManyToMany(() => Permission)

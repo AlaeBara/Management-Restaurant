@@ -5,25 +5,22 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  JoinTable,
-  ManyToMany,
 } from 'typeorm';
-import { Role } from './role.entity';
 
 @Entity()
 export class Permission {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
+  @Column({ unique: true })
   name: string;
 
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({select: false})
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({select: false})
   deletedAt: Date;
 }

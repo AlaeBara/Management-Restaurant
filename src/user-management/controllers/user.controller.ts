@@ -6,49 +6,58 @@ import {
   Patch,
   Param,
   Delete,
-  HttpException,
-  HttpStatus,
-  BadRequestException,
-  ConflictException,
-  InternalServerErrorException,
   ValidationPipe,
-  UsePipes,
+  Query,
+  Put,
 } from '@nestjs/common';
 
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserService } from '../services/user/user.service';
+import { User } from '../entity/user.entity';
 
 @Controller('api/users')
 export class UserController {
   constructor(private readonly userService: UserService) {}
 
+  @Get()
+  async findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('relations') relations?: string[],
+    @Query('sort') sort?: string,
+  ): Promise<{ data: User[]; total: number; page: number; limit: number }> {
+    return this.userService.findAll(page, limit, relations, sort);
+  }
+
   @Post()
   async create(
     @Body(new ValidationPipe()) createUserDto: CreateUserDto,
   ): Promise<any> {
+    await this.userService.throwIfFoundByAnyAttribute({
+      username: createUserDto.username,
+      email: createUserDto.email,
+    });
     const user = await this.userService.create(createUserDto);
     return user;
   }
 
-  @Get()
-  findAll() {
-    return this.userService.findAll();
-  }
-
   @Get(':id')
-  findOne(@Param('id') id: string) {
-    return this.userService.findOne(+id);
+  findOne(@Param('id') id: number) {
+    return this.userService.findOrThrow(id);
   }
 
-  @Patch(':id')
-  update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
+  @Put(':id')
+  update(
+    @Param('id') id: string,
+    @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
+  ) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+  delete(@Param('id') id: string) {
+    return this.userService.delete(+id);
   }
 
   @Patch(':id/restore')

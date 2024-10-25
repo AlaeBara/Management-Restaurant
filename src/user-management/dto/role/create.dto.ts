@@ -1,14 +1,10 @@
 import {
-  IsEmail,
-  isEmpty,
-  IsEnum,
   IsNotEmpty,
-  IsString,
   Length,
 } from 'class-validator';
 
-export class CreateUserDto {
+export class CreateRoleDto {
   @IsNotEmpty()
-  @Length(5, 20)
+  @Length(3, 20)
   name: string;
 }

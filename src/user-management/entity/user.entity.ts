@@ -9,6 +9,8 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 import { Role } from './role.entity';
+import { Gender } from '../enums/gender.enum';
+import { UserStatus } from '../enums/user-status.enum';
 
 @Entity()
 export class User  {
@@ -22,7 +24,7 @@ export class User  {
   lastname: string;
 
   @Column()
-  gender: string; // Assuming Gender is an enum, you might want to define it separately
+  gender: Gender;
 
   @Column({ unique: true })
   username: string;
@@ -33,13 +35,13 @@ export class User  {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ default: 'ACTIVE' }) // Assuming UserStatus is an enum, you might want to define it separately
-  status: string;
+  @Column({ default: UserStatus.ACTIVE })
+  status: UserStatus;
 
   @Column({ unique: true })
   email: string;
 
-  @Column()
+  @Column({ select: false })
   password: string;
 
   @Column({ nullable: true })
@@ -57,10 +59,10 @@ export class User  {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn()
+  @UpdateDateColumn({select: false})
   updatedAt: Date;
 
-  @DeleteDateColumn()
+  @DeleteDateColumn({select: false})
   deletedAt: Date;
 
   @ManyToMany(() => Role)

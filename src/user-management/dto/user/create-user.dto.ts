@@ -1,12 +1,13 @@
-import { IsEmail, isEmpty, IsEnum, IsNotEmpty, IsString, Length } from "class-validator";
+import { IsEmail, isEmpty, IsEnum, IsNotEmpty, IsOptional, IsString, Length } from "class-validator";
 import { Gender } from "../../enums/gender.enum";
 
 export class CreateUserDto {
     @IsNotEmpty()
-    @Length(3, 20)
+    @Length(5, 20)
     firstname:string;
  
     @IsNotEmpty()
+    @Length(5, 20)
     lastname:string;
   
     @IsNotEmpty()
@@ -25,4 +26,9 @@ export class CreateUserDto {
     @IsEnum(Gender)
     gender:Gender
 
+    @IsOptional()
+    address: string;
+
+    @IsOptional()
+    phone: string;
 }

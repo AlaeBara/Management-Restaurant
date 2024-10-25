@@ -1,17 +1,21 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
+import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { hash } from 'argon2';
+import { GenericService } from 'src/common/services/generic.service';
 import { CreateUserDto } from 'src/user-management/dto/user/create-user.dto';
 import { UpdateUserDto } from 'src/user-management/dto/user/update-user.dto';
 import { User } from 'src/user-management/entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
 
 @Injectable()
-export class UserService  {
+export class UserService extends GenericService<User> {
   constructor(
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+    @InjectDataSource() dataSource: DataSource,
+  ) {
+    super(dataSource, User, 'user');
+  }
 
   async create(createUserDto: CreateUserDto) {
     const { password, ...user } = createUserDto;
@@ -20,26 +24,6 @@ export class UserService  {
       password: hashedPassword,
       ...user,
     });
-    return await this.userRepository.save(newUser);
-  }
-
-  async findAll() {
-    return await this.userRepository.find();
-  }
-
-  findOne(id: number) {
-    return this.userRepository.findOneBy({ id });
-  }
-
-  update(id: number, updateUserDto: UpdateUserDto) {
-    return this.userRepository.update(id, updateUserDto);
-  }
-
-  remove(id: number) {
-    return this.userRepository.softDelete(id);
-  }
-
-  restore(id: number) {
-    return this.userRepository.restore(id);
+    return this.userRepository.save(newUser);
   }
 }
