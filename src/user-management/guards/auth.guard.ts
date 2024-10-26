@@ -14,7 +14,7 @@ export class AuthGuard implements CanActivate {
   constructor(
     private reflector: Reflector,
     private jwtService: JwtService,
-  ) {}
+  ) { }
 
   canActivate(context: ExecutionContext): boolean {
     const requiredRoles = this.reflector.get<string[]>(
@@ -27,6 +27,10 @@ export class AuthGuard implements CanActivate {
     );
 
     if (!requiredRoles && !requiredPermissions) {
+      return true;
+    }
+
+    if (requiredPermissions.includes('public-access')) {
       return true;
     }
 
@@ -43,7 +47,7 @@ export class AuthGuard implements CanActivate {
 
       const userPermissions = decoded.permissions;
 
-      if (userPermissions.includes('garanted-access')) {
+      if (userPermissions.includes('access-granted')) {
         return true;
       }
 

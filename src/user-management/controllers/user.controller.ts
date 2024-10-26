@@ -18,7 +18,18 @@ import { User } from '../entity/user.entity';
 
 @Controller('api/users')
 export class UserController {
-  constructor(private readonly userService: UserService) {}
+  constructor(private readonly userService: UserService) { }
+
+
+  /* private readonly userPermissions = [
+    { permission: 'view-users', label: 'View all users' },
+    { permission: 'create-user', label: 'Create a new user' },
+    { permission: 'view-user', label: 'View a specific user' },
+    { permission: 'update-user', label: 'Update an existing user' },
+    { permission: 'delete-user', label: 'Delete a user' },
+    { permission: 'restore-user', label: 'Restore a deleted user' },
+  ]; */
+
 
   @Get()
   async findAll(

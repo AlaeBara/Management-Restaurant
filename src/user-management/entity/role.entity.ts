@@ -7,17 +7,22 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
   JoinTable,
+  Index,
 } from 'typeorm';
 import { Permission } from './permission.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
+@Index(['name','id'])
 export class Role {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column({ unique: true })
+  @Column()
   name: string;
+
+  @Column()
+  label: string;
 
   @CreateDateColumn()
   createdAt: Date;

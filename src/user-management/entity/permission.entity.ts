@@ -5,8 +5,10 @@ import {
   DeleteDateColumn,
   CreateDateColumn,
   UpdateDateColumn,
+  Index,
 } from 'typeorm';
 
+@Index(['name','id'])
 @Entity()
 export class Permission {
   @PrimaryGeneratedColumn()
@@ -14,6 +16,12 @@ export class Permission {
 
   @Column({ unique: true })
   name: string;
+
+  @Column()
+  label:string
+
+  @Column()
+  resource: string;
 
   @CreateDateColumn()
   createdAt: Date;

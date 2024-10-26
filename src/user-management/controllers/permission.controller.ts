@@ -17,6 +17,17 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
 
+
+  /* private readonly permissionPermissions = [
+    { name: 'view-permissions', label: 'View all permissions' },
+    { name: 'create-permission', label: 'Create a new permission' },
+    { name: 'view-permission', label: 'View a specific permission' },
+    { name: 'update-permission', label: 'Update an existing permission' },
+    { name: 'delete-permission', label: 'Delete a permission' },
+    { name: 'restore-permission', label: 'Restore a deleted permission' },
+  ]; */
+
+
   @Get()
   async findAll(): Promise<{
     data: Permission[];

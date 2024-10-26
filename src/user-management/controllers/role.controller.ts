@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UnauthorizedException,
   UseGuards,
   ValidationPipe,
 } from '@nestjs/common';
@@ -28,6 +29,16 @@ export class RoleController {
     private readonly PermissionService: PermissionService,
   ) {}
 
+  /* private readonly rolePermissions = [
+    { permission: 'view-roles', label: 'View all roles' },
+    { permission: 'create-role', label: 'Create a new role' },
+    { permission: 'view-role', label: 'View a specific role' },
+    { permission: 'update-role', label: 'Update an existing role' },
+    { permission: 'delete-role', label: 'Delete a role' },
+    { permission: 'restore-role', label: 'Restore a deleted role' },
+    { permission: 'view-role-permissions', label: 'View permissions for a role' },
+  ]; */
+
   @Get()
   async findAll(
     @Query('page') page?: number,
@@ -45,8 +56,11 @@ export class RoleController {
   async create(
     @Body(new ValidationPipe()) role: CreateRoleDto,
   ): Promise<Partial<Role>> {
-    await this.roleService.throwIfFoundByName(role.name);
     await this.roleService.toLowerCase(role);
+    if (role.name === 'superadmin') {
+      throw new UnauthorizedException('Role superadmin cannot be created');
+    }
+    await this.roleService.throwIfFoundByName(role.name);
     return this.roleService.create(role);
   }
 
@@ -60,6 +74,10 @@ export class RoleController {
     @Param('id') id: number,
     @Body(new ValidationPipe()) role: UpdateRoleDto,
   ): Promise<UpdateResult> {
+    await this.roleService.toLowerCase(role);
+    if (role.name === 'superadmin') {
+      throw new UnauthorizedException('Role superadmin cannot be updated');
+    }
     await this.roleService.findOrThrow(id);
     return this.roleService.update(id, role);
   }

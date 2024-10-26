@@ -15,6 +15,12 @@ import { RoleController } from './controllers/role.controller';
 import { PermissionController } from './controllers/permission.controller';
 import { AuthGuard } from './guards/auth.guard';
 import { Constants } from '../common/constants/contanst';
+import { AccessRolePermissionSeeder } from './seeders/access-role-permission.seeder';
+import { UserPermissionSeeder } from './seeders/user-permission.seeder';
+import { RolePermissionSeeder } from './seeders/role-permission.seeder';
+import { PermissionPermissionsSeeder } from './seeders/permission-permissions.seeder';
+import { RolesSeeder } from './seeders/role.seeder';
+import { MasterSeeder } from './seeders/master.seeder';
 
 @Module({
   imports: [
@@ -33,6 +39,13 @@ import { Constants } from '../common/constants/contanst';
     PermissionService,
     AuthGuard,
     AuthenticationService,
+    AccessRolePermissionSeeder,
+    RolePermissionSeeder,
+    UserPermissionSeeder,
+    PermissionPermissionsSeeder,
+    RolesSeeder,
+    MasterSeeder
   ],
+  exports: [MasterSeeder],
 })
 export class UserManagementModule {}

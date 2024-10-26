@@ -1,4 +1,4 @@
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateRoleDto } from 'src/user-management/dto/role/create.dto';
@@ -40,6 +40,10 @@ export class RoleService extends GenericService<Role> {
     const permission = await this.permissionRepository.findOne({
       where: { id: permissionId },
     });
+
+    if (permission.name === 'access-granted') {
+      throw new UnauthorizedException('Permission access-granted cannot be granted to a role');
+    }
 
     role.permissions.push(permission);
     await this.roleRepository.save(role);
