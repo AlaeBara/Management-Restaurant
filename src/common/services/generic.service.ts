@@ -59,8 +59,12 @@ export class GenericService<T> {
     return this.repository.update(id, entity as any);
   }
 
-  async findOne(id: number): Promise<T> {
-    return this.repository.findOne({ where: { id } as any });
+  async findOne(id: number, relations?: string[], withDeleted: boolean= false): Promise<T> {
+    return this.repository.findOne({
+      where: { id } as any,
+      relations: relations,
+      withDeleted: withDeleted,
+    });
   }
 
   async delete(id: number): Promise<DeleteResult> {
@@ -71,10 +75,11 @@ export class GenericService<T> {
     return this.repository.restore(id);
   }
 
-  async findOrThrow(id: number, relations?: string[]): Promise<T> {
+  async findOrThrow(id: number, relations?: string[], withDeleted: boolean = false): Promise<T> {
     const entity = await this.repository.findOne({
       where: { id } as any,
       relations: relations,
+      withDeleted: withDeleted,
     });
     if (!entity) {
       throw new NotFoundException(
@@ -84,10 +89,11 @@ export class GenericService<T> {
     return entity;
   }
 
-  async findOrThrowByName(name: string, relations?: string[]): Promise<T> {
+  async findOrThrowByName(name: string, relations?: string[], withDeleted: boolean = false): Promise<T> {
     const entity = await this.repository.findOne({
       where: { name } as any,
       relations: relations,
+      withDeleted: withDeleted,
     });
     if (!entity) {
       throw new NotFoundException(
@@ -100,10 +106,12 @@ export class GenericService<T> {
   async findOrThrowByAttribute(
     attribute: Partial<T>,
     relations?: string[],
+    withDeleted: boolean = false,
   ): Promise<T> {
     const entity = await this.repository.findOne({
       where: attribute as any,
       relations: relations,
+      withDeleted: withDeleted,
     });
     if (!entity) {
       throw new NotFoundException(
@@ -113,10 +121,11 @@ export class GenericService<T> {
     return entity;
   }
 
-  async throwIfFoundById(id: number, relations?: string[]) {
+  async throwIfFoundById(id: number, relations?: string[], withDeleted: boolean = false) {
     const entity = await this.repository.findOne({
       where: { id } as any,
       relations: relations,
+      withDeleted: withDeleted,
     });
     if (entity) {
       throw new ConflictException(
@@ -125,10 +134,11 @@ export class GenericService<T> {
     }
   }
 
-  async throwIfFoundByName(name: string, relations?: string[]) {
+  async throwIfFoundByName(name: string, relations?: string[], withDeleted: boolean = false) {
     const entity = await this.repository.findOne({
       where: { name } as any,
       relations: relations,
+      withDeleted: withDeleted,
     });
     if (entity) {
       throw new ConflictException(
@@ -140,6 +150,7 @@ export class GenericService<T> {
   async throwIfFoundByAnyAttribute(
     attributes: Partial<T>,
     relations?: string[],
+    withDeleted: boolean = false,
   ) {
     const conditions = Object.entries(attributes).map(([key, value]) => ({
       [key]: value,
@@ -147,6 +158,7 @@ export class GenericService<T> {
     const entity = await this.repository.findOne({
       where: conditions as any,
       relations: relations,
+      withDeleted: withDeleted,
     });
     if (entity) {
       throw new ConflictException(
