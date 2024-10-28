@@ -20,7 +20,8 @@ import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permissions } from '../decorators/auth.decorator';
-
+import { ApiTags } from '@nestjs/swagger';
+@ApiTags('roles')
 @Controller('api/roles')
 export class RoleController {
   constructor(

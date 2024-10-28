@@ -19,11 +19,15 @@ async function bootstrap() {
     await seederService.seedAll();
   }
   const config = new DocumentBuilder()
-    .setTitle('Cats example')
-    .setDescription('The cats API description')
-    .setVersion('1.0')
-    .addTag('cats')
-    .build();
+  .setTitle('Restaurant Management API')
+  .setDescription('REST API for managing restaurant operations')
+  .setVersion('1.0')
+  .addBearerAuth()
+  .addTag('authentication')
+  .addTag('permissions')
+  .addTag('roles')
+  .addTag('users')
+  .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);
   await app.listen(3000, '0.0.0.0');

@@ -14,6 +14,9 @@ import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entity/permission.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Permissions } from '../decorators/auth.decorator';
+import { ApiTags } from '@nestjs/swagger';
+
+@ApiTags('permissions')
 @Controller('api/permissions')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
