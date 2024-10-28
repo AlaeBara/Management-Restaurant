@@ -5,6 +5,7 @@ import {
   Inject,
   InternalServerErrorException,
   Post,
+  Req,
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
@@ -12,12 +13,14 @@ import { AuthenticationService } from '../services/authentication/authentication
 import { LoginDto } from '../dto/authentication/login.dto';
 import { Public, Roles } from 'src/user-management/decorators/auth.decorator';
 import { JwtService } from '@nestjs/jwt';
+import { UserService } from '../services/user/user.service';
 
 @Controller('api/authentication')
 export class AuthenticationController {
   constructor(
     private jwtService: JwtService,
     private authenticationService: AuthenticationService,
+    private userService: UserService,
   ) {}
 
   @Public()
@@ -29,14 +32,9 @@ export class AuthenticationController {
     };
   }
 
-  @Post('register')
-  async register(
-    @Body() registerDto: { username: string; email: string; password: string },
-  ) {
-    return this.authenticationService.register(
-      registerDto.username,
-      registerDto.email,
-      registerDto.password,
-    );
+  @Get('profile')
+  async profile(@Req() request: Request) {
+    const reqUser = request['user'];
+    return await this.userService.findOrThrow(reqUser.sub);
   }
 }
