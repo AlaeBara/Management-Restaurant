@@ -6,7 +6,7 @@ import {
 import { AppModule } from './app.module';
 import { MasterSeeder } from './user-management/seeders/master.seeder';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
-
+import cors from '@fastify/cors';
 async function bootstrap() {
   // Create a new NestJS application instance using Fastify as the underlying HTTP server
   // This represents a change from the default Express platform to Fastify for improved performance
@@ -14,18 +14,34 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
+
+  // Run database seeders if RUN_SEEDER environment variable is set to TRUE
   if (process.env.RUN_SEEDER === 'TRUE') {
     const seederService = app.get(MasterSeeder);
     await seederService.seedAll();
   }
+
+  // Configure Swagger documentation
   const config = new DocumentBuilder()
-  .setTitle('Restaurant Management API')
-  .setDescription('REST API for managing restaurant operations')
-  .setVersion('1.0')
-  .addBearerAuth()
-  .build();
+    .setTitle('Restaurant Management API') // Set API title
+    .setDescription('REST API for managing restaurant operations') // Set API description 
+    .setVersion('1.0') // Set API version
+    .addBearerAuth() // Add bearer token authentication
+    .build();
+
+  // Create Swagger documentation
   const documentFactory = () => SwaggerModule.createDocument(app, config);
+
+  // Setup Swagger UI at /api path
   SwaggerModule.setup('api', app, documentFactory);
+
+  // Configure CORS to allow requests from frontend URL
+  await app.register(cors, {
+    origin: process.env.FRONTEND_URL, // Allow requests from frontend URL specified in env
+    credentials: true, // Allow credentials (cookies, auth headers etc)
+  });
+
+  // Start the server
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
