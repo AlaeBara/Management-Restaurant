@@ -5,7 +5,7 @@ import {
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { MasterSeeder } from './user-management/seeders/master.seeder';
-
+import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 
 async function bootstrap() {
   // Create a new NestJS application instance using Fastify as the underlying HTTP server
@@ -18,6 +18,14 @@ async function bootstrap() {
     const seederService = app.get(MasterSeeder);
     await seederService.seedAll();
   }
+  const config = new DocumentBuilder()
+    .setTitle('Cats example')
+    .setDescription('The cats API description')
+    .setVersion('1.0')
+    .addTag('cats')
+    .build();
+  const documentFactory = () => SwaggerModule.createDocument(app, config);
+  SwaggerModule.setup('api', app, documentFactory);
   await app.listen(3000, '0.0.0.0');
 }
 bootstrap();
