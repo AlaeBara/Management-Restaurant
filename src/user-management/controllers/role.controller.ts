@@ -18,8 +18,8 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
-import { Roles } from '../decorators/roles.decorator';
-import { Permissions } from '../decorators/permission.decorator';
+import { Roles } from '../decorators/auth.decorator';
+import { Permissions } from '../decorators/auth.decorator';
 import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('api/roles')
@@ -103,8 +103,8 @@ export class RoleController {
     @Param('id') id: number,
     @Param('permissionId') permissionId: number,
   ): Promise<any> {
-    await this.roleService.findOrThrow(id);
-    await this.PermissionService.findOrThrow(permissionId);
-    return await this.roleService.grantPermissionToRole(id, permissionId);
+    const role = await this.roleService.findOrThrow(id,['permissions']);
+    const permission = await this.PermissionService.findOrThrow(permissionId);
+    return await this.roleService.grantPermissionToRole(role, permission);
   }
 }

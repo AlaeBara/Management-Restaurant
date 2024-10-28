@@ -31,15 +31,7 @@ export class RoleService extends GenericService<Role> {
     return permissions;
   }
 
-  async grantPermissionToRole(roleId: number, permissionId: number) {
-    const role = await this.roleRepository.findOne({
-      where: { id: roleId },
-      relations: ['permissions'],
-    });
-
-    const permission = await this.permissionRepository.findOne({
-      where: { id: permissionId },
-    });
+  async grantPermissionToRole(role: Role, permission: Permission) {
 
     if (permission.name === 'access-granted') {
       throw new UnauthorizedException('Permission access-granted cannot be granted to a role');

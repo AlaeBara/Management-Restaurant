@@ -4,6 +4,7 @@ import { hash } from 'argon2';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateUserDto } from 'src/user-management/dto/user/create-user.dto';
 import { UpdateUserDto } from 'src/user-management/dto/user/update-user.dto';
+import { Role } from 'src/user-management/entity/role.entity';
 import { User } from 'src/user-management/entity/user.entity';
 import { DataSource, Repository } from 'typeorm';
 
@@ -25,5 +26,11 @@ export class UserService extends GenericService<User> {
       ...user,
     });
     return this.userRepository.save(newUser);
+  }
+
+  async grantRoleToUser(user:User,role:Role){
+    console.log(user)
+    user.roles.push(role);
+    return this.userRepository.save(user);
   }
 }

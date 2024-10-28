@@ -71,8 +71,11 @@ export class GenericService<T> {
     return this.repository.restore(id);
   }
 
-  async findOrThrow(id: number): Promise<T> {
-    const entity = await this.repository.findOne({ where: { id } as any });
+  async findOrThrow(id: number, relations?: string[]): Promise<T> {
+    const entity = await this.repository.findOne({
+      where: { id } as any,
+      relations: relations,
+    });
     if (!entity) {
       throw new NotFoundException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
@@ -81,8 +84,11 @@ export class GenericService<T> {
     return entity;
   }
 
-  async findOrThrowByName(name: string): Promise<T> {
-    const entity = await this.repository.findOne({ where: { name } as any });
+  async findOrThrowByName(name: string, relations?: string[]): Promise<T> {
+    const entity = await this.repository.findOne({
+      where: { name } as any,
+      relations: relations,
+    });
     if (!entity) {
       throw new NotFoundException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
@@ -91,8 +97,14 @@ export class GenericService<T> {
     return entity;
   }
 
-  async findOrThrowByAttribute(attribute: Partial<T>): Promise<T> {
-    const entity = await this.repository.findOne({ where: attribute as any });
+  async findOrThrowByAttribute(
+    attribute: Partial<T>,
+    relations?: string[],
+  ): Promise<T> {
+    const entity = await this.repository.findOne({
+      where: attribute as any,
+      relations: relations,
+    });
     if (!entity) {
       throw new NotFoundException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
@@ -101,8 +113,11 @@ export class GenericService<T> {
     return entity;
   }
 
-  async throwIfFoundById(id: number) {
-    const entity = await this.repository.findOne({ where: { id } as any });
+  async throwIfFoundById(id: number, relations?: string[]) {
+    const entity = await this.repository.findOne({
+      where: { id } as any,
+      relations: relations,
+    });
     if (entity) {
       throw new ConflictException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} already exists`,
@@ -110,8 +125,11 @@ export class GenericService<T> {
     }
   }
 
-  async throwIfFoundByName(name: string) {
-    const entity = await this.repository.findOne({ where: { name } as any });
+  async throwIfFoundByName(name: string, relations?: string[]) {
+    const entity = await this.repository.findOne({
+      where: { name } as any,
+      relations: relations,
+    });
     if (entity) {
       throw new ConflictException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} already exists`,
@@ -119,11 +137,17 @@ export class GenericService<T> {
     }
   }
 
-  async throwIfFoundByAnyAttribute(attributes: Partial<T>) {
+  async throwIfFoundByAnyAttribute(
+    attributes: Partial<T>,
+    relations?: string[],
+  ) {
     const conditions = Object.entries(attributes).map(([key, value]) => ({
       [key]: value,
     }));
-    const entity = await this.repository.findOne({ where: conditions as any });
+    const entity = await this.repository.findOne({
+      where: conditions as any,
+      relations: relations,
+    });
     if (entity) {
       throw new ConflictException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} already exists`,

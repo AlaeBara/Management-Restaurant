@@ -9,16 +9,26 @@ import {
   ValidationPipe,
   Query,
   Put,
+  UseGuards,
+  ParseIntPipe,
 } from '@nestjs/common';
 
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserService } from '../services/user/user.service';
 import { User } from '../entity/user.entity';
+import { AuthGuard } from '../guards/auth.guard';
+import { Permissions } from '../decorators/auth.decorator';
+import { JwtAuthGuard } from '../guards/jwt.guard';
+import { Roles } from '../decorators/auth.decorator';
+import { RoleService } from '../services/role/role.service';
+import { RolesGuard } from '../guards/roles.guard';
+import { PermissionsGuard } from '../guards/permission.guard';
 
 @Controller('api/users')
+@UseGuards(JwtAuthGuard,RolesGuard,PermissionsGuard)
 export class UserController {
-  constructor(private readonly userService: UserService) { }
+  constructor(private readonly userService: UserService,private readonly roleService :RoleService) { }
 
 
   /* private readonly userPermissions = [
@@ -32,6 +42,7 @@ export class UserController {
 
 
   @Get()
+  @Permissions('public-access')
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -42,6 +53,7 @@ export class UserController {
   }
 
   @Post()
+  @Roles('chef')
   async create(
     @Body(new ValidationPipe()) createUserDto: CreateUserDto,
   ): Promise<any> {
@@ -54,6 +66,7 @@ export class UserController {
   }
 
   @Get(':id')
+  @Roles('chef')
   findOne(@Param('id') id: number) {
     return this.userService.findOrThrow(id);
   }
@@ -74,5 +87,12 @@ export class UserController {
   @Patch(':id/restore')
   restore(@Param('id') id: string) {
     return this.userService.restore(+id);
+  }
+
+  @Post(':id/roles/:roleid')
+  async grantRoleToUser(@Param('id',ParseIntPipe) id:number,@Param('roleid',ParseIntPipe) roleid:number){
+    const user = await this.userService.findOrThrow(id,['roles']);
+    const role = await this.roleService.findOrThrow(roleid);
+    this.userService.grantRoleToUser(user,role);
   }
 }

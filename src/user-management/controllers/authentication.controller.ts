@@ -2,10 +2,10 @@ import { Body, Controller, Get, Inject, InternalServerErrorException, Post, Unau
 import { AuthenticationService } from '../services/authentication/authentication.service';
 import { LoginDto } from '../dto/authentication/login.dto';
 import { AuthGuard } from 'src/user-management/guards/auth.guard';
-import { Roles } from 'src/user-management/decorators/roles.decorator';
+import { Roles } from 'src/user-management/decorators/auth.decorator';
 import { verify } from 'argon2';
 import { JwtService } from '@nestjs/jwt';
-import { Permissions } from '../decorators/permission.decorator';
+import { Permissions } from '../decorators/auth.decorator';
 
 @Controller('api/authentication')
 //@UseGuards(AuthGuard)
