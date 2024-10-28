@@ -7,6 +7,10 @@ import { Role } from './user-management/entity/role.entity';
 import { Permission } from './user-management/entity/permission.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
+import { JwtAuthGuard } from './user-management/guards/jwt.guard';
+import { APP_GUARD } from '@nestjs/core';
+import { RolesGuard } from './user-management/guards/roles.guard';
+import { PermissionsGuard } from './user-management/guards/permission.guard';
 
 @Module({
   imports: [
@@ -34,7 +38,18 @@ import { ConfigModule } from '@nestjs/config';
     }),
   ],
   controllers: [],
-  providers: [],
+  providers: [ {
+    provide: APP_GUARD,
+    useClass: JwtAuthGuard,
+  },
+  {
+    provide: APP_GUARD,
+    useClass: RolesGuard,
+  },
+  {
+    provide: APP_GUARD,
+    useClass: PermissionsGuard,
+  },],
   exports: [],
 })
 export class AppModule {}

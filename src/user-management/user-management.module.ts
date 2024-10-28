@@ -20,6 +20,9 @@ import { RolePermissionSeeder } from './seeders/role-permission.seeder';
 import { PermissionPermissionsSeeder } from './seeders/permission-permissions.seeder';
 import { RolesSeeder } from './seeders/role.seeder';
 import { MasterSeeder } from './seeders/master.seeder';
+import { PermissionsGuard } from './guards/permission.guard';
+import { RolesGuard } from './guards/roles.guard';
+import { JwtAuthGuard } from './guards/jwt.guard';
 
 @Module({
   imports: [
@@ -37,6 +40,9 @@ import { MasterSeeder } from './seeders/master.seeder';
     UserService,
     PermissionService,
     AuthGuard,
+    PermissionsGuard,
+    RolesGuard,
+    JwtAuthGuard,
     AuthenticationService,
     AccessRolePermissionSeeder,
     RolePermissionSeeder,
