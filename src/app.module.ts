@@ -6,7 +6,6 @@ import { User } from './user-management/entity/user.entity';
 import { Role } from './user-management/entity/role.entity';
 import { Permission } from './user-management/entity/permission.entity';
 import { JwtModule } from '@nestjs/jwt';
-import { Constants } from './common/constants/contanst';
 import { ConfigModule } from '@nestjs/config';
 
 @Module({

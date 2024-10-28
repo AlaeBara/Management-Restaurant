@@ -14,7 +14,6 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleController } from './controllers/role.controller';
 import { PermissionController } from './controllers/permission.controller';
 import { AuthGuard } from './guards/auth.guard';
-import { Constants } from '../common/constants/contanst';
 import { AccessRolePermissionSeeder } from './seeders/access-role-permission.seeder';
 import { UserPermissionSeeder } from './seeders/user-permission.seeder';
 import { RolePermissionSeeder } from './seeders/role-permission.seeder';

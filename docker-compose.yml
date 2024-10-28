@@ -4,7 +4,7 @@ services:
     ports:
       - ${DB_PORT:-5434}:5432
     environment:
-      - POSTGRES_USER=${DB_USER:-restaurant}
+      - POSTGRES_USER=${DB_USERNAME:-restaurant}
       - POSTGRES_PASSWORD=${DB_PASSWORD:-restaurant}
       - POSTGRES_DATABASE=${DB_NAME:-restaurant}
       - PGDATA=/var/lib/restaurant/data/pgdata

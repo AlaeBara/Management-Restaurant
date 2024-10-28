@@ -5,7 +5,6 @@ import {
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
 import { MasterSeeder } from './user-management/seeders/master.seeder';
-import { Constants } from './common/constants/contanst';
 
 
 async function bootstrap() {

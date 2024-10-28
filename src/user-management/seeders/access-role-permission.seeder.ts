@@ -6,7 +6,6 @@ import { Role } from '../entity/role.entity';
 import { User } from '../entity/user.entity';
 import { hash } from 'argon2';
 import { Gender } from '../enums/gender.enum';
-import { Constants } from 'src/common/constants/contanst';
 
 @Injectable()
 export class AccessRolePermissionSeeder {
