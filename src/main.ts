@@ -15,7 +15,7 @@ async function bootstrap() {
     AppModule,
     new FastifyAdapter(),
   );
-  if (Constants.RUN_SEEDER === true) {
+  if (process.env.RUN_SEEDER === 'TRUE') {
     const seederService = app.get(MasterSeeder);
     await seederService.seedAll();
   }

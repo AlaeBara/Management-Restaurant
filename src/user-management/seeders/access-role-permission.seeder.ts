@@ -33,20 +33,20 @@ export class AccessRolePermissionSeeder {
         await roleRepository.save(superadmin);
 
         const userRepository = this.connection.getRepository(User);
-        const superadminUser = await userRepository.findOneBy([{ email: Constants.SUPERADMIN_EMAIL }, { username: 'superadmin' }]);
+        const superadminUser = await userRepository.findOneBy([{ email: process.env.SUPERADMIN_EMAIL }, { username: 'superadmin' }]);
 
         if (!superadminUser) {
             const user = [{
                 firstname: 'Ayoub',
                 lastname: 'Baraoui',
-                email: Constants.SUPERADMIN_EMAIL,
+                email: process.env.SUPERADMIN_EMAIL,
                 isEmailVerified: true,
                 username: 'superadmin',
-                password: await hash(Constants.SUPERADMIN_PASSWORD),
+                password: await hash(process.env.SUPERADMIN_PASSWORD),
                 gender: Gender.MALE
             }];
             await userRepository.save(user);
-            const createdSuperAdmin = await userRepository.findOneBy([{ email: Constants.SUPERADMIN_EMAIL }, { username: 'superadmin' }]);
+            const createdSuperAdmin = await userRepository.findOneBy([{ email: process.env.SUPERADMIN_EMAIL }, { username: 'superadmin' }]);
             createdSuperAdmin.roles = [superadmin];
             await userRepository.save(createdSuperAdmin);
         }

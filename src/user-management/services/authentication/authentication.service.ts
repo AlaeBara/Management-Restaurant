@@ -18,7 +18,15 @@ export class AuthenticationService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
+
+
+  async signIn(loginDto: LoginDto): Promise<any> {
+    const user = await this.findUserByEmailOrUsername(loginDto.emailOrUsername);
+    await this.verifyPassword(user, loginDto.password);
+    await this.updateLastLogin(user.id);
+    return await this.initializePayload(user);
+  }
 
   async validateUser(username: string, password: string): Promise<User | null> {
     const user = await this.userRepository
@@ -30,10 +38,9 @@ export class AuthenticationService {
       .getOne();
 
     if (user && (await verify(user.password, password))) {
-      
       return user;
     }
-    return null;
+    throw new UnauthorizedException('credentials are invalid');
   }
 
   async initializePayload(user: User) {
@@ -48,41 +55,44 @@ export class AuthenticationService {
     return payload;
   }
 
-  async register(username: string, email: string, password: string) {
-    const hashedPassword = await hash(password);
-    const user = this.userRepository.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
-    await this.userRepository.save(user);
-    return user;
-  }
 
-  async signIn(loginDto: LoginDto): Promise<any> {
-    const user = await this.findUserByEmailOrUsername(loginDto.emailOrUsername);
-    await this.verifyPassword(user, loginDto.password);
-    await this.updateLastLogin(user.id);
-    return await this.initializePayload(user);
-   // return this.generateAccessToken(payload);
-  }
+
 
   private async findUserByEmailOrUsername(
     emailOrUsername: string,
   ): Promise<any> {
-   /*  const user = await this.userRepository.findOneBy({
-      email: emailOrUsername,
-      username: emailOrUsername,
-    }); */
+    /*  const user = await this.userRepository.findOneBy({
+       email: emailOrUsername,
+       username: emailOrUsername,
+     }); */
 
-    const user = await this.userRepository
+    const user = await this.userRepository.findOne({
+      where: [
+        { email: emailOrUsername },
+        { username: emailOrUsername }
+      ],
+      select: {
+        id: true,
+        email: true,
+        username: true,
+        password: true,
+      },
+      relations: {
+        roles: {
+          permissions: true
+        }
+      }
+    });
+    
+
+    /* const user = await this.userRepository
       .createQueryBuilder('user')
       .addSelect('user.password')
       .leftJoinAndSelect('user.roles', 'roles')
       .leftJoinAndSelect('roles.permissions', 'permissions')
       .where('user.username = :username', { username: emailOrUsername })
       .orWhere('user.email = :email', { email: emailOrUsername })
-      .getOne();
+      .getOne(); */
     if (!user) {
       throw new NotFoundException('credentials are invalid');
     }
@@ -107,5 +117,16 @@ export class AuthenticationService {
     const payload = { sub: user.id, username: user.username };
     const access_token = await this.jwtService.signAsync(payload);
     return { access_token };
+  }
+
+  async register(username: string, email: string, password: string) {
+    const hashedPassword = await hash(password);
+    const user = this.userRepository.create({
+      username,
+      email,
+      password: hashedPassword,
+    });
+    await this.userRepository.save(user);
+    return user;
   }
 }
