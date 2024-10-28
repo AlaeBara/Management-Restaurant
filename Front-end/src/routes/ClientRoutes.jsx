@@ -5,7 +5,7 @@ import Home from '../modules/Client/Home';
 const ClientRoutes = () => {
   return (
     <Routes>
-      <Route path="/" element={<Home />} />  {/* Home route */}
+      <Route path="/" element={<Home />} />
     </Routes>
   );
 };

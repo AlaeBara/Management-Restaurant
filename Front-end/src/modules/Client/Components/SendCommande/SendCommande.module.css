@@ -108,9 +108,9 @@
     border: none;
     border-radius: 8px;
     cursor: pointer;
-    background: linear-gradient(270deg, var(--primary-color), var(--primary-hover-color),#07e9a1 );
+    background: var(--primary-color);
     background-size: 600% 600%;
-    animation: gradientAnimation 6s ease infinite;
+    animation: gradientAnimation 2s ease infinite;
     transition: transform 0.2s ease, box-shadow 0.3s ease;
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
     /* white-space: nowrap; */
@@ -118,13 +118,16 @@
 
 @keyframes gradientAnimation {
     0% {
-        background-position: 0% 50%;
+        -webkit-box-shadow: 0 0 0 0 var(--primary-hover-color);
+        box-shadow: 0 0 0 0 var(--primary-hover-color);
     }
-    50% {
-        background-position: 100% 50%;
+    70% {
+        -webkit-box-shadow: 0 0 0 30px transparent;
+        box-shadow: 0 0 0 15px transparent;
     }
     100% {
-        background-position: 0% 50%;
+        -webkit-box-shadow: 0 0 0 0 transparent;
+        box-shadow: 0 0 0 0 transparent;
     }
 }
   
