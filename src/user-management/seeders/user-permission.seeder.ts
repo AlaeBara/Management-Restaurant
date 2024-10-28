@@ -22,6 +22,7 @@ export class UserPermissionSeeder {
             { name: 'update-user', label: 'Mettre à jour un utilisateur existant', resource: 'user' },
             { name: 'delete-user', label: 'Supprimer un utilisateur', resource: 'user' },
             { name: 'restore-user', label: 'Restaurer un utilisateur supprimé', resource: 'user' },
+            { name: 'grant-user-role', label: 'Accorder un rôle à un utilisateur', resource: 'user' },
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

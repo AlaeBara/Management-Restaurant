@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -18,9 +19,7 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
-import { Roles } from '../decorators/auth.decorator';
 import { Permissions } from '../decorators/auth.decorator';
-import { AuthGuard } from '../guards/auth.guard';
 
 @Controller('api/roles')
 export class RoleController {
@@ -37,9 +36,11 @@ export class RoleController {
     { permission: 'delete-role', label: 'Delete a role' },
     { permission: 'restore-role', label: 'Restore a deleted role' },
     { permission: 'view-role-permissions', label: 'View permissions for a role' },
+    { permission: 'grant-role-permission', label: 'Grant a permission to a role' },
   ]; */
 
   @Get()
+  @Permissions('view-roles')
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -50,8 +51,6 @@ export class RoleController {
   }
 
   @Post()
-  @UseGuards(AuthGuard)
-  @Roles('Chef')
   @Permissions('create-role')
   async create(
     @Body(new ValidationPipe()) role: CreateRoleDto,
@@ -65,13 +64,15 @@ export class RoleController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<Role> {
+  @Permissions('view-role')
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Role> {
     return this.roleService.findOrThrow(id);
   }
 
   @Put(':id')
+  @Permissions('update-role')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) role: UpdateRoleDto,
   ): Promise<UpdateResult> {
     await this.roleService.toLowerCase(role);
@@ -83,27 +84,33 @@ export class RoleController {
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteResult> {
+  @Permissions('delete-role')
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
     return this.roleService.delete(id);
   }
 
   @Patch(':id/restore')
-  async restore(@Param('id') id: number): Promise<UpdateResult> {
+  @Permissions('restore-role')
+  async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
     return this.roleService.restore(id);
   }
 
   @Get(':id/permissions')
-  async getPermissionsByRoleId(@Param('id') id: number): Promise<any> {
+  @Permissions('view-role-permissions')
+  async getPermissionsByRoleId(
+    @Param('id', ParseIntPipe) id: number,
+  ): Promise<any> {
     await this.roleService.findOrThrow(id);
     return this.roleService.getPermissionsByRoleId(id);
   }
 
   @Post(':id/permissions/:permissionId')
+  @Permissions('grant-role-permission')
   async grantPermissionToRole(
-    @Param('id') id: number,
-    @Param('permissionId') permissionId: number,
+    @Param('id', ParseIntPipe) id: number,
+    @Param('permissionId', ParseIntPipe) permissionId: number,
   ): Promise<any> {
-    const role = await this.roleService.findOrThrow(id,['permissions']);
+    const role = await this.roleService.findOrThrow(id, ['permissions']);
     const permission = await this.PermissionService.findOrThrow(permissionId);
     return await this.roleService.grantPermissionToRole(role, permission);
   }

@@ -17,7 +17,6 @@ import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
 import { UserService } from '../services/user/user.service';
 import { User } from '../entity/user.entity';
-import { AuthGuard } from '../guards/auth.guard';
 import { Permissions } from '../decorators/auth.decorator';
 import { JwtAuthGuard } from '../guards/jwt.guard';
 import { Roles } from '../decorators/auth.decorator';
@@ -26,10 +25,12 @@ import { RolesGuard } from '../guards/roles.guard';
 import { PermissionsGuard } from '../guards/permission.guard';
 
 @Controller('api/users')
-@UseGuards(JwtAuthGuard,RolesGuard,PermissionsGuard)
+@UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 export class UserController {
-  constructor(private readonly userService: UserService,private readonly roleService :RoleService) { }
-
+  constructor(
+    private readonly userService: UserService,
+    private readonly roleService: RoleService,
+  ) {}
 
   /* private readonly userPermissions = [
     { permission: 'view-users', label: 'View all users' },
@@ -38,8 +39,8 @@ export class UserController {
     { permission: 'update-user', label: 'Update an existing user' },
     { permission: 'delete-user', label: 'Delete a user' },
     { permission: 'restore-user', label: 'Restore a deleted user' },
+    { permission: 'grant-user-role', label: 'Accorder un rôle à un utilisateur' },
   ]; */
-
 
   @Get()
   @Permissions('public-access')
@@ -67,32 +68,36 @@ export class UserController {
 
   @Get(':id')
   @Roles('chef')
-  findOne(@Param('id') id: number) {
+  findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOrThrow(id);
   }
 
   @Put(':id')
   update(
-    @Param('id') id: string,
+    @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
   ) {
     return this.userService.update(+id, updateUserDto);
   }
 
   @Delete(':id')
-  delete(@Param('id') id: string) {
+  delete(@Param('id', ParseIntPipe) id: number) {
     return this.userService.delete(+id);
   }
 
   @Patch(':id/restore')
-  restore(@Param('id') id: string) {
+  restore(@Param('id', ParseIntPipe) id: number) {
     return this.userService.restore(+id);
   }
 
   @Post(':id/roles/:roleid')
-  async grantRoleToUser(@Param('id',ParseIntPipe) id:number,@Param('roleid',ParseIntPipe) roleid:number){
-    const user = await this.userService.findOrThrow(id,['roles']);
+  @Permissions('grant-role-permission')
+  async grantRoleToUser(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('roleid', ParseIntPipe) roleid: number,
+  ) {
+    const user = await this.userService.findOrThrow(id, ['roles']);
     const role = await this.roleService.findOrThrow(roleid);
-    this.userService.grantRoleToUser(user,role);
+    this.userService.grantRoleToUser(user, role);
   }
 }

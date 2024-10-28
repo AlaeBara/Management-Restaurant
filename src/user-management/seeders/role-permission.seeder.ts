@@ -23,6 +23,7 @@ export class RolePermissionSeeder {
       { name: 'delete-role', label: 'Supprimer un rôle', resource: 'role' },
       { name: 'restore-role', label: 'Restaurer un rôle supprimé', resource: 'role' },
       { name: 'view-role-permissions', label: 'Voir les permissions d\'un rôle', resource: 'role' },
+      { name: 'grant-role-permission', label: 'Accorder une permission à un rôle', resource: 'role' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

@@ -4,6 +4,7 @@ import {
   Delete,
   Get,
   Param,
+  ParseIntPipe,
   Patch,
   Post,
   Put,
@@ -12,11 +13,10 @@ import {
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entity/permission.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
-
+import { Permissions } from '../decorators/auth.decorator';
 @Controller('api/permissions')
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) {}
-
 
   /* private readonly permissionPermissions = [
     { name: 'view-permissions', label: 'View all permissions' },
@@ -27,8 +27,8 @@ export class PermissionController {
     { name: 'restore-permission', label: 'Restore a deleted permission' },
   ]; */
 
-
   @Get()
+  @Permissions('view-permissions')
   async findAll(): Promise<{
     data: Permission[];
     total: number;
@@ -39,6 +39,7 @@ export class PermissionController {
   }
 
   @Post()
+  @Permissions('create-permission')
   async create(
     @Body(new ValidationPipe()) permission: Permission,
   ): Promise<Partial<Permission>> {
@@ -46,25 +47,29 @@ export class PermissionController {
   }
 
   @Get(':id')
-  async findOne(@Param('id') id: number): Promise<any> {
+  @Permissions('view-permission')
+  async findOne(@Param('id', ParseIntPipe) id: number): Promise<any> {
     return this.permissionService.findOrThrow(id);
   }
 
   @Put(':id')
+  @Permissions('update-permission')
   async update(
-    @Param('id') id: number,
+    @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) permission: Permission,
   ): Promise<UpdateResult> {
     return this.permissionService.update(id, permission);
   }
 
   @Delete(':id')
-  async delete(@Param('id') id: number): Promise<DeleteResult> {
+  @Permissions('delete-permission')
+  async delete(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
     return this.permissionService.delete(id);
   }
 
   @Patch(':id/restore')
-  async restore(@Param('id') id: number): Promise<UpdateResult> {
+  @Permissions('restore-permission')
+  async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
     return this.permissionService.restore(id);
   }
 }
