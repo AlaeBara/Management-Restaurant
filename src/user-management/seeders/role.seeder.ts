@@ -32,7 +32,8 @@ export class RolesSeeder {
 
     for (const permissionData of rolePermissions) {
         const existingPermission = await roleRepository.findOne({
-            where: { name: permissionData.name }
+            where: { name: permissionData.name },
+            withDeleted: true
         });
 
         if (!existingPermission) {

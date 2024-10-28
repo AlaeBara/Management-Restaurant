@@ -1,6 +1,5 @@
 import { JwtService } from '@nestjs/jwt';
 import {
-  Inject,
   Injectable,
   NotFoundException,
   UnauthorizedException,
@@ -11,6 +10,7 @@ import { hash, verify } from 'argon2';
 import { Repository } from 'typeorm';
 import { User } from 'src/user-management/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
+import { UserStatus } from 'src/user-management/enums/user-status.enum';
 
 @Injectable()
 export class AuthenticationService {
@@ -18,11 +18,17 @@ export class AuthenticationService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
-
+  ) {}
 
   async signIn(loginDto: LoginDto): Promise<any> {
     const user = await this.findUserByEmailOrUsername(loginDto.emailOrUsername);
+    if (!(await this.canUserLogin(user))) {
+      // Add await here
+      throw new UnauthorizedException(
+        'Your account is currently restricted. Please contact support for assistance.',
+      );
+    }
+    //await this.isEmailVerified(user); // TODO: Uncomment this when email verification is implemented
     await this.verifyPassword(user, loginDto.password);
     await this.updateLastLogin(user.id);
     return await this.initializePayload(user);
@@ -55,44 +61,25 @@ export class AuthenticationService {
     return payload;
   }
 
-
-
-
   private async findUserByEmailOrUsername(
     emailOrUsername: string,
   ): Promise<any> {
-    /*  const user = await this.userRepository.findOneBy({
-       email: emailOrUsername,
-       username: emailOrUsername,
-     }); */
-
     const user = await this.userRepository.findOne({
-      where: [
-        { email: emailOrUsername },
-        { username: emailOrUsername }
-      ],
+      where: [{ email: emailOrUsername }, { username: emailOrUsername }],
       select: {
         id: true,
         email: true,
         username: true,
         password: true,
+        status: true,
       },
       relations: {
         roles: {
-          permissions: true
-        }
-      }
+          permissions: true,
+        },
+      },
     });
-    
 
-    /* const user = await this.userRepository
-      .createQueryBuilder('user')
-      .addSelect('user.password')
-      .leftJoinAndSelect('user.roles', 'roles')
-      .leftJoinAndSelect('roles.permissions', 'permissions')
-      .where('user.username = :username', { username: emailOrUsername })
-      .orWhere('user.email = :email', { email: emailOrUsername })
-      .getOne(); */
     if (!user) {
       throw new NotFoundException('credentials are invalid');
     }
@@ -119,14 +106,23 @@ export class AuthenticationService {
     return { access_token };
   }
 
-  async register(username: string, email: string, password: string) {
-    const hashedPassword = await hash(password);
-    const user = this.userRepository.create({
-      username,
-      email,
-      password: hashedPassword,
-    });
-    await this.userRepository.save(user);
-    return user;
+  async canUserLogin(user: User): Promise<boolean> {
+    const nonLoginableStatuses = [
+      UserStatus.BANNED,
+      UserStatus.DELETED,
+      UserStatus.SUSPENDED,
+      UserStatus.ARCHIVED,
+      UserStatus.INACTIVE,
+      UserStatus.EMAIL_UNVERIFIED,
+    ];
+    return !nonLoginableStatuses.includes(user.status);
+  }
+
+  async isEmailVerified(user: User): Promise<boolean> {
+    await user.status !== UserStatus.EMAIL_UNVERIFIED;
+    if (user.isEmailVerified === true) {
+      return true;
+    }
+    throw new UnauthorizedException('Your email is not verified');
   }
 }

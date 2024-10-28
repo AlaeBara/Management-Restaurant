@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  Delete,
   ValidationPipe,
   Query,
   Put,
@@ -19,7 +18,6 @@ import { UserService } from '../services/user/user.service';
 import { User } from '../entity/user.entity';
 import { Permissions } from '../decorators/auth.decorator';
 import { JwtAuthGuard } from '../guards/jwt.guard';
-import { Roles } from '../decorators/auth.decorator';
 import { RoleService } from '../services/role/role.service';
 import { RolesGuard } from '../guards/roles.guard';
 import { PermissionsGuard } from '../guards/permission.guard';
@@ -31,7 +29,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly roleService: RoleService,
+    private readonly roleService: RoleService
   ) {}
 
   /* private readonly userPermissions = [
@@ -45,7 +43,7 @@ export class UserController {
   ]; */
 
   @Get()
-  @Permissions('public-access')
+  @Permissions('view-users')
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -56,25 +54,26 @@ export class UserController {
   }
 
   @Post()
-  @Roles('chef')
+  @Permissions('create-user')
   async create(
     @Body(new ValidationPipe()) createUserDto: CreateUserDto,
   ): Promise<any> {
     await this.userService.throwIfFoundByAnyAttribute({
       username: createUserDto.username,
       email: createUserDto.email,
-    });
+    }, [], true);
     const user = await this.userService.create(createUserDto);
     return user;
   }
 
   @Get(':id')
-  @Roles('chef')
+  @Permissions('view-user')
   findOne(@Param('id', ParseIntPipe) id: number) {
     return this.userService.findOrThrow(id);
   }
 
   @Put(':id')
+  @Permissions('update-user')
   update(
     @Param('id', ParseIntPipe) id: number,
     @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
@@ -82,18 +81,8 @@ export class UserController {
     return this.userService.update(+id, updateUserDto);
   }
 
-  @Delete(':id')
-  delete(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.delete(+id);
-  }
-
-  @Patch(':id/restore')
-  restore(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.restore(+id);
-  }
-
   @Post(':id/roles/:roleid')
-  @Permissions('grant-role-permission')
+  @Permissions('grant-user-role')
   async grantRoleToUser(
     @Param('id', ParseIntPipe) id: number,
     @Param('roleid', ParseIntPipe) roleid: number,

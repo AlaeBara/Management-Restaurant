@@ -29,7 +29,8 @@ export class PermissionPermissionsSeeder {
 
         for (const permissionData of permissionPermissions) {
             const existingPermission = await permissionRepository.findOne({
-                where: { name: permissionData.name }
+                where: { name: permissionData.name },
+                withDeleted: true
             });
 
             if (!existingPermission) {

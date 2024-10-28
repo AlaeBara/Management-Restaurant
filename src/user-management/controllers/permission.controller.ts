@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -66,13 +67,24 @@ export class PermissionController {
 
   @Delete(':id')
   @Permissions('delete-permission')
-  async delete(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
-    return this.permissionService.delete(id);
+  async delete(@Param('id', ParseIntPipe) id: number) {
+    await this.permissionService.findOrThrow(id);
+    const roles = await this.permissionService.findRolesWithPermission(id);
+    if (roles.length > 0) {
+      throw new ConflictException(
+        'Cannot delete permission as it is assigned to roles',
+      );
+    }
+    this.permissionService.delete(id);
   }
 
   @Patch(':id/restore')
   @Permissions('restore-permission')
   async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
-    return this.permissionService.restore(id);
+    const permission = await this.permissionService.findOrThrow(id,[],true);
+    if(permission.deletedAt){
+      return this.permissionService.restore(id);
+    }
+    throw new ConflictException('Permission is not deleted');
   }
 }

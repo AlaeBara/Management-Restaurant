@@ -1,5 +1,6 @@
 import {
   Body,
+  ConflictException,
   Controller,
   Delete,
   Get,
@@ -19,8 +20,10 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
-import { Permissions } from '../decorators/auth.decorator';
+import { Permissions, Public, Roles } from '../decorators/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';
+
+
 @ApiTags('roles')
 @Controller('api/roles')
 export class RoleController {
@@ -98,7 +101,11 @@ export class RoleController {
   @Patch(':id/restore')
   @Permissions('restore-role')
   async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
-    return this.roleService.restore(id);
+    const role = await this.roleService.findOrThrow(id,[],true);
+    if(role.deletedAt){
+      return this.roleService.restore(id);
+    }
+    throw new ConflictException('Role is not deleted');
   }
 
   @Get(':id/permissions')

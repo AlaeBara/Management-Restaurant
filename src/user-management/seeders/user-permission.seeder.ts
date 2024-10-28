@@ -23,6 +23,7 @@ export class UserPermissionSeeder {
             { name: 'delete-user', label: 'Supprimer un utilisateur', resource: 'user' },
             { name: 'restore-user', label: 'Restaurer un utilisateur supprimé', resource: 'user' },
             { name: 'grant-user-role', label: 'Accorder un rôle à un utilisateur', resource: 'user' },
+            { name: 'update-user-status', label: 'Mettre à jour le statut d\'un utilisateur', resource: 'user' }, 
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);
@@ -30,7 +31,8 @@ export class UserPermissionSeeder {
 
         for (const permissionData of userPermissions) {
             const existingPermission = await permissionRepository.findOne({
-                where: { name: permissionData.name }
+                where: { name: permissionData.name },
+                withDeleted: true
             });
 
             if (!existingPermission) {

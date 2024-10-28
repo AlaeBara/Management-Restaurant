@@ -21,6 +21,10 @@ import { MasterSeeder } from './seeders/master.seeder';
 import { PermissionsGuard } from './guards/permission.guard';
 import { RolesGuard } from './guards/roles.guard';
 import { JwtAuthGuard } from './guards/jwt.guard';
+import UserProfileController from './controllers/user-profile.controller';
+import UserStatusController from './controllers/user-status.controller';
+import UserVerificationController from './controllers/user-verification.controller';
+import { UserStatusService } from './services/user/user-status.service';
 
 @Module({
   imports: [
@@ -29,9 +33,13 @@ import { JwtAuthGuard } from './guards/jwt.guard';
   ],
   controllers: [
     UserController,
+    UserProfileController,
     AuthenticationController,
     RoleController,
     PermissionController,
+    UserStatusController,
+    UserProfileController,
+    UserVerificationController,
   ],
   providers: [
     RoleService,
@@ -46,7 +54,8 @@ import { JwtAuthGuard } from './guards/jwt.guard';
     UserPermissionSeeder,
     PermissionPermissionsSeeder,
     RolesSeeder,
-    MasterSeeder
+    MasterSeeder,
+    UserStatusService,
   ],
   exports: [MasterSeeder],
 })

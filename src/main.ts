@@ -23,10 +23,6 @@ async function bootstrap() {
   .setDescription('REST API for managing restaurant operations')
   .setVersion('1.0')
   .addBearerAuth()
-  .addTag('authentication')
-  .addTag('permissions')
-  .addTag('roles')
-  .addTag('users')
   .build();
   const documentFactory = () => SwaggerModule.createDocument(app, config);
   SwaggerModule.setup('api', app, documentFactory);

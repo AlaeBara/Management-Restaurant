@@ -22,7 +22,6 @@ export class AuthenticationController {
   constructor(
     private jwtService: JwtService,
     private authenticationService: AuthenticationService,
-    private userService: UserService,
   ) {}
 
   @Public()
@@ -34,9 +33,4 @@ export class AuthenticationController {
     };
   }
 
-  @Get('profile')
-  async profile(@Req() request: Request) {
-    const reqUser = request['user'];
-    return await this.userService.findOrThrow(reqUser.sub);
-  }
 }

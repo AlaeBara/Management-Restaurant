@@ -38,7 +38,7 @@ export class User  {
   @Column({ nullable: true })
   phone: string;
 
-  @Column({ default: UserStatus.ACTIVE })
+  @Column({ default: UserStatus.EMAIL_UNVERIFIED })
   status: UserStatus;
 
   @Column({ unique: true })
