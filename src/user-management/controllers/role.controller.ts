@@ -86,6 +86,11 @@ export class RoleController {
   @Delete(':id')
   @Permissions('delete-role')
   async delete(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
+    const role = await this.roleService.findOrThrow(id);
+    if (role.name === 'superadmin') {
+      throw new UnauthorizedException('Role superadmin cannot be deleted');
+    }
+    await this.roleService.validateRoleIsNotInUse(id);
     return this.roleService.delete(id);
   }
 
