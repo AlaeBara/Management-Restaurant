@@ -33,4 +33,9 @@ export class AuthenticationController {
     };
   }
 
+  @Public()
+  @Post('validate-token')
+  async validateTokenRequest(@Req() request: Request) {
+    return this.authenticationService.validateJwtToken(request);
+  }
 }

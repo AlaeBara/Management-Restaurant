@@ -18,7 +18,7 @@ export class AuthenticationService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) {}
+  ) { }
 
   async signIn(loginDto: LoginDto): Promise<any> {
     const user = await this.findUserByEmailOrUsername(loginDto.emailOrUsername);
@@ -59,6 +59,34 @@ export class AuthenticationService {
       ),
     };
     return payload;
+  }
+
+  async validateJwtToken(request: Request): Promise<boolean> {
+
+    try {
+
+      const token = request.headers['authorization']?.split(' ')[1];
+      if (!token) {
+        throw new UnauthorizedException('No token provided');
+      }
+
+      const decoded = await this.jwtService.verifyAsync(token);
+      // Check if the token is expired or invalid
+      if (!decoded) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      // Optionally verify if the user still exists and is active
+      const user = await this.userRepository.findOne({
+        where: { id: decoded.sub }
+      });
+      if (!user || !(await this.canUserLogin(user))) {
+        throw new UnauthorizedException('Invalid token');
+      }
+      return decoded;
+    } catch (error) {
+      // Token is invalid or expired
+      throw new UnauthorizedException('a problem occurred while validating the token');
+    }
   }
 
   private async findUserByEmailOrUsername(
