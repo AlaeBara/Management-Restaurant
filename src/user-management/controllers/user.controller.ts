@@ -5,7 +5,6 @@ import {
   Body,
   Patch,
   Param,
-  ValidationPipe,
   Query,
   Put,
   UseGuards,
@@ -56,7 +55,7 @@ export class UserController {
   @Post()
   @Permissions('create-user')
   async create(
-    @Body(new ValidationPipe()) createUserDto: CreateUserDto,
+    @Body() createUserDto: CreateUserDto,
   ): Promise<any> {
     await this.userService.throwIfFoundByAnyAttribute({
       username: createUserDto.username,
@@ -76,7 +75,7 @@ export class UserController {
   @Permissions('update-user')
   update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) updateUserDto: UpdateUserDto,
+    @Body() updateUserDto: UpdateUserDto,
   ) {
     return this.userService.update(+id, updateUserDto);
   }

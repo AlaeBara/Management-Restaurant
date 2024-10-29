@@ -8,8 +8,7 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put,
-  ValidationPipe,
+  Put
 } from '@nestjs/common';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entity/permission.entity';
@@ -45,7 +44,7 @@ export class PermissionController {
   @Post()
   @Permissions('create-permission')
   async create(
-    @Body(new ValidationPipe()) permission: Permission,
+    @Body() permission: Permission,
   ): Promise<Partial<Permission>> {
     return this.permissionService.create(permission);
   }
@@ -60,7 +59,7 @@ export class PermissionController {
   @Permissions('update-permission')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) permission: Permission,
+    @Body() permission: Permission,
   ): Promise<UpdateResult> {
     return this.permissionService.update(id, permission);
   }

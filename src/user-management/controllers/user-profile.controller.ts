@@ -6,8 +6,7 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Req,
-  ValidationPipe,
+  Req
 } from '@nestjs/common';
 import { Permissions, Roles } from '../decorators/auth.decorator';
 import { UserService } from '../services/user/user.service';
@@ -20,8 +19,8 @@ import { UpdateUsernameDto } from '../dto/user/update-username.dto';
 export default class UserProfileController {
   constructor(private userService: UserService) {}
   //public async updateEmail(req: Request, res: Response) // in progress
-  //public async updateUsernameById(@Param('id', ParseIntPipe) id: number,@Body(new ValidationPipe()) updateUsernameDto: UpdateUsernameDto,) // done
-  //async updateUsernameByUser( @Req() request: Request,@Body(new ValidationPipe()) updateUsernameDto: UpdateUsernameDto,) // done
+  //public async updateUsernameById(@Param('id', ParseIntPipe) id: number,@Body() updateUsernameDto: UpdateUsernameDto,) // done
+  //async updateUsernameByUser( @Req() request: Request,@Body() updateUsernameDto: UpdateUsernameDto,) // done
   //public async updatePassword(req: Request, res: Response) // in progress
   //async profile(@Req() request: Request) // done
 
@@ -31,7 +30,7 @@ export default class UserProfileController {
   @Permissions('update-user-username')
   async updateUsernameById(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) updateUsernameDto: UpdateUsernameDto,
+    @Body() updateUsernameDto: UpdateUsernameDto,
   ) {
     await this.userService.updateUsername(id, updateUsernameDto);
     return { message: 'Username updated successfully', status: 200 };
@@ -41,7 +40,7 @@ export default class UserProfileController {
   @Permissions('update-user-username')
   async updateUsernameByUser(
     @Req() request: Request,
-    @Body(new ValidationPipe()) updateUsernameDto: UpdateUsernameDto,
+    @Body() updateUsernameDto: UpdateUsernameDto,
   ) {
     const reqUser = request['user'];
     // Update the username for the authenticated user

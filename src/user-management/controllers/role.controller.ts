@@ -12,7 +12,6 @@ import {
   Query,
   UnauthorizedException,
   UseGuards,
-  ValidationPipe,
 } from '@nestjs/common';
 import { Role } from '../entity/role.entity';
 import { RoleService } from '../services/role/role.service';
@@ -57,7 +56,7 @@ export class RoleController {
   @Post()
   @Permissions('create-role')
   async create(
-    @Body(new ValidationPipe()) role: CreateRoleDto,
+    @Body() role: CreateRoleDto,
   ): Promise<Partial<Role>> {
     await this.roleService.toLowerCase(role);
     if (role.name === 'superadmin') {
@@ -77,7 +76,7 @@ export class RoleController {
   @Permissions('update-role')
   async update(
     @Param('id', ParseIntPipe) id: number,
-    @Body(new ValidationPipe()) role: UpdateRoleDto,
+    @Body() role: UpdateRoleDto,
   ): Promise<UpdateResult> {
     await this.roleService.toLowerCase(role);
     if (role.name === 'superadmin') {
