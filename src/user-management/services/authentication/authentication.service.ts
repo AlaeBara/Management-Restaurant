@@ -11,6 +11,7 @@ import { Repository } from 'typeorm';
 import { User } from 'src/user-management/entity/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserStatus } from 'src/user-management/enums/user-status.enum';
+import { EmailVerificationService } from './email-verification.service';
 
 @Injectable()
 export class AuthenticationService {
@@ -18,17 +19,25 @@ export class AuthenticationService {
     private jwtService: JwtService,
     @InjectRepository(User)
     private userRepository: Repository<User>,
-  ) { }
+    private emailVerificationService: EmailVerificationService,
+  ) {}
 
   async signIn(loginDto: LoginDto): Promise<any> {
     const user = await this.findUserByEmailOrUsername(loginDto.emailOrUsername);
+
     if (!(await this.canUserLogin(user))) {
-      // Add await here
       throw new UnauthorizedException(
         'Your account is currently restricted. Please contact support for assistance.',
       );
     }
-    //await this.isEmailVerified(user); // TODO: Uncomment this when email verification is implemented
+
+    if (!(await this.isUserVerifiedEmail(user))) {
+      await this.emailVerificationService.sendVerificationEmail(user.email);
+      throw new UnauthorizedException(
+        'Your email is not verified, a verification email has been sent',
+      );
+    }
+
     await this.verifyPassword(user, loginDto.password);
     await this.updateLastLogin(user.id);
     return await this.initializePayload(user);
@@ -62,9 +71,7 @@ export class AuthenticationService {
   }
 
   async validateJwtToken(request: Request): Promise<boolean> {
-
     try {
-
       const token = request.headers['authorization']?.split(' ')[1];
       if (!token) {
         throw new UnauthorizedException('No token provided');
@@ -77,7 +84,7 @@ export class AuthenticationService {
       }
       // Optionally verify if the user still exists and is active
       const user = await this.userRepository.findOne({
-        where: { id: decoded.sub }
+        where: { id: decoded.sub },
       });
       if (!user || !(await this.canUserLogin(user))) {
         throw new UnauthorizedException('Invalid token');
@@ -85,7 +92,9 @@ export class AuthenticationService {
       return decoded;
     } catch (error) {
       // Token is invalid or expired
-      throw new UnauthorizedException('a problem occurred while validating the token');
+      throw new UnauthorizedException(
+        'a problem occurred while validating the token',
+      );
     }
   }
 
@@ -100,6 +109,7 @@ export class AuthenticationService {
         username: true,
         password: true,
         status: true,
+        isEmailVerified: true,
       },
       relations: {
         roles: {
@@ -141,13 +151,16 @@ export class AuthenticationService {
       UserStatus.SUSPENDED,
       UserStatus.ARCHIVED,
       UserStatus.INACTIVE,
-      UserStatus.EMAIL_UNVERIFIED,
     ];
     return !nonLoginableStatuses.includes(user.status);
   }
 
+  async isUserVerifiedEmail(user: User): Promise<boolean> {
+    return user.isEmailVerified;
+  }
+
   async isEmailVerified(user: User): Promise<boolean> {
-    await user.status !== UserStatus.EMAIL_UNVERIFIED;
+    (await user.status) !== UserStatus.EMAIL_UNVERIFIED;
     if (user.isEmailVerified === true) {
       return true;
     }

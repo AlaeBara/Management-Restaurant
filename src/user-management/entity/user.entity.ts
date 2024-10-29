@@ -53,6 +53,9 @@ export class User  {
   @Column({ default: false })
   isEmailVerified: boolean;
 
+  @Column({ type: 'timestamp', nullable: true })
+  emailVerifiedAt: Date;
+
   @Column({ default: false })
   isBlocked: boolean;
 

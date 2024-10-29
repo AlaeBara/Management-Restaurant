@@ -11,6 +11,7 @@ import { JwtAuthGuard } from './user-management/guards/jwt.guard';
 import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './user-management/guards/roles.guard';
 import { PermissionsGuard } from './user-management/guards/permission.guard';
+import { MailerModule } from '@nestjs-modules/mailer';
 
 @Module({
   imports: [
@@ -35,6 +36,15 @@ import { PermissionsGuard } from './user-management/guards/permission.guard';
         //entities: [User, Role, Permission],
         autoLoadEntities: true,
         synchronize: true,
+    }),
+    MailerModule.forRoot({
+      transport: {
+        host: process.env.EMAIL_HOST,
+        auth: {
+          user: process.env.EMAIL_USERNAME,
+          pass: process.env.EMAIL_PASSWORD,
+        },
+      },
     }),
   ],
   controllers: [],

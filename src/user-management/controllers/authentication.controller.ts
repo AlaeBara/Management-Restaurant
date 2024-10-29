@@ -8,6 +8,7 @@ import {
   Req,
   UnauthorizedException,
   UseGuards,
+  ValidationPipe,
 } from '@nestjs/common';
 import { AuthenticationService } from '../services/authentication/authentication.service';
 import { LoginDto } from '../dto/authentication/login.dto';
@@ -26,7 +27,7 @@ export class AuthenticationController {
 
   @Public()
   @Post('login')
-  async login(@Body() loginDto: LoginDto) {
+  async login(@Body(ValidationPipe) loginDto: LoginDto) {
     const payload = await this.authenticationService.signIn(loginDto);
     return {
       access_token: await this.jwtService.signAsync(payload),

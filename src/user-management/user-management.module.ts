@@ -25,11 +25,15 @@ import UserProfileController from './controllers/user-profile.controller';
 import UserStatusController from './controllers/user-status.controller';
 import UserVerificationController from './controllers/user-verification.controller';
 import { UserStatusService } from './services/user/user-status.service';
+import SendVerificationEmailController from './controllers/send-verification-email.controller';
+import { UserActionToken } from './entity/user-action-token.entity';
+import { EmailVerificationService } from './services/authentication/email-verification.service';
+
 
 @Module({
   imports: [
     CommonModule,
-    TypeOrmModule.forFeature([User, Role, Permission]),
+    TypeOrmModule.forFeature([User, Role, Permission, UserActionToken])
   ],
   controllers: [
     UserController,
@@ -40,6 +44,7 @@ import { UserStatusService } from './services/user/user-status.service';
     UserStatusController,
     UserProfileController,
     UserVerificationController,
+    SendVerificationEmailController
   ],
   providers: [
     RoleService,
@@ -56,6 +61,7 @@ import { UserStatusService } from './services/user/user-status.service';
     RolesSeeder,
     MasterSeeder,
     UserStatusService,
+    EmailVerificationService
   ],
   exports: [MasterSeeder],
 })
