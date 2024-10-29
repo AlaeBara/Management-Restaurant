@@ -2,9 +2,9 @@ import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/co
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateRoleDto } from 'src/user-management/dto/role/create.dto';
-import { Permission } from 'src/user-management/entity/permission.entity';
-import { Role } from 'src/user-management/entity/role.entity';
-import { User } from 'src/user-management/entity/user.entity';
+import { Permission } from 'src/user-management/entities/permission.entity';
+import { Role } from 'src/user-management/entities/role.entity';
+import { User } from 'src/user-management/entities/user.entity';
 import { DataSource, DeleteResult, Repository, UpdateResult } from 'typeorm';
 
 @Injectable()

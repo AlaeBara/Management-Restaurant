@@ -11,7 +11,7 @@ import {
   Put
 } from '@nestjs/common';
 import { PermissionService } from '../services/permission/permission.service';
-import { Permission } from '../entity/permission.entity';
+import { Permission } from '../entities/permission.entity';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { Permissions } from '../decorators/auth.decorator';
 import { ApiTags } from '@nestjs/swagger';

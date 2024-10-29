@@ -13,7 +13,7 @@ import {
   UnauthorizedException,
   UseGuards,
 } from '@nestjs/common';
-import { Role } from '../entity/role.entity';
+import { Role } from '../entities/role.entity';
 import { RoleService } from '../services/role/role.service';
 import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateRoleDto } from '../dto/role/create.dto';

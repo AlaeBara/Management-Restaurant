@@ -12,7 +12,6 @@ import {
 import { Role } from './role.entity';
 import { Gender } from '../enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';
-import { Exclude } from 'class-transformer';
 
 @Index(['id','username','phone','email','status'])
 @Entity()

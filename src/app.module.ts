@@ -9,7 +9,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { RolesGuard } from './user-management/guards/roles.guard';
 import { PermissionsGuard } from './user-management/guards/permission.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
-
+import { ZoneTableModule } from './zone-table-management/zone-table.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +22,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
       signOptions: { expiresIn: '1h' },
     }),
     UserManagementModule,
+    ZoneTableModule,
     CommonModule,
     TypeOrmModule.forRoot({
         type: 'postgres',

@@ -2,7 +2,7 @@ import { MailService } from 'src/common/services/mail.service';
 import { v4 as uuidv4 } from 'uuid';
 import { UserService } from '../user/user.service';
 import { Repository } from 'typeorm';
-import { UserActionToken } from 'src/user-management/entity/user-action-token.entity';
+import { UserActionToken } from 'src/user-management/entities/user-action-token.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { TokenType } from 'src/user-management/enums/token.enum';
 import { ConflictException, NotFoundException } from '@nestjs/common';

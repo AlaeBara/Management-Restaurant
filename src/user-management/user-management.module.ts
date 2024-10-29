@@ -5,9 +5,9 @@ import { PermissionService } from './services/permission/permission.service';
 import { UserController } from './controllers/user.controller';
 import { AuthenticationController } from './controllers/authentication.controller';
 import { AuthenticationService } from './services/authentication/authentication.service';
-import { User } from './entity/user.entity';
-import { Role } from './entity/role.entity';
-import { Permission } from './entity/permission.entity';
+import { User } from './entities/user.entity';
+import { Role } from './entities/role.entity';
+import { Permission } from './entities/permission.entity';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { RoleController } from './controllers/role.controller';
 import { PermissionController } from './controllers/permission.controller';
@@ -24,7 +24,7 @@ import UserStatusController from './controllers/user-status.controller';
 import UserVerificationController from './controllers/user-verification.controller';
 import { UserStatusService } from './services/user/user-status.service';
 import SendVerificationEmailController from './controllers/send-verification-email.controller';
-import { UserActionToken } from './entity/user-action-token.entity';
+import { UserActionToken } from './entities/user-action-token.entity';
 import { EmailVerificationService } from './services/authentication/email-verification.service';
 
 @Module({

@@ -5,9 +5,9 @@ import {
 } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { Repository, DeleteResult, UpdateResult, DataSource } from 'typeorm';
-import { Permission } from '../../entity/permission.entity';
+import { Permission } from '../../entities/permission.entity';
 import { GenericService } from 'src/common/services/generic.service';
-import { Role } from 'src/user-management/entity/role.entity';
+import { Role } from 'src/user-management/entities/role.entity';
 
 @Injectable()
 export class PermissionService extends GenericService<Permission> {

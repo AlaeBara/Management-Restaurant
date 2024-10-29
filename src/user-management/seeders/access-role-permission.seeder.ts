@@ -1,9 +1,9 @@
 // src/database/seeder.service.ts
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Permission } from '../entity/permission.entity';
-import { Role } from '../entity/role.entity';
-import { User } from '../entity/user.entity';
+import { Permission } from '../entities/permission.entity';
+import { Role } from '../entities/role.entity';
+import { User } from '../entities/user.entity';
 import { hash } from 'argon2';
 import { Gender } from '../enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';

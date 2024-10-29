@@ -2,7 +2,7 @@ import { BadRequestException, Injectable, Req } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { request } from 'express';
 import { GenericService } from 'src/common/services/generic.service';
-import { User } from 'src/user-management/entity/user.entity';
+import { User } from 'src/user-management/entities/user.entity';
 import { UserStatus } from 'src/user-management/enums/user-status.enum';
 import { DataSource, Repository } from 'typeorm';
 

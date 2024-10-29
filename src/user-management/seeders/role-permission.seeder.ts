@@ -1,7 +1,7 @@
 // src/database/seeder.service.ts
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Permission } from '../entity/permission.entity';
+import { Permission } from '../entities/permission.entity';
 
 @Injectable()
 export class RolePermissionSeeder {

@@ -8,7 +8,7 @@ import { LoginDto } from 'src/user-management/dto/authentication/login.dto';
 
 import { hash, verify } from 'argon2';
 import { Repository } from 'typeorm';
-import { User } from 'src/user-management/entity/user.entity';
+import { User } from 'src/user-management/entities/user.entity';
 import { InjectRepository } from '@nestjs/typeorm';
 import { UserStatus } from 'src/user-management/enums/user-status.enum';
 import { EmailVerificationService } from './email-verification.service';

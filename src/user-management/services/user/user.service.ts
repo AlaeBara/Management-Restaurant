@@ -4,8 +4,8 @@ import { hash } from 'argon2';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateUserDto } from 'src/user-management/dto/user/create-user.dto';
 import { UpdateUsernameDto } from 'src/user-management/dto/user/update-username.dto';
-import { Role } from 'src/user-management/entity/role.entity';
-import { User } from 'src/user-management/entity/user.entity';
+import { Role } from 'src/user-management/entities/role.entity';
+import { User } from 'src/user-management/entities/user.entity';
 import { UserStatus } from 'src/user-management/enums/user-status.enum';
 import { DataSource, Repository } from 'typeorm';
 

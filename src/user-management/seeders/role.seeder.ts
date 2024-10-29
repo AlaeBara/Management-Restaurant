@@ -1,7 +1,7 @@
 // src/database/seeder.service.ts
 import { Injectable } from '@nestjs/common';
 import { Connection } from 'typeorm';
-import { Role } from '../entity/role.entity';
+import { Role } from '../entities/role.entity';
 
 @Injectable()
 export class RolesSeeder {

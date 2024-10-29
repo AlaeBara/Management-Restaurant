@@ -31,9 +31,13 @@ export class GenericService<T> {
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.max(1, Number(limit) || 10);
 
+    const relationArray = typeof relations === 'string' 
+    ? (relations as string).split(',') 
+    : Array.isArray(relations) ? relations : [];
 
-    if (relations && relations.length > 0) {
-      relations.forEach((relation) => {
+    if (relationArray && relationArray.length > 0) {
+      console.log('relations',relationArray)
+      relationArray.forEach((relation) => {
         query.leftJoinAndSelect(`${this.name}.${relation}`, relation);
       });
     }
@@ -47,7 +51,7 @@ export class GenericService<T> {
     } else {
       query.orderBy(`${this.name}.id`, 'ASC');
     }
-    console.log('page,limit',page,limit)
+
     query.skip((currentPage - 1) * itemsPerPage).take(itemsPerPage);
 
     const [data, total] = await query.getManyAndCount();
@@ -60,6 +64,10 @@ export class GenericService<T> {
   }
 
   async update(id: number, entity: Partial<T>): Promise<UpdateResult> {
+    return this.repository.update(id, entity as any);
+  }
+
+  async updateByUUID(id: string, entity: Partial<T>): Promise<UpdateResult> {
     return this.repository.update(id, entity as any);
   }
 
@@ -81,12 +89,38 @@ export class GenericService<T> {
     return this.repository.softDelete(id);
   }
 
+  async deleteByUUID(id: string): Promise<DeleteResult> {
+    return this.repository.softDelete(id);
+  }
+
   async restore(id: number): Promise<UpdateResult> {
+    return this.repository.restore(id);
+  }
+
+  async restoreByUUID(id: string): Promise<UpdateResult> {
     return this.repository.restore(id);
   }
 
   async findOrThrow(
     id: number,
+    relations?: string[],
+    withDeleted: boolean = false,
+  ): Promise<T> {
+    const entity = await this.repository.findOne({
+      where: { id } as any,
+      relations: relations,
+      withDeleted: withDeleted,
+    });
+    if (!entity) {
+      throw new NotFoundException(
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+      );
+    }
+    return entity;
+  }
+
+  async findOrThrowByUUID(
+    id: string,
     relations?: string[],
     withDeleted: boolean = false,
   ): Promise<T> {
