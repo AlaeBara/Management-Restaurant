@@ -23,7 +23,6 @@ export const UserProvider = ({ children }) => {
           }
         );
         setUser(response.data);
-        console.log(response.data) // Assuming the user data is in response.data
       } catch (error) {
         console.error("the token expired");
         setUser(null); // Clear user if there was an error
@@ -37,8 +36,15 @@ export const UserProvider = ({ children }) => {
     fetchUserData();
   }, []);
 
+  // Logout function
+   const logout = () => {
+    Cookies.remove("access_token");
+    setUser(null);
+    //window.location.reload(); // Force reload to reset app state
+  };;
+
   return (
-    <UserContext.Provider value={{ user, setUser, loading, fetchUserData }}>
+    <UserContext.Provider value={{ user, setUser, loading, fetchUserData , logout }}>
       {children}
     </UserContext.Provider>
   );

@@ -7,7 +7,7 @@ const ProtectedRoute = ({ children }) => {
 
   // Show a loading state if still fetching user data
   if (loading) {
-    return <div>Loading...</div>;
+    return <div></div>;
   }
 
   // Redirect to login if user is not authenticated
