@@ -8,6 +8,8 @@ import { MasterSeeder } from './user-management/seeders/master.seeder';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cors from '@fastify/cors';
 import { ValidationPipe } from '@nestjs/common';
+import helmet from '@fastify/helmet';
+
 async function bootstrap() {
   // Create a new NestJS application instance using Fastify as the underlying HTTP server
   // This represents a change from the default Express platform to Fastify for improved performance
@@ -36,7 +38,15 @@ async function bootstrap() {
   // Setup Swagger UI at /api path
   SwaggerModule.setup('api', app, documentFactory);
 
+
+  // Enable global validation pipe
   app.useGlobalPipes(new ValidationPipe({ transform: true }));
+
+  // Enable helmet middleware
+  await app.register(helmet, {
+    global: true,
+    //contentSecurityPolicy: false,
+  });
 
   // Configure CORS to allow requests from frontend URL
   await app.register(cors, {
