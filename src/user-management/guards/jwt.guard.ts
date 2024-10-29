@@ -13,7 +13,7 @@ export class JwtAuthGuard implements CanActivate {
     private jwtService: JwtService,
     private reflector: Reflector,
   ) {}
-  canActivate(context: ExecutionContext): boolean {
+  async canActivate(context: ExecutionContext): Promise<boolean> {
     const isPublic = this.reflector.getAllAndOverride<boolean>('isPublic', [
       context.getHandler(),
       context.getClass(),
@@ -24,9 +24,17 @@ export class JwtAuthGuard implements CanActivate {
 
     if (isPublic) {
       if (token) {
-        const decoded = this.jwtService.verify(token);
-        request.user = decoded;
-        return true;
+        try {
+          const decoded = await this.jwtService.verifyAsync(token);
+          request.user = decoded;
+          return true;
+        } catch (err) {
+          // Optional: handle expired tokens differently from other JWT errors
+          if (err.name === 'TokenExpiredError') {
+            throw new UnauthorizedException('Token expired');
+          }
+          throw new UnauthorizedException();
+        }
       }
       return true;
     }
@@ -40,6 +48,9 @@ export class JwtAuthGuard implements CanActivate {
       request.user = decoded;
       return true;
     } catch (err) {
+      if (err.name === 'TokenExpiredError') {
+        throw new UnauthorizedException('Token expired');
+      }
       throw new UnauthorizedException();
     }
   }

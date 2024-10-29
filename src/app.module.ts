@@ -2,9 +2,6 @@ import { Module } from '@nestjs/common';
 import { UserManagementModule } from './user-management/user-management.module';
 import { CommonModule } from './common/common.module';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { User } from './user-management/entity/user.entity';
-import { Role } from './user-management/entity/role.entity';
-import { Permission } from './user-management/entity/permission.entity';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
 import { JwtAuthGuard } from './user-management/guards/jwt.guard';
@@ -33,7 +30,6 @@ import { MailerModule } from '@nestjs-modules/mailer';
         username: process.env.DB_USERNAME,
         password: process.env.DB_PASSWORD,
         database: process.env.DB_NAME,
-        //entities: [User, Role, Permission],
         autoLoadEntities: true,
         synchronize: true,
     }),
