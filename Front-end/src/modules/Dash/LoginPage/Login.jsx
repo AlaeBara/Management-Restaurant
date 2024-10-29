@@ -17,6 +17,8 @@ import {useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import Cookies from 'js-cookie';
+import { useUserContext } from '../../../context/UserContext';
 
 const loginSchema = z.object({
   emailOrUsername: z.string(),
@@ -28,6 +30,7 @@ const loginSchema = z.object({
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
   const navigate = useNavigate();
+  const { fetchUserData } = useUserContext();
 
   const form = useForm({
     resolver: zodResolver(loginSchema),
@@ -55,8 +58,14 @@ const Login = () => {
         }
       ); 
       if (response.data) {
+        Cookies.set('access_token', response.data.access_token, { expires: 1, secure: true, sameSite: 'None' });
+        
+        await fetchUserData();
+
         console.log(response.data.access_token)
-        toast.success("Login successful!", { autoClose: 3000 });
+
+        toast.success("Login successful!", { autoClose: 2000 });
+
         setTimeout(() => {
           navigate('/dash/Home');
         }, 2000);
