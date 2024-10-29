@@ -4,11 +4,12 @@ import {
   NestFastifyApplication,
 } from '@nestjs/platform-fastify';
 import { AppModule } from './app.module';
-import { MasterSeeder } from './user-management/seeders/master.seeder';
+
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import cors from '@fastify/cors';
 import { ValidationPipe } from '@nestjs/common';
 import helmet from '@fastify/helmet';
+import { MasterSeeder } from './common/seeders/master.seeder';
 
 async function bootstrap() {
   // Create a new NestJS application instance using Fastify as the underlying HTTP server

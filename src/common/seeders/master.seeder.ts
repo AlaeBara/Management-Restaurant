@@ -1,10 +1,11 @@
 // src/database/seeder.service.ts
 import { Injectable } from '@nestjs/common';
-import { AccessRolePermissionSeeder } from './access-role-permission.seeder';
-import { RolePermissionSeeder } from './role-permission.seeder';
-import { UserPermissionSeeder } from './user-permission.seeder';
-import { PermissionPermissionsSeeder } from './permission-permissions.seeder';
-import { RolesSeeder } from './role.seeder';
+import { AccessRolePermissionSeeder } from 'src/user-management/seeders/access-role-permission.seeder';
+import { PermissionPermissionsSeeder } from 'src/user-management/seeders/permission-permissions.seeder';
+import { RolePermissionSeeder } from 'src/user-management/seeders/role-permission.seeder';
+import { RolesSeeder } from 'src/user-management/seeders/role.seeder';
+import { UserPermissionSeeder } from 'src/user-management/seeders/user-permission.seeder';
+
 
 @Injectable()
 export class MasterSeeder {
