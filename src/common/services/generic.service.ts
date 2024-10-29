@@ -21,12 +21,16 @@ export class GenericService<T> {
   }
 
   async findAll(
-    page: number = 1,
-    limit: number = 10,
+    page?: number | string,
+    limit?: number | string,
     relations?: string[],
     sort?: string,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const query = this.repository.createQueryBuilder(this.name);
+
+    const currentPage = Math.max(1, Number(page) || 1);
+    const itemsPerPage = Math.max(1, Number(limit) || 10);
+
 
     if (relations && relations.length > 0) {
       relations.forEach((relation) => {
@@ -43,12 +47,12 @@ export class GenericService<T> {
     } else {
       query.orderBy(`${this.name}.id`, 'ASC');
     }
-
-    query.skip((page - 1) * limit).take(limit);
+    console.log('page,limit',page,limit)
+    query.skip((currentPage - 1) * itemsPerPage).take(itemsPerPage);
 
     const [data, total] = await query.getManyAndCount();
 
-    return { data, total, page, limit };
+    return { data, total, page: currentPage, limit: itemsPerPage };
   }
 
   async create(entity: Partial<T>): Promise<T> {
