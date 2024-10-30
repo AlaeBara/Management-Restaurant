@@ -21,6 +21,7 @@ import {
   UserCircle,
   Shield,
   Key,
+  User
 } from "lucide-react"
 
 import {
@@ -77,12 +78,9 @@ const SideBar = () => {
         isActive: true,
         items: [
           { 
-            title: "user",
-            icon: History,
-            subItems: [
-              { title: "All User", icon: History, url: "#" },
-              { title: "Create User", icon: Key, url: "/dash/Create-User" },
-            ]
+            title:  "Utilisateurs",
+            icon: User,
+            url:"/dash/Create-User"
           },
           { 
             title: "Role",

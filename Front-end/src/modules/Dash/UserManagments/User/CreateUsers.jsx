@@ -3,7 +3,7 @@ import axios from 'axios';
 import { z } from 'zod';
 import style from './CreateUser.module.css';
 import Cookies from 'js-cookie';
-import { Eye, EyeOff, SearchX ,X } from 'lucide-react';
+import { Eye, EyeOff, SearchX ,X , UserRoundCog } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -183,7 +183,11 @@ const CreateUsers = () => {
             </button> 
         </div>
 
-
+        {dataUser.length > 0 && 
+            <div className={style.total}> 
+                <UserRoundCog /> Total des utilisateurs : {dataUser.length-1}  
+            </div> 
+        } 
 
         {/* Carts Of users */}
         <div className={style.userGrid}>
