@@ -7,8 +7,8 @@ import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, 
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
-
-// Define the Zod schema for validation
+ 
+// Define the Zod schema for validation -- create
 const schema = z.object({
   firstname: z.string().min(5, { message: 'Le prénom est requis' }),
   lastname: z.string().min(5, { message: 'Le nom est requis' }),
@@ -18,8 +18,19 @@ const schema = z.object({
   gender: z.string().nonempty({ message: 'Le genre est requis' }),
 });
 
+// Define the Zod schema for validation  -- update
+const updateSchema = z.object({
+    firstname: z.string().nonempty("Le prénom est requis"),
+    lastname: z.string().nonempty("Le nom est requis"),
+    username: z.string().nonempty("Le nom d'utilisateur est requis"),
+    password: z.string().optional().or(z.literal('')), // Optional for update
+    email: z.string().email("L'email est invalide"),
+    gender: z.string().nonempty("Le genre est requis"),
+});
+
 const CreateUsers = () => {
     const [formData, setFormData] = useState({
+        id: null,
         firstname: '',
         lastname: '',
         username: '',
@@ -36,6 +47,7 @@ const CreateUsers = () => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+    //add user
     const handleSubmit = async (e) => {
         e.preventDefault();
 
@@ -94,6 +106,7 @@ const CreateUsers = () => {
         }
     };
 
+    //open and close form 
     const CloseForm = () => {
         setIsFormVisible(false)
         setFormData({
@@ -108,6 +121,7 @@ const CreateUsers = () => {
 
     }
 
+    //for get all user
     const [dataUser, setDataUser] = useState([]);
     const fetchUsers = async () => {
         const token = Cookies.get('access_token');
@@ -123,9 +137,7 @@ const CreateUsers = () => {
         fetchUsers();
     }, []);
 
-
-
-
+    //for the menu (option of any user)
     const [activeMenu, setActiveMenu] = useState(null);
 
     const handleMenuClick = (userId, e) => {
@@ -139,6 +151,8 @@ const CreateUsers = () => {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
+
+
 
     const handleAction = (action, user) => {
         switch (action) {
@@ -157,6 +171,70 @@ const CreateUsers = () => {
         setActiveMenu(null);
     };
 
+
+    //for the update 
+    const [isEditing, setIsEditing] = useState(false);
+    const UpdateGetData = (user) => {
+        setFormData({
+            id: user.id,
+            firstname: user.firstname,
+            lastname: user.lastname,
+            username: user.username,
+            password: '',
+            email: user.email,
+            gender: user.gender,
+        });
+        setIsEditing(true);
+        setIsFormVisible(true);
+    };
+
+    const updateSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            updateSchema.parse(formData);
+            const token = Cookies.get('access_token');
+            
+            console.log(`Updating user with ID: ${formData.id}, Type: ${typeof formData.id}`);
+            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/users/${formData.id}`, formData, {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            });
+            setFormData({
+                id: null,
+                firstname: '',
+                lastname: '',
+                username: '',
+                password: '',
+                email: '',
+                gender: '',
+            });
+            setErrors({});
+            toast.success('Utilisateur mis à jour avec succès!', {
+                icon: '✅',
+                position: "top-right",
+                autoClose: 3000,
+            });
+            fetchUsers();
+            setIsFormVisible(false)
+        } catch (error) {
+        if (error instanceof z.ZodError) {
+            const fieldErrors = {};
+            error.errors.forEach(({ path, message }) => {
+            fieldErrors[path[0]] = message;
+            });
+            setErrors(fieldErrors);
+        } else {
+            console.error('Error updating user:', error.response.data.message);
+            toast.error("Échec de la mise à jour de l\'utilisateur.", {
+                icon: '❌',
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+        }
+    };
+
     // for show good formation of last lkogin of user
     const formatDate = (lastLogin) => {
         if (!lastLogin) return "introuvable";
@@ -168,7 +246,7 @@ const CreateUsers = () => {
     };
 
 
-    
+
 
   return (
     <div className={style.container}>
@@ -187,7 +265,8 @@ const CreateUsers = () => {
             <div className={style.total}> 
                 <UserRoundCog className="mr-2"  /> Total des utilisateurs : {dataUser.length-1}  
             </div> 
-        } 
+        }
+
 
         {/* Carts Of users */}
         <div className={style.userGrid}>
@@ -231,7 +310,7 @@ const CreateUsers = () => {
                             </div>
                             <div 
                                 className={style.dropdownItem}
-                                onClick={() => handleAction('update', user)}
+                                onClick={() => UpdateGetData(user)}
                             >
                                <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                             </div>
@@ -253,15 +332,20 @@ const CreateUsers = () => {
             </div>
         }
 
+
         {/* forum for add user */}
         {isFormVisible && (
             <div className={style.modalOverlay}>
-                <form className={style.form} onSubmit={handleSubmit}>
+
+                <form className={style.form} onSubmit={isEditing ? updateSubmit : handleSubmit}>
+
                     <div className={style.headerForm}>
-                        <h1>Cree nouveau utilisatuer</h1>
+
+                        <h1>{isEditing ? 'Modifier utilisateur' : 'Créer nouveau utilisateur'}</h1>
                         <button onClick={() => CloseForm()} className={style.closeFormButton}>
                             <X />
                         </button>
+
                     </div>
                     {/* Form fields */}
                     <div className={style.nameContainer}>
@@ -342,7 +426,7 @@ const CreateUsers = () => {
                     </div>
 
                     <button type="submit" className={style.submitButton}>
-                        Ajouter
+                        {isEditing ? 'Mettre à jour' : 'Ajouter'}
                     </button>
                 </form>
             </div>
