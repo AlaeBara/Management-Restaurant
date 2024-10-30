@@ -14,7 +14,14 @@
     padding: 10px;
     border-radius: 8px;
 }
-  
+
+.Headerpage{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+
 .title {
     font-size: 25px;
     font-weight: 600;
@@ -35,9 +42,8 @@
     border: none;
     cursor: pointer;
     border-radius: 5px;
-    font-size: 10px;
+    font-size: 14px;
     transition: background-color 0.3s;
-
 }
   
 
@@ -134,8 +140,210 @@
     color: var(--error-color);
 }
 
-@media (max-width: 500px) {
+@media (max-width: 600px) {
     .nameContainer {
        gap: 10px;
+    }
+    .title {
+        font-size: 12px;
+    }
+    
+    .showFormButton{
+        font-size: 10px;
+    }
+}
+
+/* css for carts user */
+.userGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+    padding: 20px;
+    margin-top: 30px;
+}
+
+.userCard {
+    display: flex;
+    align-items: center;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.userCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 16px;
+    border: 2px solid #f0f0f0;
+}
+
+.userInfo {
+    flex: 1;
+}
+
+.userInfo h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.username {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #666;
+    font-family: "Poppins", sans-serif;
+}
+
+.email {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #000;
+    font-family: "Poppins", sans-serif;
+}
+
+.lastLogin {
+    margin: 0 0 8px 0;
+    font-size: 12px;
+    color: #888;
+    font-family: "Poppins", sans-serif;
+}
+
+.status {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.active {
+    background-color: #e6f7ed;
+    color: #0d9f4f;
+}
+
+.blocked {
+    background-color: #ffe8e8;
+    color: #ff4d4d;
+}
+
+.menuButton {
+    position: absolute;
+    top: 12px;
+    right: 12px;
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    padding: 8px;
+    border-radius: 50%;
+    z-index: 2;
+}
+
+.menuButton:hover {
+    background: #f5f5f5;
+}
+
+.menuDots {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    width: 4px;
+}
+
+.menuDot {
+    width: 4px;
+    height: 4px;
+    background: #666;
+    border-radius: 50%;
+}
+
+.dropdownMenu {
+    position: absolute;
+    top: 40px;
+    right: 12px;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    min-width: 150px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: all 0.2s ease;
+}
+
+.dropdownMenu.show {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.dropdownItem {
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #333;
+    font-size: 14px;
+    cursor: pointer;
+    transition: background-color 0.2s;
+}
+
+.dropdownItem:hover {
+    background-color: #f5f5f5;
+}
+
+.dropdownItem:first-child {
+    border-radius: 8px 8px 0 0;
+}
+
+.dropdownItem:last-child {
+    border-radius: 0 0 8px 8px;
+}
+
+.dropdownItem.delete {
+    color: #ff4d4d;
+}
+
+.dropdownItem.delete:hover {
+    background-color: #fff1f1;
+}
+
+/* Responsive adjustments */
+@media (max-width: 480px) {
+    .userGrid {
+        grid-template-columns: 1fr;
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .userCard {
+        padding: 15px;
+    }
+
+    .avatar {
+        width: 50px;
+        height: 50px;
+    }
+
+    .userInfo h3 {
+        font-size: 14px;
+    }
+
+    .username, .email {
+        font-size: 13px;
+    }
+
+    .lastLogin {
+        font-size: 11px;
     }
 }

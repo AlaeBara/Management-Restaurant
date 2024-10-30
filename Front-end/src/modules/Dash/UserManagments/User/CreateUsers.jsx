@@ -9,9 +9,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { CircleX , X } from 'lucide-react';
 
 
-
-
-
 // Define the Zod schema for validation
 const schema = z.object({
   firstname: z.string().min(5, { message: 'Le prénom est requis' }),
@@ -111,17 +108,189 @@ const CreateUsers = () => {
 
     }
 
+
+
+
+    
+    const users = [
+            {
+                id: 1,
+                firstname: "Ayoub",
+                lastname: "Baraoui",
+                username: "superadmin",
+                email: "superadmin@admin.com",
+                lastLogin: "2024-10-30",
+                status: "active",
+            },
+            {
+                id: 2,
+                firstname: "Sarah",
+                lastname: "Lamine",
+                username: "sarah123",
+                email: "sarah@domain.com",
+                lastLogin: "2024-10-28",
+                status: "blocked",
+            },
+            {
+                id: 3,
+                firstname: "Omar",
+                lastname: "Reda",
+                username: "omar_r",
+                email: "omar@domain.com",
+                lastLogin: "2024-10-29",
+                status: "active",
+            },
+            {
+                id: 4,
+                firstname: "Omar",
+                lastname: "Reda",
+                username: "omar_r",
+                email: "omar@domain.com",
+                lastLogin: "2024-10-29",
+                status: "active",
+            },
+            {
+                id: 5,
+                firstname: "Omar",
+                lastname: "Reda",
+                username: "omar_r",
+                email: "omar@domain.com",
+                lastLogin: "2024-10-29",
+                status: "active",
+            },
+            {
+                id: 6,
+                firstname: "Omar",
+                lastname: "Reda",
+                username: "omar_r",
+                email: "omar@domain.com",
+                lastLogin: "2024-10-29",
+                status: "active",
+            }
+    ];
+
+    const [activeMenu, setActiveMenu] = useState(null);
+
+    const handleMenuClick = (userId, e) => {
+        e.stopPropagation();
+        setActiveMenu(activeMenu === userId ? null : userId);
+    };
+
+    // Close dropdown when clicking outside
+    React.useEffect(() => {
+        const handleClickOutside = () => setActiveMenu(null);
+        document.addEventListener('click', handleClickOutside);
+        return () => document.removeEventListener('click', handleClickOutside);
+    }, []);
+
+    const handleAction = (action, user) => {
+        switch (action) {
+            case 'details':
+                console.log('View details for user:', user);
+                break;
+            case 'update':
+                console.log('Update user:', user);
+                break;
+            case 'delete':
+                console.log('Delete user:', user);
+                break;
+            default:
+                break;
+        }
+        setActiveMenu(null);
+    };
+
+
+    
+
   return (
     <div className={style.container}>
-      <ToastContainer />
-      <h1 className={style.title}>Créer un utilisateur</h1>
-      
-      
-        <button onClick={() => setIsFormVisible(true)} className={style.showFormButton}>
-            Ajouter un utilisateur
-        </button>
-     
+        <ToastContainer />
 
+        {/* header of page  */}
+        <div className={style.Headerpage}>
+            <h1 className={style.title}>gestion des utilisateurs</h1>
+    
+            <button onClick={() => setIsFormVisible(true)} className={style.showFormButton}>
+                Ajouter un utilisateur
+            </button> 
+        </div>
+
+
+
+        {/* Carts Of users */}
+        {/* Carts Of users */}
+        <div className={style.userGrid}>
+            {users.map((user) => (
+                <div className={style.userCard} key={user.id}>
+                    <img
+                        src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
+                        alt="Avatar"
+                        className={style.avatar}
+                    />
+                    <div className={style.userInfo}>
+                        <h3>{user.firstname} {user.lastname}</h3>
+                        <p className={style.username}>@{user.username}</p>
+                        <p className={style.email}>{user.email}</p>
+                        <p className={style.lastLogin}>Last login: {user.lastLogin}</p>
+                        <span className={`${style.status} ${style[user.status]}`}>
+                            {user.status === "active" ? "Active" : "Blocked"}
+                        </span>
+                    </div>
+                    <button 
+                        className={style.menuButton} 
+                        onClick={(e) => handleMenuClick(user.id, e)}
+                        aria-label="More options"
+                    >
+                        <div className={style.menuDots}>
+                            <div className={style.menuDot}></div>
+                            <div className={style.menuDot}></div>
+                            <div className={style.menuDot}></div>
+                        </div>
+                    </button>
+                    <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
+                        <div 
+                            className={style.dropdownItem}
+                            onClick={() => handleAction('details', user)}
+                        >
+                            Details
+                        </div>
+                        <div 
+                            className={style.dropdownItem}
+                            onClick={() => handleAction('update', user)}
+                        >
+                            Update
+                        </div>
+                        <div 
+                            className={`${style.dropdownItem} ${style.delete}`}
+                            onClick={() => handleAction('delete', user)}
+                        >
+                            Delete
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+
+
+
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        {/* forum for add user */}
         {isFormVisible && (
             <div className={style.modalOverlay}>
                 <form className={style.form} onSubmit={handleSubmit}>
