@@ -1,5 +1,6 @@
-import { IsNotEmpty, IsUUID, IsBoolean, IsOptional } from "class-validator";
+import { IsNotEmpty, IsUUID, IsBoolean, IsOptional, IsEnum } from "class-validator";
 import { UUID } from "crypto";
+import { TableStatus } from "src/zone-table-management/enums/table-status.enum";
 
 
 export class CreateTableDto {
@@ -17,4 +18,8 @@ export class CreateTableDto {
     @IsBoolean()
     @IsOptional()
     isActive: boolean;
+
+    @IsOptional()
+    @IsEnum(TableStatus)
+    tableStatus: TableStatus;   
 }

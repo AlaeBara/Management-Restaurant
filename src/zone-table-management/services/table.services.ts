@@ -13,6 +13,8 @@ import { CreateTableDto } from '../dtos/table/create-table.dto';
 import { ZoneService } from './zone.services';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';
 import { Zone } from '../entities/zone.entity';
+import QrcodeService from 'src/qr-code/services/qrcode.service';
+import { TableStatus } from '../enums/table-status.enum';
 
 @Injectable()
 export class TableService extends GenericService<Table> {
@@ -22,6 +24,7 @@ export class TableService extends GenericService<Table> {
     private tableRepository: Repository<Table>,
     @Inject(forwardRef(() => ZoneService))
     private readonly zoneService: ZoneService,
+    private readonly qrcodeService: QrcodeService,
   ) {
     super(dataSource, Table, 'table');
   }
@@ -39,11 +42,16 @@ export class TableService extends GenericService<Table> {
       if (!zone) {
         throw new BadRequestException('Zone not found');
       }
-      console.log(zone);
+
       tableData = { ...tableDto, zone: zone };
     }
-    console.log(tableData);
-    return this.tableRepository.save(tableData);
+
+    const savedTable = await this.tableRepository.save(tableData);
+    const qrcode = await this.qrcodeService.generateQrCode(
+      process.env.MENU_WITH_QRCODE_URL + savedTable.id,
+    );
+    savedTable.qrcode = qrcode;
+    return await this.tableRepository.save(savedTable);
   }
 
   async updateTable(id: string, tableDto: UpdateTableDto) {
@@ -57,17 +65,18 @@ export class TableService extends GenericService<Table> {
     }
 
     let zone: Zone | null = tableContent.zone;
-    console.log(zone);
-    console.log(tableContent);
+
     if (tableDto.zoneUUID && tableDto.zoneUUID !== zone?.id) {
-      console.log('dkhel lhna');
-      zone = await this.zoneService.findOrThrowByAttribute({id: tableDto.zoneUUID});
+      zone = await this.zoneService.findOrThrowByAttribute({
+        id: tableDto.zoneUUID,
+      });
     }
 
     const updateData = {
       ...(tableDto.tableCode && { tableCode: tableDto.tableCode }),
       ...(tableDto.tableName && { tableName: tableDto.tableName }),
       ...(tableDto.isActive && { isActive: tableDto.isActive }),
+      ...(tableDto.tableStatus && { tableStatus: tableDto.tableStatus }),
       zone,
     };
 
@@ -114,10 +123,4 @@ export class TableService extends GenericService<Table> {
       }
       return table;
   } */
-
-  async restoreTable(id: string) {
-    if (!id) {
-      return this.tableRepository.restore(id);
-    }
-  }
 }

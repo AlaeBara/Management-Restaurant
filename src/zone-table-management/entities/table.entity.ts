@@ -10,6 +10,7 @@ import {
   UpdateDateColumn,
 } from 'typeorm';
 import { Zone } from './zone.entity';
+import { TableStatus } from '../enums/table-status.enum';
 
 @Entity('table')
 @Index(['id', 'tableCode','zone'])
@@ -29,6 +30,9 @@ export class Table {
 
   @Column({ default: true })
   isActive: boolean;
+
+  @Column({ type: 'enum', enum: TableStatus, default: TableStatus.AVAILABLE })
+  tableStatus: TableStatus;
 
   @Column({ type: 'varchar', nullable: true })
   qrcode: string;

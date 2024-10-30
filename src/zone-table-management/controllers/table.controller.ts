@@ -14,7 +14,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Table } from '../entities/table.entity';
 import { TableService } from '../services/table.services';
-import { Permissions } from 'src/user-management/decorators/auth.decorator';
+import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
 import { CreateTableDto } from '../dtos/table/create-table.dto';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';
 
@@ -81,5 +81,12 @@ export class TableController {
   @Permissions('restore-table')
   async restore(@Param('id', ParseUUIDPipe) id: string) {
     return this.tableService.restoreByUUID(id, true, ['tableCode']);
+  }
+
+  @Get('qrcode/:id')
+  @Public()
+  async generateQrCode(@Param('id') id: string) {
+    const table = await this.tableService.findOneByUUID(id);
+    return `<img src="${table.qrcode}" alt="QR Code" />`;
   }
 }
