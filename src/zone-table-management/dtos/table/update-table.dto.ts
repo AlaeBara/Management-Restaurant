@@ -2,15 +2,15 @@ import { IsNotEmpty, IsUUID, IsBoolean, IsOptional } from "class-validator";
 import { UUID } from "crypto";
 
 
-export class CreateTableDto {
+export class UpdateTableDto {
 
-    @IsNotEmpty()
+    @IsOptional()
     tableName: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     tableCode: string;
 
-    @IsNotEmpty()
+    @IsOptional()
     @IsUUID()
     zoneUUID: UUID;
 

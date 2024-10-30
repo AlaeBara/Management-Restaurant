@@ -6,11 +6,13 @@ import { ZoneController } from './controllers/zone.controller';
 import { TableController } from './controllers/table.controller';
 import { ZoneService } from './services/zone.services';
 import { TableService } from './services/table.services';
+import { TablePermissionSeeder } from './seeders/table-permissions.dto';
+import { ZonePermissionSeeder } from './seeders/zone-permissions.dto';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Zone,Table])],
   controllers: [ZoneController,TableController],
-  providers: [ZoneService,TableService],
-  exports: [],
+  providers: [ZoneService, TableService, TablePermissionSeeder, ZonePermissionSeeder],
+  exports: [TablePermissionSeeder, ZonePermissionSeeder],
 })
 export class ZoneTableModule {}

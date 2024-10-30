@@ -19,7 +19,7 @@ import { ZoneTableModule } from './zone-table-management/zone-table.module';
     JwtModule.register({
       global: true,
       secret: process.env.jwt_secret,
-      signOptions: { expiresIn: '1h' },
+      signOptions: { expiresIn: '1day' },
     }),
     UserManagementModule,
     ZoneTableModule,

@@ -25,18 +25,21 @@ export class GenericService<T> {
     limit?: number | string,
     relations?: string[],
     sort?: string,
+    withDeleted: boolean = false,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const query = this.repository.createQueryBuilder(this.name);
 
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.max(1, Number(limit) || 10);
 
-    const relationArray = typeof relations === 'string' 
-    ? (relations as string).split(',') 
-    : Array.isArray(relations) ? relations : [];
+    const relationArray =
+      typeof relations === 'string'
+        ? (relations as string).split(',')
+        : Array.isArray(relations)
+          ? relations
+          : [];
 
     if (relationArray && relationArray.length > 0) {
-      console.log('relations',relationArray)
       relationArray.forEach((relation) => {
         query.leftJoinAndSelect(`${this.name}.${relation}`, relation);
       });
@@ -52,7 +55,20 @@ export class GenericService<T> {
       query.orderBy(`${this.name}.id`, 'ASC');
     }
 
-    query.skip((currentPage - 1) * itemsPerPage).take(itemsPerPage);
+    query
+      .skip((currentPage - 1) * itemsPerPage)
+      .take(itemsPerPage)
+      .setFindOptions({
+        relations: relationArray?.reduce(
+          (acc, rel) => ({ ...acc, [rel]: true }),
+          {},
+        ),
+        withDeleted: true,
+      });
+
+    if (!withDeleted) {
+      query.andWhere(`${this.name}.deletedAt IS NULL`);
+    }
 
     const [data, total] = await query.getManyAndCount();
 
@@ -83,7 +99,68 @@ export class GenericService<T> {
     });
   }
 
-  
+  async findOneByUUID(
+    id: string,
+    relations?: string[],
+    withDeleted: boolean = false,
+    select?: string[],
+  ): Promise<T> {
+    return this.repository.findOne({
+      where: { id } as any,
+      relations: relations,
+      withDeleted: withDeleted,
+      select: select as any,
+    });
+  }
+
+  /* async customGet(id: string, relations?: string[], withDeleted: boolean = false) {
+    const query = this.repository
+      .createQueryBuilder(this.name)
+      .where(`${this.name}.id = :id`, { id })
+      
+      if(withDeleted){
+        query.andWhere(`${this.name}.deletedAt IS NULL`);
+      }
+    // Handle relations if provided
+    if (relations && relations.length > 0) {
+      relations.forEach(relation => {
+        query.leftJoinAndSelect(`${this.name}.${relation}`, relation).withDeleted();
+      });
+    }
+
+    return query.getOne();
+  } */
+
+  async findOneWithSoftDeletedRelations(
+    id: string,
+    relations?: string[],
+    withDeleted: boolean = false,
+  ) {
+    const query = this.repository
+      .createQueryBuilder(this.name)
+      .where(`${this.name}.id = :id`, { id });
+    if (!withDeleted) {
+      query.andWhere(`${this.name}.deletedAt IS NULL`);
+    }
+
+    // Handle relations if provided
+    if (relations && relations.length > 0) {
+      relations.forEach((relation) => {
+        query.leftJoinAndSelect(`${this.name}.${relation}`, relation);
+      });
+    }
+
+    const result = await query
+      .setFindOptions({
+        relations: relations?.reduce(
+          (acc, rel) => ({ ...acc, [rel]: true }),
+          {},
+        ),
+        withDeleted: true,
+      })
+      .getOne();
+    return result;
+  }
 
   async delete(id: number): Promise<DeleteResult> {
     return this.repository.softDelete(id);
@@ -97,8 +174,55 @@ export class GenericService<T> {
     return this.repository.restore(id);
   }
 
-  async restoreByUUID(id: string): Promise<UpdateResult> {
+  async restoreByUUID(
+    id: string,
+    checkUnique: boolean = false,
+    listOfUniqueAttributes: string[] = [],
+  ): Promise<UpdateResult> {
+    const entity = await this.findOneByUUID(id, undefined, true);
+    if (entity) {
+      if (checkUnique && listOfUniqueAttributes.length > 0) {
+        // Create an object with only the specified unique attributes
+        const uniqueAttributes = listOfUniqueAttributes.reduce((acc, attr) => {
+          acc[attr] = entity[attr];
+          return acc;
+        }, {});
+
+        // Check if any active record exists with the same unique attributes
+        const existingEntity = await this.repository.findOne({
+          where: uniqueAttributes as any,
+          withDeleted: false,
+        });
+
+        if (existingEntity) {
+          throw new ConflictException(
+            `Active ${this.name} with the same unique attributes already exists`,
+          );
+        }
+      }
+    }
+
     return this.repository.restore(id);
+  }
+
+  async countByAttribute(attribute: Partial<T> | Record<string, any>) {
+    // For nested relations, we need to use QueryBuilder
+    const query = this.repository.createQueryBuilder(this.name);
+
+    // Process each attribute
+    Object.entries(attribute).forEach(([key, value]) => {
+      if (typeof value === 'object' && value !== null) {
+        // Handle relation
+        query.andWhere(`${this.name}.${key} = :${key}Id`, {
+          [`${key}Id`]: value.id,
+        });
+      } else {
+        // Handle regular attribute
+        query.andWhere(`${this.name}.${key} = :${key}`, { [key]: value });
+      }
+    });
+
+    return query.getCount();
   }
 
   async findOrThrow(
@@ -129,6 +253,7 @@ export class GenericService<T> {
       relations: relations,
       withDeleted: withDeleted,
     });
+
     if (!entity) {
       throw new NotFoundException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
@@ -136,8 +261,6 @@ export class GenericService<T> {
     }
     return entity;
   }
-
-  
 
   async findOrThrowByName(
     name: string,

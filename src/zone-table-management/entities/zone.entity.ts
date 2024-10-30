@@ -10,7 +10,7 @@ export class Zone {
   @Column({ type: 'varchar', length: 50 })
   zoneLabel: string;
 
-  @Column({ type: 'varchar', length: 50 ,unique: true})
+  @Column({ type: 'varchar', length: 50})
   zoneCode: string;
 
   @ManyToOne(() => Zone, (zone) => zone.id)
