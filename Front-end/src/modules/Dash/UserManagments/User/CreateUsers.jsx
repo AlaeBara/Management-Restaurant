@@ -3,7 +3,7 @@ import axios from 'axios';
 import { z } from 'zod';
 import style from './CreateUser.module.css';
 import Cookies from 'js-cookie';
-import { Eye, EyeOff, SearchX ,X , UserRoundCog } from 'lucide-react';
+import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
@@ -179,13 +179,13 @@ const CreateUsers = () => {
             <h1 className={style.title}>gestion des utilisateurs</h1>
     
             <button onClick={() => setIsFormVisible(true)} className={style.showFormButton}>
-                Ajouter un utilisateur
+                <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
             </button> 
         </div>
 
         {dataUser.length > 0 && 
             <div className={style.total}> 
-                <UserRoundCog /> Total des utilisateurs : {dataUser.length-1}  
+                <UserRoundCog className="mr-2"  /> Total des utilisateurs : {dataUser.length-1}  
             </div> 
         } 
 
@@ -194,51 +194,52 @@ const CreateUsers = () => {
             {dataUser.length > 0 &&
                 (dataUser.map((user) => (
                     <div className={style.userCard} key={user.id}>
-                        <img
-                            src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
-                            alt="Avatar"
-                            className={style.avatar}
-                        />
-                        <div className={style.userInfo}>
-                            <h3>{user.firstname} {user.lastname}</h3>
-                            <p className={style.username}>@{user.username}</p>
-                            <p className={style.email}>{user.email}</p>
-                            <p className={style.lastLogin}>
-                                Dernier Login: {formatDate(user.lastLogin)}
-                            </p>
-                            <span className={`${style.status} ${style[user.status]}`}>
-                            {user.status === "active" ? "Active" : user.status === "blocked" ? "Blocked" : "Status pas Trouvé"}
-                            </span>
+
+                        <div className={style.headerCart}>
+                            <img
+                                src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
+                                alt="Avatar"
+                                className={style.avatar}
+                            />
+                            <div className={style.userInfo}>
+                                <h3>{user.firstname} {user.lastname}</h3>
+                                <p className={style.username}>@{user.username}</p>
+                            </div>
                         </div>
+
+                        <p className={style.email}>{user.email}</p>
+                        <p className={style.lastLogin}>
+                            Dernier Login: {formatDate(user.lastLogin)}
+                        </p>
+                        <span className={`${style.status} ${style[user.status]}`}>
+                        {user.status === "active" ? "Active" : user.status === "blocked" ? "Blockez" : "Status pas Trouvé"}
+                        </span>
+
                         <button 
                             className={style.menuButton} 
                             onClick={(e) => handleMenuClick(user.id, e)}
                             aria-label="More options"
                         >
-                            <div className={style.menuDots}>
-                                <div className={style.menuDot}></div>
-                                <div className={style.menuDot}></div>
-                                <div className={style.menuDot}></div>
-                            </div>
+                            <EllipsisVertical />
                         </button>
                         <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
                             <div 
                                 className={style.dropdownItem}
                                 onClick={() => handleAction('details', user)}
                             >
-                                Details
+                                <Info className="mr-2 h-4 w-4" /> Détails
                             </div>
                             <div 
                                 className={style.dropdownItem}
                                 onClick={() => handleAction('update', user)}
                             >
-                                Update
+                               <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                             </div>
                             <div 
                                 className={`${style.dropdownItem} ${style.delete}`}
                                 onClick={() => handleAction('delete', user)}
                             >
-                                Delete
+                                <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                             </div>
                         </div>
                     </div>
@@ -341,7 +342,7 @@ const CreateUsers = () => {
                     </div>
 
                     <button type="submit" className={style.submitButton}>
-                        Soumettre
+                        Ajouter
                     </button>
                 </form>
             </div>

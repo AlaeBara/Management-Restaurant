@@ -6,6 +6,7 @@
     --border-color: #ddd;
     --focus-border-color: #4CAF50;
     --button-bg-color: #4CAF50;
+    --button-add-bg-color: #000;
     --button-hover-bg-color: #45a049;
     --error-color: red;
 }
@@ -36,8 +37,10 @@
 }
 
 .showFormButton{
+    display: flex;
+    align-items: center;
     padding: 10px;
-    background-color: var(--button-bg-color);
+    background-color: var(--button-add-bg-color);
     color: white;
     border: none;
     cursor: pointer;
@@ -188,7 +191,6 @@
 } */
 
 .userCard {
-    display: flex;
     align-items: center;
     background: #ffffff;
     border-radius: 12px;
@@ -196,6 +198,12 @@
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
     transition: transform 0.2s, box-shadow 0.2s;
     position: relative;
+}
+
+.headerCart{
+    display: flex;
+    align-items: center;
+    margin-bottom: 20px;
 }
 
 .userCard:hover {
@@ -239,7 +247,7 @@
 
 .lastLogin {
     margin: 0 0 8px 0;
-    font-size: 12px;
+    font-size: 14px;
     color: #888;
     font-family: "Poppins", sans-serif;
 }
@@ -265,7 +273,7 @@
 .menuButton {
     position: absolute;
     top: 12px;
-    right: 12px;
+    right: 5px;
     background: transparent;
     border: none;
     cursor: pointer;
@@ -277,19 +285,6 @@
     background: #f5f5f5;
 }
 
-.menuDots {
-    display: flex;
-    flex-direction: column;
-    gap: 2px;
-    width: 4px;
-}
-
-.menuDot {
-    width: 4px;
-    height: 4px;
-    background: #666;
-    border-radius: 50%;
-}
 
 .dropdownMenu {
     position: absolute;
