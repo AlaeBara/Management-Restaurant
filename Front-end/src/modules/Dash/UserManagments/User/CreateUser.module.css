@@ -74,7 +74,7 @@
 .headerForm{
     display: flex;
     justify-content: space-between;
-    margin-bottom: 40px;
+    margin-bottom: 20px;
 } 
 
 .headerForm h1{
@@ -147,20 +147,38 @@
     .title {
         font-size: 12px;
     }
+    .headerForm{
+        margin-bottom: 10px;
+    } 
     
     .showFormButton{
+        font-size: 10px;
+    }
+    .error {
         font-size: 10px;
     }
 }
 
 /* css for carts user */
+
+
 .userGrid {
     display: grid;
+    justify-content: center;
     grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
     gap: 20px;
     padding: 20px;
-    margin-top: 30px;
 }
+
+
+/* .userGrid {
+    display: flex;
+    flex-wrap: wrap; 
+    justify-content: center; 
+    align-items: flex-start; 
+    gap: 20px; 
+    margin-top: 30px;
+} */
 
 .userCard {
     display: flex;
@@ -244,7 +262,6 @@
     background: transparent;
     border: none;
     cursor: pointer;
-    padding: 8px;
     border-radius: 50%;
     z-index: 2;
 }
@@ -318,11 +335,28 @@
     background-color: #fff1f1;
 }
 
+
+.notfound {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+    margin-top: 10%;
+}
+
+.icon {
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 20px;
+    color: #f44336; 
+}
+
+
 /* Responsive adjustments */
 @media (max-width: 480px) {
     .userGrid {
         grid-template-columns: 1fr;
-        padding: 12px;
         gap: 12px;
     }
 
@@ -345,5 +379,11 @@
 
     .lastLogin {
         font-size: 11px;
+    }
+    .dropdownMenu {
+        top: 33px;
+    }
+    .dropdownItem {
+        padding: 6px 16px;
     }
 }

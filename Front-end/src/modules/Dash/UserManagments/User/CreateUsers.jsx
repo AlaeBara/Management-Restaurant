@@ -1,12 +1,11 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { z } from 'zod';
 import style from './CreateUser.module.css';
 import Cookies from 'js-cookie';
-import { Eye, EyeOff } from 'lucide-react';
+import { Eye, EyeOff, SearchX ,X } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { CircleX , X } from 'lucide-react';
 
 
 // Define the Zod schema for validation
@@ -49,7 +48,6 @@ const CreateUsers = () => {
             Authorization: `Bearer ${token}`,
             },
         });
-
         setFormData({
             firstname: '',
             lastname: '',
@@ -64,6 +62,8 @@ const CreateUsers = () => {
             position: "top-right",
             autoClose: 3000,
         });
+        fetchUsers();
+        setIsFormVisible(false)
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = {};
@@ -108,66 +108,23 @@ const CreateUsers = () => {
 
     }
 
+    const [dataUser, setDataUser] = useState([]);
+    const fetchUsers = async () => {
+        const token = Cookies.get('access_token');
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`, {
+            headers: {
+                Authorization: `Bearer ${token}`,
+            },
+        });
+        setDataUser(response.data.data);
+    };
+
+    useEffect(() => {
+        fetchUsers();
+    }, []);
 
 
 
-    
-    const users = [
-            {
-                id: 1,
-                firstname: "Ayoub",
-                lastname: "Baraoui",
-                username: "superadmin",
-                email: "superadmin@admin.com",
-                lastLogin: "2024-10-30",
-                status: "active",
-            },
-            {
-                id: 2,
-                firstname: "Sarah",
-                lastname: "Lamine",
-                username: "sarah123",
-                email: "sarah@domain.com",
-                lastLogin: "2024-10-28",
-                status: "blocked",
-            },
-            {
-                id: 3,
-                firstname: "Omar",
-                lastname: "Reda",
-                username: "omar_r",
-                email: "omar@domain.com",
-                lastLogin: "2024-10-29",
-                status: "active",
-            },
-            {
-                id: 4,
-                firstname: "Omar",
-                lastname: "Reda",
-                username: "omar_r",
-                email: "omar@domain.com",
-                lastLogin: "2024-10-29",
-                status: "active",
-            },
-            {
-                id: 5,
-                firstname: "Omar",
-                lastname: "Reda",
-                username: "omar_r",
-                email: "omar@domain.com",
-                lastLogin: "2024-10-29",
-                status: "active",
-            },
-            {
-                id: 6,
-                firstname: "Omar",
-                lastname: "Reda",
-                username: "omar_r",
-                email: "omar@domain.com",
-                lastLogin: "2024-10-29",
-                status: "active",
-            }
-    ];
 
     const [activeMenu, setActiveMenu] = useState(null);
 
@@ -200,6 +157,16 @@ const CreateUsers = () => {
         setActiveMenu(null);
     };
 
+    // for show good formation of last lkogin of user
+    const formatDate = (lastLogin) => {
+        if (!lastLogin) return "introuvable";
+        
+        const date = new Date(lastLogin);
+        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
+        const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
+        return `${formattedDate} ${formattedTime}`;
+    };
+
 
     
 
@@ -219,77 +186,68 @@ const CreateUsers = () => {
 
 
         {/* Carts Of users */}
-        {/* Carts Of users */}
         <div className={style.userGrid}>
-            {users.map((user) => (
-                <div className={style.userCard} key={user.id}>
-                    <img
-                        src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
-                        alt="Avatar"
-                        className={style.avatar}
-                    />
-                    <div className={style.userInfo}>
-                        <h3>{user.firstname} {user.lastname}</h3>
-                        <p className={style.username}>@{user.username}</p>
-                        <p className={style.email}>{user.email}</p>
-                        <p className={style.lastLogin}>Last login: {user.lastLogin}</p>
-                        <span className={`${style.status} ${style[user.status]}`}>
-                            {user.status === "active" ? "Active" : "Blocked"}
-                        </span>
+            {dataUser.length > 0 &&
+                (dataUser.map((user) => (
+                    <div className={style.userCard} key={user.id}>
+                        <img
+                            src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
+                            alt="Avatar"
+                            className={style.avatar}
+                        />
+                        <div className={style.userInfo}>
+                            <h3>{user.firstname} {user.lastname}</h3>
+                            <p className={style.username}>@{user.username}</p>
+                            <p className={style.email}>{user.email}</p>
+                            <p className={style.lastLogin}>
+                                Dernier Login: {formatDate(user.lastLogin)}
+                            </p>
+                            <span className={`${style.status} ${style[user.status]}`}>
+                            {user.status === "active" ? "Active" : user.status === "blocked" ? "Blocked" : "Status pas Trouvé"}
+                            </span>
+                        </div>
+                        <button 
+                            className={style.menuButton} 
+                            onClick={(e) => handleMenuClick(user.id, e)}
+                            aria-label="More options"
+                        >
+                            <div className={style.menuDots}>
+                                <div className={style.menuDot}></div>
+                                <div className={style.menuDot}></div>
+                                <div className={style.menuDot}></div>
+                            </div>
+                        </button>
+                        <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
+                            <div 
+                                className={style.dropdownItem}
+                                onClick={() => handleAction('details', user)}
+                            >
+                                Details
+                            </div>
+                            <div 
+                                className={style.dropdownItem}
+                                onClick={() => handleAction('update', user)}
+                            >
+                                Update
+                            </div>
+                            <div 
+                                className={`${style.dropdownItem} ${style.delete}`}
+                                onClick={() => handleAction('delete', user)}
+                            >
+                                Delete
+                            </div>
+                        </div>
                     </div>
-                    <button 
-                        className={style.menuButton} 
-                        onClick={(e) => handleMenuClick(user.id, e)}
-                        aria-label="More options"
-                    >
-                        <div className={style.menuDots}>
-                            <div className={style.menuDot}></div>
-                            <div className={style.menuDot}></div>
-                            <div className={style.menuDot}></div>
-                        </div>
-                    </button>
-                    <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
-                        <div 
-                            className={style.dropdownItem}
-                            onClick={() => handleAction('details', user)}
-                        >
-                            Details
-                        </div>
-                        <div 
-                            className={style.dropdownItem}
-                            onClick={() => handleAction('update', user)}
-                        >
-                            Update
-                        </div>
-                        <div 
-                            className={`${style.dropdownItem} ${style.delete}`}
-                            onClick={() => handleAction('delete', user)}
-                        >
-                            Delete
-                        </div>
-                    </div>
-                </div>
+                )
             ))}
         </div>
+        {dataUser.length ==0  &&
+            <div className={style.notfound}>
+                <SearchX className={style.icon} />
+                <h1>Aucun utilisateur trouvé</h1>
+            </div>
+        }
 
-
-
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
-        
         {/* forum for add user */}
         {isFormVisible && (
             <div className={style.modalOverlay}>
