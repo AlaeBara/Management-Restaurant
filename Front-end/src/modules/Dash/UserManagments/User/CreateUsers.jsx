@@ -6,6 +6,11 @@ import Cookies from 'js-cookie';
 import { Eye, EyeOff } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { CircleX , X } from 'lucide-react';
+
+
+
+
 
 // Define the Zod schema for validation
 const schema = z.object({
@@ -18,7 +23,6 @@ const schema = z.object({
 });
 
 const CreateUsers = () => {
-
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',
@@ -30,6 +34,7 @@ const CreateUsers = () => {
 
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
+    const [isFormVisible, setIsFormVisible] = useState(false);
 
     const handleChange = ({ target: { name, value } }) => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -37,17 +42,17 @@ const CreateUsers = () => {
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-    
+
         try {
         schema.parse(formData);
         const token = Cookies.get('access_token');
-    
+
         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
             headers: {
             Authorization: `Bearer ${token}`,
             },
         });
-    
+
         setFormData({
             firstname: '',
             lastname: '',
@@ -73,7 +78,6 @@ const CreateUsers = () => {
             console.error('Error creating user:', error);
             let errorMessage = 'Erreur lors de la création de l\'utilisateur';
 
-            // Handling specific backend error messages
             if (error.response?.data?.message) {
             if (error.response.data.message.includes('User already exists')) {
                 errorMessage = "L'utilisateur existe déjà";
@@ -83,7 +87,7 @@ const CreateUsers = () => {
                 errorMessage = error.response.data.message;
             }
             }
-    
+
             toast.error(errorMessage, {
             icon: '❌',
             position: "top-right",
@@ -92,94 +96,125 @@ const CreateUsers = () => {
         }
         }
     };
-  
+
+    const CloseForm = () => {
+        setIsFormVisible(false)
+        setFormData({
+            firstname: '',
+            lastname: '',
+            username: '',
+            password: '',
+            email: '',
+            gender: '',
+        });
+        setErrors({});
+
+    }
 
   return (
     <div className={style.container}>
-        <ToastContainer />
-        <h1 className={style.title}>Créer un utilisateur</h1>
-        <form className={style.form} onSubmit={handleSubmit}>
-            <div className={style.nameContainer}>
-                <div className={style.inputGroup}>
-                    <label>Prénom</label>
-                    <input
-                    type="text"
-                    name="firstname"
-                    value={formData.firstname}
-                    onChange={handleChange}
-                    placeholder="Prénom"
-                    />
-                    {errors.firstname && <p className={style.error}>{errors.firstname}</p>}
-                </div>
-                <div className={style.inputGroup}>
-                    <label>Nom</label>
-                    <input
-                    type="text"
-                    name="lastname"
-                    value={formData.lastname}
-                    onChange={handleChange}
-                    placeholder="Nom"
-                    />
-                    {errors.lastname && <p className={style.error}>{errors.lastname}</p>}
-                </div>
-            </div>
+      <ToastContainer />
+      <h1 className={style.title}>Créer un utilisateur</h1>
+      
+      
+        <button onClick={() => setIsFormVisible(true)} className={style.showFormButton}>
+            Ajouter un utilisateur
+        </button>
+     
 
-            <div className={style.inputGroup}>
-                <label>Nom d'utilisateur</label>
-                <input
-                    type="text"
-                    name="username"
-                    value={formData.username}
-                    onChange={handleChange}
-                    placeholder="Nom d'utilisateur"
-                />
-                {errors.username && <p className={style.error}>{errors.username}</p>}
-            </div>
+        {isFormVisible && (
+            <div className={style.modalOverlay}>
+                <form className={style.form} onSubmit={handleSubmit}>
+                    <div className={style.headerForm}>
+                        <h1>Cree nouveau utilisatuer</h1>
+                        <button onClick={() => CloseForm()} className={style.closeFormButton}>
+                            <X />
+                        </button>
+                    </div>
+                    {/* Form fields */}
+                    <div className={style.nameContainer}>
+                        <div className={style.inputGroup}>
+                            <label>Prénom</label>
+                            <input
+                                type="text"
+                                name="firstname"
+                                value={formData.firstname}
+                                onChange={handleChange}
+                                placeholder="Prénom"
+                            />
+                            {errors.firstname && <p className={style.error}>{errors.firstname}</p>}
+                        </div>
+                            <div className={style.inputGroup}>
+                            <label>Nom</label>
+                            <input
+                                type="text"
+                                name="lastname"
+                                value={formData.lastname}
+                                onChange={handleChange}
+                                placeholder="Nom"
+                            />
+                            {errors.lastname && <p className={style.error}>{errors.lastname}</p>}
+                        </div>
+                    </div>
 
-            <div className={style.inputGroup} style={{ position: 'relative' }}>
-                <label>Mot de passe</label>
-                <input
-                    type={showPassword ? 'text' : 'password'}
-                    name="password"
-                    value={formData.password}
-                    onChange={handleChange}
-                    placeholder="Mot de passe"
-                />
-                <span
-                    onClick={() => setShowPassword((prev) => !prev)}
-                    style={{ position: 'absolute', right: 10, top: 43, cursor: 'pointer' }}
-                >
-                    {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                </span>
-                {errors.password && <p className={style.error}>{errors.password}</p>}
-            </div>
+                    <div className={style.inputGroup}>
+                        <label>Nom d'utilisateur</label>
+                        <input
+                            type="text"
+                            name="username"
+                            value={formData.username}
+                            onChange={handleChange}
+                            placeholder="Nom d'utilisateur"
+                        />
+                        {errors.username && <p className={style.error}>{errors.username}</p>}
+                    </div>
 
-            <div className={style.inputGroup}>
-                <label>Email</label>
-                <input
-                    type="email"
-                    name="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                />
-                {errors.email && <p className={style.error}>{errors.email}</p>}
-            </div>
+                    <div className={style.inputGroup} style={{ position: 'relative' }}>
+                        <label>Mot de passe</label>
+                        <input
+                            type={showPassword ? 'text' : 'password'}
+                            name="password"
+                            value={formData.password}
+                            onChange={handleChange}
+                            placeholder="Mot de passe"
+                        />
+                        <span
+                            onClick={() => setShowPassword((prev) => !prev)}
+                            style={{ position: 'absolute', right: 10, top: 43, cursor: 'pointer' }}
+                        >
+                            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
+                        </span>
+                        {errors.password && <p className={style.error}>{errors.password}</p>}
+                    </div>
 
-            <div className={style.inputGroup}>
-                <label>Genre</label>
-                <select name="gender" value={formData.gender} onChange={handleChange}>
-                    <option value="">Sélectionnez le genre</option>
-                    <option value="male">Masculin</option>
-                    <option value="female">Féminin</option>
-                </select>
-                {errors.gender && <p className={style.error}>{errors.gender}</p>}
-            </div>
+                    <div className={style.inputGroup}>
+                        <label>Email</label>
+                        <input
+                            type="email"
+                            name="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            placeholder="Email"
+                        />
+                        {errors.email && <p className={style.error}>{errors.email}</p>}
+                    </div>
 
-            <button type="submit" className={style.submitButton}>
-                Soumettre
-            </button>
-        </form>
+                    <div className={style.inputGroup}>
+                        <label>Genre</label>
+                        <select name="gender" value={formData.gender} onChange={handleChange}>
+                            <option value="">Sélectionnez le genre</option>
+                            <option value="male">Masculin</option>
+                            <option value="female">Féminin</option>
+                        </select>
+                        {errors.gender && <p className={style.error}>{errors.gender}</p>}
+                    </div>
+
+                    <button type="submit" className={style.submitButton}>
+                        Soumettre
+                    </button>
+                </form>
+            </div>
+        )}
     </div>
   );
 };
