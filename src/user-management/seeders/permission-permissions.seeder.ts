@@ -8,11 +8,11 @@ export class PermissionPermissionsSeeder {
     constructor(private readonly connection: Connection) { }
 
     async seed() {
-        await this.seedPermissions();
+        await this.seedPermissionPermissions();
         console.log('Permission Permissions Seeding completed!');
     }
 
-    private async seedPermissions() {
+    private async seedPermissionPermissions() {
 
 
         const permissionPermissions = [

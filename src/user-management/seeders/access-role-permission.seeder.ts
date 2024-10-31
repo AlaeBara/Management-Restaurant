@@ -13,11 +13,11 @@ export class AccessRolePermissionSeeder {
     constructor(private readonly connection: Connection) { }
 
     async seed() {
-        await this.seedUsers();
-        console.log('Access Role Permission Seeding completed!');
+        await this.seedSuperadmin();
+        console.log('Superadmin Seeding completed!');
     }
 
-    private async seedUsers() {
+    private async seedSuperadmin() {
         const roleRepository = this.connection.getRepository(Role);
         const permissionRepository = this.connection.getRepository(Permission);
         let superadmin: Role;

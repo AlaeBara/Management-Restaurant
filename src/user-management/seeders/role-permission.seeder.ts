@@ -8,11 +8,11 @@ export class RolePermissionSeeder {
   constructor(private readonly connection: Connection) { }
 
   async seed() {
-    await this.seedUsers();
+    await this.seedRolePermissions();
     console.log('Role Permission Seeding completed!');
   }
 
-  private async seedUsers() {
+  private async seedRolePermissions() {
 
 
     const rolePermissions = [

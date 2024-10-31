@@ -9,10 +9,10 @@ export class UserPermissionSeeder {
     constructor(private readonly connection: Connection) { }
 
     async seed() {
-        await this.seedUsers();
+        await this.seedUserPermissions();
         console.log('User Permission Seeding completed!');
     }
-    private async seedUsers() {
+    private async seedUserPermissions() {
 
 
         const userPermissions = [
