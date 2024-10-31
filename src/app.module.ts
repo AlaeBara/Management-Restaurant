@@ -10,6 +10,7 @@ import { RolesGuard } from './user-management/guards/roles.guard';
 import { PermissionsGuard } from './user-management/guards/permission.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ZoneTableModule } from './zone-table-management/zone-table.module';
+import { ClientManagementModule } from './client-management/client-management.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -22,6 +23,7 @@ import { ZoneTableModule } from './zone-table-management/zone-table.module';
       signOptions: { expiresIn: '1day' },
     }),
     UserManagementModule,
+    ClientManagementModule,
     ZoneTableModule,
     CommonModule,
     TypeOrmModule.forRoot({

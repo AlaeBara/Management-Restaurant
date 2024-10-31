@@ -7,16 +7,18 @@ import {
   IsString,
   Length,
 } from 'class-validator';
-import { Gender } from '../../enums/gender.enum';
+import { Gender } from '../../../common/enums/gender.enum';
 import { UserStatus } from '../../enums/user-status.enum';
 export class UpdateUserDto {
+  @IsOptional()
   @Length(5, 20)
   firstname: string;
 
+  @IsOptional()
   @Length(5, 20)
   lastname: string;
 
-  @IsNotEmpty()
+  @IsOptional()
   @IsEnum(Gender)
   gender: Gender;
 
@@ -26,4 +28,7 @@ export class UpdateUserDto {
   @IsOptional()
   @IsEnum(UserStatus)
   status: UserStatus;
+
+  @IsOptional()
+  phone: string;
 }

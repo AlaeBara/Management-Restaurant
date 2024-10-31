@@ -248,9 +248,15 @@ export class GenericService<T> {
     relations?: string[],
     withDeleted: boolean = false,
   ): Promise<T> {
+    const relationArray =
+      typeof relations === 'string'
+        ? (relations as string).split(',')
+        : Array.isArray(relations)
+          ? relations
+          : [];
     const entity = await this.repository.findOne({
       where: { id } as any,
-      relations: relations,
+      relations: relationArray,
       withDeleted: withDeleted,
     });
 
@@ -355,12 +361,14 @@ export class GenericService<T> {
   async findByAttributes(
     attributes: Partial<T>,
     relations?: string[],
+    select?: string[],
     withDeleted: boolean = false,
   ): Promise<T> {
     const entity = await this.repository.findOne({
       where: attributes as any,
       relations: relations,
       withDeleted: withDeleted,
+      select: select as any,
     });
     return entity;
   }

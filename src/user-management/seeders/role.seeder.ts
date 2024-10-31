@@ -25,6 +25,7 @@ export class RolesSeeder {
       { name: 'sous-chef', label: 'Gestion de cuisine assistante' },
       { name: 'barman', label: 'Service de boissons et gestion du bar' },
       { name: 'caissier', label: 'Manipulation de l\'argent et traitement des paiements' },
+      { name: 'client', label: 'Accès client' },
     ];
 
     const roleRepository = this.connection.getRepository(Role);

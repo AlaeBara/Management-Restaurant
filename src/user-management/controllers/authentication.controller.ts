@@ -27,9 +27,8 @@ export class AuthenticationController {
   @Public()
   @Post('login')
   async login(@Body() loginDto: LoginDto) {
-    const payload = await this.authenticationService.signIn(loginDto);
     return {
-      access_token: await this.jwtService.signAsync(payload),
+      access_token: await this.authenticationService.signIn(loginDto),
     };
   }
 

@@ -5,7 +5,7 @@ import { Permission } from '../entities/permission.entity';
 import { Role } from '../entities/role.entity';
 import { User } from '../entities/user.entity';
 import { hash } from 'argon2';
-import { Gender } from '../enums/gender.enum';
+import { Gender } from '../../common/enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';
 
 @Injectable()

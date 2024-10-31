@@ -10,7 +10,7 @@ import {
   Index,
 } from 'typeorm';
 import { Role } from './role.entity';
-import { Gender } from '../enums/gender.enum';
+import { Gender } from '../../common/enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';
 
 @Index(['id','username','phone','email','status'])

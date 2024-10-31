@@ -32,8 +32,11 @@ export class UserService extends GenericService<User> {
 
   // TODO : let user can have only one role
   async grantRoleToUser(user: User, role: Role) {
-    console.log(user);
-    user.roles.push(role);
+    if (user.roles.length > 0) {
+      user.roles[0] = role;
+    } else {
+      user.roles.push(role);
+    }
     return this.userRepository.save(user);
   }
 
@@ -59,6 +62,10 @@ export class UserService extends GenericService<User> {
     }
 
     user.username = updateUsernameDto.username.toLowerCase();
+    return this.userRepository.save(user);
+  }
+
+  async updateUser(user: User) {
     return this.userRepository.save(user);
   }
 }

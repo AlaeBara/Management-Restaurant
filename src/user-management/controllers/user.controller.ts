@@ -28,7 +28,7 @@ import { ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly roleService: RoleService
+    private readonly roleService: RoleService,
   ) {}
 
   /* private readonly userPermissions = [
@@ -54,13 +54,15 @@ export class UserController {
 
   @Post()
   @Permissions('create-user')
-  async create(
-    @Body() createUserDto: CreateUserDto,
-  ): Promise<any> {
-    await this.userService.throwIfFoundByAnyAttribute({
-      username: createUserDto.username,
-      email: createUserDto.email,
-    }, [], true);
+  async create(@Body() createUserDto: CreateUserDto): Promise<any> {
+    await this.userService.throwIfFoundByAnyAttribute(
+      {
+        username: createUserDto.username,
+        email: createUserDto.email,
+      },
+      [],
+      true,
+    );
     const user = await this.userService.create(createUserDto);
     return user;
   }
@@ -73,11 +75,11 @@ export class UserController {
 
   @Put(':id')
   @Permissions('update-user')
-  update(
+  async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
   ) {
-    return this.userService.update(+id, updateUserDto);
+    return await this.userService.update(+id, updateUserDto);
   }
 
   @Post(':id/roles/:roleid')

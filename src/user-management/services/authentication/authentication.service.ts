@@ -40,7 +40,8 @@ export class AuthenticationService {
 
     await this.verifyPassword(user, loginDto.password);
     await this.updateLastLogin(user.id);
-    return await this.initializePayload(user);
+    const payload = await this.initializePayload(user);
+    return await this.jwtService.signAsync(payload);
   }
 
   async validateUser(username: string, password: string): Promise<User | null> {
@@ -60,8 +61,10 @@ export class AuthenticationService {
 
   async initializePayload(user: User) {
     const payload = {
-      username: user.username,
       sub: user.id,
+      username: user.username,
+      email: user.email,
+      role: user.roles[0].name,
       roles: user.roles.map((role) => role.name),
       permissions: user.roles.flatMap((role) =>
         role.permissions.map((perm) => perm.name),

@@ -28,7 +28,7 @@ async function bootstrap() {
   // Configure Swagger documentation
   const config = new DocumentBuilder()
     .setTitle('Restaurant Management API') // Set API title
-    .setDescription('REST API for managing restaurant operations') // Set API description 
+    .setDescription('REST API for managing restaurant operations') // Set API description
     .setVersion('1.0') // Set API version
     .addBearerAuth() // Add bearer token authentication
     .build();
@@ -39,9 +39,14 @@ async function bootstrap() {
   // Setup Swagger UI at /api path
   SwaggerModule.setup('api', app, documentFactory);
 
-
   // Enable global validation pipe
-  app.useGlobalPipes(new ValidationPipe({ transform: true }));
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+      whitelist: true,
+      forbidNonWhitelisted: true,
+    }),
+  );
 
   // Enable helmet middleware
   await app.register(helmet, {
