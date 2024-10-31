@@ -3,7 +3,7 @@ import axios from 'axios';
 import { z } from 'zod';
 import style from './CreateUser.module.css';
 import Cookies from 'js-cookie';
-import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2  } from 'lucide-react';
+import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2 ,Settings, RotateCcw  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import  UserStatus  from './UserStatus';
@@ -243,7 +243,6 @@ const CreateUsers = () => {
         setErrors({});
     }
    
-
     const updateSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -290,7 +289,7 @@ const CreateUsers = () => {
                 firstname: '',
                 lastname: '',
                 address: null,
-                phone: null, // Reset to null
+                phone: null, 
                 email: '',
                 gender: '',
             });
@@ -320,14 +319,6 @@ const CreateUsers = () => {
         }
     };
     
-
-
-
-
-
-
-
-
     // for show good formation of last lkogin of user
     const formatDate = (lastLogin) => {
         if (!lastLogin) return "introuvable";
@@ -337,8 +328,6 @@ const CreateUsers = () => {
         const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         return `${formattedDate} ${formattedTime}`;
     };
-
-
 
     //for update the status 
     const [status, setStatus] = useState(UserStatus.ACTIVE);
@@ -389,6 +378,42 @@ const CreateUsers = () => {
         }
     };
     
+   // delete user
+    const deleteUser = async (id) => {
+        try {
+            const token = Cookies.get('access_token');
+            console.log(id)
+            const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/users/${id}/status/delete`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            toast.success('L’utilisateur a été supprimé avec succès!', {
+                icon: '✅',
+                position: "top-right",
+                autoClose: 3000,
+            });
+            fetchUsers();
+        } catch (error) {
+            let errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
+            if (error.response?.data?.message) {
+                if (error.response.data.message.includes('User is already deleted')) {
+                    errorMessage = "L’utilisateur est déjà supprimé";
+                } else if (error.response.data.message.includes('Super admin cannot be deleted')) {
+                    errorMessage = "Le super administrateur ne peut pas être supprimé";
+                } else {
+                    errorMessage = error.response.data.message; 
+                }
+            }
+            console.error('Error delete user:', error.response.data.message);
+            toast.error(errorMessage, {
+                icon: '❌',
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+    }
+
 
   return (
     <div className={style.container}>
@@ -451,6 +476,7 @@ const CreateUsers = () => {
                             <EllipsisVertical />
                         </button>
                         <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
+
                             <div 
                                 className={style.dropdownItem}
                                 onClick={() => handleAction('details', user)}
@@ -465,21 +491,32 @@ const CreateUsers = () => {
                                <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                             </div>
 
-                            <div 
-                                className={`${style.dropdownItem} ${style.delete}`}
-                                onClick={() => handleAction('delete', user)}
-                            >
-                                <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                            </div>
+                            {user.status !== "deleted" && (
+                                <div 
+                                    className={`${style.dropdownItem} ${style.delete}`}
+                                    onClick={() => deleteUser(user.id)}
+                                >
+                                    <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                                </div>
+                            )}
 
                             {user.status !== "deleted" && (
                                 <div 
                                     className={`${style.dropdownItem} ${style.delete}`}
                                     onClick={() => updateStatus(user.status ,user.id)}
                                 >
-                                    Ghange Status
+                                    <Settings  className="mr-2 h-4 w-4" /> Ghange Status
                                 </div>
                             )}
+
+                            {/* {user.status == "deleted" && (
+                                <div 
+                                    className={`${style.dropdownItem} ${style.delete}`}
+                                    onClick={() => updateStatus(user.status ,user.id)}
+                                >
+                                    <RotateCcw   className="mr-2 h-4 w-4" /> Réactiver l’utilisateur
+                                </div>
+                            )} */}
                             
                         </div>
                     </div>
@@ -677,33 +714,6 @@ const CreateUsers = () => {
                 </form>
             </div>
         )}
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
         {/* for update status of user */}
