@@ -44,7 +44,7 @@ export class UserStatusService extends GenericService<User> {
     }
     await this.checkSelf(user, request);
 
-    if (request['user'].roles.includes('superadmin')) {
+    if (user.roles.some((role) => role.name === 'superadmin')) {
       throw new BadRequestException('Super admin cannot be deleted');
     }
     user.status = UserStatus.DELETED;

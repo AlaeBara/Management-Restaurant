@@ -51,7 +51,7 @@ export default class UserStatusController {
     @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
   ) {
-    const user = await this.userStatusService.findOrThrow(id);
+    const user = await this.userStatusService.findOrThrow(id, ['roles']);
     await this.userStatusService.markAsDeleted(user, request);
     return { message: 'user deleted successfully', statusCode: 200 };
   }
