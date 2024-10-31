@@ -6,26 +6,50 @@ import Cookies from 'js-cookie';
 import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import  UserStatus  from './UserStatus';
 
  
 // Define the Zod schema for validation -- create
 const schema = z.object({
-  firstname: z.string().min(5, { message: 'Le prénom est requis' }),
-  lastname: z.string().min(5, { message: 'Le nom est requis' }),
-  username: z.string().min(5, { message: "Le nom d'utilisateur est requis" }),
-  password: z.string().min(5, { message: 'Le mot de passe doit contenir au moins 5 caractères' }),
-  email: z.string().email({ message: 'Adresse e-mail invalide' }),
-  gender: z.string().nonempty({ message: 'Le genre est requis' }),
-});
+    firstname: z.string()
+      .min(5, { message: 'Prénom trop court.' }),
+  
+    lastname: z.string()
+      .min(5, { message: 'Nom trop court.' }),
+  
+    username: z.string()
+      .min(5, { message: 'Nom d’utilisateur trop court.' }),
+  
+    password: z.string()
+      .min(5, { message: 'Mot de passe trop court.' }),
+  
+    email: z.string()
+      .email({ message: 'E-mail invalide.' }),
+  
+    gender: z.string()
+      .nonempty({ message: 'Genre requis.' }),
+  });
+  
+  
 
 // Define the Zod schema for validation  -- update
 const updateSchema = z.object({
-    firstname: z.string().nonempty("Le prénom est requis"),
-    lastname: z.string().nonempty("Le nom est requis"),
-    username: z.string().nonempty("Le nom d'utilisateur est requis"),
-    password: z.string().optional().or(z.literal('Optional')), // Optional for update
-    email: z.string().email("L'email est invalide"),
-    gender: z.string().nonempty("Le genre est requis"),
+    firstname: z.string()
+        .min(5, { message: 'Prénom trop court' }),
+  
+    lastname: z.string()
+        .min(5, { message: 'Nom trop court.' }),
+  
+    username: z.string()
+        .min(5, { message: "Nom d’utilisateur trop court." }),
+    
+    password: z.string().optional().or(z.literal('Optional')), 
+    
+    email: z.string()
+        .email({ message: 'E-mail invalide.' }),
+    
+    gender: z.string()
+      .nonempty({ message: 'Genre requis.' }),
 });
 
 
@@ -132,7 +156,6 @@ const CreateUsers = () => {
             },
         });
         setDataUser(response.data.data);
-        console.log(response.data.data)
     };
 
     useEffect(() => {
@@ -245,11 +268,57 @@ const CreateUsers = () => {
         return `${formattedDate} ${formattedTime}`;
     };
 
+
+
     //for update the status 
+    const [status, setStatus] = useState(UserStatus.ACTIVE);
+    const [oldstatus, setoldStatus] = useState("");
+    const [isChangeStatus, setisChangeStatus] = useState(false);
+
+    const updateStatus =(status,id)=>{
+        formData.id = id
+        setisChangeStatus(true)
+        setoldStatus(status)
+        
+    }
+
+    const handleStatus = (event) => {
+        const newStatus = event.target.value;
+        setStatus(newStatus);
+        console.log(`User status changed to: ${newStatus}`);
+        console.log(`old status: ${oldstatus}`);
+    }; 
+
+    const closeFormOfupdateStatus =()=>{
+        setisChangeStatus(false)
+    } 
+    const updateStatusOfUsers = async (e) => {
+        e.preventDefault();
+        try {
+            console.log(`Updating user with ID: ${formData.id}, Type: ${typeof formData.id}`);
+            const token = Cookies.get('access_token');
+            const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${formData.id}/status`, {status:status} , {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            toast.success('Statut de l’utilisateur mis à jour avec succès!', {
+                icon: '✅',
+                position: "top-right",
+                autoClose: 3000,
+            });
+            fetchUsers();
+            setisChangeStatus(false)
+        } catch (error) {
+            console.error('Erreur lors de la mise à jour de l’utilisateur:', error.response?.data?.message || error.message);
+            toast.error("Échec de la mise à jour du statut de l’utilisateur. Veuillez réessayer.", {
+                icon: '❌',
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+    };
     
-
-
-
 
   return (
     <div className={style.container}>
@@ -294,8 +363,16 @@ const CreateUsers = () => {
                             Dernier Login: {formatDate(user.lastLogin)}
                         </p>
                         <span className={`${style.status} ${style[user.status]}`}>
-                            {user.status === "active" ? "Active" : user.status === "email-unverified" ? "Non vérifié" : ""}
+                            {user.status === UserStatus.ACTIVE ? "Actif" :
+                            user.status === UserStatus.INACTIVE ? "Inactif" :
+                            user.status === UserStatus.SUSPENDED ? "Suspendu" :
+                            user.status === UserStatus.BANNED ? "Banni" :
+                            user.status === UserStatus.ARCHIVED ? "Archivé" :
+                            user.status === "email-unverified" ? "Non vérifié":
+                            user.status === "deleted" ? "Supprimé": ""}
                         </span>
+
+
                         <button 
                             className={style.menuButton} 
                             onClick={(e) => handleMenuClick(user.id, e)}
@@ -310,18 +387,30 @@ const CreateUsers = () => {
                             >
                                 <Info className="mr-2 h-4 w-4" /> Détails
                             </div>
+
                             <div 
                                 className={style.dropdownItem}
                                 onClick={() => UpdateGetData(user)}
                             >
                                <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                             </div>
+
                             <div 
                                 className={`${style.dropdownItem} ${style.delete}`}
                                 onClick={() => handleAction('delete', user)}
                             >
                                 <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                             </div>
+
+                            {user.status !== "deleted" && (
+                                <div 
+                                    className={`${style.dropdownItem} ${style.delete}`}
+                                    onClick={() => updateStatus(user.status ,user.id)}
+                                >
+                                    Ghange Status
+                                </div>
+                            )}
+                            
                         </div>
                     </div>
                 )
@@ -433,6 +522,45 @@ const CreateUsers = () => {
                 </form>
             </div>
         )}
+
+
+
+        {/* for update status of user */}
+        {isChangeStatus && (
+            <div className={style.modalOverlay}>
+
+                <form className={style.form}  onSubmit={updateStatusOfUsers}>
+
+                    <div className={style.headerForm}>
+
+                        <h1>Changer le status</h1>
+                        <button onClick={() => closeFormOfupdateStatus()} className={style.closeFormButton}>
+                            <X />
+                        </button>
+
+                    </div>
+                    {/* Form fields */}
+
+                    <div className={style.inputGroup}>
+                        <label>Change User Status:</label>
+                        <select name="gender"  value={status} onChange={handleStatus}>
+                            {Object.values(UserStatus).filter((statusValue) => statusValue !== oldstatus) // Exclude old status
+                                .map((statusValue) => (
+                                    <option key={statusValue} value={statusValue}>
+                                        {statusValue.charAt(0).toUpperCase() + statusValue.slice(1).replace(/-/g, ' ')}
+                                    </option>
+                                ))}
+                            </select>
+                        {errors.gender && <p className={style.error}>{errors.gender}</p>}
+                    </div>
+
+                    <button type="submit" className={style.submitButton}>
+                        Modifier
+                    </button>
+                </form>
+            </div>
+        )}
+
     </div>
   );
 };
