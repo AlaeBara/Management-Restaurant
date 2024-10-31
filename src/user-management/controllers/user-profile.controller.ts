@@ -6,7 +6,8 @@ import {
   Param,
   ParseIntPipe,
   Patch,
-  Req
+  Query,
+  Req,
 } from '@nestjs/common';
 import { Permissions, Roles } from '../decorators/auth.decorator';
 import { UserService } from '../services/user/user.service';
@@ -23,7 +24,6 @@ export default class UserProfileController {
   //async updateUsernameByUser( @Req() request: Request,@Body() updateUsernameDto: UpdateUsernameDto,) // done
   //public async updatePassword(req: Request, res: Response) // in progress
   //async profile(@Req() request: Request) // done
-
 
   @Patch(':id/username')
   @Roles('superadmin')
@@ -49,8 +49,16 @@ export default class UserProfileController {
   }
 
   @Get()
-  async profile(@Req() request: Request) {
+  async profile(
+    @Req() request: Request,
+    @Query('relations') relations?: string[],
+    @Query('withDeleted') withDeleted?: boolean,
+  ) {
     const reqUser = request['user'];
-    return await this.userService.findOrThrow(reqUser.sub);
+    return await this.userService.findOrThrow(
+      reqUser.sub,
+      relations,
+      withDeleted,
+    );
   }
 }

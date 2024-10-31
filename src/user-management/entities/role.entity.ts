@@ -8,12 +8,13 @@ import {
   UpdateDateColumn,
   JoinTable,
   Index,
+  RelationId,
 } from 'typeorm';
 import { Permission } from './permission.entity';
 import { Exclude } from 'class-transformer';
 
 @Entity()
-@Index(['name','id'])
+@Index(['name', 'id'])
 export class Role {
   @PrimaryGeneratedColumn()
   id: number;
@@ -27,15 +28,18 @@ export class Role {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({select: false})
+  @UpdateDateColumn({ select: false })
   @Exclude()
   updatedAt: Date;
 
-  @DeleteDateColumn({select: false})
+  @DeleteDateColumn({ select: false })
   @Exclude()
   deletedAt: Date;
 
   @ManyToMany(() => Permission)
   @JoinTable()
   permissions: Permission[];
+
+  @RelationId((role: Role) => role.permissions)
+  permissionIds: number[];
 }

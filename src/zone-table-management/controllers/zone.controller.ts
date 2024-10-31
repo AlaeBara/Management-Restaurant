@@ -47,8 +47,12 @@ export class ZoneController {
 
   @Get(':id')
   @Permissions('view-zone')
-  async findOne(@Param('id', ParseUUIDPipe) id: string) {
-    return this.zoneService.findOrThrowByUUID(id, ['parentZone']);
+  async findOne(
+    @Param('id', ParseUUIDPipe) id: string,
+    @Query('relations') relations?: string[],
+    @Query('withDeleted') withDeleted?: boolean,
+  ) {
+    return this.zoneService.findOrThrowByUUID(id, relations, withDeleted);
   }
 
   @Post()

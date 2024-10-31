@@ -8,7 +8,7 @@ import {
   Index,
 } from 'typeorm';
 
-@Index(['name','id'])
+@Index(['name', 'id'])
 @Entity()
 export class Permission {
   @PrimaryGeneratedColumn()
@@ -18,7 +18,7 @@ export class Permission {
   name: string;
 
   @Column()
-  label:string
+  label: string;
 
   @Column()
   resource: string;
@@ -26,9 +26,9 @@ export class Permission {
   @CreateDateColumn()
   createdAt: Date;
 
-  @UpdateDateColumn({select: false})
+  @UpdateDateColumn({ select: false })
   updatedAt: Date;
 
-  @DeleteDateColumn({select: false})
+  @DeleteDateColumn({ select: false })
   deletedAt: Date;
 }

@@ -20,6 +20,14 @@ export class GenericService<T> {
     this.name = modelName.toLowerCase();
   }
 
+  async refactorRelations(relations: string[]) {
+    return typeof relations === 'string'
+        ? (relations as string).split(',')
+        : Array.isArray(relations)
+          ? relations
+          : [];
+  }
+
   async findAll(
     page?: number | string,
     limit?: number | string,
@@ -32,12 +40,7 @@ export class GenericService<T> {
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.max(1, Number(limit) || 10);
 
-    const relationArray =
-      typeof relations === 'string'
-        ? (relations as string).split(',')
-        : Array.isArray(relations)
-          ? relations
-          : [];
+    const relationArray = await this.refactorRelations(relations);
 
     if (relationArray && relationArray.length > 0) {
       relationArray.forEach((relation) => {
@@ -170,6 +173,10 @@ export class GenericService<T> {
     return this.repository.softDelete(id);
   }
 
+  async deleteByEntity(entity: Partial<T>) {
+    return this.repository.softDelete(entity as any);
+  }
+  
   async restore(id: number): Promise<UpdateResult> {
     return this.repository.restore(id);
   }
@@ -230,9 +237,10 @@ export class GenericService<T> {
     relations?: string[],
     withDeleted: boolean = false,
   ): Promise<T> {
+    const relationArray = await this.refactorRelations(relations);
     const entity = await this.repository.findOne({
       where: { id } as any,
-      relations: relations,
+      relations: relationArray,
       withDeleted: withDeleted,
     });
     if (!entity) {
@@ -248,12 +256,8 @@ export class GenericService<T> {
     relations?: string[],
     withDeleted: boolean = false,
   ): Promise<T> {
-    const relationArray =
-      typeof relations === 'string'
-        ? (relations as string).split(',')
-        : Array.isArray(relations)
-          ? relations
-          : [];
+    const relationArray = await this.refactorRelations(relations);
+      
     const entity = await this.repository.findOne({
       where: { id } as any,
       relations: relationArray,

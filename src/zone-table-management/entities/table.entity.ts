@@ -7,6 +7,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { Zone } from './zone.entity';
@@ -27,6 +28,9 @@ export class Table {
   @ManyToOne(() => Zone, (zone) => zone.id)
   @JoinColumn({ name: 'zone_id' })
   zone: Zone;
+
+  @RelationId((table: Table) => table.zone)
+  zoneId: string;
 
   @Column({ default: true })
   isActive: boolean;

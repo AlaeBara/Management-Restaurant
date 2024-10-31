@@ -68,8 +68,12 @@ export class RoleController {
 
   @Get(':id')
   @Permissions('view-role')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<Role> {
-    return this.roleService.findOrThrow(id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('relations') relations?: string[],
+    @Query('withDeleted') withDeleted?: boolean,
+  ): Promise<Role> {
+    return this.roleService.findOrThrow(id, relations, withDeleted);
   }
 
   @Put(':id')

@@ -8,7 +8,8 @@ import {
   ParseIntPipe,
   Patch,
   Post,
-  Put
+  Put,
+  Query
 } from '@nestjs/common';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entities/permission.entity';
@@ -51,8 +52,11 @@ export class PermissionController {
 
   @Get(':id')
   @Permissions('view-permission')
-  async findOne(@Param('id', ParseIntPipe) id: number): Promise<any> {
-    return this.permissionService.findOrThrow(id);
+  async findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('withDeleted') withDeleted?: boolean,
+  ): Promise<any> {
+    return this.permissionService.findOrThrow(id, [], withDeleted);
   }
 
   @Put(':id')

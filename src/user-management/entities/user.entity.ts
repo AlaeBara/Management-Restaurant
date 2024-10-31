@@ -8,6 +8,7 @@ import {
   JoinTable,
   DeleteDateColumn,
   Index,
+  RelationId,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Gender } from '../../common/enums/gender.enum';
@@ -73,4 +74,7 @@ export class User  {
   @ManyToMany(() => Role)
   @JoinTable()
   roles: Role[];
+
+  @RelationId((user: User) => user.roles)
+  roleIds: number[];
 }

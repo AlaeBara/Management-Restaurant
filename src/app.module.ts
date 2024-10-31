@@ -11,6 +11,7 @@ import { PermissionsGuard } from './user-management/guards/permission.guard';
 import { MailerModule } from '@nestjs-modules/mailer';
 import { ZoneTableModule } from './zone-table-management/zone-table.module';
 import { ClientManagementModule } from './client-management/client-management.module';
+import { UnitModule } from './unit-management/unit.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -24,6 +25,7 @@ import { ClientManagementModule } from './client-management/client-management.mo
     }),
     UserManagementModule,
     ClientManagementModule,
+    UnitModule,
     ZoneTableModule,
     CommonModule,
     TypeOrmModule.forRoot({

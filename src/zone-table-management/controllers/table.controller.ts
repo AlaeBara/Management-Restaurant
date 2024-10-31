@@ -14,7 +14,10 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import { Table } from '../entities/table.entity';
 import { TableService } from '../services/table.service';
-import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
+import {
+  Permissions,
+  Public,
+} from 'src/user-management/decorators/auth.decorator';
 import { CreateTableDto } from '../dtos/table/create-table.dto';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';
 
@@ -22,7 +25,6 @@ import { UpdateTableDto } from '../dtos/table/update-table.dto';
 @ApiTags('Tables')
 export class TableController {
   constructor(private readonly tableService: TableService) {}
-
 
   /* private readonly PERMISSIONS = [
     { name: 'view-tables', label: 'Consulter toutes les tables', resource: 'table' },
@@ -32,7 +34,6 @@ export class TableController {
     { name: 'delete-table', label: 'Supprimer une table', resource: 'table' },
     { name: 'restore-table', label: 'Récupérer une table supprimée', resource: 'table' }
   ]; */
-
 
   @Get()
   @Permissions('view-tables')
@@ -74,12 +75,14 @@ export class TableController {
   @Delete(':id')
   @Permissions('delete-table')
   async delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tableService.deleteByUUID(id);
+    const table = await this.tableService.findOrThrowByUUID(id);
+    return this.tableService.deleteByEntity(table);
   }
 
   @Patch(':id/restore')
   @Permissions('restore-table')
   async restore(@Param('id', ParseUUIDPipe) id: string) {
+    await this.tableService.findOrThrowByUUID(id);
     return this.tableService.restoreByUUID(id, true, ['tableCode']);
   }
 

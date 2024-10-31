@@ -1,4 +1,4 @@
-import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, UpdateDateColumn } from "typeorm";
+import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId, UpdateDateColumn } from "typeorm";
 
 
 @Entity('zone')
@@ -16,6 +16,9 @@ export class Zone {
   @ManyToOne(() => Zone, (zone) => zone.id)
   @JoinColumn({ name: 'parent_zone_id' })
   parentZone: Zone;
+
+  @RelationId((zone: Zone) => zone.parentZone)
+  parentZoneId: string;
 
   @CreateDateColumn()
   createdAt: Date;

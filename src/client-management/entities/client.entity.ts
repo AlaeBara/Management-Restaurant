@@ -9,6 +9,7 @@ import {
   JoinColumn,
   ManyToOne,
   PrimaryGeneratedColumn,
+  RelationId,
   UpdateDateColumn,
 } from 'typeorm';
 import { statusClient } from '../enums/client.enum';
@@ -73,4 +74,7 @@ export class Client {
   @ManyToOne(() => Role, (role) => role.id)
   @JoinColumn({ name: 'role_id' })
   role: Role;
+
+  @RelationId((client: Client) => client.role)
+  roleId: number;
 }

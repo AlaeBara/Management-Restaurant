@@ -68,8 +68,9 @@ export class ClientController {
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('relations') relations?: string[],
+    @Query('withDeleted') withDeleted?: boolean,
   ) {
-    return this.clientService.findOrThrowByUUID(id, relations);
+    return this.clientService.findOrThrowByUUID(id, relations, withDeleted);
   }
 
   @Put(':id')
@@ -84,12 +85,14 @@ export class ClientController {
   @Delete(':id')
   @Permissions('delete-client')
   async deleteClient(@Param('id', ParseUUIDPipe) id: string) {
-    return this.clientService.deleteByUUID(id);
+    const client = await this.clientService.findOrThrowByUUID(id);
+    return this.clientService.deleteByEntity(client);
   }
 
-  @Patch(':id')
+  @Patch(':id/restore')
   @Permissions('restore-client')
   async restoreClient(@Param('id', ParseUUIDPipe) id: string) {
+    await this.clientService.findOrThrowByUUID(id);
     return this.clientService.restoreByUUID(id, true, ['username', 'email']);
   }
 }
