@@ -23,10 +23,11 @@ const updateSchema = z.object({
     firstname: z.string().nonempty("Le prénom est requis"),
     lastname: z.string().nonempty("Le nom est requis"),
     username: z.string().nonempty("Le nom d'utilisateur est requis"),
-    password: z.string().optional().or(z.literal('')), // Optional for update
+    password: z.string().optional().or(z.literal('Optional')), // Optional for update
     email: z.string().email("L'email est invalide"),
     gender: z.string().nonempty("Le genre est requis"),
 });
+
 
 const CreateUsers = () => {
     const [formData, setFormData] = useState({
@@ -131,6 +132,7 @@ const CreateUsers = () => {
             },
         });
         setDataUser(response.data.data);
+        console.log(response.data.data)
     };
 
     useEffect(() => {
@@ -139,7 +141,6 @@ const CreateUsers = () => {
 
     //for the menu (option of any user)
     const [activeMenu, setActiveMenu] = useState(null);
-
     const handleMenuClick = (userId, e) => {
         e.stopPropagation();
         setActiveMenu(activeMenu === userId ? null : userId);
@@ -151,7 +152,6 @@ const CreateUsers = () => {
         document.addEventListener('click', handleClickOutside);
         return () => document.removeEventListener('click', handleClickOutside);
     }, []);
-
 
 
     const handleAction = (action, user) => {
@@ -245,6 +245,9 @@ const CreateUsers = () => {
         return `${formattedDate} ${formattedTime}`;
     };
 
+    //for update the status 
+    
+
 
 
 
@@ -291,9 +294,8 @@ const CreateUsers = () => {
                             Dernier Login: {formatDate(user.lastLogin)}
                         </p>
                         <span className={`${style.status} ${style[user.status]}`}>
-                        {user.status === "active" ? "Active" : user.status === "blocked" ? "Blockez" : "Status pas Trouvé"}
+                            {user.status === "active" ? "Active" : user.status === "email-unverified" ? "Non vérifié" : ""}
                         </span>
-
                         <button 
                             className={style.menuButton} 
                             onClick={(e) => handleMenuClick(user.id, e)}
@@ -325,13 +327,13 @@ const CreateUsers = () => {
                 )
             ))}
         </div>
+
         {dataUser.length ==0  &&
             <div className={style.notfound}>
                 <SearchX className={style.icon} />
                 <h1>Aucun utilisateur trouvé</h1>
             </div>
         }
-
 
         {/* forum for add user */}
         {isFormVisible && (

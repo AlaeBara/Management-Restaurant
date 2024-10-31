@@ -264,6 +264,10 @@
     background-color: #e6f7ed;
     color: #0d9f4f;
 }
+.email-unverified{
+    background-color: #e3e9e6;
+    color: #373937;
+}
 
 .blocked {
     background-color: #ffe8e8;

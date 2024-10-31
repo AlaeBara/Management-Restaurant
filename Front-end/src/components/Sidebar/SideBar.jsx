@@ -1,6 +1,7 @@
 import {
   BadgeCheck,
   Bell,
+  UserCheck,
   BookOpen,
   ChevronRight,
   ChevronsUpDown,
@@ -21,7 +22,9 @@ import {
   UserCircle,
   Shield,
   Key,
-  User
+  User,
+  List,
+  UserPlus
 } from "lucide-react"
 
 import {
@@ -74,7 +77,7 @@ const SideBar = () => {
     navMain: [
       {
         title: "User Management",
-        icon: SquareTerminal,
+        icon: Users,
         isActive: true,
         items: [
           { 
@@ -84,18 +87,17 @@ const SideBar = () => {
           },
           { 
             title: "Role",
-            icon: Star,
+            icon: Shield,
             subItems: [
-              { title: "All Role", icon: Folder, url: "#" },
-              { title: "Give Role", icon: Folder, url: "#" },
-              { title: "Create Role", icon: Star, url: "#" },
+              { title: "All Role", icon: List, url: "#" },
+              { title: "Give Role", icon:  UserPlus, url: "#" },
             ]
           },
           { 
             title: "Permission",
-            icon: Settings,
+            icon: Key,
             subItems: [
-              { title: "All Permission", icon: UserCircle, url: "#" },
+              { title: "All Permission", icon: UserCheck, url: "#" },
             ]
           },
         ],
