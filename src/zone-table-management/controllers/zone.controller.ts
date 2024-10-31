@@ -10,7 +10,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ZoneService } from '../services/zone.services';
+import { ZoneService } from '../services/zone.service';
 import { CreateZoneDto } from '../dtos/zone/create-zone.dto';
 import { Body } from '@nestjs/common';
 import { Permissions } from 'src/user-management/decorators/auth.decorator';

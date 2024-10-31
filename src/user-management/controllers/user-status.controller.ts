@@ -6,10 +6,12 @@ import {
   Delete,
   Req,
   ConflictException,
+  Body,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Permissions, Roles } from '../decorators/auth.decorator';
 import { UserStatusService } from '../services/user/user-status.service';
+import { UpdateStatusDto } from '../dto/user/update-status.dto';
 
 @ApiTags('users/status')
 @Controller('api/users')
@@ -21,7 +23,7 @@ export default class UserStatusController {
     { permission: 'update-user-status', label: 'Update user status', resource: 'user' }, 
   ]; */
 
-  @Patch(':id/status/block')
+  /*  @Patch(':id/status/block')
   @Permissions('update-user-status')
   async markAsBlocked(
     @Param('id', ParseIntPipe) id: number,
@@ -30,9 +32,9 @@ export default class UserStatusController {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAsBlocked(user, request);
     return { message: 'User status updated successfully', statusCode: 200 };
-  }
+  } */
 
-  @Patch(':id/status/active')
+  /* @Patch(':id/status/active')
   @Permissions('update-user-status')
   async markAsActive(
     @Param('id', ParseIntPipe) id: number,
@@ -41,7 +43,7 @@ export default class UserStatusController {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAsActive(user, request);
     return { message: 'User status updated successfully', statusCode: 200 };
-  }
+  } */
 
   @Delete(':id/status/delete')
   @Permissions('update-user-status')
@@ -51,7 +53,7 @@ export default class UserStatusController {
   ) {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAsDeleted(user, request);
-    return { message: 'User status updated successfully', statusCode: 200 };
+    return { message: 'user deleted successfully', statusCode: 200 };
   }
 
   @Patch(':id/status/restore')
@@ -62,10 +64,22 @@ export default class UserStatusController {
       throw new ConflictException('User is not deleted');
     }
     await this.userStatusService.markAsRestored(id);
+    return { message: 'user restored successfully', statusCode: 200 };
+  }
+
+  @Patch(':id/status')
+  @Permissions('update-user-status')
+  async markAs(
+    @Param('id', ParseIntPipe) id: number,
+    @Body() updateStatusDto: UpdateStatusDto,
+    @Req() request: Request,
+  ) {
+    const user = await this.userStatusService.findOrThrow(id);
+    await this.userStatusService.markAs(user, updateStatusDto.status, request);
     return { message: 'User status updated successfully', statusCode: 200 };
   }
 
-  @Patch(':id/status/archive')
+  /*   @Patch(':id/status/archive')
   @Permissions('update-user-status')
   async markAsArchived(
     @Param('id', ParseIntPipe) id: number,
@@ -74,9 +88,9 @@ export default class UserStatusController {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAsArchived(user, request);
     return { message: 'User status updated successfully', statusCode: 200 };
-  }
+  } */
 
-  @Patch(':id/status/inactive')
+  /*  @Patch(':id/status/inactive')
   @Permissions('update-user-status')
   async markAsInactive(
     @Param('id', ParseIntPipe) id: number,
@@ -85,9 +99,9 @@ export default class UserStatusController {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAsInactive(user, request);
     return { message: 'User status updated successfully', statusCode: 200 };
-  }
+  } */
 
-  @Patch(':id/status/ban')
+  /* @Patch(':id/status/ban')
   @Permissions('update-user-status')
   async markAsBanned(
     @Param('id', ParseIntPipe) id: number,
@@ -96,5 +110,5 @@ export default class UserStatusController {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAsBanned(user, request);
     return { message: 'User status updated successfully', statusCode: 200 };
-  }
+  } */
 }

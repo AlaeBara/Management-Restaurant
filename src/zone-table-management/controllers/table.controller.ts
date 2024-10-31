@@ -13,7 +13,7 @@ import {
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { Table } from '../entities/table.entity';
-import { TableService } from '../services/table.services';
+import { TableService } from '../services/table.service';
 import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
 import { CreateTableDto } from '../dtos/table/create-table.dto';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';

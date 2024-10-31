@@ -30,6 +30,7 @@ export class UserService extends GenericService<User> {
     return this.userRepository.save(newUser);
   }
 
+  // TODO : let user can have only one role
   async grantRoleToUser(user: User, role: Role) {
     console.log(user);
     user.roles.push(role);

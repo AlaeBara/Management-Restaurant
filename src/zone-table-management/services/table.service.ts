@@ -10,7 +10,7 @@ import { DataSource, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateTableDto } from '../dtos/table/create-table.dto';
-import { ZoneService } from './zone.services';
+import { ZoneService } from './zone.service';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';
 import { Zone } from '../entities/zone.entity';
 import QrcodeService from 'src/qr-code/services/qrcode.service';

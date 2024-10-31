@@ -1,11 +1,16 @@
-import { BadRequestException, forwardRef, Inject, Injectable } from '@nestjs/common';
+import {
+  BadRequestException,
+  forwardRef,
+  Inject,
+  Injectable,
+} from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
 import { Zone } from '../entities/zone.entity';
 import { CreateZoneDto } from '../dtos/zone/create-zone.dto';
 import { UpdateZoneDto } from '../dtos/zone/update-zone.dto';
-import { TableService } from './table.services';
+import { TableService } from './table.service';
 @Injectable()
 export class ZoneService extends GenericService<Zone> {
   constructor(
@@ -21,7 +26,11 @@ export class ZoneService extends GenericService<Zone> {
   async createZone(zoneDto: CreateZoneDto) {
     let parentZone: Zone | null = null;
 
-    await this.throwIfFoundByAnyAttribute({ zoneCode: zoneDto.zoneCode },[],true);
+    await this.throwIfFoundByAnyAttribute(
+      { zoneCode: zoneDto.zoneCode },
+      [],
+      true,
+    );
 
     if (zoneDto.parentZoneUUID) {
       parentZone = await this.zoneRepository.findOne({
@@ -48,7 +57,10 @@ export class ZoneService extends GenericService<Zone> {
 
     // Handle parent zone assignment
     if (zoneDto.parentZoneUUID) {
-      parentZone = await this.validateZoneReassignment(id, zoneDto.parentZoneUUID);
+      parentZone = await this.validateZoneReassignment(
+        id,
+        zoneDto.parentZoneUUID,
+      );
 
       // Prevent circular dependencies Note: Need to check the circular dependency before assigning the parent zone
     }
@@ -57,7 +69,7 @@ export class ZoneService extends GenericService<Zone> {
     const updateData = {
       ...(zoneDto.zoneLabel && { zoneLabel: zoneDto.zoneLabel }),
       ...(zoneDto.zoneCode && { zoneCode: zoneDto.zoneCode }),
-      parentZone
+      parentZone,
     };
 
     // Perform update and return updated zone
@@ -79,7 +91,7 @@ export class ZoneService extends GenericService<Zone> {
 
   async deleteByUUID(id: string) {
     // Use COUNT instead of fetching full records
-    /* const [zoneCount, tableCount] = await Promise.all([
+    const [zoneCount, tableCount] = await Promise.all([
       this.countByAttribute({ parentZone: { id } }),
       this.tableService.countByAttribute({ zone: { id } }),
     ]);
@@ -93,12 +105,12 @@ export class ZoneService extends GenericService<Zone> {
           .filter(Boolean)
           .join(' and ')} linked to it.`,
       );
-    } */
+    }
 
-    const zoneCount = await this.countByAttribute({ parentZone: { id } })
+    /*    const zoneCount = await this.countByAttribute({ parentZone: { id } })
     if(zoneCount > 0) {
       throw new BadRequestException('Cannot delete zone: it has child zones linked to it.');
-    }
+    } */
 
     return this.zoneRepository.softDelete(id);
   }

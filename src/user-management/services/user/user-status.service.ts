@@ -22,11 +22,13 @@ export class UserStatusService extends GenericService<User> {
 
   async checkSelf(user: User, @Req() request: Request) {
     if (user.id === request['user'].sub) {
-      throw new BadRequestException('You cannot do this action to self-account');
+      throw new BadRequestException(
+        'You cannot do this action to self-account',
+      );
     }
   }
 
-  async markAsBlocked(user: User, @Req() request: Request) {
+  /* async markAsBlocked(user: User, @Req() request: Request) {
     if (user.isBlocked || user.status === UserStatus.SUSPENDED) {
       throw new BadRequestException('User already blocked');
     }
@@ -34,9 +36,7 @@ export class UserStatusService extends GenericService<User> {
     user.isBlocked = true;
     user.status = UserStatus.SUSPENDED;
     return this.userRepository.save(user);
-  }
-
-  
+  } */
 
   async markAsDeleted(user: User, @Req() request: Request) {
     if (user.status === UserStatus.DELETED) {
@@ -48,7 +48,7 @@ export class UserStatusService extends GenericService<User> {
       throw new BadRequestException('Super admin cannot be deleted');
     }
     user.status = UserStatus.DELETED;
-    if(!this.isBlocked(user)){
+    if (!this.isBlocked(user)) {
       user.isBlocked = true;
     }
     await this.userRepository.softDelete(user.id);
@@ -63,61 +63,79 @@ export class UserStatusService extends GenericService<User> {
     return this.userRepository.save(user);
   }
 
-  async markAsArchived(user: User, @Req() request: Request) {
+  /* async markAsArchived(user: User, @Req() request: Request) {
     if (user.status === UserStatus.ARCHIVED) {
       throw new BadRequestException('User is already archived');
     }
     await this.checkSelf(user, request);
     user.status = UserStatus.ARCHIVED;
-    if(!this.isBlocked(user)){
+    if (!this.isBlocked(user)) {
       user.isBlocked = true;
     }
     return this.userRepository.save(user);
-  }
+  } */
 
-  async markAsInactive(user: User, @Req() request: Request) {
+  /* async markAsInactive(user: User, @Req() request: Request) {
     if (user.status === UserStatus.INACTIVE) {
       throw new BadRequestException('User is already inactive');
     }
     await this.checkSelf(user, request);
     user.status = UserStatus.INACTIVE;
-    if(!this.isBlocked(user)){
+    if (!this.isBlocked(user)) {
       user.isBlocked = true;
     }
     return this.userRepository.save(user);
-  }
+  } */
 
-  async markAsBanned(user: User, @Req() request: Request) {
+  /* async markAsBanned(user: User, @Req() request: Request) {
     if (user.status === UserStatus.BANNED) {
       throw new BadRequestException('User is already banned');
     }
-    await this.checkSelf(user, request);  
+    await this.checkSelf(user, request);
     user.status = UserStatus.BANNED;
-    if(!this.isBlocked(user)){
+    if (!this.isBlocked(user)) {
       user.isBlocked = true;
     }
     return this.userRepository.save(user);
-  }
+  } */
 
-  async markAsEmailUnverified(user: User, @Req() request: Request) {
+  /* async markAsEmailUnverified(user: User, @Req() request: Request) {
     if (user.status === UserStatus.EMAIL_UNVERIFIED) {
       throw new BadRequestException('User is already email unverified');
     }
     await this.checkSelf(user, request);
     user.status = UserStatus.EMAIL_UNVERIFIED;
-    if(!this.isBlocked(user)){
+    if (!this.isBlocked(user)) {
       user.isBlocked = true;
     }
     return this.userRepository.save(user);
-  }
+  } */
 
-  async markAsActive(user: User, @Req() request: Request) {
+/*   async markAsActive(user: User, @Req() request: Request) {
     if (user.status === UserStatus.ACTIVE) {
       throw new BadRequestException('User is already active');
     }
     await this.checkSelf(user, request);
     user.status = UserStatus.ACTIVE;
-    if(this.isBlocked(user)){
+    if (this.isBlocked(user)) {
+      user.isBlocked = false;
+    }
+    return this.userRepository.save(user);
+  } */
+
+  async markAs(user: User, status: UserStatus, @Req() request: Request) {
+    if (user.status === status) {
+      throw new BadRequestException('User is already ' + status.valueOf());
+    }
+    if (status === UserStatus.DELETED) {
+      throw new BadRequestException('User cannot be deleted');
+    }
+    await this.checkSelf(user, request);
+    user.status = status;
+    if (!this.isBlocked(user)) {
+      user.isBlocked = true;
+    }
+    if (status === UserStatus.ACTIVE) {
       user.isBlocked = false;
     }
     return this.userRepository.save(user);
