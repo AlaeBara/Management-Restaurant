@@ -8,6 +8,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import  UserStatus  from './UserStatus';
 import { useUserContext } from '../../../../context/UserContext';
+import Spinner from '../../../../components//Spinner/Spinner'
 
  
 // Define the Zod schema for validation -- create
@@ -75,6 +76,7 @@ const CreateUsers = () => {
     const [errors, setErrors] = useState({});
     const [showPassword, setShowPassword] = useState(false);
     const [isFormVisible, setIsFormVisible] = useState(false);
+    const [loading, setLoading] = useState(false);
 
     const handleChange = ({ target: { name, value } }) => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -83,32 +85,36 @@ const CreateUsers = () => {
     //add user
     const handleSubmit = async (e) => {
         e.preventDefault();
-
         try {
-        schema.parse(formData);
-        const token = Cookies.get('access_token');
+            schema.parse(formData);
+            const token = Cookies.get('access_token');
 
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
-            headers: {
-            Authorization: `Bearer ${token}`,
-            },
-        });
-        setFormData({
-            firstname: '',
-            lastname: '',
-            username: '',
-            password: '',
-            email: '',
-            gender: '',
-        });
-        setErrors({});
-        toast.success('Utilisateur créé avec succès!', {
-            icon: '✅',
-            position: "top-right",
-            autoClose: 3000,
-        });
-        fetchUsers();
-        setIsFormVisible(false)
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            });
+            setFormData({
+                firstname: '',
+                lastname: '',
+                username: '',
+                password: '',
+                email: '',
+                gender: '',
+            });
+            setErrors({});
+            fetchUsers();
+            setIsFormVisible(false)
+            setLoading(true);
+            // Show spinner for 3 seconds and then hide
+            setTimeout(() => {
+                setLoading(false);
+                toast.success('Utilisateur créé avec succès!', {
+                    icon: '✅',
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            }, 3000);
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = {};
@@ -427,6 +433,9 @@ const CreateUsers = () => {
     <div className={style.container}>
         <ToastContainer />
 
+       
+       
+        
         {/* header of page  */}
         <div className={style.Headerpage}>
             <h1 className={style.title}>gestion des utilisateurs</h1>
@@ -444,86 +453,94 @@ const CreateUsers = () => {
 
 
         {/* Carts Of users */}
-        <div className={style.userGrid}>
-            {dataUser.length > 0 &&
-                (dataUser
-                .filter(userData => userData.username !== user.username) // Exclude logged-in user
-                .map(user => (
-                    <div className={style.userCard} key={user.id}>
 
-                        <div className={style.headerCart}>
-                            <img
-                                src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
-                                alt="Avatar"
-                                className={style.avatar}
-                            />
-                            <div className={style.userInfo}>
-                                <h3>{user.firstname} {user.lastname}</h3>
-                                <p className={style.username}>@{user.username}</p>
-                            </div>
-                        </div>
-
-                        <p className={style.email}>{user.email}</p>
-                        <p className={style.lastLogin}>
-                            Dernier Login: {formatDate(user.lastLogin)}
-                        </p>
-                        <span className={`${style.status} ${style[user.status]}`}>
-                            {user.status === UserStatus.ACTIVE ? "Actif" :
-                            user.status === UserStatus.INACTIVE ? "Inactif" :
-                            user.status === UserStatus.SUSPENDED ? "Suspendu" :
-                            user.status === UserStatus.BANNED ? "Banni" :
-                            user.status === UserStatus.ARCHIVED ? "Archivé" :
-                            user.status === "email-unverified" ? "Non vérifié":
-                            user.status === "deleted" ? "Supprimé": ""}
-                        </span>
-
-
-                        <button 
-                            className={style.menuButton} 
-                            onClick={(e) => handleMenuClick(user.id, e)}
-                            aria-label="More options"
-                        >
-                            <EllipsisVertical />
-                        </button>
-                        <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
-
-                            <div 
-                                className={style.dropdownItem}
-                                onClick={() => handleAction('details', user)}
-                            >
-                                <Info className="mr-2 h-4 w-4" /> Détails
-                            </div>
-
-                            <div 
-                                className={style.dropdownItem}
-                                onClick={() => UpdateGetData(user)}
-                            >
-                               <Edit className="mr-2 h-4 w-4" /> Mise à Jour
-                            </div>
-
-                            {user.status !== "deleted" && (
-                                <div 
-                                    className={`${style.dropdownItem}`}
-                                    onClick={() => updateStatus(user.status ,user.id)}
-                                >
-                                    <Settings  className="mr-2 h-4 w-4" /> Ghange Status
-                                </div>
-                            )}
-
-                            {user.status !== "deleted" && (
-                                <div 
-                                    className={`${style.dropdownItem} ${style.delete}`}
-                                    onClick={() => deleteUser(user.id)}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                                </div>
-                            )}
-                            
-                        </div>
+        {loading ? (
+                    <div className={style.spinner}>
+                        <Spinner title="Création de l'utilisateur en cours..."/>
                     </div>
-                )
-            ))}
-        </div>
+                    
+                ) :
+            (<div className={style.userGrid}>
+                {dataUser.length > 0 &&
+                    (dataUser
+                    .filter(userData => userData.username !== user.username) // Exclude logged-in user
+                    .map(user => (
+                        <div className={style.userCard} key={user.id}>
+
+                            <div className={style.headerCart}>
+                                <img
+                                    src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
+                                    alt="Avatar"
+                                    className={style.avatar}
+                                />
+                                <div className={style.userInfo}>
+                                    <h3>{user.firstname} {user.lastname}</h3>
+                                    <p className={style.username}>@{user.username}</p>
+                                </div>
+                            </div>
+
+                            <p className={style.email}>{user.email}</p>
+                            <p className={style.lastLogin}>
+                                Dernier Login: {formatDate(user.lastLogin)}
+                            </p>
+                            <span className={`${style.status} ${style[user.status]}`}>
+                                {user.status === UserStatus.ACTIVE ? "Actif" :
+                                user.status === UserStatus.INACTIVE ? "Inactif" :
+                                user.status === UserStatus.SUSPENDED ? "Suspendu" :
+                                user.status === UserStatus.BANNED ? "Banni" :
+                                user.status === UserStatus.ARCHIVED ? "Archivé" :
+                                user.status === "email-unverified" ? "Non vérifié":
+                                user.status === "deleted" ? "Supprimé": ""}
+                            </span>
+
+
+                            <button 
+                                className={style.menuButton} 
+                                onClick={(e) => handleMenuClick(user.id, e)}
+                                aria-label="More options"
+                            >
+                                <EllipsisVertical />
+                            </button>
+                            <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
+
+                                <div 
+                                    className={style.dropdownItem}
+                                    onClick={() => handleAction('details', user)}
+                                >
+                                    <Info className="mr-2 h-4 w-4" /> Détails
+                                </div>
+
+                                <div 
+                                    className={style.dropdownItem}
+                                    onClick={() => UpdateGetData(user)}
+                                >
+                                <Edit className="mr-2 h-4 w-4" /> Mise à Jour
+                                </div>
+
+                                {user.status !== "deleted" && (
+                                    <div 
+                                        className={`${style.dropdownItem}`}
+                                        onClick={() => updateStatus(user.status ,user.id)}
+                                    >
+                                        <Settings  className="mr-2 h-4 w-4" /> Ghange Status
+                                    </div>
+                                )}
+
+                                {user.status !== "deleted" && (
+                                    <div 
+                                        className={`${style.dropdownItem} ${style.delete}`}
+                                        onClick={() => deleteUser(user.id)}
+                                    >
+                                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                                    </div>
+                                )}
+                                
+                            </div>
+                        </div>
+                    )
+                ))}
+            </div>)
+        }
 
         {dataUser.length ==0  &&
             <div className={style.notfound}>
