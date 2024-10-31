@@ -33,6 +33,7 @@ const schema = z.object({
   
 
 // Define the Zod schema for validation  -- update
+// Define the update schema with an optional phone field
 const updateSchema = z.object({
     firstname: z.string()
         .min(5, { message: 'Prénom trop court' }),
@@ -40,17 +41,22 @@ const updateSchema = z.object({
     lastname: z.string()
         .min(5, { message: 'Nom trop court.' }),
   
-    username: z.string()
-        .min(5, { message: "Nom d’utilisateur trop court." }),
-    
-    password: z.string().optional().or(z.literal('Optional')), 
-    
-    email: z.string()
-        .email({ message: 'E-mail invalide.' }),
+    address: z.string()
+        .min(5, { message: "L'adresse est trop courte." })
+        .optional(), // Optional field
     
     gender: z.string()
-      .nonempty({ message: 'Genre requis.' }),
+        .nonempty({ message: 'Genre requis.' }),
+    
+    // Add phone as an optional field that can be null
+    phone: z.string()
+        .nullable() // Allows phone to be null
+        .optional() // Allows phone to be omitted
+        .refine(value => value === null || /^[+]?[0-9\s]*$/.test(value), {
+            message: 'Numéro de téléphone invalide.',
+        }),
 });
+
 
 
 const CreateUsers = () => {
@@ -123,9 +129,9 @@ const CreateUsers = () => {
             }
 
             toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+                icon: '❌',
+                position: "top-right",
+                autoClose: 3000,
             });
         }
         }
@@ -143,7 +149,6 @@ const CreateUsers = () => {
             gender: '',
         });
         setErrors({});
-
     }
 
     //for get all user
@@ -156,6 +161,7 @@ const CreateUsers = () => {
             },
         });
         setDataUser(response.data.data);
+        console.log(response.data.data)
     };
 
     useEffect(() => {
@@ -197,38 +203,94 @@ const CreateUsers = () => {
 
     //for the update 
     const [isEditing, setIsEditing] = useState(false);
+    const [originalData, setOriginalData] = useState({});
+    const [formUpdateData, setUpdateData] = useState({
+        id: null,
+        firstname: '',
+        lastname: '',
+        address: null,
+        phone: null,
+        gender: '',
+    });
+
     const UpdateGetData = (user) => {
-        setFormData({
+        setOriginalData(user);
+        setUpdateData({
             id: user.id,
             firstname: user.firstname,
             lastname: user.lastname,
-            username: user.username,
-            password: '',
-            email: user.email,
+            address: user.address,
+            phone:  user.phone,
             gender: user.gender,
         });
         setIsEditing(true);
-        setIsFormVisible(true);
     };
+
+    const handleChangeUpdate = ({ target: { name, value } }) => {
+        setUpdateData((prevData) => ({ ...prevData, [name]: value }));
+    };
+
+    const CloseFormOfUpdate = () => {
+        setIsEditing(false)
+        setUpdateData({
+            id: null,
+            firstname: '',
+            lastname: '',
+           address: null,
+            phone: null,
+            gender: '',
+        });
+        setErrors({});
+    }
+   
 
     const updateSubmit = async (e) => {
         e.preventDefault();
         try {
-            updateSchema.parse(formData);
+            // Validate the form data against the schema
+            updateSchema.parse(formUpdateData);
+    
+            // Create an object to hold the data that will be updated
+            const updatedData = {};
+    
+            // Loop through the keys of formUpdateData
+            for (const key in formUpdateData) {
+                // Only add fields that are changed or are not null
+                if (formUpdateData[key] !== originalData[key]) {
+                    // Set field to null if it's empty
+                    updatedData[key] = formUpdateData[key] ? formUpdateData[key] : null; // Null if empty
+                }
+            }
+    
+            // Optional: Handle case where no fields have changed
+            if (Object.keys(updatedData).length === 0) {
+                toast.info('Aucune mise à jour nécessaire.', {
+                    icon: 'ℹ️',
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+                return;
+            }
+    
             const token = Cookies.get('access_token');
-            
-            console.log(`Updating user with ID: ${formData.id}, Type: ${typeof formData.id}`);
-            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/users/${formData.id}`, formData, {
-                headers: {
-                Authorization: `Bearer ${token}`,
-                },
-            });
-            setFormData({
+
+            const response = await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/api/users/${originalData.id}`, 
+                updatedData, // Send only updated values
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            // Reset form state after a successful update
+            setUpdateData({
                 id: null,
                 firstname: '',
                 lastname: '',
-                username: '',
-                password: '',
+                address: null,
+                phone: null, // Reset to null
                 email: '',
                 gender: '',
             });
@@ -239,24 +301,32 @@ const CreateUsers = () => {
                 autoClose: 3000,
             });
             fetchUsers();
-            setIsFormVisible(false)
+            setIsEditing(false)
         } catch (error) {
-        if (error instanceof z.ZodError) {
-            const fieldErrors = {};
-            error.errors.forEach(({ path, message }) => {
-            fieldErrors[path[0]] = message;
-            });
-            setErrors(fieldErrors);
-        } else {
-            console.error('Error updating user:', error.response.data.message);
-            toast.error("Échec de la mise à jour de l\'utilisateur.", {
-                icon: '❌',
-                position: "top-right",
-                autoClose: 3000,
-            });
-        }
+            if (error instanceof z.ZodError) {
+                const fieldErrors = {};
+                error.errors.forEach(({ path, message }) => {
+                    fieldErrors[path[0]] = message;
+                });
+                setErrors(fieldErrors);
+            } else {
+                console.error('Error updating user:', error.response.data.message);
+                toast.error("Échec de la mise à jour de l'utilisateur.", {
+                    icon: '❌',
+                    position: "top-right",
+                    autoClose: 3000,
+                });
+            }
         }
     };
+    
+
+
+
+
+
+
+
 
     // for show good formation of last lkogin of user
     const formatDate = (lastLogin) => {
@@ -428,11 +498,11 @@ const CreateUsers = () => {
         {isFormVisible && (
             <div className={style.modalOverlay}>
 
-                <form className={style.form} onSubmit={isEditing ? updateSubmit : handleSubmit}>
+                <form className={style.form} onSubmit={handleSubmit}>
 
                     <div className={style.headerForm}>
 
-                        <h1>{isEditing ? 'Modifier utilisateur' : 'Créer nouveau utilisateur'}</h1>
+                        <h1>Créer nouveau utilisateur</h1>
                         <button onClick={() => CloseForm()} className={style.closeFormButton}>
                             <X />
                         </button>
@@ -517,11 +587,122 @@ const CreateUsers = () => {
                     </div>
 
                     <button type="submit" className={style.submitButton}>
-                        {isEditing ? 'Mettre à jour' : 'Ajouter'}
+                        Ajouter
                     </button>
                 </form>
             </div>
         )}
+
+
+
+        {/* forum for update user */}
+        {isEditing && (
+            <div className={style.modalOverlay}>
+
+                <form className={style.form} onSubmit={updateSubmit}>
+
+                    <div className={style.headerForm}>
+
+                        <h1>Modifier utilisateur</h1>
+                        <button onClick={() => CloseFormOfUpdate()} className={style.closeFormButton}>
+                            <X />
+                        </button>
+
+                    </div>
+                    {/* Form fields */}
+                    <div className={style.nameContainer}>
+                        <div className={style.inputGroup}>
+                            <label>Prénom</label>
+                            <input
+                                type="text"
+                                name="firstname"
+                                value={formUpdateData.firstname}
+                                onChange={handleChangeUpdate}
+                                placeholder="Prénom"
+                            />
+                            {errors.firstname && <p className={style.error}>{errors.firstname}</p>}
+                        </div>
+                            <div className={style.inputGroup}>
+                            <label>Nom</label>
+                            <input
+                                type="text"
+                                name="lastname"
+                                value={formUpdateData.lastname}
+                                onChange={handleChangeUpdate}
+                                placeholder="Nom"
+                            />
+                            {errors.lastname && <p className={style.error}>{errors.lastname}</p>}
+                        </div>
+                    </div>
+
+                    <div className={style.inputGroup}>
+                        <label>Adress</label>
+                        <input
+                            type="text"
+                            name="address"
+                            value={formUpdateData.address  || ''}
+                            onChange={handleChangeUpdate}
+                            placeholder="Adress"
+                        />
+                        {errors.address && <p className={style.error}>{errors.address}</p>}
+                    </div>
+
+                    <div className={style.inputGroup} style={{ position: 'relative' }}>
+                        <label>Telephone</label>
+                        <input
+                            type="text"
+                            name="phone"
+                            value={formUpdateData.phone || ''}
+                            onChange={handleChangeUpdate}
+                            placeholder="Numéro de téléphone"
+                        />
+                        
+                        {errors.phone && <p className={style.error}>{errors.phone}</p>}
+                    </div>
+
+
+                    <div className={style.inputGroup}>
+                        <label>Genre</label>
+                        <select name="gender" value={formUpdateData.gender} onChange={handleChange}>
+                            <option value="">Sélectionnez le genre</option>
+                            <option value="male">Masculin</option>
+                            <option value="female">Féminin</option>
+                        </select>
+                        {errors.gender && <p className={style.error}>{errors.gender}</p>}
+                    </div>
+
+                    <button type="submit" className={style.submitButton}>
+                        Mettre à jour
+                    </button>
+                </form>
+            </div>
+        )}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
