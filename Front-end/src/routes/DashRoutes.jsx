@@ -4,7 +4,8 @@ import Login from '../modules/Dash/LoginPage/Login';
 import MainLayout from '../layouts/MainLayoutDash';
 import Home from '../modules/Dash/Home/Home';
 import ProtectedRoute from '../ProtectRoutes/ProtectedRouteDash'; 
-import CreateUsers from '@/modules/Dash/UserManagments/User/CreateUsers';
+import AllUsers from '@/modules/Dash/UserManagments/User/AllUsers';
+import DeletedUsers from '@/modules/Dash/UserManagments/User/DeletedUsers';
 
 const ClientRoutes = () => {
   return (
@@ -26,7 +27,17 @@ const ClientRoutes = () => {
         element={
           <ProtectedRoute>
             <MainLayout>
-             <CreateUsers/>
+             <AllUsers/>
+            </MainLayout>
+          </ProtectedRoute>
+        } 
+      />
+      <Route 
+        path="/Deleted-User" 
+        element={
+          <ProtectedRoute>
+            <MainLayout>
+             <DeletedUsers/>
             </MainLayout>
           </ProtectedRoute>
         } 

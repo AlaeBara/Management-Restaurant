@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { z } from 'zod';
-import style from './CreateUser.module.css';
+import style from './AllUser.module.css';
 import Cookies from 'js-cookie';
 import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2 ,Settings, RotateCcw  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import  UserStatus  from './UserStatus';
+import { useUserContext } from '../../../../context/UserContext';
 
  
 // Define the Zod schema for validation -- create
@@ -33,7 +34,6 @@ const schema = z.object({
   
 
 // Define the Zod schema for validation  -- update
-// Define the update schema with an optional phone field
 const updateSchema = z.object({
     firstname: z.string()
         .min(5, { message: 'Prénom trop court' }),
@@ -43,7 +43,9 @@ const updateSchema = z.object({
   
     address: z.string()
         .min(5, { message: "L'adresse est trop courte." })
-        .optional(), // Optional field
+        .optional()
+        .nullable()
+        .or(z.literal("")),
     
     gender: z.string()
         .nonempty({ message: 'Genre requis.' }),
@@ -60,8 +62,8 @@ const updateSchema = z.object({
 
 
 const CreateUsers = () => {
+    const { user } = useUserContext()
     const [formData, setFormData] = useState({
-        id: null,
         firstname: '',
         lastname: '',
         username: '',
@@ -161,7 +163,6 @@ const CreateUsers = () => {
             },
         });
         setDataUser(response.data.data);
-        console.log(response.data.data)
     };
 
     useEffect(() => {
@@ -225,6 +226,7 @@ const CreateUsers = () => {
         });
         setIsEditing(true);
     };
+
 
     const handleChangeUpdate = ({ target: { name, value } }) => {
         setUpdateData((prevData) => ({ ...prevData, [name]: value }));
@@ -322,30 +324,30 @@ const CreateUsers = () => {
     // for show good formation of last lkogin of user
     const formatDate = (lastLogin) => {
         if (!lastLogin) return "introuvable";
-        
         const date = new Date(lastLogin);
         const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         return `${formattedDate} ${formattedTime}`;
     };
 
+
+
     //for update the status 
-    const [status, setStatus] = useState(UserStatus.ACTIVE);
+    const [status, setStatus] = useState("");
     const [oldstatus, setoldStatus] = useState("");
     const [isChangeStatus, setisChangeStatus] = useState(false);
+    const [statusError, setStatusError] = useState("");
 
     const updateStatus =(status,id)=>{
         formData.id = id
         setisChangeStatus(true)
         setoldStatus(status)
-        
     }
 
     const handleStatus = (event) => {
         const newStatus = event.target.value;
         setStatus(newStatus);
-        console.log(`User status changed to: ${newStatus}`);
-        console.log(`old status: ${oldstatus}`);
+        setStatusError(""); 
     }; 
 
     const closeFormOfupdateStatus =()=>{
@@ -354,7 +356,12 @@ const CreateUsers = () => {
     const updateStatusOfUsers = async (e) => {
         e.preventDefault();
         try {
-            console.log(`Updating user with ID: ${formData.id}, Type: ${typeof formData.id}`);
+            if (!status) {
+                setStatusError("Veuillez sélectionner un statut.");
+                return;
+            }
+            console.log(`in try catch new value ${status}`);
+            console.log(`in try catch old value:  ${oldstatus}`);
             const token = Cookies.get('access_token');
             const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${formData.id}/status`, {status:status} , {
                 headers: {
@@ -368,6 +375,7 @@ const CreateUsers = () => {
             });
             fetchUsers();
             setisChangeStatus(false)
+            setStatus("")
         } catch (error) {
             console.error('Erreur lors de la mise à jour de l’utilisateur:', error.response?.data?.message || error.message);
             toast.error("Échec de la mise à jour du statut de l’utilisateur. Veuillez réessayer.", {
@@ -438,7 +446,9 @@ const CreateUsers = () => {
         {/* Carts Of users */}
         <div className={style.userGrid}>
             {dataUser.length > 0 &&
-                (dataUser.map((user) => (
+                (dataUser
+                .filter(userData => userData.username !== user.username) // Exclude logged-in user
+                .map(user => (
                     <div className={style.userCard} key={user.id}>
 
                         <div className={style.headerCart}>
@@ -493,30 +503,21 @@ const CreateUsers = () => {
 
                             {user.status !== "deleted" && (
                                 <div 
-                                    className={`${style.dropdownItem} ${style.delete}`}
-                                    onClick={() => deleteUser(user.id)}
-                                >
-                                    <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                                </div>
-                            )}
-
-                            {user.status !== "deleted" && (
-                                <div 
-                                    className={`${style.dropdownItem} ${style.delete}`}
+                                    className={`${style.dropdownItem}`}
                                     onClick={() => updateStatus(user.status ,user.id)}
                                 >
                                     <Settings  className="mr-2 h-4 w-4" /> Ghange Status
                                 </div>
                             )}
 
-                            {/* {user.status == "deleted" && (
+                            {user.status !== "deleted" && (
                                 <div 
                                     className={`${style.dropdownItem} ${style.delete}`}
-                                    onClick={() => updateStatus(user.status ,user.id)}
+                                    onClick={() => deleteUser(user.id)}
                                 >
-                                    <RotateCcw   className="mr-2 h-4 w-4" /> Réactiver l’utilisateur
+                                    <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                                 </div>
-                            )} */}
+                            )}
                             
                         </div>
                     </div>
@@ -731,18 +732,21 @@ const CreateUsers = () => {
 
                     </div>
                     {/* Form fields */}
-
                     <div className={style.inputGroup}>
                         <label>Change User Status:</label>
                         <select name="gender"  value={status} onChange={handleStatus}>
-                            {Object.values(UserStatus).filter((statusValue) => statusValue !== oldstatus) // Exclude old status
+                            <option value="" disabled>
+                                Select status
+                            </option>
+                            {Object.values(UserStatus).filter((statusValue) => statusValue !== oldstatus)
                                 .map((statusValue) => (
                                     <option key={statusValue} value={statusValue}>
                                         {statusValue.charAt(0).toUpperCase() + statusValue.slice(1).replace(/-/g, ' ')}
                                     </option>
                                 ))}
-                            </select>
-                        {errors.gender && <p className={style.error}>{errors.gender}</p>}
+                        </select>
+                        {statusError && <p className={style.error}>{statusError}</p>}
+                        
                     </div>
 
                     <button type="submit" className={style.submitButton}>

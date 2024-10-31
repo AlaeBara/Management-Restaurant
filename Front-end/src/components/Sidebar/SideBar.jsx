@@ -76,28 +76,31 @@ const SideBar = () => {
     },
     navMain: [
       {
-        title: "User Management",
+        title: "Gestion des utilisateurs",
         icon: Users,
         isActive: true,
         items: [
           { 
             title:  "Utilisateurs",
             icon: User,
-            url:"/dash/Create-User"
-          },
-          { 
-            title: "Role",
-            icon: Shield,
             subItems: [
-              { title: "All Role", icon: List, url: "#" },
-              { title: "Give Role", icon:  UserPlus, url: "#" },
+              { title: "Tous les utilisateurs", icon: List, url: "/dash/Create-User" },
+              { title: "Utilisateurs supprimés", icon:  UserPlus, url: "/dash/Deleted-User" },
             ]
           },
           { 
-            title: "Permission",
+            title: "Rôles",
+            icon: Shield,
+            subItems: [
+              { title: "Tous les rôles", icon: List, url: "#" },
+              { title: "Attribuer un rôle", icon:  UserPlus, url: "#" },
+            ]
+          },
+          { 
+            title: "Permissions",
             icon: Key,
             subItems: [
-              { title: "All Permission", icon: UserCheck, url: "#" },
+              { title: "Toutes les permissions", icon: UserCheck, url: "#" },
             ]
           },
         ],
