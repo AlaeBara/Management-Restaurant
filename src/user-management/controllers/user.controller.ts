@@ -48,8 +48,9 @@ export class UserController {
     @Query('limit') limit?: number,
     @Query('relations') relations?: string[],
     @Query('sort') sort?: string,
+    @Query('withDeleted') withDeleted?: boolean,
   ): Promise<{ data: User[]; total: number; page: number; limit: number }> {
-    return this.userService.findAll(page, limit, relations, sort);
+    return this.userService.findAll(page, limit, relations, sort, withDeleted);
   }
 
   @Post()
@@ -63,14 +64,17 @@ export class UserController {
       [],
       true,
     );
-    const user = await this.userService.create(createUserDto);
-    return user;
+    await this.userService.create(createUserDto);
   }
 
   @Get(':id')
   @Permissions('view-user')
-  findOne(@Param('id', ParseIntPipe) id: number) {
-    return this.userService.findOrThrow(id);
+  findOne(
+    @Param('id', ParseIntPipe) id: number,
+    @Query('relations') relations?: string[],
+    @Query('withDeleted') withDeleted?: boolean,
+  ) {
+    return this.userService.findOrThrow(id, relations, withDeleted);
   }
 
   @Put(':id')
