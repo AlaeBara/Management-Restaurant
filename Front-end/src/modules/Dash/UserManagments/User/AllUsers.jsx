@@ -11,7 +11,6 @@ import { useUserContext } from '../../../../context/UserContext';
 import Spinner from '../../../../components//Spinner/Spinner'
 
  
-// Define the Zod schema for validation -- create
 const schema = z.object({
     firstname: z.string()
       .min(5, { message: 'Prénom trop court.' }),
@@ -161,14 +160,17 @@ const CreateUsers = () => {
 
     //for get all user
     const [dataUser, setDataUser] = useState([]);
+    const [NumberOfData, setNumberOfData] = useState([]);
+
     const fetchUsers = async () => {
         const token = Cookies.get('access_token');
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?sort=createdAt:desc`, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
         });
         setDataUser(response.data.data);
+        setNumberOfData(response.data.total)
     };
 
     useEffect(() => {
@@ -433,9 +435,6 @@ const CreateUsers = () => {
     <div className={style.container}>
         <ToastContainer />
 
-       
-       
-        
         {/* header of page  */}
         <div className={style.Headerpage}>
             <h1 className={style.title}>gestion des utilisateurs</h1>
@@ -445,15 +444,13 @@ const CreateUsers = () => {
             </button> 
         </div>
 
-        {dataUser.length > 0 && 
-            <div className={style.total}> 
-                <UserRoundCog className="mr-2"  /> Total des utilisateurs : {dataUser.length-1}  
-            </div> 
-        }
 
+        <div className={style.total}> 
+            <UserRoundCog className="mr-2"  /> Total des utilisateurs : {NumberOfData-1}  
+        </div> 
+        
 
         {/* Carts Of users */}
-
         {loading ? (
                     <div className={style.spinner}>
                         <Spinner title="Création de l'utilisateur en cours..."/>
@@ -463,13 +460,13 @@ const CreateUsers = () => {
             (<div className={style.userGrid}>
                 {dataUser.length > 0 &&
                     (dataUser
-                    .filter(userData => userData.username !== user.username) // Exclude logged-in user
+                    .filter(userData => userData.username !== user.username) 
                     .map(user => (
                         <div className={style.userCard} key={user.id}>
 
                             <div className={style.headerCart}>
                                 <img
-                                    src="https://assets-us-01.kc-usercontent.com/5cb25086-82d2-4c89-94f0-8450813a0fd3/0c3fcefb-bc28-4af6-985e-0c3b499ae832/Elon_Musk_Royal_Society.jpg?fm=jpg&auto=format"
+                                    src="https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"
                                     alt="Avatar"
                                     className={style.avatar}
                                 />
@@ -548,6 +545,7 @@ const CreateUsers = () => {
                 <h1>Aucun utilisateur trouvé</h1>
             </div>
         }
+
 
         {/* forum for add user */}
         {isFormVisible && (

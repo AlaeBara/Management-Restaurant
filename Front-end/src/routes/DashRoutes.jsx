@@ -6,6 +6,7 @@ import Home from '../modules/Dash/Home/Home';
 import ProtectedRoute from '../ProtectRoutes/ProtectedRouteDash'; 
 import AllUsers from '@/modules/Dash/UserManagments/User/AllUsers';
 import DeletedUsers from '@/modules/Dash/UserManagments/User/DeletedUsers';
+import Zones from '@/modules/ZoneAndTable/Zones';
 
 const ClientRoutes = () => {
   return (
@@ -42,6 +43,19 @@ const ClientRoutes = () => {
           </ProtectedRoute>
         } 
       />
+
+
+
+      {/* zones and table mock up  */}
+      <Route 
+        path="/zones" 
+        element={
+            <MainLayout>
+              <Zones/>
+            </MainLayout>
+        } 
+      />
+
     </Routes>
   );
 };

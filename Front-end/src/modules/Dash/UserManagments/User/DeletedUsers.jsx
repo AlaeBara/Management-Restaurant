@@ -5,17 +5,17 @@ import Cookies from 'js-cookie';
 import { SearchX , UserRoundCog,  EllipsisVertical , RotateCcw  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import  UserStatus  from './UserStatus';
 
  
 const DeletedUsers = () => {
     
     //for get all user Supprimés
     const [dataUser, setDataUser] = useState([]);
+
     const fetchUsers = async () => {
         try{
             const token = Cookies.get('access_token');
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?withDeleted=${true}`, {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?onlyDeleted=${true}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -51,7 +51,7 @@ const DeletedUsers = () => {
         const token = Cookies.get('access_token');
         try{
             console.log(id)
-            const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${id}/restore`, {
+            const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${id}/status/restore`, {}, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -63,7 +63,7 @@ const DeletedUsers = () => {
             });
         }
         catch(error){
-            console.error(error.response.data.message)
+            console.error(error.response)
             toast.error("Erreur lors de la restauration de l'utilisateur.", {
                 position: "top-right",
                 autoClose: 3000,
@@ -72,8 +72,6 @@ const DeletedUsers = () => {
        
     }
 
-
-   
   return (
     <div className={style.container}>
         <ToastContainer />
@@ -111,13 +109,7 @@ const DeletedUsers = () => {
                         <p className={style.email}>{user.email}</p><br />
 
                         <span className={`${style.status} ${style[user.status]}`}>
-                            {user.status === UserStatus.ACTIVE ? "Actif" :
-                            user.status === UserStatus.INACTIVE ? "Inactif" :
-                            user.status === UserStatus.SUSPENDED ? "Suspendu" :
-                            user.status === UserStatus.BANNED ? "Banni" :
-                            user.status === UserStatus.ARCHIVED ? "Archivé" :
-                            user.status === "email-unverified" ? "Non vérifié":
-                            user.status === "deleted" ? "Supprimé": ""}
+                            {user.status === "deleted" ? "Supprimé": ""}
                         </span>
 
 
