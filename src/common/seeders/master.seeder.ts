@@ -1,6 +1,8 @@
 // src/database/seeder.service.ts
 import { Injectable } from '@nestjs/common';
 import { ClientPermissionSeeder } from 'src/client-management/seeders/client-permission.seeder';
+import { SupplierPermissionsSeeder } from 'src/supplier-management/seeders/supplier-permissions.seeder';
+import { UnitPermissionsSeeder } from 'src/unit-management/seeders/unit-permissions.seeder';
 import { AccessRolePermissionSeeder } from 'src/user-management/seeders/access-role-permission.seeder';
 import { PermissionPermissionsSeeder } from 'src/user-management/seeders/permission-permissions.seeder';
 import { RolePermissionSeeder } from 'src/user-management/seeders/role-permission.seeder';
@@ -20,7 +22,9 @@ export class MasterSeeder {
         private readonly rolesSeeder: RolesSeeder,
         private readonly tablePermissionSeeder: TablePermissionSeeder,
         private readonly zonePermissionSeeder: ZonePermissionSeeder,
-        private readonly clientPermissionSeeder: ClientPermissionSeeder
+        private readonly clientPermissionSeeder: ClientPermissionSeeder,
+        private readonly unitPermissionsSeeder: UnitPermissionsSeeder,
+        private readonly supplierPermissionsSeeder: SupplierPermissionsSeeder
     ) { }
 
     async seedAll() {
@@ -32,6 +36,8 @@ export class MasterSeeder {
         await this.tablePermissionSeeder.seed();
         await this.zonePermissionSeeder.seed();
         await this.clientPermissionSeeder.seed();
+        await this.unitPermissionsSeeder.seed();
+        await this.supplierPermissionsSeeder.seed();
         console.log('All seeders executed');
     }
 }

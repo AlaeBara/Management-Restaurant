@@ -22,6 +22,15 @@ import { CreateUnitDto } from '../dto/create-unit.dto';
 export class UnitController {
   constructor(private unitService: UnitService) {}
 
+  /* private unitPermissions = [
+    { name: 'view-units', label: 'Voir toutes les unités', resource: 'unit' },
+    { name: 'create-unit', label: 'Créer une nouvelle unité', resource: 'unit' },
+    { name: 'view-unit', label: 'Voir une unité spécifique', resource: 'unit' },
+    { name: 'update-unit', label: 'Mettre à jour une unité existante', resource: 'unit' },
+    { name: 'delete-unit', label: 'Supprimer une unité', resource: 'unit' },
+    { name: 'restore-unit', label: 'Restaurer une unité supprimée', resource: 'unit' }
+  ]; */
+
   @Get()
   @Permissions('view-units')
   async findAll(

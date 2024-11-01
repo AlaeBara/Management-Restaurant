@@ -11,6 +11,16 @@ import { UpdateSupplierDto } from '../dto/update-supplier.dto';
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 
+  /* private supplierPermissions = [
+    { name: 'view-suppliers', label: 'Voir tous les fournisseurs', resource: 'supplier' },
+    { name: 'create-supplier', label: 'Créer un nouveau fournisseur', resource: 'supplier' },
+    { name: 'view-supplier', label: 'Voir un fournisseur spécifique', resource: 'supplier' },
+    { name: 'update-supplier', label: 'Mettre à jour un fournisseur existant', resource: 'supplier' },
+    { name: 'delete-supplier', label: 'Supprimer un fournisseur', resource: 'supplier' },
+    { name: 'restore-supplier', label: 'Restaurer un fournisseur supprimé', resource: 'supplier' }
+  ]; */
+
+
   @Get()
   @Permissions('view-suppliers')
   @ApiOperation({ summary: 'Get all suppliers' })
