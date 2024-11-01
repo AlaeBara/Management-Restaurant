@@ -101,9 +101,7 @@ export class AuthenticationService {
     }
   }
 
-  private async findUserByEmailOrUsername(
-    emailOrUsername: string,
-  ): Promise<any> {
+  async findUserByEmailOrUsername(emailOrUsername: string): Promise<any> {
     const user = await this.userRepository.findOne({
       where: [{ email: emailOrUsername }, { username: emailOrUsername }],
       select: {

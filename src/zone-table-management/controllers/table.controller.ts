@@ -57,6 +57,12 @@ export class TableController {
     );
   }
 
+  @Get('group-by-zone')
+  @Permissions('view-tables')
+  async findAllGroupByZone(){
+    return this.tableService.findAllGroupByZone();
+  }
+
   @Get(':id')
   @Permissions('view-table')
   async findOne(

@@ -9,7 +9,8 @@ import {
   Patch,
   Post,
   Put,
-  Query
+  Query,
+  Req
 } from '@nestjs/common';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entities/permission.entity';
@@ -56,6 +57,12 @@ export class PermissionController {
       onlyDeleted,
       select,
     );
+  }
+
+  @Get('group-by-resource')
+  @Permissions('view-permissions')
+  async findAllPermissionsGroupByResource(@Req() req: Request) {
+    return this.permissionService.findAndGroupPermissionsWithUserAccess(req);
   }
 
   @Post()

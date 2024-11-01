@@ -82,7 +82,7 @@ export class TableService extends GenericService<Table> {
 
     return this.tableRepository.update(id, updateData);
   }
-/* 
+  /* 
   async getTableByUUID(
     id: string,
     relations?: string[],
@@ -123,4 +123,32 @@ export class TableService extends GenericService<Table> {
       }
       return table;
   } */
+
+  async findAllGroupByZone() {
+    const zoneSummary = await this.tableRepository
+      .createQueryBuilder('table')
+      .leftJoinAndSelect('table.zone', 'zone')
+      .leftJoinAndSelect('zone.parentZone', 'parentZone')
+      .select('zone.id', 'zoneId')
+      .addSelect('zone.zoneLabel', 'zoneLabel')
+      .addSelect('parentZone.zoneLabel', 'parentZoneLabel')
+      .addSelect('COUNT(table.id)', 'tableCount')
+      .groupBy('zone.id')
+      .addGroupBy('zone.zoneLabel')
+      .addGroupBy('parentZone.zoneLabel') 
+      .getRawMany();
+
+    // Second query to get all tables with their zone information
+    const tablesWithZones = await this.tableRepository.find({
+      relations: ['zone'],
+      where: { isActive: true },
+    });
+
+    // Combine the results
+    return zoneSummary.map((zone) => ({
+      ...zone,
+      tableCount: parseInt(zone.tableCount),
+      tables: tablesWithZones.filter((table) => table.zone?.id === zone.zoneId),
+    }));
+  }
 }

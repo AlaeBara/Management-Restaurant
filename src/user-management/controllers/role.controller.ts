@@ -132,6 +132,7 @@ export class RoleController {
   }
 
   @Post(':id/permissions/:permissionId')
+  @Roles('superadmin','admin')
   @Permissions('grant-role-permission')
   async grantPermissionToRole(
     @Param('id', ParseIntPipe) id: number,
@@ -140,5 +141,24 @@ export class RoleController {
     const role = await this.roleService.findOrThrow(id, ['permissions']);
     const permission = await this.PermissionService.findOrThrow(permissionId);
     return await this.roleService.grantPermissionToRole(role, permission);
+  }
+
+  @Delete(':id/permissions/:permissionId')
+  @Roles('superadmin','admin')
+  @Permissions('revoke-role-permission')
+  async revokePermissionFromRole(
+    @Param('id', ParseIntPipe) id: number,
+    @Param('permissionId', ParseIntPipe) permissionId: number,
+  ): Promise<any> {
+    const role = await this.roleService.findOrThrow(id, ['permissions']);
+    const permission = await this.PermissionService.findOrThrow(permissionId);
+    return await this.roleService.revokePermissionFromRole(role, permission);
+  }
+
+  @Get(':id/permissions/group-by-resource')
+  @Permissions('view-role-permissions')
+  async findAndGroupPermissionsWithRoleAccess(@Param('id', ParseIntPipe) id: number): Promise<any> {
+    const role = await this.roleService.findOrThrow(id, ['permissions']);
+    return this.roleService.findAndGroupPermissionsWithRoleAccess(role);
   }
 }

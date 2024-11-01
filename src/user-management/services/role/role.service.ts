@@ -44,6 +44,45 @@ export class RoleService extends GenericService<Role> {
     await this.roleRepository.save(role);
   }
 
+  async revokePermissionFromRole(role: Role, permission: Permission) {
+    role.permissions = role.permissions.filter(p => p.id !== permission.id);
+    await this.roleRepository.save(role);
+  }
+
+  async findAndGroupPermissionsWithRoleAccess(role: Role) {
+    const rolePermissionIds = role.permissions.map((p) => p.id);
+    console.log(rolePermissionIds);
+
+    return this.permissionRepository
+      .createQueryBuilder('permission')
+      .select('permission.resource', 'resource')
+      .addSelect('permission.id', 'id')
+      .addSelect('permission.name', 'name')
+      .addSelect('permission.label', 'label')
+      .orderBy('permission.resource', 'ASC')
+      .orderBy('permission.name', 'ASC')
+      .getRawMany()
+      .then((permissions) => {
+        // Group permissions by resource
+        return permissions.reduce((groups, permission) => {
+          const resource = permission.resource;
+          if (!groups[resource]) {
+            groups[resource] = [];
+          }
+          groups[resource].push({
+            id: permission.id,
+            name: permission.name,
+            label: permission.label,
+            currentUserHasPermission:
+              role.name === 'superadmin'
+                ? true
+                : rolePermissionIds.includes(permission.id),
+          });
+          return groups;
+        }, {});
+      });
+  }
+
   async toLowerCase(role: CreateRoleDto) {
     role.name = role.name.toLowerCase();
   }
