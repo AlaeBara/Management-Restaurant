@@ -33,7 +33,7 @@ export class TableService extends GenericService<Table> {
     await this.throwIfFoundByAnyAttribute({ tableCode: tableDto.tableCode });
     let tableData: any;
     if (tableDto.zoneUUID) {
-      const zone = await this.zoneService.findOneByUUID(
+      const zone = await this.zoneService.findOne(
         tableDto.zoneUUID,
         [],
         false,
@@ -55,7 +55,7 @@ export class TableService extends GenericService<Table> {
   }
 
   async updateTable(id: string, tableDto: UpdateTableDto) {
-    const tableContent = await this.findOneByUUID(id, ['zone']);
+    const tableContent = await this.findOne(id, ['zone']);
     if (!tableContent) {
       throw new NotFoundException('Table not found');
     }
@@ -82,7 +82,7 @@ export class TableService extends GenericService<Table> {
 
     return this.tableRepository.update(id, updateData);
   }
-
+/* 
   async getTableByUUID(
     id: string,
     relations?: string[],
@@ -99,7 +99,7 @@ export class TableService extends GenericService<Table> {
       throw new NotFoundException('Table not found');
     }
     return table;
-  }
+  } */
 
   /* async customGet(id: string) {
     const table = await this.tableRepository

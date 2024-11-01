@@ -68,7 +68,7 @@ export class User  {
   @UpdateDateColumn({select: false})
   updatedAt: Date;
 
-  @DeleteDateColumn({select: false})
+  @DeleteDateColumn()
   deletedAt: Date;
 
   @ManyToMany(() => Role)

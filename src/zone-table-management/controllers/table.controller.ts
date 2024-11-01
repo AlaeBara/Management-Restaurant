@@ -44,8 +44,17 @@ export class TableController {
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
   ): Promise<{ data: Table[]; total: number; page: number; limit: number }> {
-    return this.tableService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
+    return this.tableService.findAll(
+      page,
+      limit,
+      relations,
+      sort,
+      withDeleted,
+      onlyDeleted,
+      select,
+    );
   }
 
   @Get(':id')
@@ -54,8 +63,17 @@ export class TableController {
     @Param('id', ParseUUIDPipe) id: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('relations') relations?: string[],
+    @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
+    @Query('findOrThrow') findOrThrow?: boolean,
   ) {
-    return this.tableService.getTableByUUID(id, relations, withDeleted);
+    return this.tableService.findOneByIdWithOptions(id, {
+      relations,
+      select,
+      withDeleted,
+      onlyDeleted,
+      findOrThrow,
+    });
   }
 
   @Post()
@@ -76,8 +94,8 @@ export class TableController {
   @Delete(':id')
   @Permissions('delete-table')
   async delete(@Param('id', ParseUUIDPipe) id: string) {
-    const table = await this.tableService.findOrThrowByUUID(id);
-    return this.tableService.deleteByEntity(table);
+    await this.tableService.findOrThrowByUUID(id);
+    return this.tableService.softDelete(id);
   }
 
   @Patch(':id/restore')
@@ -90,7 +108,7 @@ export class TableController {
   @Get('qrcode/:id')
   @Public()
   async generateQrCode(@Param('id') id: string) {
-    const table = await this.tableService.findOneByUUID(id);
+    const table = await this.tableService.findOne(id);
     return `<img src="${table.qrcode}" alt="QR Code" />`;
   }
 }

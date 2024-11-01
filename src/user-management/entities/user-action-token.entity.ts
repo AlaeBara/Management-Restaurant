@@ -41,6 +41,6 @@ export class UserActionToken {
   @UpdateDateColumn({ select: false })
   updatedAt: Date;
 
-  @DeleteDateColumn({ select: false })
+  @DeleteDateColumn()
   deletedAt: Date;
 }

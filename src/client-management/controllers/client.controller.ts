@@ -19,6 +19,7 @@ import {
 import { UpdateClientDto } from '../dto/update-client.dto';
 import { LoginClientDto } from '../dto/login-client.dto';
 import { Client } from '../entities/client.entity';
+import { statusClient } from '../enums/client.enum';
 
 @Controller('api/clients')
 @ApiTags('Client')
@@ -43,8 +44,17 @@ export class ClientController {
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
   ): Promise<{ data: Client[]; total: number; page: number; limit: number }> {
-    return this.clientService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
+    return this.clientService.findAll(
+      page,
+      limit,
+      relations,
+      sort,
+      withDeleted,
+      onlyDeleted,
+      select,
+    );
   }
 
   @Post('login')
@@ -81,20 +91,18 @@ export class ClientController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() clientdto: UpdateClientDto,
   ) {
-    return this.clientService.updateByUUID(id, clientdto);
+    return this.clientService.update(id, clientdto);
   }
 
   @Delete(':id')
   @Permissions('delete-client')
   async deleteClient(@Param('id', ParseUUIDPipe) id: string) {
-    const client = await this.clientService.findOrThrowByUUID(id);
-    return this.clientService.deleteByEntity(client);
+    await this.clientService.deleteClient(id);
   }
 
   @Patch(':id/restore')
   @Permissions('restore-client')
   async restoreClient(@Param('id', ParseUUIDPipe) id: string) {
-    await this.clientService.findOrThrowByUUID(id);
-    return this.clientService.restoreByUUID(id, true, ['username', 'email']);
+    return this.clientService.restoreClient(id);
   }
 }

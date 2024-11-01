@@ -43,7 +43,7 @@ export class ZoneService extends GenericService<Zone> {
 
   async updateZoneByUUID(id: string, zoneDto: UpdateZoneDto) {
     // Validate existing zone
-    const existingZone = await this.findOneByUUID(id);
+    const existingZone = await this.findOne(id);
     if (!existingZone) {
       throw new BadRequestException('Zone not found');
     }
@@ -89,7 +89,7 @@ export class ZoneService extends GenericService<Zone> {
     return false;
   } */
 
-  async deleteByUUID(id: string) {
+  async deleteZoneByUUID(id: string) {
     // Use COUNT instead of fetching full records
     const [zoneCount, tableCount] = await Promise.all([
       this.countByAttribute({ parentZone: { id } }),
@@ -119,14 +119,14 @@ export class ZoneService extends GenericService<Zone> {
     id: string,
     uuid: string | null,
   ): Promise<Zone | null> {
-    const zoneExists = await this.findOneByUUID(id);
+    const zoneExists = await this.findOne(id);
     if (!zoneExists) {
       throw new BadRequestException('Zone not found');
     }
 
     if (!uuid) return null;
 
-    const parentZone = await this.findOneByUUID(uuid);
+    const parentZone = await this.findOne(uuid);
     if (!parentZone) {
       throw new BadRequestException('Parent zone not found');
     }

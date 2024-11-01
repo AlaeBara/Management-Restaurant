@@ -40,13 +40,22 @@ export class PermissionController {
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
   ): Promise<{
     data: Permission[];
     total: number;
     page: number;
     limit: number;
   }> {
-    return this.permissionService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
+    return this.permissionService.findAll(
+      page,
+      limit,
+      relations,
+      sort,
+      withDeleted,
+      onlyDeleted,
+      select,
+    );
   }
 
   @Post()
@@ -85,7 +94,7 @@ export class PermissionController {
         'Cannot delete permission as it is assigned to roles',
       );
     }
-    this.permissionService.delete(id);
+    this.permissionService.softDelete(id);
   }
 
   @Patch(':id/restore')

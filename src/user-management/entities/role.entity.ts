@@ -29,11 +29,9 @@ export class Role {
   createdAt: Date;
 
   @UpdateDateColumn({ select: false })
-  @Exclude()
   updatedAt: Date;
 
-  @DeleteDateColumn({ select: false })
-  @Exclude()
+  @DeleteDateColumn()
   deletedAt: Date;
 
   @ManyToMany(() => Permission)

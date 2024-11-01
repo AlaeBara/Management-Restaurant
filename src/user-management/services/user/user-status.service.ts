@@ -48,11 +48,12 @@ export class UserStatusService extends GenericService<User> {
       throw new BadRequestException('Super admin cannot be deleted');
     }
     user.status = UserStatus.DELETED;
+ 
     if (!this.isBlocked(user)) {
       user.isBlocked = true;
     }
-    await this.userRepository.softDelete(user.id);
-    return this.userRepository.save(user);
+    await this.userRepository.save(user);
+    return await this.userRepository.softDelete(user.id);
   }
 
   async markAsRestored(id: number) {

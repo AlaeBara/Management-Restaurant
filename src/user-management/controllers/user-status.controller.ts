@@ -51,7 +51,7 @@ export default class UserStatusController {
     @Param('id', ParseIntPipe) id: number,
     @Req() request: Request,
   ) {
-    const user = await this.userStatusService.findOrThrow(id, ['roles']);
+    const user = await this.userStatusService.findOneByIdWithOptions(id, {relations:['roles']});
     await this.userStatusService.markAsDeleted(user, request);
     return { message: 'user deleted successfully', statusCode: 200 };
   }
@@ -59,7 +59,8 @@ export default class UserStatusController {
   @Patch(':id/status/restore')
   @Permissions('update-user-status')
   async markAsRestored(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userStatusService.findOrThrow(id, [], true);
+    const user = await this.userStatusService.findOneByIdWithOptions(id,{withDeleted:true});
+    console.log(user);
     if (!user.deletedAt) {
       throw new ConflictException('User is not deleted');
     }

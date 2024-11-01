@@ -29,6 +29,6 @@ export class Permission {
   @UpdateDateColumn({ select: false })
   updatedAt: Date;
 
-  @DeleteDateColumn({ select: false })
+  @DeleteDateColumn()
   deletedAt: Date;
 }

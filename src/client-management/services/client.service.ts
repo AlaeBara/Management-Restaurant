@@ -14,6 +14,7 @@ import {
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { LoginClientDto } from '../dto/login-client.dto';
+import { statusClient } from '../enums/client.enum';
 
 @Injectable()
 export class ClientService extends GenericService<Client> {
@@ -35,7 +36,9 @@ export class ClientService extends GenericService<Client> {
     );
 
     if (!client) {
-      throw new UnauthorizedException('Account not found. Please sign up to create an account.');
+      throw new UnauthorizedException(
+        'Account not found. Please sign up to create an account.',
+      );
     }
 
     const isPasswordValid = await verify(
@@ -53,7 +56,9 @@ export class ClientService extends GenericService<Client> {
     return { token };
   }
 
-  async registerAndSignin(clientdto: createClientDto): Promise<{ token: string }> {
+  async registerAndSignin(
+    clientdto: createClientDto,
+  ): Promise<{ token: string }> {
     const queryRunner = this.datasource.createQueryRunner();
 
     try {
@@ -151,19 +156,19 @@ export class ClientService extends GenericService<Client> {
 
   async createClientByAccess(clientdto: createClientDto) {
     await this.throwIfFoundByAnyAttribute({
-        username: clientdto.username,
-        email: clientdto.email,
-      });
-      clientdto.password = await hash(clientdto.password);
-      const role = await this.roleRepository.findOrThrowByAttribute({
-        name: 'client',
-      });
-      const user = this.clientRepository.create({
-        ...clientdto,
-        role,
-      });
-  
-      await this.clientRepository.save(user);
+      username: clientdto.username,
+      email: clientdto.email,
+    });
+    clientdto.password = await hash(clientdto.password);
+    const role = await this.roleRepository.findOrThrowByAttribute({
+      name: 'client',
+    });
+    const user = this.clientRepository.create({
+      ...clientdto,
+      role,
+    });
+
+    await this.clientRepository.save(user);
   }
 
   async generateToken(client: Client) {
@@ -181,5 +186,19 @@ export class ClientService extends GenericService<Client> {
   async updateLastLogin(client: Client, manager: EntityManager) {
     client.lastLogin = new Date();
     await manager.save(client);
+  }
+
+  async deleteClient(id: string) {
+    const client = await this.findOrThrowByUUID(id);
+    client.status = statusClient.DELETED;
+    await this.clientRepository.save(client);
+    await this.softDelete(id);
+  }
+
+  async restoreClient(id: string) {
+    const client = await this.findOrThrowByUUID(id, undefined, true);
+    client.status = statusClient.ACTIVE;
+    await this.clientRepository.save(client);
+    await this.restoreByUUID(id, true, ['username', 'email']);
   }
 }

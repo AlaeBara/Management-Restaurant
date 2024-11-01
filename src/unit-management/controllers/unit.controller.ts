@@ -31,8 +31,17 @@ export class UnitController {
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
   ): Promise<{ data: Unit[]; total: number; page: number; limit: number }> {
-    return this.unitService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
+    return this.unitService.findAll(
+      page,
+      limit,
+      relations,
+      sort,
+      withDeleted,
+      onlyDeleted,
+      select,
+    );
   }
 
   @Post()
@@ -45,10 +54,13 @@ export class UnitController {
   @Permissions('view-unit')
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
-    @Query('relations') relations?: string[],
     @Query('withDeleted') withDeleted?: boolean,
+    @Query('findOrThrow') findOrThrow?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
+
   ) {
-    return this.unitService.findOrThrowByUUID(id, relations, withDeleted);
+    return this.unitService.findOneByIdWithOptions(id,{select,withDeleted,onlyDeleted,findOrThrow:true});
   }
 
   @Put(':id')
@@ -57,20 +69,19 @@ export class UnitController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() unitdto: UpdateUnitDto,
   ) {
-    return this.unitService.updateByUUID(id, unitdto);
+    return this.unitService.update(id, unitdto);
   }
 
   @Delete(':id')
   @Permissions('delete-unit')
   async deleteUnits(@Param('id', ParseUUIDPipe) id: string) {
-    const unit = await this.unitService.findOrThrowByUUID(id);
-    return this.unitService.deleteByEntity(unit);
+    await this.unitService.findOneByIdWithOptions(id,{findOrThrow:true});
+    return this.unitService.softDelete(id);
   }
 
   @Patch(':id/restore')
   @Permissions('restore-unit')
   async restoreUnits(@Param('id', ParseUUIDPipe) id: string) {
-    await this.unitService.findOrThrowByUUID(id);
     return this.unitService.restoreByUUID(id);
   }
 }

@@ -51,8 +51,17 @@ export class RoleController {
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
   ): Promise<{ data: Role[]; total: number; page: number; limit: number }> {
-    return this.roleService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
+    return this.roleService.findAll(
+      page,
+      limit,
+      relations,
+      sort,
+      withDeleted,
+      onlyDeleted,
+      select,
+    );
   }
 
   @Post()
@@ -100,7 +109,7 @@ export class RoleController {
       throw new UnauthorizedException('Role superadmin cannot be deleted');
     }
     await this.roleService.validateRoleIsNotInUse(id);
-    return this.roleService.delete(id);
+    return this.roleService.softDelete(id);
   }
 
   @Patch(':id/restore')

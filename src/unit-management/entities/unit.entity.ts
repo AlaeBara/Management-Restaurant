@@ -24,6 +24,6 @@ export class Unit {
   @UpdateDateColumn({ select: false })
   updatedAt: Date;
 
-  @DeleteDateColumn({ select: false })
+  @DeleteDateColumn()
   deletedAt: Date;
 }

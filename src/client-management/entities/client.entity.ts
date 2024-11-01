@@ -68,7 +68,7 @@ export class Client {
   @UpdateDateColumn({ select: false })
   updatedAt: Date;
 
-  @DeleteDateColumn({ select: false })
+  @DeleteDateColumn()
   deletedAt: Date;
 
   @ManyToOne(() => Role, (role) => role.id)
@@ -76,5 +76,6 @@ export class Client {
   role: Role;
 
   @RelationId((client: Client) => client.role)
+  @Column({ name: 'role_id', nullable: true })
   roleId: number;
 }
