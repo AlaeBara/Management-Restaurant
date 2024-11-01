@@ -49,8 +49,9 @@ export class UserController {
     @Query('relations') relations?: string[],
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
   ): Promise<{ data: User[]; total: number; page: number; limit: number }> {
-    return this.userService.findAll(page, limit, relations, sort, withDeleted);
+    return this.userService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
   }
 
   @Post()

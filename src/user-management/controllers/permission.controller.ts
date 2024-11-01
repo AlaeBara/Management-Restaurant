@@ -33,13 +33,20 @@ export class PermissionController {
 
   @Get()
   @Permissions('view-permissions')
-  async findAll(): Promise<{
+  async findAll(
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('relations') relations?: string[],
+    @Query('sort') sort?: string,
+    @Query('withDeleted') withDeleted?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
+  ): Promise<{
     data: Permission[];
     total: number;
     page: number;
     limit: number;
   }> {
-    return this.permissionService.findAll();
+    return this.permissionService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
   }
 
   @Post()

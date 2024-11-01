@@ -49,8 +49,10 @@ export class RoleController {
     @Query('limit') limit?: number,
     @Query('relations') relations?: string[],
     @Query('sort') sort?: string,
+    @Query('withDeleted') withDeleted?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
   ): Promise<{ data: Role[]; total: number; page: number; limit: number }> {
-    return this.roleService.findAll(page, limit, relations, sort);
+    return this.roleService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
   }
 
   @Post()

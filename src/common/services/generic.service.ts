@@ -22,10 +22,10 @@ export class GenericService<T> {
 
   async refactorRelations(relations: string[]) {
     return typeof relations === 'string'
-        ? (relations as string).split(',')
-        : Array.isArray(relations)
-          ? relations
-          : [];
+      ? (relations as string).split(',')
+      : Array.isArray(relations)
+        ? relations
+        : [];
   }
 
   async findAll(
@@ -34,6 +34,7 @@ export class GenericService<T> {
     relations?: string[],
     sort?: string,
     withDeleted: boolean = false,
+    onlyDeleted: boolean = false,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const query = this.repository.createQueryBuilder(this.name);
 
@@ -69,8 +70,12 @@ export class GenericService<T> {
         withDeleted: true,
       });
 
-    if (!withDeleted) {
+    if (!withDeleted && !onlyDeleted) {
       query.andWhere(`${this.name}.deletedAt IS NULL`);
+    }
+
+    if (onlyDeleted) {
+      query.andWhere(`${this.name}.deletedAt IS NOT NULL`);
     }
 
     const [data, total] = await query.getManyAndCount();
@@ -176,7 +181,7 @@ export class GenericService<T> {
   async deleteByEntity(entity: Partial<T>) {
     return this.repository.softDelete(entity as any);
   }
-  
+
   async restore(id: number): Promise<UpdateResult> {
     return this.repository.restore(id);
   }
@@ -257,7 +262,7 @@ export class GenericService<T> {
     withDeleted: boolean = false,
   ): Promise<T> {
     const relationArray = await this.refactorRelations(relations);
-      
+
     const entity = await this.repository.findOne({
       where: { id } as any,
       relations: relationArray,

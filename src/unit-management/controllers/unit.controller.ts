@@ -30,8 +30,9 @@ export class UnitController {
     @Query('relations') relations?: string[],
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
   ): Promise<{ data: Unit[]; total: number; page: number; limit: number }> {
-    return this.unitService.findAll(page, limit, relations, sort, withDeleted);
+    return this.unitService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
   }
 
   @Post()

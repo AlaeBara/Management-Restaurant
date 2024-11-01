@@ -43,8 +43,9 @@ export class TableController {
     @Query('relations') relations?: string[],
     @Query('sort') sort?: string,
     @Query('withDeleted') withDeleted?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
   ): Promise<{ data: Table[]; total: number; page: number; limit: number }> {
-    return this.tableService.findAll(page, limit, relations, sort, withDeleted);
+    return this.tableService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted);
   }
 
   @Get(':id')
