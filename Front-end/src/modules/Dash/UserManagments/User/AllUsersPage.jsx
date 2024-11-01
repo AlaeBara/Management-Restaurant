@@ -1,69 +1,26 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-import { z } from 'zod';
 import style from './AllUser.module.css';
 import Cookies from 'js-cookie';
-import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2 ,Settings, RotateCcw  } from 'lucide-react';
+import {SearchX  ,UserRoundCog, Plus } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import  UserStatus  from './Components/UserStatus';
 import { useUserContext } from '../../../../context/UserContext';
+
+//validation Shema
+import { UserSchema } from './schemas/UserSchema';
+import { UpdateSchema } from './schemas/UpdateSchema';
+//components
 import Spinner from '../../../../components//Spinner/Spinner'
+import UpdateUserForm from './components/UpdateUserForm'; 
+import UpdateUserStatusForm from './components/UpdateUserStatusForm';
 import UserCarts from './Components/UserCarts'
+import AddUserForm  from './Components/AddUserForm'
 
  
-const schema = z.object({
-    firstname: z.string()
-      .min(5, { message: 'Prénom trop court.' }),
-  
-    lastname: z.string()
-      .min(5, { message: 'Nom trop court.' }),
-  
-    username: z.string()
-      .min(5, { message: 'Nom d’utilisateur trop court.' }),
-  
-    password: z.string()
-      .min(5, { message: 'Mot de passe trop court.' }),
-  
-    email: z.string()
-      .email({ message: 'E-mail invalide.' }),
-  
-    gender: z.string()
-      .nonempty({ message: 'Genre requis.' }),
-  });
-  
-  
-
-// Define the Zod schema for validation  -- update
-const updateSchema = z.object({
-    firstname: z.string()
-        .min(5, { message: 'Prénom trop court' }),
-  
-    lastname: z.string()
-        .min(5, { message: 'Nom trop court.' }),
-  
-    address: z.string()
-        .min(5, { message: "L'adresse est trop courte." })
-        .optional()
-        .nullable()
-        .or(z.literal("")),
-    
-    gender: z.string()
-        .nonempty({ message: 'Genre requis.' }),
-    
-    // Add phone as an optional field that can be null
-    phone: z.string()
-        .nullable() // Allows phone to be null
-        .optional() // Allows phone to be omitted
-        .refine(value => value === null || /^[+]?[0-9\s]*$/.test(value), {
-            message: 'Numéro de téléphone invalide.',
-        }),
-});
-
-
-
 const CreateUsers = () => {
     const { user } = useUserContext()
+    
     const [formData, setFormData] = useState({
         firstname: '',
         lastname: '',
@@ -82,11 +39,12 @@ const CreateUsers = () => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
+
     //add user
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-            schema.parse(formData);
+            UserSchema.parse(formData);
             const token = Cookies.get('access_token');
 
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
@@ -193,24 +151,6 @@ const CreateUsers = () => {
     }, []);
 
 
-    const handleAction = (action, user) => {
-        switch (action) {
-            case 'details':
-                console.log('View details for user:', user);
-                break;
-            case 'update':
-                console.log('Update user:', user);
-                break;
-            case 'delete':
-                console.log('Delete user:', user);
-                break;
-            default:
-                break;
-        }
-        setActiveMenu(null);
-    };
-
-
     //for the update 
     const [isEditing, setIsEditing] = useState(false);
     const [originalData, setOriginalData] = useState({});
@@ -258,7 +198,7 @@ const CreateUsers = () => {
         e.preventDefault();
         try {
             // Validate the form data against the schema
-            updateSchema.parse(formUpdateData);
+            UpdateSchema .parse(formUpdateData);
     
             // Create an object to hold the data that will be updated
             const updatedData = {};
@@ -340,7 +280,6 @@ const CreateUsers = () => {
     };
 
 
-
     //for update the status 
     const [status, setStatus] = useState("");
     const [oldstatus, setoldStatus] = useState("");
@@ -369,8 +308,6 @@ const CreateUsers = () => {
                 setStatusError("Veuillez sélectionner un statut.");
                 return;
             }
-            console.log(`in try catch new value ${status}`);
-            console.log(`in try catch old value:  ${oldstatus}`);
             const token = Cookies.get('access_token');
             const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${formData.id}/status`, {status:status} , {
                 headers: {
@@ -486,226 +423,38 @@ const CreateUsers = () => {
 
         {/* forum for add user */}
         {isFormVisible && (
-            <div className={style.modalOverlay}>
-
-                <form className={style.form} onSubmit={handleSubmit}>
-
-                    <div className={style.headerForm}>
-
-                        <h1>Créer nouveau utilisateur</h1>
-                        <button onClick={() => CloseForm()} className={style.closeFormButton}>
-                            <X />
-                        </button>
-
-                    </div>
-                    {/* Form fields */}
-                    <div className={style.nameContainer}>
-                        <div className={style.inputGroup}>
-                            <label>Prénom</label>
-                            <input
-                                type="text"
-                                name="firstname"
-                                value={formData.firstname}
-                                onChange={handleChange}
-                                placeholder="Prénom"
-                            />
-                            {errors.firstname && <p className={style.error}>{errors.firstname}</p>}
-                        </div>
-                            <div className={style.inputGroup}>
-                            <label>Nom</label>
-                            <input
-                                type="text"
-                                name="lastname"
-                                value={formData.lastname}
-                                onChange={handleChange}
-                                placeholder="Nom"
-                            />
-                            {errors.lastname && <p className={style.error}>{errors.lastname}</p>}
-                        </div>
-                    </div>
-
-                    <div className={style.inputGroup}>
-                        <label>Nom d'utilisateur</label>
-                        <input
-                            type="text"
-                            name="username"
-                            value={formData.username}
-                            onChange={handleChange}
-                            placeholder="Nom d'utilisateur"
-                        />
-                        {errors.username && <p className={style.error}>{errors.username}</p>}
-                    </div>
-
-                    <div className={style.inputGroup} style={{ position: 'relative' }}>
-                        <label>Mot de passe</label>
-                        <input
-                            type={showPassword ? 'text' : 'password'}
-                            name="password"
-                            value={formData.password}
-                            onChange={handleChange}
-                            placeholder="Mot de passe"
-                        />
-                        <span
-                            onClick={() => setShowPassword((prev) => !prev)}
-                            style={{ position: 'absolute', right: 10, top: 43, cursor: 'pointer' }}
-                        >
-                            {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                        </span>
-                        {errors.password && <p className={style.error}>{errors.password}</p>}
-                    </div>
-
-                    <div className={style.inputGroup}>
-                        <label>Email</label>
-                        <input
-                            type="email"
-                            name="email"
-                            value={formData.email}
-                            onChange={handleChange}
-                            placeholder="Email"
-                        />
-                        {errors.email && <p className={style.error}>{errors.email}</p>}
-                    </div>
-
-                    <div className={style.inputGroup}>
-                        <label>Genre</label>
-                        <select name="gender" value={formData.gender} onChange={handleChange}>
-                            <option value="">Sélectionnez le genre</option>
-                            <option value="male">Masculin</option>
-                            <option value="female">Féminin</option>
-                        </select>
-                        {errors.gender && <p className={style.error}>{errors.gender}</p>}
-                    </div>
-
-                    <button type="submit" className={style.submitButton}>
-                        Ajouter
-                    </button>
-                </form>
-            </div>
+            <AddUserForm
+                formData={formData}
+                handleChange={handleChange}
+                handleSubmit={handleSubmit}
+                setShowPassword={setShowPassword}
+                showPassword={showPassword}
+                errors={errors}
+                CloseForm={CloseForm}
+            />
         )}
-
-
 
         {/* forum for update user */}
         {isEditing && (
-            <div className={style.modalOverlay}>
-
-                <form className={style.form} onSubmit={updateSubmit}>
-
-                    <div className={style.headerForm}>
-
-                        <h1>Modifier utilisateur</h1>
-                        <button onClick={() => CloseFormOfUpdate()} className={style.closeFormButton}>
-                            <X />
-                        </button>
-
-                    </div>
-                    {/* Form fields */}
-                    <div className={style.nameContainer}>
-                        <div className={style.inputGroup}>
-                            <label>Prénom</label>
-                            <input
-                                type="text"
-                                name="firstname"
-                                value={formUpdateData.firstname}
-                                onChange={handleChangeUpdate}
-                                placeholder="Prénom"
-                            />
-                            {errors.firstname && <p className={style.error}>{errors.firstname}</p>}
-                        </div>
-                            <div className={style.inputGroup}>
-                            <label>Nom</label>
-                            <input
-                                type="text"
-                                name="lastname"
-                                value={formUpdateData.lastname}
-                                onChange={handleChangeUpdate}
-                                placeholder="Nom"
-                            />
-                            {errors.lastname && <p className={style.error}>{errors.lastname}</p>}
-                        </div>
-                    </div>
-
-                    <div className={style.inputGroup}>
-                        <label>Adress</label>
-                        <input
-                            type="text"
-                            name="address"
-                            value={formUpdateData.address  || ''}
-                            onChange={handleChangeUpdate}
-                            placeholder="Adress"
-                        />
-                        {errors.address && <p className={style.error}>{errors.address}</p>}
-                    </div>
-
-                    <div className={style.inputGroup} style={{ position: 'relative' }}>
-                        <label>Telephone</label>
-                        <input
-                            type="text"
-                            name="phone"
-                            value={formUpdateData.phone || ''}
-                            onChange={handleChangeUpdate}
-                            placeholder="Numéro de téléphone"
-                        />
-                        
-                        {errors.phone && <p className={style.error}>{errors.phone}</p>}
-                    </div>
-
-
-                    <div className={style.inputGroup}>
-                        <label>Genre</label>
-                        <select name="gender" value={formUpdateData.gender} onChange={handleChange}>
-                            <option value="">Sélectionnez le genre</option>
-                            <option value="male">Masculin</option>
-                            <option value="female">Féminin</option>
-                        </select>
-                        {errors.gender && <p className={style.error}>{errors.gender}</p>}
-                    </div>
-
-                    <button type="submit" className={style.submitButton}>
-                        Mettre à jour
-                    </button>
-                </form>
-            </div>
+            <UpdateUserForm
+                formUpdateData={formUpdateData}
+                handleChangeUpdate={handleChangeUpdate}
+                updateSubmit={updateSubmit}
+                errors={errors}
+                CloseFormOfUpdate={CloseFormOfUpdate}
+            />
         )}
-
 
         {/* for update status of user */}
         {isChangeStatus && (
-            <div className={style.modalOverlay}>
-
-                <form className={style.form}  onSubmit={updateStatusOfUsers}>
-
-                    <div className={style.headerForm}>
-
-                        <h1>Changer le status</h1>
-                        <button onClick={() => closeFormOfupdateStatus()} className={style.closeFormButton}>
-                            <X />
-                        </button>
-
-                    </div>
-                    {/* Form fields */}
-                    <div className={style.inputGroup}>
-                        <label>Change User Status:</label>
-                        <select name="gender"  value={status} onChange={handleStatus}>
-                            <option value="" disabled>
-                                Select status
-                            </option>
-                            {Object.values(UserStatus).filter((statusValue) => statusValue !== oldstatus)
-                                .map((statusValue) => (
-                                    <option key={statusValue} value={statusValue}>
-                                        {statusValue.charAt(0).toUpperCase() + statusValue.slice(1).replace(/-/g, ' ')}
-                                    </option>
-                                ))}
-                        </select>
-                        {statusError && <p className={style.error}>{statusError}</p>}
-                        
-                    </div>
-
-                    <button type="submit" className={style.submitButton}>
-                        Modifier
-                    </button>
-                </form>
-            </div>
+            <UpdateUserStatusForm
+                status={status}
+                oldstatus={oldstatus}
+                handleStatus={handleStatus}
+                updateStatusOfUsers={updateStatusOfUsers}
+                closeFormOfupdateStatus={closeFormOfupdateStatus}
+                statusError={statusError}
+            />
         )}
 
     </div>
