@@ -1,0 +1,255 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
+.userCard {
+    align-items: center;
+    background: #ffffff;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s, box-shadow 0.2s;
+    position: relative;
+}
+
+.headerCart{
+    display: flex;
+    align-items: center;
+    margin: 30px 0;
+}
+
+.userCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.avatar {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    object-fit: cover;
+    margin-right: 16px;
+    border: 2px solid #f0f0f0;
+}
+
+.userInfo {
+    flex: 1;
+}
+
+.userInfo h3 {
+    margin: 0 0 4px 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: #000;
+}
+
+.username {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #666;
+    font-family: "Poppins", sans-serif;
+}
+
+.email {
+    margin: 0 0 4px 0;
+    font-size: 14px;
+    color: #000;
+    font-family: "Poppins", sans-serif;
+}
+
+.lastLogin {
+    margin: 0 0 8px 0;
+    font-size: 14px;
+    color: #888;
+    font-family: "Poppins", sans-serif;
+}
+
+.status {
+    width: fit-content;
+    text-align: center;
+    margin-bottom: 20px;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+    position: absolute;
+    right: 20px;
+}
+
+
+
+.active {
+    background-color: #e6f7ed;
+    color: #0d9f4f;
+}
+.email-unverified {
+    background-color: #e6f0ff;
+    color: #2c6de3;
+}
+.inactive {
+    background-color: #f0f0f0;
+    color: #6b6b6b;
+}
+.suspended {
+    background-color: #fff3e0;
+    color: #ff9800;
+}
+.banned {
+    background-color: #ffe8e8;
+    color: #ff4d4d;
+}
+.archived {
+    background-color: #f0e6ff;
+    color: #8a4fff;
+}
+.deleted {
+    background-color: #f4e6e6;
+    color: #b35656;
+}
+
+
+.userAction {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 10px 10px;
+}
+
+
+.userAction {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    width: 100%;
+    margin-top: 30px;
+}
+
+.btn {
+    padding: 8px 12px;
+    border-radius: 12px;
+    border: none;
+    background-color: #f1f1f1;
+    color: #333;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: background-color 0.3s, transform 0.2s;
+    text-align: center;
+}
+
+.btn:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.btn.delete {
+    background-color: #ffe0e0;
+    color: #e60000;
+}
+
+.btn.delete:hover {
+    background-color: #ffcccc;
+}
+
+
+.modalOverlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000; /* Ensure it appears above other content */
+}
+
+.modalContent {
+    background-color: white;
+    border-radius: 8px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.modalContent h3 {
+    text-align: left; 
+    margin: 0 0 10px;
+    font-family: "Poppins", sans-serif;
+    font-size: 20px;
+}
+
+.modalContent p {
+    text-align: left; 
+    margin: 0 0 20px; /* Space below the text */
+}
+
+.modalActions {
+    display: flex;
+    justify-content: center; /* Center the buttons */
+    gap: 20px; /* Space between buttons */
+}
+
+.cancelBtn,
+.confirmBtn {
+    padding: 10px 20px;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.cancelBtn {
+    background-color: #4caf50;
+    color: white;
+}
+
+.confirmBtn {
+    background-color: #000; 
+    color: white;
+}
+
+
+@media (max-width: 480px) {
+    .userCard {
+        padding: 20px;
+    }
+
+    .avatar {
+        width: 60px;
+        height: 60px;
+    }
+
+    .userInfo h3 {
+        font-size: 16px;
+    }
+
+    .username,
+    .email {
+        font-size: 13px;
+    }
+
+    .lastLogin {
+        font-size: 12px;
+    }
+
+    .btn {
+        padding: 8px 10px;
+        font-size: 12px;
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+@media (max-width: 600px) {
+    .modalContent {
+        max-width: 90%;
+    }
+}
+
+
+

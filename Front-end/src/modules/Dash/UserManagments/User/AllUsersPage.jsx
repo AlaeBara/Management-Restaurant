@@ -6,9 +6,10 @@ import Cookies from 'js-cookie';
 import { Eye, EyeOff, SearchX ,X , UserRoundCog, Plus, EllipsisVertical , Info, Edit , Trash2 ,Settings, RotateCcw  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import  UserStatus  from './UserStatus';
+import  UserStatus  from './Components/UserStatus';
 import { useUserContext } from '../../../../context/UserContext';
 import Spinner from '../../../../components//Spinner/Spinner'
+import UserCarts from './Components/UserCarts'
 
  
 const schema = z.object({
@@ -462,78 +463,14 @@ const CreateUsers = () => {
                     (dataUser
                     .filter(userData => userData.username !== user.username) 
                     .map(user => (
-                        <div className={style.userCard} key={user.id}>
-
-                            <div className={style.headerCart}>
-                                <img
-                                    src="https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"
-                                    alt="Avatar"
-                                    className={style.avatar}
-                                />
-                                <div className={style.userInfo}>
-                                    <h3>{user.firstname} {user.lastname}</h3>
-                                    <p className={style.username}>@{user.username}</p>
-                                </div>
-                            </div>
-
-                            <p className={style.email}>{user.email}</p>
-                            <p className={style.lastLogin}>
-                                Dernier Login: {formatDate(user.lastLogin)}
-                            </p>
-                            <span className={`${style.status} ${style[user.status]}`}>
-                                {user.status === UserStatus.ACTIVE ? "Actif" :
-                                user.status === UserStatus.INACTIVE ? "Inactif" :
-                                user.status === UserStatus.SUSPENDED ? "Suspendu" :
-                                user.status === UserStatus.BANNED ? "Banni" :
-                                user.status === UserStatus.ARCHIVED ? "Archivé" :
-                                user.status === "email-unverified" ? "Non vérifié":
-                                user.status === "deleted" ? "Supprimé": ""}
-                            </span>
-
-
-                            <button 
-                                className={style.menuButton} 
-                                onClick={(e) => handleMenuClick(user.id, e)}
-                                aria-label="More options"
-                            >
-                                <EllipsisVertical />
-                            </button>
-                            <div className={`${style.dropdownMenu} ${activeMenu === user.id ? style.show : ''}`}>
-
-                                <div 
-                                    className={style.dropdownItem}
-                                    onClick={() => handleAction('details', user)}
-                                >
-                                    <Info className="mr-2 h-4 w-4" /> Détails
-                                </div>
-
-                                <div 
-                                    className={style.dropdownItem}
-                                    onClick={() => UpdateGetData(user)}
-                                >
-                                <Edit className="mr-2 h-4 w-4" /> Mise à Jour
-                                </div>
-
-                                {user.status !== "deleted" && (
-                                    <div 
-                                        className={`${style.dropdownItem}`}
-                                        onClick={() => updateStatus(user.status ,user.id)}
-                                    >
-                                        <Settings  className="mr-2 h-4 w-4" /> Ghange Status
-                                    </div>
-                                )}
-
-                                {user.status !== "deleted" && (
-                                    <div 
-                                        className={`${style.dropdownItem} ${style.delete}`}
-                                        onClick={() => deleteUser(user.id)}
-                                    >
-                                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-                                    </div>
-                                )}
-                                
-                            </div>
-                        </div>
+                        <UserCarts
+                            key={user.id}
+                            user={user}
+                            formatDate={formatDate}
+                            updateStatus={updateStatus}
+                            deleteUser={deleteUser}
+                            UpdateGetData={UpdateGetData}
+                        />
                     )
                 ))}
             </div>)

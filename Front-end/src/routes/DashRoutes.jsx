@@ -1,11 +1,14 @@
 import React from 'react';
 import { Routes, Route } from 'react-router-dom'; 
-import Login from '../modules/Dash/LoginPage/Login';
 import MainLayout from '../layouts/MainLayoutDash';
-import Home from '../modules/Dash/Home/Home';
 import ProtectedRoute from '../ProtectRoutes/ProtectedRouteDash'; 
-import AllUsers from '@/modules/Dash/UserManagments/User/AllUsers';
-import DeletedUsers from '@/modules/Dash/UserManagments/User/DeletedUsers';
+
+
+//Pages
+import Home from '../modules/Dash/Home/Home';
+import Login from '../modules/Dash/LoginPage/Login';
+import AllUsers from '@/modules/Dash/UserManagments/User/AllUsersPage';
+import DeletedUsers from '@/modules/Dash/UserManagments/User/DeletedUsersPage';
 import Zones from '@/modules/ZoneAndTable/Zones';
 
 const ClientRoutes = () => {
