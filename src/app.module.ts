@@ -12,6 +12,7 @@ import { MailerModule } from '@nestjs-modules/mailer';
 import { ZoneTableModule } from './zone-table-management/zone-table.module';
 import { ClientManagementModule } from './client-management/client-management.module';
 import { UnitModule } from './unit-management/unit.module';
+import { SupplierModule } from './supplier-management/supplier.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -27,6 +28,7 @@ import { UnitModule } from './unit-management/unit.module';
     ClientManagementModule,
     UnitModule,
     ZoneTableModule,
+    SupplierModule,
     CommonModule,
     TypeOrmModule.forRoot({
         type: 'postgres',

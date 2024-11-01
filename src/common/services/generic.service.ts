@@ -213,6 +213,24 @@ export class GenericService<T> {
     return entity;
   }
 
+  async validateUnique(attributes: Partial<T>) {
+    // Create an array of conditions for each attribute
+    const conditions = Object.entries(attributes).map(([key, value]) => ({
+      [key]: value,
+    }));
+  
+    // Use findOne with OR conditions
+    const entity = await this.repository.findOne({
+      where: conditions as any,
+    });
+  
+    if (entity) {
+      throw new ConflictException(
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with one of these attributes already exists`
+      );
+    }
+  }
+
   async findOrThrow(
     id: number,
     relations?: string[],
@@ -321,7 +339,7 @@ export class GenericService<T> {
     listOfUniqueAttributes: string[] = [],
   ): Promise<UpdateResult> {
     const entity = (await this.findOneByIdWithOptions(id, {
-      withDeleted: true,
+      onlyDeleted: true,
     })) as any;
 
     if (entity && entity.deletedAt === null) {
@@ -475,11 +493,13 @@ export class GenericService<T> {
     select?: string[],
     withDeleted: boolean = false,
   ): Promise<T> {
+    const arrayRelations = await this.splitByComma(relations);
+    const arraySelect = await this.splitByComma(select);
     const entity = await this.repository.findOne({
       where: attributes as any,
-      relations: relations,
+      relations: arrayRelations,
       withDeleted: withDeleted,
-      select: select as any,
+      select: arraySelect as any,
     });
     return entity;
   }
