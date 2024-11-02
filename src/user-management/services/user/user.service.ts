@@ -20,6 +20,11 @@ export class UserService extends GenericService<User> {
   }
 
   async create(createUserDto: CreateUserDto) {
+    await this.validateUnique({
+      username: createUserDto.username,
+      email: createUserDto.email,
+      phone: createUserDto.phone,
+    });
     const { password, ...user } = createUserDto;
     const hashedPassword = await hash(password);
     const newUser = this.userRepository.create({

@@ -7,6 +7,7 @@ import { DataSource } from 'typeorm';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierStatus } from '../enums/status-supplier.enum';
 import { ConflictException } from '@nestjs/common';
+import { UUID } from 'typeorm/driver/mongodb/bson.typings';
 export class SupplierService extends GenericService<Supplier> {
   constructor(
     @InjectDataSource() dataSource: DataSource,
@@ -28,20 +29,31 @@ export class SupplierService extends GenericService<Supplier> {
   }
 
   async deleteSupplier(id: string) {
-    await this.findOneByIdWithOptions(id);
-    const update = await this.update(id, { status: SupplierStatus.DELETED });
-    if(update) return this.softDelete(id);
-    throw new ConflictException('Problem while deleting supplier');
+    const supplier = await this.findOneByIdWithOptions(id, { select: 'status' });
+    try {
+      const statusUpdate = await this.update(id, { status: SupplierStatus.DELETED });
+      if (!statusUpdate.affected) {
+        throw new ConflictException('Failed to update supplier status');
+      }
+      return await this.softDelete(id);
+    } catch (error) {
+      await this.update(id, { status: supplier.status });
+      throw new ConflictException('Failed to soft delete supplier:' + error.message);
+
+    }
   }
 
   async restoreSupplier(id: string) {
     const supplier = await this.findOneByIdWithOptions(id, { onlyDeleted: true });
-    let update = await this.update(supplier.id as any, { status: SupplierStatus.ACTIVE });
-    update = null;
-    if(update){
-        return await this.restoreByUUID(id, true, ['name', 'phone', 'email','rcNumber','iceNumber']);
+    try {
+      const statusUpdate = await this.update(supplier.id, { status: SupplierStatus.ACTIVE });
+      if (statusUpdate.affected === 0) {
+        throw new ConflictException('Failed to update supplier status');
+      }
+      return await this.restoreByUUID(id, true, ['name', 'phone', 'email', 'rcNumber', 'iceNumber']);
+    } catch (error) {
+      await this.update(supplier.id, { status: SupplierStatus.DELETED });
+      throw new ConflictException('Problem while restoring supplier:' + error.message);
     }
-    await this.update(supplier.id as any, { status: SupplierStatus.DELETED });
-    throw new ConflictException('Problem while restoring supplier');
   }
 }

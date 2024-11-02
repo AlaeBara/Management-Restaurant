@@ -107,11 +107,6 @@ export class ZoneService extends GenericService<Zone> {
       );
     }
 
-    /*    const zoneCount = await this.countByAttribute({ parentZone: { id } })
-    if(zoneCount > 0) {
-      throw new BadRequestException('Cannot delete zone: it has child zones linked to it.');
-    } */
-
     return this.zoneRepository.softDelete(id);
   }
 

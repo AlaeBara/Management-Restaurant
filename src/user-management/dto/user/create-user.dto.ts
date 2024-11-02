@@ -3,11 +3,11 @@ import { Gender } from "../../../common/enums/gender.enum";
 
 export class CreateUserDto {
     @IsNotEmpty()
-    @Length(5, 20)
+    @Length(3, 20)
     firstname:string;
  
     @IsNotEmpty()
-    @Length(5, 20)
+    @Length(3, 20)
     lastname:string;
   
     @IsNotEmpty()

@@ -8,6 +8,7 @@ import {
   Patch,
   Put,
   Query,
+  Req,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { createClientDto } from '../dto/create-client.dto';
@@ -96,8 +97,8 @@ export class ClientController {
 
   @Delete(':id')
   @Permissions('delete-client')
-  async deleteClient(@Param('id', ParseUUIDPipe) id: string) {
-    await this.clientService.deleteClient(id);
+  async deleteClient(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
+    await this.clientService.deleteClient(id, request);
   }
 
   @Patch(':id/restore')

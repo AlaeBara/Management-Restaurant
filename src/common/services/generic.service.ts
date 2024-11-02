@@ -2,6 +2,8 @@ import {
   Injectable,
   NotFoundException,
   ConflictException,
+  Req,
+  BadRequestException,
 } from '@nestjs/common';
 import { Repository, DeleteResult, UpdateResult } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
@@ -351,16 +353,30 @@ export class GenericService<T> {
     if (entity) {
       if (checkUnique && listOfUniqueAttributes.length > 0) {
         // Create an object with only the specified unique attributes
-        const uniqueAttributes = listOfUniqueAttributes.reduce((acc, attr) => {
+     /*    const uniqueAttributes = listOfUniqueAttributes.reduce((acc, attr) => {
           acc[attr] = entity[attr];
           return acc;
         }, {});
+
+        console.log(uniqueAttributes);
 
         // Check if any active record exists with the same unique attributes
         const existingEntity = (await this.repository.findOne({
           where: uniqueAttributes as any,
           withDeleted: false,
+        })) as any; */
+
+        const conditions = listOfUniqueAttributes.map(attr => ({
+          [attr]: entity[attr]
+        }));
+
+        // Check if any active record exists with any of the unique attributes
+        const existingEntity = (await this.repository.findOne({
+          where: conditions as any,
+          withDeleted: false,
         })) as any;
+
+        console.log('existingEntity',existingEntity);
 
         if (existingEntity && existingEntity.id === entity.id) {
           throw new ConflictException(
@@ -395,6 +411,14 @@ export class GenericService<T> {
     });
 
     return query.getCount();
+  }
+
+  async checkSelf(user: T, @Req() request: Request) {
+    if ((user as any).id === request['user'].sub) {
+      throw new BadRequestException(
+        'You cannot do this action to self-account',
+      );
+    }
   }
 
   async findOrThrowByName(

@@ -11,11 +11,11 @@ import { Gender } from '../../../common/enums/gender.enum';
 import { UserStatus } from '../../enums/user-status.enum';
 export class UpdateUserDto {
   @IsOptional()
-  @Length(5, 20)
+  @Length(3, 20)
   firstname: string;
 
   @IsOptional()
-  @Length(5, 20)
+  @Length(3, 20)
   lastname: string;
 
   @IsOptional()

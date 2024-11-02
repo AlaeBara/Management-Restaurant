@@ -29,7 +29,7 @@ export class User  {
   @Column()
   gender: Gender;
 
-  @Column({ unique: true })
+  @Column()
   username: string;
 
   @Column({ nullable: true })
@@ -41,7 +41,7 @@ export class User  {
   @Column({ default: UserStatus.EMAIL_UNVERIFIED })
   status: UserStatus;
 
-  @Column({ unique: true })
+  @Column()
   email: string;
 
   @Column({select: false})

@@ -59,11 +59,6 @@ export default class UserStatusController {
   @Patch(':id/status/restore')
   @Permissions('update-user-status')
   async markAsRestored(@Param('id', ParseIntPipe) id: number) {
-    const user = await this.userStatusService.findOneByIdWithOptions(id,{withDeleted:true});
-    console.log(user);
-    if (!user.deletedAt) {
-      throw new ConflictException('User is not deleted');
-    }
     await this.userStatusService.markAsRestored(id);
     return { message: 'user restored successfully', statusCode: 200 };
   }

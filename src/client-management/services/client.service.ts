@@ -6,10 +6,12 @@ import { createClientDto } from '../dto/create-client.dto';
 import { hash, verify } from 'argon2';
 import { RoleService } from 'src/user-management/services/role/role.service';
 import {
+  ConflictException,
   forwardRef,
   Inject,
   Injectable,
   NotFoundException,
+  Req,
   UnauthorizedException,
 } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
@@ -188,17 +190,38 @@ export class ClientService extends GenericService<Client> {
     await manager.save(client);
   }
 
-  async deleteClient(id: string) {
-    const client = await this.findOrThrowByUUID(id);
-    client.status = statusClient.DELETED;
-    await this.clientRepository.save(client);
-    await this.softDelete(id);
+  async deleteClient(id: string, @Req() request: Request) {
+    const client = await this.findOneByIdWithOptions(id, { select: 'status,isBlocked' });
+    const originalStatus = client.status;
+    const originalIsBlocked = client.isBlocked;
+    await this.checkSelf(client, request);
+    try {
+      client.status = statusClient.DELETED;
+      const updateResult = await this.update(id, { status: statusClient.DELETED, isBlocked: true });
+      if (!updateResult.affected) {
+        throw new ConflictException('Failed to update client status');
+      }
+      return await this.softDelete(id);
+    } catch (error) {
+      await this.update(id, { status: originalStatus, isBlocked: originalIsBlocked });
+      throw new ConflictException('Failed to soft delete client:' + error.message);
+    }
   }
 
   async restoreClient(id: string) {
-    const client = await this.findOrThrowByUUID(id, undefined, true);
-    client.status = statusClient.ACTIVE;
-    await this.clientRepository.save(client);
-    await this.restoreByUUID(id, true, ['username', 'email']);
+    const client = await this.findOneByIdWithOptions(id, { select: 'status,isBlocked' });
+    const originalStatus = client.status;
+    const originalIsBlocked = client.isBlocked;
+    try {
+      client.status = statusClient.ACTIVE;
+      const updateResult = await this.update(id, { status: statusClient.ACTIVE, isBlocked: false });
+      if (!updateResult.affected) {
+        throw new ConflictException('Failed to update client Status');
+      }
+      return await this.restoreByUUID(id, true, ['username', 'email']);
+    } catch (error) {
+      await this.update(id, { status: originalStatus, isBlocked: originalIsBlocked });
+      throw new ConflictException('Failed to restore client:' + error.message);
+    }
   }
 }
