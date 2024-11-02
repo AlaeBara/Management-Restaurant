@@ -64,11 +64,13 @@ export class UserStatusService extends GenericService<User> {
   async markAsRestored(id: number) {
     try {
       await this.findOneByIdWithOptions(id, { select: 'status,isBlocked', onlyDeleted: true });
+  
       let updateResult = await this.update(id, { status: UserStatus.ACTIVE, isBlocked: false });
       if (!updateResult.affected) {
-        return await this.restoreByUUID(id, true, ['username', 'email', 'phone']);
+        throw new ConflictException('Problem while restoring user');
       }
-      throw new ConflictException('Problem while restoring user');
+    
+      return await this.restoreByUUID(id, true, ['username', 'email', 'phone']);
     } catch (error) {
       await this.update(id, { status: UserStatus.DELETED, isBlocked: true });
       throw new ConflictException('Problem while restoring user: ' + error.message);
