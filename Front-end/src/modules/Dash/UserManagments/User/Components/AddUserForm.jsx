@@ -1,101 +1,157 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { X, Eye, EyeOff } from 'lucide-react';
-import style from './AddUserForm.module.css'; // Adjust the path as needed
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
 const AddUserForm = ({ formData, handleChange, handleSubmit, setShowPassword, showPassword, errors, CloseForm }) => {
-    return (
-        <div className={style.modalOverlay}>
-            <form className={style.form} onSubmit={handleSubmit}>
-                <div className={style.headerForm}>
-                    <h1>Créer nouveau utilisateur</h1>
-                    <button onClick={CloseForm} className={style.closeFormButton}>
-                        <X />
-                    </button>
-                </div>
-                {/* Form fields */}
-                <div className={style.nameContainer}>
-                    <div className={style.inputGroup}>
-                        <label>Prénom</label>
-                        <input
-                            type="text"
-                            name="firstname"
-                            value={formData.firstname}
-                            onChange={handleChange}
-                            placeholder="Prénom"
-                        />
-                        {errors.firstname && <p className={style.error}>{errors.firstname}</p>}
-                    </div>
-                    <div className={style.inputGroup}>
-                        <label>Nom</label>
-                        <input
-                            type="text"
-                            name="lastname"
-                            value={formData.lastname}
-                            onChange={handleChange}
-                            placeholder="Nom"
-                        />
-                        {errors.lastname && <p className={style.error}>{errors.lastname}</p>}
-                    </div>
-                </div>
+  return (
+    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm z-50">
+      <Card className="w-full max-w-md bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
+        <CardHeader className="p-4 sticky top-0 bg-white border-b z-10">
+          <div className="flex items-center justify-between">
+            <CardTitle className="text-lg font-medium">
+              Créer nouveau utilisateur
+            </CardTitle>
+            <button
+              onClick={CloseForm}
+              className="rounded-full p-1.5 hover:bg-gray-100 transition-colors"
+            >
+              <X className="h-4 w-4" />
+            </button>
+          </div>
+        </CardHeader>
+        <CardContent className="p-4 space-y-4">
+          <form onSubmit={handleSubmit} className="space-y-4">
+            {/* Name Fields */}
+            <div className="grid grid-cols-2 gap-3">
+              <div className="space-y-1">
+                <label className="text-sm font-medium">
+                  Prénom
+                </label>
+                <input
+                  type="text"
+                  name="firstname"
+                  value={formData.firstname}
+                  onChange={handleChange}
+                  placeholder="Prénom"
+                  className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                />
+                {errors.firstname && (
+                  <p className="text-xs text-red-500 mt-1">{errors.firstname}</p>
+                )}
+              </div>
+              <div className="space-y-1">
+                <label className="text-sm font-medium">
+                  Nom
+                </label>
+                <input
+                  type="text"
+                  name="lastname"
+                  value={formData.lastname}
+                  onChange={handleChange}
+                  placeholder="Nom"
+                  className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                />
+                {errors.lastname && (
+                  <p className="text-xs text-red-500 mt-1">{errors.lastname}</p>
+                )}
+              </div>
+            </div>
 
-                <div className={style.inputGroup}>
-                    <label>Nom d'utilisateur</label>
-                    <input
-                        type="text"
-                        name="username"
-                        value={formData.username}
-                        onChange={handleChange}
-                        placeholder="Nom d'utilisateur"
-                    />
-                    {errors.username && <p className={style.error}>{errors.username}</p>}
-                </div>
+            {/* Username Field */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium">
+                Nom d'utilisateur
+              </label>
+              <input
+                type="text"
+                name="username"
+                value={formData.username}
+                onChange={handleChange}
+                placeholder="Nom d'utilisateur"
+                className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              />
+              {errors.username && (
+                <p className="text-xs text-red-500 mt-1">{errors.username}</p>
+              )}
+            </div>
 
-                <div className={style.inputGroup} style={{ position: 'relative' }}>
-                    <label>Mot de passe</label>
-                    <input
-                        type={showPassword ? 'text' : 'password'}
-                        name="password"
-                        value={formData.password}
-                        onChange={handleChange}
-                        placeholder="Mot de passe"
-                    />
-                    <span
-                        onClick={() => setShowPassword((prev) => !prev)}
-                        style={{ position: 'absolute', right: 10, top: 43, cursor: 'pointer' }}
-                    >
-                        {showPassword ? <Eye size={20} /> : <EyeOff size={20} />}
-                    </span>
-                    {errors.password && <p className={style.error}>{errors.password}</p>}
-                </div>
-
-                <div className={style.inputGroup}>
-                    <label>Email</label>
-                    <input
-                        type="email"
-                        name="email"
-                        value={formData.email}
-                        onChange={handleChange}
-                        placeholder="Email"
-                    />
-                    {errors.email && <p className={style.error}>{errors.email}</p>}
-                </div>
-
-                <div className={style.inputGroup}>
-                    <label>Genre</label>
-                    <select name="gender" value={formData.gender} onChange={handleChange}>
-                        <option value="">Sélectionnez le genre</option>
-                        <option value="male">Masculin</option>
-                        <option value="female">Féminin</option>
-                    </select>
-                    {errors.gender && <p className={style.error}>{errors.gender}</p>}
-                </div>
-
-                <button type="submit" className={style.submitButton}>
-                    Ajouter
+            {/* Password Field */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium">
+                Mot de passe
+              </label>
+              <div className="relative">
+                <input
+                  type={showPassword ? 'text' : 'password'}
+                  name="password"
+                  value={formData.password}
+                  onChange={handleChange}
+                  placeholder="Mot de passe"
+                  className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                  className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
+                >
+                  {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
                 </button>
-            </form>
-        </div>
-    );
+              </div>
+              {errors.password && (
+                <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+              )}
+            </div>
+
+            {/* Email Field */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium">
+                Email
+              </label>
+              <input
+                type="email"
+                name="email"
+                value={formData.email}
+                onChange={handleChange}
+                placeholder="Email"
+                className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+              />
+              {errors.email && (
+                <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+              )}
+            </div>
+
+            {/* Gender Field */}
+            <div className="space-y-1">
+              <label className="text-sm font-medium">
+                Genre
+              </label>
+              <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Sélectionnez le genre" />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="male">Masculin</SelectItem>
+                  <SelectItem value="female">Féminin</SelectItem>
+                </SelectContent>
+              </Select>
+              {errors.gender && (
+                <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
+              )}
+            </div>
+
+            {/* Submit Button */}
+            <button
+              type="submit"
+              className="w-full bg-black text-white hover:bg-gray-800 h-9 rounded-md text-sm font-medium transition-colors  disabled:opacity-50 disabled:cursor-not-allowed mt-2"
+            >
+              Ajouter
+            </button>
+          </form>
+        </CardContent>
+      </Card>
+    </div>
+  );
 };
 
 export default AddUserForm;

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import style from './AllUser.module.css';
 import Cookies from 'js-cookie';
-import {SearchX  ,UserRoundCog, Plus } from 'lucide-react';
+import {SearchX  ,UserRoundCog, Plus , ExternalLink  } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUserContext } from '../../../../context/UserContext';
@@ -376,11 +376,17 @@ const CreateUsers = () => {
 
         {/* header of page  */}
         <div className={style.Headerpage}>
-            <h1 className={style.title}>gestion des utilisateurs</h1>
-    
+            <div>
+                <h1 className={style.title}>gestion des utilisateurs</h1>
+                <a href="/dash/Deleted-User" className={style.titleUserSupr} >
+                    <ExternalLink className="mr-3 h-4 w-4 "/>Utilisateurs Supprimés
+                </a>
+            </div>
+            
             <button onClick={() => setIsFormVisible(true)} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
             </button> 
+            
         </div>
 
 

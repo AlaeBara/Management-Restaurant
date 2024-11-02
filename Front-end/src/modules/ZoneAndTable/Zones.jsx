@@ -92,11 +92,11 @@ export default function Component() {
         </div>
 
         {selectedZone && (
-            <Card className="w-full border-0 shadow-none">
+            <Card className="w-full border-0 shadow-none mt-[80px]">
 
-                <CardContent className="">
+                <CardContent >
                     <h2 className="text-xl sm:text-2xl font-semibold mb-4">{selectedZone.name}</h2>
-                    <ScrollArea className="h-[60vh] w-full">
+                    <ScrollArea className="w-full">
                         <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-4">
                             {selectedZone.tables.map((table) => (
                             <Button
@@ -143,12 +143,12 @@ export default function Component() {
 
                         <div className="grid grid-cols-4 items-center gap-4">
                             <span className="font-bold">Statut:</span>
-                            <Badge variant="secondary" className={`col-span-3 ${getStatusColor(selectedTable.status)}`}>
-                            {selectedTable.status}
+                            <Badge variant="secondary" className={`col-span-3 w-fit  ${getStatusColor(selectedTable.status)}`}>
+                              {selectedTable.status}
                             </Badge>
                         </div>
 
-                        <div className="grid grid-cols-4 items-center gap-4">
+                        <div className="grid grid-cols-4 items-center gap-4 mt-4">
                             <span className="font-bold">Commande:</span>
                             <span className="col-span-3">
                             {selectedTable.order ? (

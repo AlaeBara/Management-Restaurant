@@ -311,6 +311,16 @@
     color: #f44336; 
 }
 
+.titleUserSupr{
+    display: flex;
+    font-size: 10px !important;
+    color: red;
+    text-decoration: underline;
+    align-items: center;
+    margin-top: 10px;
+    font-family: "Poppins", sans-serif;
+    font-weight: 600;
+}
 
 /* Responsive adjustments */
 @media (max-width: 480px) {

@@ -7,12 +7,12 @@ const Starter = ({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
 
   const menuItems = [
-    { id: 1, price: 8.53, image: "https://images.deliveryhero.io/image/fd-th/LH/jb7y-listing.jpg", category: "Lunch" },
-    { id: 2, price: 8.53, image: "https://w7.pngwing.com/pngs/319/731/png-transparent-cafe-food-barbecue-grill-chicken-dish-grilled-food-animals-seafood-recipe-thumbnail.png", category: "Breakfast" },
-    { id: 3, price: 8.53, image: "https://veenaazmanov.com/wp-content/uploads/2017/03/Hyderabad-Chicken-Biryani-Dum-Biryani-Kachi-Biryani4.jpg", category: "Dinner" },
-    { id: 4, price: 8.53, image: "https://t3.ftcdn.net/jpg/06/13/11/24/360_F_613112498_iv3eiTNveuJpXjHFGDnClADBmBNGMTVD.jpg", category: "Dinner" },
-    { id: 5, price: 8.53, image: "https://www.thespruceeats.com/thmb/9Clboupu2hvMEXks_u3HcNkkNlg=/450x300/filters:no_upscale():max_bytes(150000):strip_icc()/SES-classic-steak-diane-recipe-7503150-hero-01-b33a018d76c24f40a7315efb3b02025c.jpg", category: "Lunch" },
-    { id: 6, price: 8.53, image: "https://www.quichentell.com/wp-content/uploads/2020/12/Fish-Pulao-3.1.jpg", category: "Dinner" }
+    { id: 1, price: 8.53, image: "https://easyfood.ie/wp-content/uploads/2023/11/Smoked-salmon-herby-cream-cheese-bites-featured-770x770.png", category: "Lunch" },
+    { id: 2, price: 8.53, image: "https://images.immediate.co.uk/production/volatile/sites/2/2019/08/Olive_Seasonal_ConfitGarlicRoastedTomatoesToast-520c4ab.jpg?quality=90&resize=556,505", category: "Breakfast" },
+    { id: 3, price: 8.53, image: "https://images.immediate.co.uk/production/volatile/sites/30/2017/06/Tomato-soup-5cf0912.jpg?quality=90&resize=556,505", category: "Dinner" },
+    { id: 4, price: 8.53, image: "https://www.princes.co.uk/wp-content/uploads/sites/14/2024/09/Princes_TunaStuffPotatoSkins_1x1_v01-scaled.jpg.webp", category: "Dinner" },
+    { id: 5, price: 8.53, image: "https://img.delicious.com.au/fFU7B22c/w1200/del/2015/10/carrot-tzatziki-15562-2.jpg", category: "Lunch" },
+    { id: 6, price: 8.53, image: "https://img.taste.com.au/0rJb9yEE/w354-h236-cfill-q80/taste/2016/11/butter-chicken-vol-au-vents-104157-1.jpeg", category: "Dinner" }
   ];
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';

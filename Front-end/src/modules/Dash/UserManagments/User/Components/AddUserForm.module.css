@@ -6,8 +6,8 @@
 :root {
     --border-color: #ddd;
     --focus-border-color: #4CAF50;
-    --button-bg-color: #4CAF50;
-    --button-hover-bg-color: #45a049;
+    --button-bg-color: #000;
+    --button-hover-bg-color: #000000;
     --error-color: red;
 }
 
@@ -102,6 +102,7 @@
 
 .error {
     color: var(--error-color);
+    font-size: 0.80rem ;
 }
 
 @media (max-width: 600px) {

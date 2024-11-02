@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import style from "./UserCarts.module.css";
-import { Edit, Trash2, Settings } from 'lucide-react';
+import { Edit, Trash2, Settings , GitCommitVertical} from 'lucide-react';
 import UserStatus from './UserStatus';
 
 const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
@@ -54,7 +54,8 @@ const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
                     />
                     <div className={style.userInfo}>
                         <h3>{user.firstname} {user.lastname}</h3>
-                        <p className={style.username}>@{user.username}</p>
+                        {/* <p className={style.username}>@{user.username}</p> */}
+                        <p className={style.username}>Manager</p>
                     </div>
                 </div>
 
@@ -86,17 +87,31 @@ const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
 
             {/* Modal for delete confirmation */}
             {isModalVisible && (
-                <div className={style.modalOverlay}>
-                    <div className={style.modalContent}>
-                        <h3>Confirmation</h3>
-                        <p>Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
-                        <div className={style.modalActions}>
-                            <button className={style.cancelBtn} onClick={cancelDelete}>Non</button>
-                            <button className={style.confirmBtn} onClick={confirmDelete}>Oui</button>
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center p-4 z-10">
+                    <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto transform transition-all ease-in-out duration-300">
+                        <div className="p-6">
+                            <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirmation</h3>
+                            <p className="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+                            <div className="flex justify-end space-x-4">
+                            <button 
+                                className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors"
+                                onClick={cancelDelete}
+                            >
+                                Annuler
+                            </button>
+                            <button 
+                                className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
+                                onClick={confirmDelete}
+                            >
+                                Supprimer
+                            </button>
+                            </div>
                         </div>
                     </div>
-                </div>
+              </div>
             )}
+
+
         </>
     );
 };

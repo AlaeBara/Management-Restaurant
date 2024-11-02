@@ -2,10 +2,10 @@ import { z } from 'zod';
 
 export const UserSchema = z.object({
     firstname: z.string()
-        .min(5, { message: 'Prénom trop court.' }),
+        .min(5, { message: 'Prénom trop court: 5 minimum' }),
 
     lastname: z.string()
-        .min(5, { message: 'Nom trop court.' }),
+        .min(4, { message: 'Nom trop court: 4 minimum' }),
 
     username: z.string()
         .min(5, { message: 'Nom d’utilisateur trop court.' }),

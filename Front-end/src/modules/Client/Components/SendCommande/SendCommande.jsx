@@ -87,7 +87,7 @@ const SendCommande = ({ previousStep }) => {
 
         <button
           className={`${styles.btn_next}`}
-          onClick={()=>{alert("WA Khelsna AZABI")}}
+          onClick={()=>{alert("sucess")}}
         >
           {t('Place Order')}
         </button>

@@ -1,30 +1,21 @@
+import React, { useState } from 'react';
 import {
   BadgeCheck,
   Bell,
   UserCheck,
-  BookOpen,
   ChevronRight,
   ChevronsUpDown,
   Command,
   CreditCard,
-  Folder,
-  LifeBuoy,
   LogOut,
-  MoreHorizontal,
-  Share,
   Sparkles,
-  SquareTerminal,
-  Trash2,
   Users,
-  Settings,
-  History,
-  Star,
-  UserCircle,
   Shield,
   Key,
   User,
   List,
-  UserPlus
+  UserPlus,
+  Grid2x2Check
 } from "lucide-react"
 
 import {
@@ -32,11 +23,13 @@ import {
   AvatarFallback,
   AvatarImage,
 } from "@/components/ui/avatar"
+
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
 } from "@/components/ui/collapsible"
+
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -46,12 +39,12 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
+
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
-  SidebarGroupContent,
   SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
@@ -62,10 +55,10 @@ import {
   SidebarMenuSubButton,
   SidebarMenuSubItem,
 } from "@/components/ui/sidebar"
+
 import { useUserContext } from '../../context/UserContext';
 
 const SideBar = () => {
-
   const { logout, user } = useUserContext();
 
   const data = {
@@ -81,19 +74,16 @@ const SideBar = () => {
         isActive: true,
         items: [
           { 
-            title:  "Utilisateurs",
+            title: "Utilisateurs",
             icon: User,
-            subItems: [
-              { title: "Tous les utilisateurs", icon: List, url: "/dash/Create-User" },
-              { title: "Utilisateurs supprimés", icon:  UserPlus, url: "/dash/Deleted-User" },
-            ]
+            url: "/dash/Create-User",
           },
           { 
             title: "Rôles",
             icon: Shield,
             subItems: [
               { title: "Tous les rôles", icon: List, url: "#" },
-              { title: "Attribuer un rôle", icon:  UserPlus, url: "#" },
+              { title: "Attribuer un rôle", icon: UserPlus, url: "#" },
             ]
           },
           { 
@@ -103,46 +93,96 @@ const SideBar = () => {
               { title: "Toutes les permissions", icon: UserCheck, url: "#" },
             ]
           },
+          { 
+            title: "Zones",
+            icon: Grid2x2Check,
+            url:"/dash/zones"
+          },
         ],
       },
     ],
+    
   }
+
+  // Function to handle navigation
+  const handleNavigation = (url, e) => {
+    if (url) {
+      e.stopPropagation(); // Prevent collapsible from toggling when clicking a link
+      window.location.href = url;
+    }
+  };
 
   // Recursive function to render menu items
   const renderMenuItem = (item) => {
+    const [isOpen, setIsOpen] = useState(item.isActive);
+    const hasSubMenu = (item.items?.length > 0 || item.subItems?.length > 0);
+
     return (
-      <Collapsible key={item.title} asChild defaultOpen={item.isActive}>
+      <Collapsible 
+        key={item.title} 
+        asChild 
+        open={isOpen}
+        onOpenChange={setIsOpen}
+      >
         <SidebarMenuItem>
-          <SidebarMenuButton asChild tooltip={item.title}>
-            <a href={item.url}>
-              {item.icon && <item.icon className="h-4 w-4" />}
-              <span>{item.title}</span>
-            </a>
-          </SidebarMenuButton>
-          {(item.items?.length > 0 || item.subItems?.length > 0) && (
-            <>
+          <div className="flex w-full items-center">
+            <SidebarMenuButton 
+              asChild={!!item.url}
+              tooltip={item.title}
+              className="flex-1"
+              onClick={(e) => {
+                if (item.url) {
+                  handleNavigation(item.url, e);
+                } else if (hasSubMenu) {
+                  setIsOpen(!isOpen);
+                }
+              }}
+            >
+              {item.url ? (
+                <a href={item.url}>
+                  {item.icon && <item.icon className="h-4 w-4" />}
+                  <span>{item.title}</span>
+                </a>
+              ) : (
+                <div className="flex items-center">
+                  {item.icon && <item.icon className="h-4 w-4 mr-2" />}
+                  <span>{item.title}</span>
+                </div>
+              )}
+            </SidebarMenuButton>
+            
+            {hasSubMenu && (
               <CollapsibleTrigger asChild>
-                <SidebarMenuAction className="data-[state=open]:rotate-90">
+                <SidebarMenuAction 
+                  className={`transform transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
+                  onClick={() => setIsOpen(!isOpen)}
+                >
                   <ChevronRight />
                   <span className="sr-only">Toggle</span>
                 </SidebarMenuAction>
               </CollapsibleTrigger>
-              <CollapsibleContent>
-                <SidebarMenuSub>
-                  {item.items?.map((subItem) => renderMenuItem(subItem))}
-                  {item.subItems?.map((subItem) => (
-                    <SidebarMenuSubItem key={subItem.title}>
-                      <SidebarMenuSubButton asChild>
-                        <a href={subItem.url}>
-                          {subItem.icon && <subItem.icon className="h-4 w-4" />}
-                          <span>{subItem.title}</span>
-                        </a>
-                      </SidebarMenuSubButton>
-                    </SidebarMenuSubItem>
-                  ))}
-                </SidebarMenuSub>
-              </CollapsibleContent>
-            </>
+            )}
+          </div>
+
+          {hasSubMenu && (
+            <CollapsibleContent>
+              <SidebarMenuSub>
+                {item.items?.map((subItem) => renderMenuItem(subItem))}
+                {item.subItems?.map((subItem) => (
+                  <SidebarMenuSubItem key={subItem.title}>
+                    <SidebarMenuSubButton 
+                      asChild
+                      onClick={(e) => handleNavigation(subItem.url, e)}
+                    >
+                      <a href={subItem.url}>
+                        {subItem.icon && <subItem.icon className="h-4 w-4" />}
+                        <span>{subItem.title}</span>
+                      </a>
+                    </SidebarMenuSubButton>
+                  </SidebarMenuSubItem>
+                ))}
+              </SidebarMenuSub>
+            </CollapsibleContent>
           )}
         </SidebarMenuItem>
       </Collapsible>
@@ -190,7 +230,7 @@ const SideBar = () => {
                     <AvatarFallback className="rounded-lg">CN</AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold"> user.username</span>
+                    <span className="truncate font-semibold">user.username</span>
                     <span className="truncate text-xs">{data.user.email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />

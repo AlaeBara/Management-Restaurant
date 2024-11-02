@@ -7,12 +7,12 @@ const Dessert = ({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
 
   const menuItems = [
-    { id: 1, price: 8.53, image: "https://images.deliveryhero.io/image/fd-th/LH/jb7y-listing.jpg", category: "Lunch" },
-    { id: 2, price: 8.53, image: "https://w7.pngwing.com/pngs/319/731/png-transparent-cafe-food-barbecue-grill-chicken-dish-grilled-food-animals-seafood-recipe-thumbnail.png", category: "Breakfast" },
-    { id: 3, price: 8.53, image: "https://veenaazmanov.com/wp-content/uploads/2017/03/Hyderabad-Chicken-Biryani-Dum-Biryani-Kachi-Biryani4.jpg", category: "Dinner" },
-    { id: 4, price: 8.53, image: "https://t3.ftcdn.net/jpg/06/13/11/24/360_F_613112498_iv3eiTNveuJpXjHFGDnClADBmBNGMTVD.jpg", category: "Dinner" },
-    { id: 5, price: 8.53, image: "https://www.thespruceeats.com/thmb/9Clboupu2hvMEXks_u3HcNkkNlg=/450x300/filters:no_upscale():max_bytes(150000):strip_icc()/SES-classic-steak-diane-recipe-7503150-hero-01-b33a018d76c24f40a7315efb3b02025c.jpg", category: "Lunch" },
-    { id: 6, price: 8.53, image: "https://www.quichentell.com/wp-content/uploads/2020/12/Fish-Pulao-3.1.jpg", category: "Dinner" }
+    { id: 1, price: 8.53, image: "https://food.fnr.sndimg.com/content/dam/images/food/fullset/2014/1/29/1/FN_Strawberry-Poke-Cake_s4x3.jpg.rend.hgtvcom.1280.960.suffix/1393874276855.jpeg", category: "Lunch" },
+    { id: 2, price: 8.53, image: "https://www.allrecipes.com/thmb/FRzTyEYbAi3hJsIctlq8toGKv_A=/1500x0/filters:no_upscale():max_bytes(150000):strip_icc()/hot-fudge-ice-cream-bar-dessert-22728-7a84d325fdd04ccc8976bf1478d8362d.jpg", category: "Breakfast" },
+    { id: 3, price: 8.53, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTEIT8aOFyZdjlnlr2cTGXcd9rCCitJOueFgQ&s", category: "Dinner" },
+    { id: 4, price: 8.53, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTcD8iLTRltuuSteoTeswOq6BIWcIncmylw_g&s", category: "Dinner" },
+    { id: 5, price: 8.53, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTaQk3lRY_GyJPaWzVp2Q-_7BqbgOhijAV7MQ&s", category: "Lunch" },
+    { id: 6, price: 8.53, image: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcTXTgM7WJhgbFFDj91XvJtxFe7DTBSDCS72DQ&s", category: "Dinner" }
   ];
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
