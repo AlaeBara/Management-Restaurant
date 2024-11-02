@@ -19,12 +19,13 @@ import { DeleteResult, UpdateResult } from 'typeorm';
 import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
-import { Permissions, Public, Roles } from '../decorators/auth.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { Permissions, Roles } from '../decorators/auth.decorator';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 
 @ApiTags('roles')
 @Controller('api/roles')
+@ApiBearerAuth()
 export class RoleController {
   constructor(
     private readonly roleService: RoleService,
@@ -44,6 +45,7 @@ export class RoleController {
 
   @Get()
   @Permissions('view-roles')
+  @ApiOperation({ summary: 'Get all roles' })
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -66,6 +68,7 @@ export class RoleController {
 
   @Post()
   @Permissions('create-role')
+  @ApiOperation({ summary: 'Create a new role' })
   async create(
     @Body() role: CreateRoleDto,
   ): Promise<Partial<Role>> {
@@ -79,6 +82,7 @@ export class RoleController {
 
   @Get(':id')
   @Permissions('view-role')
+  @ApiOperation({ summary: 'Get a specific role' })
   async findOne(
     @Param('id', ParseIntPipe) id: number,
     @Query('relations') relations?: string[],
@@ -89,7 +93,8 @@ export class RoleController {
 
   @Put(':id')
   @Permissions('update-role')
-  async update(
+  @ApiOperation({ summary: 'Update an existing role' })
+    async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() role: UpdateRoleDto,
   ): Promise<UpdateResult> {
@@ -103,6 +108,7 @@ export class RoleController {
 
   @Delete(':id')
   @Permissions('delete-role')
+  @ApiOperation({ summary: 'Delete a role' })
   async delete(@Param('id', ParseIntPipe) id: number): Promise<DeleteResult> {
     const role = await this.roleService.findOrThrow(id);
     if (role.name === 'superadmin') {
@@ -114,6 +120,7 @@ export class RoleController {
 
   @Patch(':id/restore')
   @Permissions('restore-role')
+  @ApiOperation({ summary: 'Restore a deleted role' })
   async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
     const role = await this.roleService.findOrThrow(id,[],true);
     if(role.deletedAt){
@@ -121,9 +128,10 @@ export class RoleController {
     }
     throw new ConflictException('Role is not deleted');
   }
-
+  
   @Get(':id/permissions')
   @Permissions('view-role-permissions')
+  @ApiOperation({ summary: 'Get permissions for a specific role' })
   async getPermissionsByRoleId(
     @Param('id', ParseIntPipe) id: number,
   ): Promise<any> {
@@ -134,6 +142,7 @@ export class RoleController {
   @Post(':id/permissions/:permissionId')
   @Roles('superadmin','admin')
   @Permissions('grant-role-permission')
+  @ApiOperation({ summary: 'Grant a permission to a role' })
   async grantPermissionToRole(
     @Param('id', ParseIntPipe) id: number,
     @Param('permissionId', ParseIntPipe) permissionId: number,
@@ -146,6 +155,7 @@ export class RoleController {
   @Delete(':id/permissions/:permissionId')
   @Roles('superadmin','admin')
   @Permissions('revoke-role-permission')
+  @ApiOperation({ summary: 'Revoke a permission from a role' })
   async revokePermissionFromRole(
     @Param('id', ParseIntPipe) id: number,
     @Param('permissionId', ParseIntPipe) permissionId: number,
@@ -157,6 +167,7 @@ export class RoleController {
 
   @Get(':id/permissions/group-by-resource')
   @Permissions('view-role-permissions')
+  @ApiOperation({ summary: 'Get permissions for a specific role grouped by resource' })
   async findAndGroupPermissionsWithRoleAccess(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const role = await this.roleService.findOrThrow(id, ['permissions']);
     return this.roleService.findAndGroupPermissionsWithRoleAccess(role);

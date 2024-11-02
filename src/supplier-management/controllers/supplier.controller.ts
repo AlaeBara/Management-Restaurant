@@ -1,6 +1,6 @@
 import { Supplier } from '../entities/supplier.entity';
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
-import { ApiOperation, ApiQuery, ApiResponse, ApiTags } from '@nestjs/swagger';
+  import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierService } from '../services/supplier.service';
 import { Permissions } from 'src/user-management/decorators/auth.decorator';
@@ -8,6 +8,7 @@ import { UpdateSupplierDto } from '../dto/update-supplier.dto';
 
 @Controller('api/suppliers')
 @ApiTags('Suppliers')
+@ApiBearerAuth()
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) {}
 

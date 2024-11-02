@@ -11,12 +11,13 @@ import {
 } from '@nestjs/common';
 import { Permissions, Roles } from '../decorators/auth.decorator';
 import { UserService } from '../services/user/user.service';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NumericType } from 'typeorm';
 import { UpdateUsernameDto } from '../dto/user/update-username.dto';
 
 @ApiTags('users/profile')
 @Controller('api/users/profile')
+@ApiBearerAuth()
 export default class UserProfileController {
   constructor(private userService: UserService) {}
   //public async updateEmail(req: Request, res: Response) // in progress
@@ -28,6 +29,7 @@ export default class UserProfileController {
   @Patch(':id/username')
   @Roles('superadmin')
   @Permissions('update-user-username')
+  @ApiOperation({ summary: 'Update the username of a user by their ID' })
   async updateUsernameById(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUsernameDto: UpdateUsernameDto,
@@ -38,6 +40,7 @@ export default class UserProfileController {
 
   @Patch('username')
   @Permissions('update-user-username')
+  @ApiOperation({ summary: 'Update the username of the authenticated user' })
   async updateUsernameByUser(
     @Req() request: Request,
     @Body() updateUsernameDto: UpdateUsernameDto,
@@ -49,6 +52,7 @@ export default class UserProfileController {
   }
 
   @Get()
+  @ApiOperation({ summary: 'Get the profile of the authenticated user' })
   async profile(
     @Req() request: Request,
     @Query('relations') relations?: string[],

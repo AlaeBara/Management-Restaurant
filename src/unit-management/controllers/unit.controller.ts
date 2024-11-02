@@ -11,7 +11,7 @@ import {
   Delete,
   Patch,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Permissions } from 'src/user-management/decorators/auth.decorator';
 import { Unit } from '../entities/unit.entity';
 import { UpdateUnitDto } from '../dto/update-unit.dto';
@@ -19,6 +19,7 @@ import { CreateUnitDto } from '../dto/create-unit.dto';
 
 @Controller('api/units')
 @ApiTags('Units')
+@ApiBearerAuth()
 export class UnitController {
   constructor(private unitService: UnitService) {}
 
@@ -33,6 +34,7 @@ export class UnitController {
 
   @Get()
   @Permissions('view-units')
+  @ApiOperation({ summary: 'Get all units' })
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -55,13 +57,15 @@ export class UnitController {
 
   @Post()
   @Permissions('create-unit')
+  @ApiOperation({ summary: 'Create a unit' })
   async createUnits(@Body() createUnitDto: CreateUnitDto) {
     return await this.unitService.create(createUnitDto);
   }
 
   @Get(':id')
   @Permissions('view-unit')
-  async findOne(
+  @ApiOperation({ summary: 'Get a unit by id' })
+  async findOne(  
     @Param('id', ParseUUIDPipe) id: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('findOrThrow') findOrThrow?: boolean,
@@ -74,6 +78,7 @@ export class UnitController {
 
   @Put(':id')
   @Permissions('update-unit')
+  @ApiOperation({ summary: 'Update a unit' })
   async updateUnits(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() unitdto: UpdateUnitDto,
@@ -83,6 +88,7 @@ export class UnitController {
 
   @Delete(':id')
   @Permissions('delete-unit')
+  @ApiOperation({ summary: 'Delete a unit' })
   async deleteUnits(@Param('id', ParseUUIDPipe) id: string) {
     await this.unitService.findOneByIdWithOptions(id,{findOrThrow:true});
     return this.unitService.softDelete(id);
@@ -90,6 +96,7 @@ export class UnitController {
 
   @Patch(':id/restore')
   @Permissions('restore-unit')
+  @ApiOperation({ summary: 'Restore a unit' })
   async restoreUnits(@Param('id', ParseUUIDPipe) id: string) {
     return this.unitService.restoreByUUID(id);
   }

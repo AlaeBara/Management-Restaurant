@@ -20,10 +20,11 @@ import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RoleService } from '../services/role/role.service';
 import { RolesGuard } from '../guards/roles.guard';
 import { PermissionsGuard } from '../guards/permission.guard';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('users')
 @Controller('api/users')
+@ApiBearerAuth()
 @UseGuards(JwtAuthGuard, RolesGuard, PermissionsGuard)
 export class UserController {
   constructor(
@@ -43,6 +44,7 @@ export class UserController {
 
   @Get()
   @Permissions('view-users')
+  @ApiOperation({ summary: 'Get all users' })
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -65,6 +67,7 @@ export class UserController {
 
   @Post()
   @Permissions('create-user')
+  @ApiOperation({ summary: 'Create a new user' })
   async create(@Body() createUserDto: CreateUserDto): Promise<any> {
     await this.userService.throwIfFoundByAnyAttribute(
       {
@@ -79,6 +82,7 @@ export class UserController {
 
   @Get(':id')
   @Permissions('view-user')
+  @ApiOperation({ summary: 'Get a specific user' })
   findOne(
     @Param('id', ParseIntPipe) id: number,
     @Query('relations') relations?: string[],
@@ -89,6 +93,7 @@ export class UserController {
 
   @Put(':id')
   @Permissions('update-user')
+  @ApiOperation({ summary: 'Update an existing user' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
@@ -98,6 +103,7 @@ export class UserController {
 
   @Post(':id/roles/:roleid')
   @Permissions('grant-user-role')
+  @ApiOperation({ summary: 'Grant a role to a user' })
   async grantRoleToUser(
     @Param('id', ParseIntPipe) id: number,
     @Param('roleid', ParseIntPipe) roleid: number,

@@ -14,14 +14,15 @@ import {
 } from '@nestjs/common';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entities/permission.entity';
-import { DeleteResult, UpdateResult } from 'typeorm';
+import { UpdateResult } from 'typeorm';
 import { Permissions } from '../decorators/auth.decorator';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('permissions')
 @Controller('api/permissions')
+@ApiBearerAuth()
 export class PermissionController {
-  constructor(private readonly permissionService: PermissionService) {}
+  constructor(private readonly permissionService: PermissionService) { }
 
   /* private readonly permissionPermissions = [
     { name: 'view-permissions', label: 'View all permissions' },
@@ -34,6 +35,7 @@ export class PermissionController {
 
   @Get()
   @Permissions('view-permissions')
+  @ApiOperation({ summary: 'Get all permissions' })
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -61,12 +63,14 @@ export class PermissionController {
 
   @Get('group-by-resource')
   @Permissions('view-permissions')
+  @ApiOperation({ summary: 'Get all permissions grouped by resource' })
   async findAllPermissionsGroupByResource(@Req() req: Request) {
     return this.permissionService.findAndGroupPermissionsWithUserAccess(req);
   }
 
   @Post()
   @Permissions('create-permission')
+  @ApiOperation({ summary: 'Create a new permission' })
   async create(
     @Body() permission: Permission,
   ): Promise<Partial<Permission>> {
@@ -75,6 +79,7 @@ export class PermissionController {
 
   @Get(':id')
   @Permissions('view-permission')
+  @ApiOperation({ summary: 'Get a specific permission' })
   async findOne(
     @Param('id', ParseIntPipe) id: number,
     @Query('withDeleted') withDeleted?: boolean,
@@ -84,6 +89,7 @@ export class PermissionController {
 
   @Put(':id')
   @Permissions('update-permission')
+  @ApiOperation({ summary: 'Update an existing permission' })
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() permission: Permission,
@@ -93,6 +99,7 @@ export class PermissionController {
 
   @Delete(':id')
   @Permissions('delete-permission')
+  @ApiOperation({ summary: 'Delete a permission' })
   async delete(@Param('id', ParseIntPipe) id: number) {
     await this.permissionService.findOrThrow(id);
     const roles = await this.permissionService.findRolesWithPermission(id);
@@ -106,9 +113,10 @@ export class PermissionController {
 
   @Patch(':id/restore')
   @Permissions('restore-permission')
+  @ApiOperation({ summary: 'Restore a deleted permission' })
   async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
-    const permission = await this.permissionService.findOrThrow(id,[],true);
-    if(permission.deletedAt){
+    const permission = await this.permissionService.findOrThrow(id, [], true);
+    if (permission.deletedAt) {
       return this.permissionService.restore(id);
     }
     throw new ConflictException('Permission is not deleted');

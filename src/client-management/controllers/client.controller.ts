@@ -10,7 +10,7 @@ import {
   Query,
   Req,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { createClientDto } from '../dto/create-client.dto';
 import { Body, Get, Post } from '@nestjs/common';
 import {
@@ -24,6 +24,7 @@ import { statusClient } from '../enums/client.enum';
 
 @Controller('api/clients')
 @ApiTags('Client')
+@ApiBearerAuth()
 export class ClientController {
   constructor(private clientService: ClientService) {}
 
@@ -38,6 +39,7 @@ export class ClientController {
 
   @Get()
   @Permissions('view-clients')
+  @ApiOperation({ summary: 'Get all clients' }) 
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -60,24 +62,28 @@ export class ClientController {
 
   @Post('login')
   @Public()
+  @ApiOperation({ summary: 'Login a client' })
   async loginClient(@Body() loginClientDto: LoginClientDto) {
     return await this.clientService.signin(loginClientDto);
   }
 
   @Post('register')
   @Public()
+  @ApiOperation({ summary: 'Register a client' })
   async registerClient(@Body() createClientDto: createClientDto) {
     return await this.clientService.registerAndSignin(createClientDto);
   }
 
   @Post()
   @Permissions('create-client')
+  @ApiOperation({ summary: 'Create a client' })
   async createClient(@Body() createClientDto: createClientDto) {
     return await this.clientService.createClientByAccess(createClientDto);
   }
 
   @Get(':id')
   @Permissions('view-client')
+  @ApiOperation({ summary: 'Get a client by id' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('relations') relations?: string[],
@@ -88,6 +94,7 @@ export class ClientController {
 
   @Put(':id')
   @Permissions('update-client')
+  @ApiOperation({ summary: 'Update a client' })
   async updateClient(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() clientdto: UpdateClientDto,
@@ -97,12 +104,14 @@ export class ClientController {
 
   @Delete(':id')
   @Permissions('delete-client')
+  @ApiOperation({ summary: 'Delete a client' })
   async deleteClient(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
     await this.clientService.deleteClient(id, request);
   }
 
   @Patch(':id/restore')
   @Permissions('restore-client')
+  @ApiOperation({ summary: 'Restore a client' })
   async restoreClient(@Param('id', ParseUUIDPipe) id: string) {
     return this.clientService.restoreClient(id);
   }

@@ -11,7 +11,7 @@ import {
   Put,
   Query,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { Table } from '../entities/table.entity';
 import { TableService } from '../services/table.service';
 import {
@@ -23,6 +23,7 @@ import { UpdateTableDto } from '../dtos/table/update-table.dto';
 
 @Controller('api/tables')
 @ApiTags('Tables')
+@ApiBearerAuth()
 export class TableController {
   constructor(private readonly tableService: TableService) {}
 
@@ -37,6 +38,7 @@ export class TableController {
 
   @Get()
   @Permissions('view-tables')
+  @ApiOperation({ summary: 'Get all tables' })
   async findAll(
     @Query('page') page?: number,
     @Query('limit') limit?: number,
@@ -59,12 +61,14 @@ export class TableController {
 
   @Get('group-by-zone')
   @Permissions('view-tables')
+  @ApiOperation({ summary: 'Get all tables grouped by zone' })
   async findAllGroupByZone(){
     return this.tableService.findAllGroupByZone();
   }
 
   @Get(':id')
   @Permissions('view-table')
+  @ApiOperation({ summary: 'Get a table by id' })
   async findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('withDeleted') withDeleted?: boolean,
@@ -84,12 +88,14 @@ export class TableController {
 
   @Post()
   @Permissions('create-table')
+  @ApiOperation({ summary: 'Create a table' })
   async create(@Body() createTableDto: CreateTableDto) {
     return this.tableService.createTable(createTableDto);
   }
 
   @Put(':id')
   @Permissions('update-table')
+  @ApiOperation({ summary: 'Update a table' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTableDto: UpdateTableDto,
@@ -99,6 +105,7 @@ export class TableController {
 
   @Delete(':id')
   @Permissions('delete-table')
+  @ApiOperation({ summary: 'Delete a table' })
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOrThrowByUUID(id);
     return this.tableService.softDelete(id);
@@ -106,6 +113,7 @@ export class TableController {
 
   @Patch(':id/restore')
   @Permissions('restore-table')
+  @ApiOperation({ summary: 'Restore a table' })
   async restore(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOrThrowByUUID(id);
     return this.tableService.restoreByUUID(id, true, ['tableCode']);
@@ -113,6 +121,7 @@ export class TableController {
 
   @Get('qrcode/:id')
   @Public()
+  @ApiOperation({ summary: 'Generate a QR code for a table' })
   async generateQrCode(@Param('id') id: string) {
     const table = await this.tableService.findOne(id);
     return `<img src="${table.qrcode}" alt="QR Code" />`;
