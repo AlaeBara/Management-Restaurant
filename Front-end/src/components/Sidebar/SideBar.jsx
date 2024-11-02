@@ -81,24 +81,18 @@ const SideBar = () => {
           { 
             title: "Rôles",
             icon: Shield,
-            subItems: [
-              { title: "Tous les rôles", icon: List, url: "#" },
-              { title: "Attribuer un rôle", icon: UserPlus, url: "#" },
-            ]
           },
           { 
             title: "Permissions",
             icon: Key,
-            subItems: [
-              { title: "Toutes les permissions", icon: UserCheck, url: "#" },
-            ]
-          },
-          { 
-            title: "Zones",
-            icon: Grid2x2Check,
-            url:"/dash/zones"
-          },
+          }
         ],
+      },
+      {
+        title: "Zones",
+        icon: Grid2x2Check,
+        isActive: true,
+        url:"/dash/zones"
       },
     ],
     
