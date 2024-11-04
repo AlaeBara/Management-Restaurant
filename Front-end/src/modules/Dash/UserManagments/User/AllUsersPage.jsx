@@ -321,17 +321,18 @@ const CreateUsers = () => {
 
         {/* header of page  */}
         <div className={style.Headerpage}>
-            <div>
-                <h1 className={style.title}>Gestion Des Utilisateurs</h1>
-                <a href="/dash/Deleted-User" className={style.titleUserSupr} >
-                    <ExternalLink className="mr-3 h-4 w-4 "/>Utilisateurs Supprimés
-                </a>
-            </div>
-            
+            <h1 className={style.title}>Gestion Des Utilisateurs</h1>
+        </div>
+
+        <div className={style.Headerpage}>
+
+            <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
+                <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
+            </button> 
+        
             <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
             </button> 
-            
         </div>
 
 

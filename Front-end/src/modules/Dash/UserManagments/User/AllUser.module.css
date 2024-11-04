@@ -23,6 +23,7 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
+    margin-bottom: 30px;
 }
 
 
@@ -52,6 +53,22 @@
     transition: background-color 0.3s;
 }
 
+.showdeleteuser{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: 1px solid black;
+    color: black;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+.showdeleteuser:hover{
+    background-color: var(--button-add-bg-color);
+    color: white;
+}
+
 .total{
     display: flex;
     justify-content: end;
@@ -65,13 +82,13 @@
        gap: 10px;
     }
     .title {
-        font-size: 12px;
+        font-size: 22px;
     }
     .headerForm{
         margin-bottom: 10px;
     } 
     
-    .showFormButton{
+    .showFormButton,.showdeleteuser{
         font-size: 10px;
     }
 }
