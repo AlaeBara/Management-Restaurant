@@ -8,6 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useUserContext } from '../../../../context/UserContext';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import PaginationNav from './Components/PaginationNav' 
 
 //validation Shema
 import { UpdateSchema } from './schemas/UpdateSchema';
@@ -38,19 +39,29 @@ const CreateUsers = () => {
 
     //for get all user
     const [dataUser, setDataUser] = useState([]);
-    const [NumberOfData, setNumberOfData] = useState([]);
+    const [numberOfData, setnumberOfData] = useState([])
+    ;
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit, setLimit] = useState(10); // Items per page
 
-    const fetchUsers = useCallback(async () => {
+    const totalPages = Math.ceil(numberOfData / limit);
+
+    
+    const fetchUsers = useCallback(async (page = 1, limit = 10) => {
         setLoading(true);
         const token = Cookies.get('access_token');
         try {
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?sort=createdAt:desc`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
+            const response = await axios.get(
+                `${import.meta.env.VITE_BACKEND_URL}/api/users`, 
+                {
+                    params: { page, limit, sort: 'createdAt:desc' },
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
             setDataUser(response.data.data);
-            setNumberOfData(response.data.total);
+            setnumberOfData(response.data.total-1);
         } catch (error) {
             console.error("Failed to fetch users:", error);
             setErrorgetdate("Une erreur s'est produite lors du chargement des utilisateurs.");
@@ -59,9 +70,31 @@ const CreateUsers = () => {
         }
     }, []);
 
+    // Fetch data on initial render and whenever currentPage or limit changes
     useEffect(() => {
-        fetchUsers();
-    }, [fetchUsers]);
+        fetchUsers(currentPage, limit);
+    }, [currentPage, limit, fetchUsers]);
+
+    // Navigate to the next page
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+            setCurrentPage((prev) => prev + 1);
+        }
+    };
+
+    // Navigate to the previous page
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+            setCurrentPage((prev) => prev - 1);
+        }
+    };
+
+    // Calculate item range
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, numberOfData);
+
+
+
 
     
     //for the update 
@@ -289,7 +322,7 @@ const CreateUsers = () => {
         {/* header of page  */}
         <div className={style.Headerpage}>
             <div>
-                <h1 className={style.title}>gestion des utilisateurs</h1>
+                <h1 className={style.title}>Gestion Des Utilisateurs</h1>
                 <a href="/dash/Deleted-User" className={style.titleUserSupr} >
                     <ExternalLink className="mr-3 h-4 w-4 "/>Utilisateurs Supprimés
                 </a>
@@ -302,57 +335,66 @@ const CreateUsers = () => {
         </div>
 
 
-        
-        
-
         {/* Carts Of users */}
         <div>
-             
             {loading ? (
-
                 <div className={style.spinner}>
-                    <Spinner title="Chargement des utilisateurs..." />
+                <Spinner title="Chargement des utilisateurs..." />
                 </div>
-                
             ) : (
-                // Error Message or Data
                 <>
                     {errorgetdate ? (
                         <div className={style.notfound}>
                             <Ban className={style.icon} />
                             <h1>{errorgetdate}</h1>
                         </div>
+
                     ) : (
                         <>
-                            <div className={style.total}> 
-                                <UserRoundCog className="mr-2"  /> Total des utilisateurs : {NumberOfData-1}  
-                            </div> 
-                            <div className={style.userGrid}>
-                                {dataUser.length > 0 ? (
-                                    dataUser
-                                        .filter(userData => userData.username !== user.username) 
-                                        .map(user => (
-                                            <UserCarts
-                                                key={user.id}
-                                                user={user}
-                                                formatDate={formatDate}
-                                                updateStatus={updateStatus}
-                                                deleteUser={deleteUser}
-                                                UpdateGetData={UpdateGetData}
-                                            />
-                                        ))
-                                ) : (
-                                    // No Users Found Message
-                                    <div className={style.notfound}>
-                                        <SearchX className={style.icon} />
-                                        <h1>Aucun utilisateur trouvé</h1>
-                                    </div>
-                                )}
-                            </div>
-                        </>
+                        {dataUser.length - 1 > 0 ? (
+                            <>
+                                <div className={style.total}>
+                                    <UserRoundCog className="mr-2" />
+                                    Total des utilisateurs : {numberOfData - 1}
+                                </div>
+                            
+                                <div className={style.userGrid}>
+                                    {dataUser
+                                    .filter(userData => userData.username !== user.username)
+                                    .map(user => (
+                                        <UserCarts
+                                        key={user.id}
+                                        user={user}
+                                        formatDate={formatDate}
+                                        updateStatus={updateStatus}
+                                        deleteUser={deleteUser}
+                                        UpdateGetData={UpdateGetData}
+                                        />
+                                    ))}
+                                </div>
+
+                                {/* Navigation */}
+                                <PaginationNav
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    startItem={startItem}
+                                    endItem={endItem}
+                                    numberOfData={numberOfData}
+                                    onPreviousPage={handlePreviousPage}
+                                    onNextPage={handleNextPage}
+                                />
+                            </>
+                    ) : (
+                        // No Users Found Message
+                        <div className={style.notfound}>
+                            <SearchX className={style.icon} />
+                            <h1>Aucun utilisateur trouvé</h1>
+                        </div>
                     )}
                 </>
             )}
+            </>
+        )}
         </div>
 
 
