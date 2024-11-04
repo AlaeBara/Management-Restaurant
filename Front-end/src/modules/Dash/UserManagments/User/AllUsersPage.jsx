@@ -1,26 +1,27 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState , useCallback } from 'react';
 import axios from 'axios';
 import style from './AllUser.module.css';
 import Cookies from 'js-cookie';
-import {SearchX  ,UserRoundCog, Plus , ExternalLink  } from 'lucide-react';
+import {SearchX  ,UserRoundCog, Plus , ExternalLink , Ban } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { useUserContext } from '../../../../context/UserContext';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 
 //validation Shema
-import { UserSchema } from './schemas/UserSchema';
 import { UpdateSchema } from './schemas/UpdateSchema';
 //components
 import Spinner from '../../../../components//Spinner/Spinner'
 import UpdateUserForm from './components/UpdateUserForm'; 
 import UpdateUserStatusForm from './components/UpdateUserStatusForm';
 import UserCarts from './Components/UserCarts'
-import AddUserForm  from './Components/AddUserForm'
 
  
 const CreateUsers = () => {
     const { user } = useUserContext()
+
+    const navigate = useNavigate()
     
     const [formData, setFormData] = useState({
         firstname: '',
@@ -32,126 +33,37 @@ const CreateUsers = () => {
     });
 
     const [errors, setErrors] = useState({});
-    const [showPassword, setShowPassword] = useState(false);
-    const [isFormVisible, setIsFormVisible] = useState(false);
     const [loading, setLoading] = useState(false);
-
-    const handleChange = ({ target: { name, value } }) => {
-        setFormData((prevData) => ({ ...prevData, [name]: value }));
-    };
-
-
-    //add user
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            UserSchema.parse(formData);
-            const token = Cookies.get('access_token');
-
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
-                headers: {
-                Authorization: `Bearer ${token}`,
-                },
-            });
-            setFormData({
-                firstname: '',
-                lastname: '',
-                username: '',
-                password: '',
-                email: '',
-                gender: '',
-            });
-            setErrors({});
-            fetchUsers();
-            setIsFormVisible(false)
-            setLoading(true);
-            // Show spinner for 3 seconds and then hide
-            setTimeout(() => {
-                setLoading(false);
-                toast.success('Utilisateur créé avec succès!', {
-                    icon: '✅',
-                    position: "top-right",
-                    autoClose: 3000,
-                });
-            }, 3000);
-        } catch (error) {
-        if (error instanceof z.ZodError) {
-            const fieldErrors = {};
-            error.errors.forEach(({ path, message }) => {
-            fieldErrors[path[0]] = message;
-            });
-            setErrors(fieldErrors);
-        } else {
-            console.error('Error creating user:', error);
-            let errorMessage = 'Erreur lors de la création de l\'utilisateur';
-
-            if (error.response?.data?.message) {
-            if (error.response.data.message.includes('User already exists')) {
-                errorMessage = "L'utilisateur existe déjà";
-            } else if (error.response.data.message.includes('Invalid token')) {
-                errorMessage = "Token invalide";
-            } else {
-                errorMessage = error.response.data.message;
-            }
-            }
-
-            toast.error(errorMessage, {
-                icon: '❌',
-                position: "top-right",
-                autoClose: 3000,
-            });
-        }
-        }
-    };
-
-    //open and close form 
-    const CloseForm = () => {
-        setIsFormVisible(false)
-        setFormData({
-            firstname: '',
-            lastname: '',
-            username: '',
-            password: '',
-            email: '',
-            gender: '',
-        });
-        setErrors({});
-    }
+    const [errorgetdate, setErrorgetdate] = useState(null);
 
     //for get all user
     const [dataUser, setDataUser] = useState([]);
     const [NumberOfData, setNumberOfData] = useState([]);
 
-    const fetchUsers = async () => {
+    const fetchUsers = useCallback(async () => {
+        setLoading(true);
         const token = Cookies.get('access_token');
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?sort=createdAt:desc`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-        });
-        setDataUser(response.data.data);
-        setNumberOfData(response.data.total)
-    };
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?sort=createdAt:desc`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setDataUser(response.data.data);
+            setNumberOfData(response.data.total);
+        } catch (error) {
+            console.error("Failed to fetch users:", error);
+            setErrorgetdate("Une erreur s'est produite lors du chargement des utilisateurs.");
+        } finally {
+            setLoading(false); 
+        }
+    }, []);
 
     useEffect(() => {
         fetchUsers();
-    }, []);
+    }, [fetchUsers]);
 
-    //for the menu (option of any user)
-    const [activeMenu, setActiveMenu] = useState(null);
-    const handleMenuClick = (userId, e) => {
-        e.stopPropagation();
-        setActiveMenu(activeMenu === userId ? null : userId);
-    };
-
-    // Close dropdown when clicking outside
-    React.useEffect(() => {
-        const handleClickOutside = () => setActiveMenu(null);
-        document.addEventListener('click', handleClickOutside);
-        return () => document.removeEventListener('click', handleClickOutside);
-    }, []);
-
-
+    
     //for the update 
     const [isEditing, setIsEditing] = useState(false);
     const [originalData, setOriginalData] = useState({});
@@ -383,63 +295,66 @@ const CreateUsers = () => {
                 </a>
             </div>
             
-            <button onClick={() => setIsFormVisible(true)} className={style.showFormButton}>
+            <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
             </button> 
             
         </div>
 
 
-        <div className={style.total}> 
-            <UserRoundCog className="mr-2"  /> Total des utilisateurs : {NumberOfData-1}  
-        </div> 
+        
         
 
         {/* Carts Of users */}
-        {loading ? (
-                    <div className={style.spinner}>
-                        <Spinner title="Création de l'utilisateur en cours..."/>
-                    </div>
-                    
-                ) :
-            (<div className={style.userGrid}>
-                {dataUser.length > 0 &&
-                    (dataUser
-                    .filter(userData => userData.username !== user.username) 
-                    .map(user => (
-                        <UserCarts
-                            key={user.id}
-                            user={user}
-                            formatDate={formatDate}
-                            updateStatus={updateStatus}
-                            deleteUser={deleteUser}
-                            UpdateGetData={UpdateGetData}
-                        />
-                    )
-                ))}
-            </div>)
-        }
+        <div>
+             
+            {loading ? (
 
-        {dataUser.length ==0  &&
-            <div className={style.notfound}>
-                <SearchX className={style.icon} />
-                <h1>Aucun utilisateur trouvé</h1>
-            </div>
-        }
+                <div className={style.spinner}>
+                    <Spinner title="Chargement des utilisateurs..." />
+                </div>
+                
+            ) : (
+                // Error Message or Data
+                <>
+                    {errorgetdate ? (
+                        <div className={style.notfound}>
+                            <Ban className={style.icon} />
+                            <h1>{errorgetdate}</h1>
+                        </div>
+                    ) : (
+                        <>
+                            <div className={style.total}> 
+                                <UserRoundCog className="mr-2"  /> Total des utilisateurs : {NumberOfData-1}  
+                            </div> 
+                            <div className={style.userGrid}>
+                                {dataUser.length > 0 ? (
+                                    dataUser
+                                        .filter(userData => userData.username !== user.username) 
+                                        .map(user => (
+                                            <UserCarts
+                                                key={user.id}
+                                                user={user}
+                                                formatDate={formatDate}
+                                                updateStatus={updateStatus}
+                                                deleteUser={deleteUser}
+                                                UpdateGetData={UpdateGetData}
+                                            />
+                                        ))
+                                ) : (
+                                    // No Users Found Message
+                                    <div className={style.notfound}>
+                                        <SearchX className={style.icon} />
+                                        <h1>Aucun utilisateur trouvé</h1>
+                                    </div>
+                                )}
+                            </div>
+                        </>
+                    )}
+                </>
+            )}
+        </div>
 
-
-        {/* forum for add user */}
-        {isFormVisible && (
-            <AddUserForm
-                formData={formData}
-                handleChange={handleChange}
-                handleSubmit={handleSubmit}
-                setShowPassword={setShowPassword}
-                showPassword={showPassword}
-                errors={errors}
-                CloseForm={CloseForm}
-            />
-        )}
 
         {/* forum for update user */}
         {isEditing && (

@@ -32,22 +32,6 @@ const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
         setUserToDelete(null);
     };
 
-    const roles = [
-        { name: 'Admin', color: '#FF5733' },
-        { name: 'Manager', color: '#33FF57' },
-        { name: 'Controller', color: '#3357FF' },
-        { name: 'Serveur', color: '#FF33A1' },
-        { name: 'Chef', color: '#FFD700' },
-        { name: 'Sous-Chef', color: '#FF4500' },
-        { name: 'Barman', color: '#8A2BE2' },
-        { name: 'Caissier', color: '#20B2AA' }
-    ];
-
-    const getRandomRole = () => {
-        return roles[Math.floor(Math.random() * roles.length)];
-    };
-    const role = getRandomRole();
-
     return (
         <>
             <div className={style.userCard} key={user.id}>
@@ -70,9 +54,8 @@ const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
                     />
                     <div className={style.userInfo}>
                         <h3>{user.firstname} {user.lastname}</h3>
-                        {/* <p className={style.username}>@{user.username}</p> */}
                         <p className={style.username}>
-                            {role.name}
+                            Manager
                         </p>
                     </div>
                 </div>

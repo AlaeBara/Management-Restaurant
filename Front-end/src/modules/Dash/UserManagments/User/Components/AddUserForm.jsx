@@ -1,157 +1,204 @@
-import React from 'react';
-import { X, Eye, EyeOff } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import React, { useState } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
+import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Label } from "@/components/ui/label"
+import { UserSchema } from '../schemas/UserSchema'
+import Cookies from 'js-cookie'
+import axios from 'axios'
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+import { z } from 'zod'
 
-const AddUserForm = ({ formData, handleChange, handleSubmit, setShowPassword, showPassword, errors, CloseForm }) => {
+export default function Component() {
+  const [formData, setFormData] = useState({
+    firstname: '',
+    lastname: '',
+    username: '',
+    password: '',
+    email: '',
+    gender: '',
+  })
+
+  const [showPassword, setShowPassword] = useState(false)
+  const [errors, setErrors] = useState({})
+
+  const handleChange = ({ target: { name, value } }) => {
+    setFormData((prevData) => ({ ...prevData, [name]: value }))
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    try {
+      UserSchema.parse(formData)
+      const token = Cookies.get('access_token')
+
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      })
+      setFormData({
+        firstname: '',
+        lastname: '',
+        username: '',
+        password: '',
+        email: '',
+        gender: '',
+      })
+      setErrors({})
+
+      toast.success('Utilisateur créé avec succès!', {
+        icon: '✅',
+        position: "top-right",
+        autoClose: 3000,
+      })
+    } catch (error) {
+      if (error instanceof z.ZodError) {
+        const fieldErrors = {}
+        error.errors.forEach(({ path, message }) => {
+          fieldErrors[path[0]] = message
+        })
+        setErrors(fieldErrors)
+      } else {
+        console.error('Error creating user:', error)
+        let errorMessage = 'Erreur lors de la création de l\'utilisateur'
+
+        if (error.response?.data?.message) {
+          if (error.response.data.message.includes('User already exists')) {
+            errorMessage = "L'utilisateur existe déjà"
+          } else if (error.response.data.message.includes('Invalid token')) {
+            errorMessage = "Token invalide"
+          } else {
+            errorMessage = error.response.data.message
+          }
+        }
+
+        toast.error(errorMessage, {
+          icon: '❌',
+          position: "top-right",
+          autoClose: 3000,
+        })
+      }
+    }
+  }
+
   return (
-    <div className="fixed inset-0 bg-black/50 flex items-center justify-center p-4 backdrop-blur-sm z-50">
-      <Card className="w-full max-w-md bg-white shadow-2xl max-h-[90vh] overflow-y-auto">
-        <CardHeader className="p-4 sticky top-0 bg-white border-b z-10">
-          <div className="flex items-center justify-between">
-            <CardTitle className="text-lg font-medium">
-              Créer nouveau utilisateur
-            </CardTitle>
-            <button
-              onClick={CloseForm}
-              className="rounded-full p-1.5 hover:bg-gray-100 transition-colors"
-            >
-              <X className="h-4 w-4" />
-            </button>
-          </div>
-        </CardHeader>
-        <CardContent className="p-4 space-y-4">
-          <form onSubmit={handleSubmit} className="space-y-4">
-            {/* Name Fields */}
-            <div className="grid grid-cols-2 gap-3">
-              <div className="space-y-1">
-                <label className="text-sm font-medium">
-                  Prénom
-                </label>
-                <input
-                  type="text"
-                  name="firstname"
-                  value={formData.firstname}
+
+    <>
+      <ToastContainer />
+      <h1 className="text-2xl font-bold m-3 text-blackfont-sans">Ajouter un nouvel utilisateur</h1>
+
+      <div className="container p-0 max-w-2xl">
+        <Card className="w-full border-none shadow-none">
+          <CardContent className="pt-6 ">
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstname">Prénom</Label>
+                  <Input
+                    id="firstname"
+                    name="firstname"
+                    value={formData.firstname}
+                    onChange={handleChange}
+                    placeholder="Prénom"
+                  />
+                  {errors.firstname && (
+                    <p className="text-xs text-red-500 mt-1">{errors.firstname}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="lastname">Nom</Label>
+                  <Input
+                    id="lastname"
+                    name="lastname"
+                    value={formData.lastname}
+                    onChange={handleChange}
+                    placeholder="Nom"
+                  />
+                  {errors.lastname && (
+                    <p className="text-xs text-red-500 mt-1">{errors.lastname}</p>
+                  )}
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="username">Nom d'utilisateur</Label>
+                  <Input
+                    id="username"
+                    name="username"
+                    value={formData.username}
+                    onChange={handleChange}
+                    placeholder="Nom d'utilisateur"
+                  />
+                  {errors.username && (
+                    <p className="text-xs text-red-500 mt-1">{errors.username}</p>
+                  )}
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="password">Mot de passe</Label>
+                  <div className="relative">
+                    <Input
+                      id="password"
+                      name="password"
+                      type={showPassword ? 'text' : 'password'}
+                      value={formData.password}
+                      onChange={handleChange}
+                      placeholder="Mot de passe"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowPassword((prev) => !prev)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                    >
+                      {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                    </button>
+                  </div>
+                  {errors.password && (
+                    <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+                  )}
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
                   onChange={handleChange}
-                  placeholder="Prénom"
-                  className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
+                  placeholder="Email"
                 />
-                {errors.firstname && (
-                  <p className="text-xs text-red-500 mt-1">{errors.firstname}</p>
+                {errors.email && (
+                  <p className="text-xs text-red-500 mt-1">{errors.email}</p>
                 )}
               </div>
-              <div className="space-y-1">
-                <label className="text-sm font-medium">
-                  Nom
-                </label>
-                <input
-                  type="text"
-                  name="lastname"
-                  value={formData.lastname}
-                  onChange={handleChange}
-                  placeholder="Nom"
-                  className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-                />
-                {errors.lastname && (
-                  <p className="text-xs text-red-500 mt-1">{errors.lastname}</p>
+              <div className="space-y-2">
+                <Label htmlFor="gender">Genre</Label>
+                <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
+                  <SelectTrigger id="gender">
+                    <SelectValue placeholder="Sélectionnez le genre" />
+                  </SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="male">Masculin</SelectItem>
+                    <SelectItem value="female">Féminin</SelectItem>
+                  </SelectContent>
+                </Select>
+                {errors.gender && (
+                  <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
                 )}
               </div>
-            </div>
-
-            {/* Username Field */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">
-                Nom d'utilisateur
-              </label>
-              <input
-                type="text"
-                name="username"
-                value={formData.username}
-                onChange={handleChange}
-                placeholder="Nom d'utilisateur"
-                className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-              />
-              {errors.username && (
-                <p className="text-xs text-red-500 mt-1">{errors.username}</p>
-              )}
-            </div>
-
-            {/* Password Field */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">
-                Mot de passe
-              </label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  name="password"
-                  value={formData.password}
-                  onChange={handleChange}
-                  placeholder="Mot de passe"
-                  className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword((prev) => !prev)}
-                  className="absolute right-2 top-2 text-gray-400 hover:text-gray-600"
-                >
-                  {showPassword ? <Eye className="h-4 w-4" /> : <EyeOff className="h-4 w-4" />}
-                </button>
-              </div>
-              {errors.password && (
-                <p className="text-xs text-red-500 mt-1">{errors.password}</p>
-              )}
-            </div>
-
-            {/* Email Field */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">
-                Email
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                placeholder="Email"
-                className="h-9 w-full rounded-md border border-gray-200 px-2.5 text-sm focus:outline-none focus:ring-1 focus:ring-gray-400"
-              />
-              {errors.email && (
-                <p className="text-xs text-red-500 mt-1">{errors.email}</p>
-              )}
-            </div>
-
-            {/* Gender Field */}
-            <div className="space-y-1">
-              <label className="text-sm font-medium">
-                Genre
-              </label>
-              <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
-                <SelectTrigger>
-                  <SelectValue placeholder="Sélectionnez le genre" />
-                </SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="male">Masculin</SelectItem>
-                  <SelectItem value="female">Féminin</SelectItem>
-                </SelectContent>
-              </Select>
-              {errors.gender && (
-                <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
-              )}
-            </div>
-
-            {/* Submit Button */}
-            <button
-              type="submit"
-              className="w-full bg-black text-white hover:bg-gray-800 h-9 rounded-md text-sm font-medium transition-colors  disabled:opacity-50 disabled:cursor-not-allowed mt-2"
-            >
-              Ajouter
-            </button>
-          </form>
-        </CardContent>
-      </Card>
-    </div>
-  );
-};
-
-export default AddUserForm;
+              <Button type="submit" className="w-full">
+                Ajouter
+              </Button>
+            </form>
+          </CardContent>
+        </Card>
+      </div>
+    </>
+    
+  )
+}
