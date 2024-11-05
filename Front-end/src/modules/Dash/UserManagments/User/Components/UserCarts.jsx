@@ -2,8 +2,11 @@ import React, { useState } from 'react';
 import style from "./UserCarts.module.css";
 import { Edit, Trash2, Settings , GitCommitVertical} from 'lucide-react';
 import UserStatus from './UserStatus';
+import { useNavigate } from 'react-router-dom';
 
 const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
+
+    const navigate = useNavigate()
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [userToDelete, setUserToDelete] = useState(null);
 
@@ -65,7 +68,7 @@ const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
                 <p className={style.lastLogin}>Créer à: {formatDate(user.createdAt)}</p>
 
                 <div className={style.userAction}>
-                    <div className={style.btn} onClick={() => UpdateGetData(user)}>
+                    <div className={style.btn} onClick={() => navigate(`/dash/Update-user/${user.id}`)}>
                         <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                     </div>
 

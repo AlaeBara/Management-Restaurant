@@ -100,6 +100,7 @@ const CreateUsers = () => {
     //for the update 
     const [isEditing, setIsEditing] = useState(false);
     const [originalData, setOriginalData] = useState({});
+
     const [formUpdateData, setUpdateData] = useState({
         id: null,
         firstname: '',
@@ -133,7 +134,7 @@ const CreateUsers = () => {
             id: null,
             firstname: '',
             lastname: '',
-           address: null,
+            address: null,
             phone: null,
             gender: '',
         });
