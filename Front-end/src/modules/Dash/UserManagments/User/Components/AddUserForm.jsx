@@ -20,6 +20,8 @@ export default function Component() {
     password: '',
     email: '',
     gender: '',
+    address: null,
+    phone: null
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -47,6 +49,8 @@ export default function Component() {
         password: '',
         email: '',
         gender: '',
+        address: null,
+        phone: null
       })
       setErrors({})
 
@@ -89,13 +93,25 @@ export default function Component() {
 
     <>
       <ToastContainer />
-      <h1 className="text-2xl font-bold m-3 text-blackfont-sans">Ajouter un nouvel utilisateur</h1>
+      <div className="space-y-2 m-3">
+        <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouvel utilisateur</h1>
+        <p className="text-base text-gray-600">
+            Remplissez les informations ci-dessous pour ajouter un nouvel utilisateur au système.
+        </p>
+      </div>
+
+      
 
       <div className="container p-0 max-w-2xl">
+
         <Card className="w-full border-none shadow-none">
+
           <CardContent className="pt-6 ">
+
             <form onSubmit={handleSubmit} className="space-y-4">
+
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                 <div className="space-y-2">
                   <Label htmlFor="firstname">Prénom</Label>
                   <Input
@@ -109,6 +125,7 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.firstname}</p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="lastname">Nom</Label>
                   <Input
@@ -122,6 +139,7 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.lastname}</p>
                   )}
                 </div>
+                
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -138,44 +156,77 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.username}</p>
                   )}
                 </div>
+
                 <div className="space-y-2">
-                  <Label htmlFor="password">Mot de passe</Label>
-                  <div className="relative">
-                    <Input
-                      id="password"
-                      name="password"
-                      type={showPassword ? 'text' : 'password'}
-                      value={formData.password}
-                      onChange={handleChange}
-                      placeholder="Mot de passe"
-                    />
-                    <button
-                      type="button"
-                      onClick={() => setShowPassword((prev) => !prev)}
-                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
-                    >
-                      {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
-                    </button>
-                  </div>
-                  {errors.password && (
-                    <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+                  <Label htmlFor="email">Email</Label>
+                  <Input
+                    id="email"
+                    name="email"
+                    type="email"
+                    value={formData.email}
+                    onChange={handleChange}
+                    placeholder="Email"
+                  />
+                  {errors.email && (
+                    <p className="text-xs text-red-500 mt-1">{errors.email}</p>
                   )}
                 </div>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="firstname">Adresse</Label>
+                  <Input
+                    id="address"
+                    name="address"
+                    value={formData.address || ''}
+                    onChange={handleChange}
+                    placeholder="adresse"
+                  />
+                  {errors.address && (
+                    <p className="text-xs text-red-500 mt-1">{errors.address}</p>
+                  )}
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="lastname">Téléphone</Label>
+                  <Input
+                    id="phone"
+                    name="phone"
+                    value={formData.phone || ''}
+                    onChange={handleChange}
+                    placeholder="Numéro de Téléphone"
+                  />
+                  {errors.phone && (
+                    <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
+                  )}
+                </div>
+              </div>
+
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
-                <Input
-                  id="email"
-                  name="email"
-                  type="email"
-                  value={formData.email}
-                  onChange={handleChange}
-                  placeholder="Email"
-                />
-                {errors.email && (
-                  <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                <Label htmlFor="password">Mot de passe</Label>
+                <div className="relative">
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? 'text' : 'password'}
+                    value={formData.password}
+                    onChange={handleChange}
+                    placeholder="Mot de passe"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword((prev) => !prev)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                  >
+                    {showPassword ? <Eye className="h-5 w-5" /> : <EyeOff className="h-5 w-5" />}
+                  </button>
+                </div>
+                {errors.password && (
+                  <p className="text-xs text-red-500 mt-1">{errors.password}</p>
                 )}
               </div>
+
               <div className="space-y-2">
                 <Label htmlFor="gender">Genre</Label>
                 <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
@@ -191,9 +242,11 @@ export default function Component() {
                   <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
                 )}
               </div>
+
               <Button type="submit" className="w-full">
                 Ajouter
               </Button>
+
             </form>
           </CardContent>
         </Card>
