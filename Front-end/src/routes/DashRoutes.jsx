@@ -11,6 +11,7 @@ const AllUsers = lazy(() => import('@/modules/Dash/UserManagments/User/AllUsersP
 const DeletedUsers = lazy(() => import('@/modules/Dash/UserManagments/User/DeletedUsersPage'));
 const Zones = lazy(() => import('@/modules/ZoneAndTable/Zones'));
 const AddUserForm = lazy(() => import('@/modules/Dash/UserManagments/User/Components/AddUserForm'));
+const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'));
 
 const ClientRoutes = () => {
   return (
@@ -57,6 +58,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <AddUserForm />
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Gestion-des-roles" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AllRoles/>
               </MainLayout>
             </ProtectedRoute>
           } 

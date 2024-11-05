@@ -81,6 +81,7 @@ const SideBar = () => {
           { 
             title: "Rôles",
             icon: Shield,
+            url:'/dash/Gestion-des-roles'
           },
           { 
             title: "Permissions",
