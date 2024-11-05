@@ -33,6 +33,7 @@
 
 .userInfo {
     flex: 1;
+    
 }
 
 .userInfo h3 {
@@ -43,6 +44,7 @@
     white-space: nowrap;
     display: inline-flex;
     align-items: center; 
+    white-space: normal;
 }
 .userPost{
     font-size: 12px;
@@ -65,7 +67,10 @@
     font-size: 14px;
     color: #000;
     font-family: "Poppins", sans-serif;
-}
+    white-space: normal; 
+    overflow-wrap: break-word; 
+    word-wrap: break-word; 
+} 
 
 .lastLogin {
     margin: 0 0 8px 0;
