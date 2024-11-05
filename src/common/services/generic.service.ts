@@ -220,12 +220,41 @@ export class GenericService<T> {
     const conditions = Object.entries(attributes).map(([key, value]) => ({
       [key]: value,
     }));
-  
+
     // Use findOne with OR conditions
     const entity = await this.repository.findOne({
       where: conditions as any,
+      select: ['id'] as any,
     });
-  
+
+    if (entity) {
+      throw new ConflictException(
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with one of these attributes already exists`
+      );
+    }
+  }
+
+  async validateUniqueExcludingSelf(attributes: Partial<T>, excludeId?: number | string) {
+    // Create query builder
+    const query = this.repository.createQueryBuilder(this.name);
+
+    // Add OR conditions for each attribute
+    const conditions = Object.entries(attributes);
+    conditions.forEach(([key, value], index) => {
+      if (index === 0) {
+        query.where(`${this.name}.${key} = :${key}`, { [key]: value });
+      } else {
+        query.orWhere(`${this.name}.${key} = :${key}`, { [key]: value });
+      }
+    });
+
+    // Exclude the current entity if excludeId is provided
+    if (excludeId) {
+      query.andWhere(`${this.name}.id != :excludeId`, { excludeId });
+    }
+
+    const entity = await query.getOne();
+
     if (entity) {
       throw new ConflictException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with one of these attributes already exists`
@@ -353,18 +382,18 @@ export class GenericService<T> {
     if (entity) {
       if (checkUnique && listOfUniqueAttributes.length > 0) {
         // Create an object with only the specified unique attributes
-     /*    const uniqueAttributes = listOfUniqueAttributes.reduce((acc, attr) => {
-          acc[attr] = entity[attr];
-          return acc;
-        }, {});
-
-        console.log(uniqueAttributes);
-
-        // Check if any active record exists with the same unique attributes
-        const existingEntity = (await this.repository.findOne({
-          where: uniqueAttributes as any,
-          withDeleted: false,
-        })) as any; */
+        /*    const uniqueAttributes = listOfUniqueAttributes.reduce((acc, attr) => {
+             acc[attr] = entity[attr];
+             return acc;
+           }, {});
+   
+           console.log(uniqueAttributes);
+   
+           // Check if any active record exists with the same unique attributes
+           const existingEntity = (await this.repository.findOne({
+             where: uniqueAttributes as any,
+             withDeleted: false,
+           })) as any; */
 
         const conditions = listOfUniqueAttributes.map(attr => ({
           [attr]: entity[attr]
@@ -376,7 +405,7 @@ export class GenericService<T> {
           withDeleted: false,
         })) as any;
 
-        console.log('existingEntity',existingEntity);
+        console.log('existingEntity', existingEntity);
 
         if (existingEntity && existingEntity.id === entity.id) {
           throw new ConflictException(
@@ -414,11 +443,7 @@ export class GenericService<T> {
   }
 
   async checkSelf(user: T, @Req() request: Request) {
-    if ((user as any).id === request['user'].sub) {
-      throw new BadRequestException(
-        'You cannot do this action to self-account',
-      );
-    }
+    return (user as any).id === request['user'].sub
   }
 
   async findOrThrowByName(

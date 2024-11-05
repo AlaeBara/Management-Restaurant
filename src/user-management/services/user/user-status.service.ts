@@ -20,13 +20,13 @@ export class UserStatusService extends GenericService<User> {
     return user.isBlocked;
   }
 
-  async checkSelf(user: User, @Req() request: Request) {
-    if (user.id === request['user'].sub) {
-      throw new BadRequestException(
-        'You cannot do this action to self-account',
-      );
-    }
-  }
+  /*  async checkSelf(user: User, @Req() request: Request) {
+     if (user.id === request['user'].sub) {
+       throw new BadRequestException(
+         'You cannot do this action to self-account',
+       );
+     }
+   } */
 
   async markAsDeleted(user: User, @Req() request: Request) {
     const originalStatus = user.status;
@@ -38,7 +38,9 @@ export class UserStatusService extends GenericService<User> {
       if (user.roles.some((role) => role.name === 'superadmin')) {
         throw new BadRequestException('Super admin cannot be deleted');
       }
-      await this.checkSelf(user, request);
+      if (await this.checkSelf(user, request)) {
+        throw new BadRequestException('You cannot do this action to self-account');
+      }
       const updateResult = await this.userRepository.update(user.id, {
         status: UserStatus.DELETED,
         isBlocked: true
@@ -64,12 +66,12 @@ export class UserStatusService extends GenericService<User> {
   async markAsRestored(id: number) {
     try {
       await this.findOneByIdWithOptions(id, { select: 'status,isBlocked', onlyDeleted: true });
-  
+
       let updateResult = await this.update(id, { status: UserStatus.ACTIVE, isBlocked: false });
       if (!updateResult.affected) {
         throw new ConflictException('Problem while restoring user');
       }
-    
+
       return await this.restoreByUUID(id, true, ['username', 'email', 'phone']);
     } catch (error) {
       await this.update(id, { status: UserStatus.DELETED, isBlocked: true });
@@ -84,7 +86,9 @@ export class UserStatusService extends GenericService<User> {
     if (status === UserStatus.DELETED) {
       throw new BadRequestException('User cannot be deleted');
     }
-    await this.checkSelf(user, request);
+    if (await this.checkSelf(user, request)) {
+      throw new BadRequestException('You cannot do this action to self-account');
+    }
     user.status = status;
     if (!this.isBlocked(user)) {
       user.isBlocked = true;

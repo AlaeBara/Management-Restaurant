@@ -9,6 +9,9 @@ import {
   Put,
   UseGuards,
   ParseIntPipe,
+  Req,
+  Inject,
+  forwardRef,
 } from '@nestjs/common';
 
 import { CreateUserDto } from '../dto/user/create-user.dto';
@@ -22,6 +25,8 @@ import { RolesGuard } from '../guards/roles.guard';
 import { PermissionsGuard } from '../guards/permission.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
+
+
 @ApiTags('users')
 @Controller('api/users')
 @ApiBearerAuth()
@@ -29,8 +34,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class UserController {
   constructor(
     private readonly userService: UserService,
-    private readonly roleService: RoleService,
-  ) {}
+    private readonly roleService: RoleService
+  ) { }
 
   /* private readonly userPermissions = [
     { permission: 'view-users', label: 'View all users' },
@@ -69,15 +74,9 @@ export class UserController {
   @Permissions('create-user')
   @ApiOperation({ summary: 'Create a new user' })
   async create(@Body() createUserDto: CreateUserDto): Promise<any> {
-    await this.userService.throwIfFoundByAnyAttribute(
-      {
-        username: createUserDto.username,
-        email: createUserDto.email,
-      },
-      [],
-      true,
-    );
+    await this.userService.throwIfFoundByAnyAttribute({ username: createUserDto.username, email: createUserDto.email }, [], true);
     await this.userService.create(createUserDto);
+    return { message: 'Great! The user has been successfully created.', status: 200 };
   }
 
   @Get(':id')
@@ -97,8 +96,11 @@ export class UserController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @Req() request: Request,
   ) {
-    return await this.userService.update(+id, updateUserDto);
+    // return await this.userService.update(+id, updateUserDto);
+    await this.userService.updateUser(id, updateUserDto, request);
+    return { message: 'Great! The user has been successfully updated.', status: 200 };
   }
 
   @Post(':id/roles/:roleid')
@@ -111,5 +113,6 @@ export class UserController {
     const user = await this.userService.findOrThrow(id, ['roles']);
     const role = await this.roleService.findOrThrow(roleid);
     this.userService.grantRoleToUser(user, role);
+    return { message: 'Great! The role has been successfully granted to the user.', status: 200 };
   }
 }

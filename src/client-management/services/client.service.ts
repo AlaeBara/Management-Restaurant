@@ -6,6 +6,7 @@ import { createClientDto } from '../dto/create-client.dto';
 import { hash, verify } from 'argon2';
 import { RoleService } from 'src/user-management/services/role/role.service';
 import {
+  BadRequestException,
   ConflictException,
   forwardRef,
   Inject,
@@ -194,7 +195,9 @@ export class ClientService extends GenericService<Client> {
     const client = await this.findOneByIdWithOptions(id, { select: 'status,isBlocked' });
     const originalStatus = client.status;
     const originalIsBlocked = client.isBlocked;
-    await this.checkSelf(client, request);
+    if (await this.checkSelf(client, request)) {
+      throw new BadRequestException('You cannot do this action to self-account');
+    }
     try {
       client.status = statusClient.DELETED;
       const updateResult = await this.update(id, { status: statusClient.DELETED, isBlocked: true });
