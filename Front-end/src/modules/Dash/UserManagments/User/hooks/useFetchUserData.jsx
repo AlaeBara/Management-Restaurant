@@ -19,6 +19,8 @@ const useFetchUserData = (id) => {
   const [roles, setRoles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const [messageError , setMessageError]= useState()
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -50,6 +52,7 @@ const useFetchUserData = (id) => {
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);
+        setMessageError("Échec de la récupération des données.")
         toast.error("Échec de la récupération des données.", {
           icon: '❌',
           position: 'top-right',
@@ -61,7 +64,7 @@ const useFetchUserData = (id) => {
     fetchData();
   }, [id]);
 
-  return { formData, setFormData, originalData, roles, isLoading, setOriginalData };
+  return { formData, setFormData, originalData, roles, isLoading, setOriginalData , messageError };
 };
 
 export default useFetchUserData;
