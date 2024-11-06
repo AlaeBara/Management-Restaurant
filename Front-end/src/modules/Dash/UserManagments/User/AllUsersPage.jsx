@@ -52,7 +52,7 @@ const CreateUsers = () => {
         const token = Cookies.get('access_token');
         try {
             const response = await axios.get(
-                `${import.meta.env.VITE_BACKEND_URL}/api/users`, 
+                `${import.meta.env.VITE_BACKEND_URL}/api/users?relations=roles`, 
                 {
                     params: { page, limit, sort: 'createdAt:desc' },
                     headers: {
@@ -94,9 +94,6 @@ const CreateUsers = () => {
     const endItem = Math.min(currentPage * limit, numberOfData);
 
 
-
-
-    
     //for the update 
     const [isEditing, setIsEditing] = useState(false);
     const [originalData, setOriginalData] = useState({});
@@ -370,7 +367,6 @@ const CreateUsers = () => {
                                         formatDate={formatDate}
                                         updateStatus={updateStatus}
                                         deleteUser={deleteUser}
-                                        UpdateGetData={UpdateGetData}
                                         />
                                     ))}
                                 </div>

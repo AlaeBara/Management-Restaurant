@@ -205,12 +205,6 @@ export default function UpdateUser() {
                 </Card>
             </div>
         ) }
-
-
-
-    
-
-       
     </>
   );
 }

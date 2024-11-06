@@ -4,7 +4,7 @@ import { Edit, Trash2, Settings , GitCommitVertical} from 'lucide-react';
 import UserStatus from './UserStatus';
 import { useNavigate } from 'react-router-dom';
 
-const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
+const userCarts = ({ user, updateStatus, deleteUser}) => {
 
     const navigate = useNavigate()
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -57,9 +57,15 @@ const userCarts = ({ user, updateStatus, deleteUser, UpdateGetData }) => {
                     />
                     <div className={style.userInfo}>
                         <h3>{user.firstname} {user.lastname}</h3>
-                        <p className={style.username}>
-                            Manager
-                        </p>
+
+                        {user.roles[0]?.name  ? 
+                            <p className={style.username}>
+                                @{user.roles[0]?.name}
+                            </p>: 
+                            <p className={style.sansrole}>
+                                sans rôle
+                            </p>
+                        }
                     </div>
                 </div>
 

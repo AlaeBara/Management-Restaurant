@@ -54,12 +54,17 @@
 .username {
     margin: 0 0 4px 0;
     font-size: 14px;
-    color: #f5f5f5f5;
-    background-color: rgba(176, 173, 173, 0.9);
+    color: #888;
     font-family: "Poppins", sans-serif;
     width: fit-content;
-    padding: 2px 10px;
+    padding: 2px 0px;
     border-radius: 10px;
+}
+.sansrole{
+    font-size: 14px;
+    margin: 0 0 4px 0;
+    color: red;
+    font-family: "Poppins", sans-serif;
 }
 
 .email {
