@@ -1,3 +1,6 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
 .roleCard {
     background-color: white;
     border-radius: 8px;
@@ -8,6 +11,7 @@
     margin-bottom: 16px;
     width: 100%;
     max-width: 400px;
+    max-height: fit-content;
 }
 
 .roleCard:hover {
@@ -37,6 +41,7 @@
     font-size: 14px;
     color: #666;
     margin: 0;
+    font-family: "Poppins", sans-serif;
 }
 
 .dateInfo {
@@ -166,6 +171,22 @@
 .confirmButton:hover {
     background-color: #c62828;
 }
+
+.toggleButton {
+    background: none;
+    border: none;
+    color: #000000;
+    cursor: pointer;
+    font-size: 14px;
+    margin-left: 8px;
+    padding: 0;
+}
+
+.vide{
+    color: #888;
+    font-family: "Poppins", sans-serif;
+}
+
 
 /* Responsive Design */
 @media (max-width: 768px) {

@@ -27,6 +27,11 @@ const RoleCart = ({ role  }) => {
         console.log("aaaa")
     }
 
+    const [isExpanded, setIsExpanded] = useState(false);
+    const toggleExpand = () => {
+        setIsExpanded(!isExpanded);
+    };
+
     return (
         <>
             <div className={style.roleCard}>
@@ -35,7 +40,23 @@ const RoleCart = ({ role  }) => {
 
                     <div className={style.roleInfo}>
                         <h3 className={style.roleTitle}>{role.name}</h3>
-                        <p className={style.roleLabel}>{role.label}</p>
+                        <p className={style.roleLabel}>
+                            {role.label ? (
+                                <>
+                                    {isExpanded || role.label.length <= 46 
+                                        ? role.label
+                                        : `${role.label.substring(0, 46 )}...`}
+                                    {role.label.length > 46  && (
+                                        <button onClick={toggleExpand} className={style.toggleButton}>
+                                            {isExpanded ? 'Voir moins' : 'Voir plus'}
+                                        </button>
+                                    )}
+                                </>
+                            ) : (
+                                <p className={style.vide}>*Description vide*</p>
+                            )}
+                        </p>
+
                         <div className={style.dateInfo}>
                             <span>Créé le: {formatDate(role.createdAt)}</span>
                         </div>
