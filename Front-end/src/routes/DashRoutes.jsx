@@ -14,6 +14,7 @@ const AddUserForm = lazy(() => import('@/modules/Dash/UserManagments/User/Compon
 const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'));
 const UpdateUserpage = lazy(() => import('@/modules/Dash/UserManagments/User/Components/UpdateUserpage'))
 const AddRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/AddRole'))
+const UpdateRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/UpdateRole'))
 
 const ClientRoutes = () => {
   return (
@@ -93,6 +94,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <AddRole/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Update-Role/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <UpdateRole />
               </MainLayout>
             </ProtectedRoute>
           } 

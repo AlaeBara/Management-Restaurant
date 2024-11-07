@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import style from "./RolesCarts.module.css";
+import { useNavigate } from 'react-router-dom';
 
-const RoleCart = ({ role  }) => {
+const RoleCart = ({ role  , Delete}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [userToDelete, setUserToDelete] = useState(null);
+    const navigate = useNavigate()
 
     const formatDate = (dateString) => {
         if (!dateString) return "introuvable";
@@ -14,18 +15,19 @@ const RoleCart = ({ role  }) => {
     };
 
     const handleDelete = () => {
-        setUserToDelete(role);
         setIsModalVisible(true);
     };
 
-    const confirmDelete = () => {
+    const confirmDelete = (id) => {
         setIsModalVisible(false);
-        setUserToDelete(null);
+        Delete(id)
     };
+    
 
-    const handleEdit = ()=>{
-        console.log("aaaa")
+    const handleEdit = (id) =>{
+        navigate(`/dash/Update-Role/${id}`)
     }
+    
 
     const [isExpanded, setIsExpanded] = useState(false);
     const toggleExpand = () => {
@@ -53,7 +55,7 @@ const RoleCart = ({ role  }) => {
                                     )}
                                 </>
                             ) : (
-                                <p className={style.vide}>*Description vide*</p>
+                                <span className={style.vide}>*Description vide*</span>
                             )}
                         </p>
 
@@ -66,7 +68,7 @@ const RoleCart = ({ role  }) => {
 
                 <div className={style.actions}>
                     <button
-                        onClick={handleEdit}
+                        onClick={() => handleEdit(role.id)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
                         Modifier
@@ -85,7 +87,7 @@ const RoleCart = ({ role  }) => {
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                         <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer le rôle "{userToDelete?.name}" ?
+                            Êtes-vous sûr de vouloir supprimer le rôle "{role?.name}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -95,7 +97,7 @@ const RoleCart = ({ role  }) => {
                                 Annuler
                             </button>
                             <button
-                                onClick={confirmDelete}
+                                onClick={()=>confirmDelete(role.id)}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
                                 Supprimer

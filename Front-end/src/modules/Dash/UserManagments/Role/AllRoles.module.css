@@ -17,7 +17,14 @@
     align-items: center;
     padding: 10px;
     border-radius: 8px;
-    
+}
+
+.Headerpage2{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    padding: 10px;
+    border-radius: 8px;
 }
 
 .title {
