@@ -221,7 +221,7 @@ const CreateUsers = () => {
                             <>
                                 <div className={style.total}>
                                     <UserRoundCog className="mr-2" />
-                                    Total des utilisateurs : {numberOfData - 1}
+                                    Total des utilisateurs : {numberOfData}
                                 </div>
                             
                                 <div className={style.userGrid}>

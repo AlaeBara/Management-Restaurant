@@ -13,7 +13,7 @@ const Zones = lazy(() => import('@/modules/ZoneAndTable/Zones'));
 const AddUserForm = lazy(() => import('@/modules/Dash/UserManagments/User/Components/AddUserForm'));
 const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'));
 const UpdateUserpage = lazy(() => import('@/modules/Dash/UserManagments/User/Components/UpdateUserpage'))
-
+const AddRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/AddRole'))
 
 const ClientRoutes = () => {
   return (
@@ -86,6 +86,32 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/Add-Role" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddRole/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
         {/* Zones and table mock up */}
         <Route 

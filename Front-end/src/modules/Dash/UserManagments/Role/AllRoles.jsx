@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRoles } from './hooks/useRoles';
-import { SearchX, UserRoundCog , ExternalLink , Plus  } from 'lucide-react';
+import { SearchX, UserRoundCog , ExternalLink , Plus , Ban } from 'lucide-react';
 import Spinner from '../../../../components/Spinner/Spinner';
 import PaginationNav from '../User/Components/PaginationNav';
 import RoleCart from './Components/RoleCarts';
@@ -36,28 +36,31 @@ const AllRoles = () => {
 
   return (
     <>
+    
       <div className={styles.Headerpage}>
         <h1 className={styles.title}>Gestion Des Rôles</h1>
       </div>
       
       <div className={styles.Headerpage}>
 
-        <button onClick={() => navigate('/dash/Deleted-User')} className={styles.showdeleteuser}>
-            <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
+        <button onClick={() => navigate('#')} className={styles.showdeleteuser}>
+            <ExternalLink className="mr-3 h-4 w-4 "/>Les Rôles Supprimés
         </button> 
     
-        <button onClick={() => navigate('/dash/Add-User')} className={styles.showFormButton}>
-            <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
+        <button onClick={() => navigate('/dash/Add-Role')} className={styles.showFormButton}>
+            <Plus className="mr-3 h-4 w-4 " /> Ajouter un Rôle
         </button> 
       </div>
 
       <div>
+
         {loading ? (
           <div className={styles.spinner}>
             <Spinner title="Chargement des rôles..." />
           </div>
         ) : error ? (
-          <div className={styles.error}>
+          <div className={styles.notfound}>
+            <Ban className={styles.icon} />
             <span>{error}</span>
           </div>
         ) : (
