@@ -1,6 +1,6 @@
 import { BadRequestException, forwardRef, Inject, Injectable, Req } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
-import { hash } from 'argon2';
+import { hash, verify } from 'argon2';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateUserDto } from 'src/user-management/dto/user/create-user.dto';
 import { UpdateUsernameDto } from 'src/user-management/dto/user/update-username.dto';
@@ -10,6 +10,7 @@ import { UserStatus } from 'src/user-management/enums/user-status.enum';
 import { DataSource, Repository } from 'typeorm';
 import { RoleService } from '../role/role.service';
 import { UpdateUserDto } from 'src/user-management/dto/user/update-user.dto';
+import { UpdatePasswordDto } from 'src/user-management/dto/user/update-password.dto';
 
 @Injectable()
 export class UserService extends GenericService<User> {
@@ -187,5 +188,28 @@ export class UserService extends GenericService<User> {
     return this.userRepository.save(updatedUser);
   }
 
+  async updatePasswordByProfile(@Req() request: Request, updatePasswordDto: UpdatePasswordDto) {
+    const reqUser = request['user'];
+    const user = await this.findOneByIdWithOptions(reqUser.sub, { select:'password' } );
+    const oldPassword = updatePasswordDto.oldPassword;
+    const newPassword = updatePasswordDto.newPassword;
+    const confirmPassword = updatePasswordDto.confirmPassword;
 
+    console.log(user)
+
+    if (oldPassword === newPassword) {
+      throw new BadRequestException('New password is the same as the old password');
+    }
+
+    if (newPassword !== confirmPassword) {
+      throw new BadRequestException('New password and confirm password do not match');
+    }
+
+    if (!(await verify(user.password, oldPassword))) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+
+    user.password = await hash(newPassword);
+    return this.userRepository.save(user);
+  }
 }

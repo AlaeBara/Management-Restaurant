@@ -14,6 +14,7 @@ import { UserService } from '../services/user/user.service';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { NumericType } from 'typeorm';
 import { UpdateUsernameDto } from '../dto/user/update-username.dto';
+import { UpdatePasswordDto } from '../dto/user/update-password.dto';
 
 @ApiTags('users/profile')
 @Controller('api/users/profile')
@@ -64,5 +65,13 @@ export default class UserProfileController {
       relations,
       withDeleted,
     );
+  }
+
+  @Patch('password')
+  @Permissions('update-user-password')
+  @ApiOperation({ summary: 'Update the password of the authenticated user' })
+  async updatePassword(@Req() request: Request, @Body() updatePasswordDto: UpdatePasswordDto) {
+     await this.userService.updatePasswordByProfile(request, updatePasswordDto);
+     return {message: 'Votre mot de passe a été modifié avec succès. Merci de votre confiance.', status: 200};
   }
 }
