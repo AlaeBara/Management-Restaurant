@@ -11,6 +11,7 @@
     margin-bottom: 16px;
     width: 100%;
     max-width: 400px;
+    min-height: 25vh;
     max-height: fit-content;
 }
 
@@ -35,6 +36,8 @@
     font-weight: 600;
     color: #333;
     margin: 0 0 4px 0;
+    text-transform: capitalize;
+    margin-bottom: 20px;
 }
 
 .roleLabel {
@@ -55,6 +58,7 @@
 
 .actions {
     display: flex;
+    flex-wrap: wrap;
     gap: 8px;
     justify-content: flex-end;
     margin-top: 16px;
@@ -71,8 +75,11 @@
 }
 
 .editButton {
-    background-color: #e3f2fd;
-    color: #1976d2;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f1f1f1;
+    color: #333;
 }
 
 .editButton:hover {
@@ -80,6 +87,9 @@
 }
 
 .deleteButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     background-color: #ffebee;
     color: #d32f2f;
 }

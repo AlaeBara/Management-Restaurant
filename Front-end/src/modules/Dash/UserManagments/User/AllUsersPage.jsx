@@ -33,7 +33,7 @@ const CreateUsers = () => {
     const [numberOfData, setnumberOfData] = useState([]);
     
     const [currentPage, setCurrentPage] = useState(1);
-    const [limit, setLimit] = useState(10); // Items per page
+    const [limit, setLimit] = useState(8); // Items per page
 
     const totalPages = Math.ceil(numberOfData / limit);
 

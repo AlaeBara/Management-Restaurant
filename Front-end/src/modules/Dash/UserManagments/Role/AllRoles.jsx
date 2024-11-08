@@ -14,7 +14,7 @@ import axios  from 'axios';
 const AllRoles = () => {
     const navigate = useNavigate()
     const [currentPage, setCurrentPage] = useState(1);
-    const [limit] = useState(5);
+    const [limit] = useState(10);
     const { roles, totalRoles, loading, error, fetchRoles } = useRoles();
 
     const totalPages = Math.ceil(totalRoles / limit);

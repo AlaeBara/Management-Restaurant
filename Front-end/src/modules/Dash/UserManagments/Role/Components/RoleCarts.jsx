@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import style from "./RolesCarts.module.css";
 import { useNavigate } from 'react-router-dom';
+import { Edit, Trash2 } from 'lucide-react';
 
 const RoleCart = ({ role  , Delete}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -71,13 +72,13 @@ const RoleCart = ({ role  , Delete}) => {
                         onClick={() => handleEdit(role.id)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        Modifier
+                        <Edit  className="mr-2 h-4 w-4" /> Modifier
                     </button>
                     <button
                         onClick={handleDelete}
                         className={`${style.actionButton} ${style.deleteButton}`}
                     >
-                        Supprimer
+                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                     </button>
                 </div>
             </div>

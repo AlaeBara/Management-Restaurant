@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import style from "./UserCarts.module.css";
-import { Edit, Trash2, Settings , GitCommitVertical} from 'lucide-react';
+import { Edit, Trash2, Settings } from 'lucide-react';
 import UserStatus from './UserStatus';
 import { useNavigate } from 'react-router-dom';
 

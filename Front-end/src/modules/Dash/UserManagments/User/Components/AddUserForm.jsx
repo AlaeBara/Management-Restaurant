@@ -11,8 +11,10 @@ import axios from 'axios'
 import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { z } from 'zod'
+import { useNavigate } from 'react-router-dom'
 
 export default function Component() {
+  const navigate = useNavigate()
   const [formData, setFormData] = useState({
     firstname: '',
     lastname: '',
@@ -59,6 +61,7 @@ export default function Component() {
         position: "top-right",
         autoClose: 3000,
       })
+      navigate('/dash/Create-User')
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {}
@@ -156,19 +159,19 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.username}</p>
                   )}
                 </div>
-
                 <div className="space-y-2">
-                  <Label htmlFor="email">Email</Label>
-                  <Input
-                    id="email"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    placeholder="Email"
-                  />
-                  {errors.email && (
-                    <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                  <Label htmlFor="gender">Genre</Label>
+                  <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
+                    <SelectTrigger id="gender">
+                      <SelectValue placeholder="Sélectionnez le genre" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="male">Masculin</SelectItem>
+                      <SelectItem value="female">Féminin</SelectItem>
+                    </SelectContent>
+                  </Select>
+                  {errors.gender && (
+                    <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
                   )}
                 </div>
               </div>
@@ -204,6 +207,21 @@ export default function Component() {
               </div>
 
               <div className="space-y-2">
+                <Label htmlFor="email">Email</Label>
+                <Input
+                  id="email"
+                  name="email"
+                  type="email"
+                  value={formData.email}
+                  onChange={handleChange}
+                  placeholder="Email"
+                />
+                {errors.email && (
+                  <p className="text-xs text-red-500 mt-1">{errors.email}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
                 <Label htmlFor="password">Mot de passe</Label>
                 <div className="relative">
                   <Input
@@ -224,22 +242,6 @@ export default function Component() {
                 </div>
                 {errors.password && (
                   <p className="text-xs text-red-500 mt-1">{errors.password}</p>
-                )}
-              </div>
-
-              <div className="space-y-2">
-                <Label htmlFor="gender">Genre</Label>
-                <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
-                  <SelectTrigger id="gender">
-                    <SelectValue placeholder="Sélectionnez le genre" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="male">Masculin</SelectItem>
-                    <SelectItem value="female">Féminin</SelectItem>
-                  </SelectContent>
-                </Select>
-                {errors.gender && (
-                  <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
                 )}
               </div>
 
