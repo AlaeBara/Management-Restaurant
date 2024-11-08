@@ -46,6 +46,7 @@ export default function Component() {
                 label: ''
             });
             setErrors({});
+            navigate("/dash/Gestion-des-roles")
 
             toast.success('Rôle créé avec succès!', {
                 icon: '✅',
@@ -120,7 +121,7 @@ export default function Component() {
                                 Annuler 
                             </Button>
                             <Button type="submit" className="w-full">
-                                Annuler
+                                Ajouter
                             </Button>
 
                         </div>
