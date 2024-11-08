@@ -141,11 +141,11 @@ const CreateUsers = () => {
 
         <div className={style.Headerpage2}>
             <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
+                <ExternalLink className="mr-3 h-4 w-4 "/>Utilisateurs Supprimés
             </button> 
         
             <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
+                <Plus className="mr-3 h-4 w-4 " /> Ajouter  utilisateur
             </button> 
         </div>
 

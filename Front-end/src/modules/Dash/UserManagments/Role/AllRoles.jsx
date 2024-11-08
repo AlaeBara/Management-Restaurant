@@ -80,7 +80,7 @@ const AllRoles = () => {
       
       <div className={styles.Headerpage2}>
         <button onClick={() => navigate('/dash/Add-Role')} className={styles.showFormButton}>
-          <Plus className="mr-3 h-4 w-4 " /> Ajouter un Rôle
+          <Plus className="mr-3 h-4 w-4 " /> Ajouter Rôle
         </button>
       </div>
 
