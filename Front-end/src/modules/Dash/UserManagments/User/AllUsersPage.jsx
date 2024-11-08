@@ -20,9 +20,6 @@ const CreateUsers = () => {
 
     const navigate = useNavigate()
     
-    const [formData, setFormData] = useState({
-        id: null
-    });
 
     const [loading, setLoading] = useState(false);
     const [errorgetdate, setErrorgetdate] = useState(null);
@@ -134,28 +131,26 @@ const CreateUsers = () => {
 
         {/* header of page  */}
         <div className={style.Headerpage}>
-            <h1 className={style.title}>Gestion Des Utilisateurs</h1>
+            <div>
+                <h1 className={`${style.title} !mb-0 `}>Gestion Des Utilisateurs</h1>
+                <p className="text-base text-gray-600 mt-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium unde perspiciatis distinctio optio cupiditate, excepturi nostrum alias repudiandae libero perferendis facere, eius voluptates quo molestias nam corrupti eum assumenda doloribus.</p>
+            </div>
+        </div> 
 
+        
 
+        <div className={style.Headerpage2}>
+            <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
+                <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
+            </button> 
+        
+            <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
+                <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
+            </button> 
         </div>
 
-        <div className={style.Header}>
-
-            <div className={style.Headerpage2}>
-                <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
-                    <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
-                </button> 
             
-                <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
-                    <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
-                </button> 
-            </div>
-
-            <div className={style.total}>
-                <UserRoundCog className="mr-2" />
-                Total des utilisateurs : {numberOfData}
-            </div>
-        </div>
+        
 
         {/* Carts Of users */}
         <div>

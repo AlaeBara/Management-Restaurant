@@ -2,7 +2,7 @@ import React, { useEffect, useState, useCallback } from 'react';
 import axios from 'axios';
 import style from './AllUser.module.css';
 import Cookies from 'js-cookie';
-import { SearchX, UserRoundCog, EllipsisVertical, RotateCcw } from 'lucide-react';
+import { SearchX} from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from '../../../../components/Spinner/Spinner';
@@ -23,7 +23,7 @@ const DeletedUsers = () => {
         setLoading(true);
         try {
             const token = Cookies.get('access_token');
-            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?onlyDeleted=true&limit=${limit}&page=${currentPage}`, {
+            const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users?onlyDeleted=true&limit=${limit}&page=${currentPage}&relations=roles`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -99,6 +99,7 @@ const DeletedUsers = () => {
             <div className={style.Headerpage}>
                 <h1 className={style.title}>Historique Des Utilisateurs Supprimés</h1>
             </div>
+
             {loading ? (
                 <div className={style.spinnerContainer}>
                     <Spinner title="Chargement des utilisateurs supprimés..." />
@@ -107,9 +108,6 @@ const DeletedUsers = () => {
                 <>
                     {dataUser.length > 0 ? (
                         <div>
-                            <div className={style.total}>
-                                <UserRoundCog className="mr-2" /> Total des utilisateurs : {numberOfDate}
-                            </div>
                             <div className={style.userGrid}>
                                 {dataUser.map((user) => (
                                     <UserDeletedCarts key={user.id}  user={user} restore={restoreUser}/> 

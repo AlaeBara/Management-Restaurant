@@ -130,21 +130,13 @@
 
 .userAction {
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    align-items: center;
-    gap: 10px 10px;
-}
-
-
-.userAction {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: flex-end;
-    gap: 12px;
-    width: 100%;
+    gap: 10px;
+    justify-content: space-around;
     margin-top: 30px;
+    width: 100%;
 }
+
+
 
 .btn {
     padding: 8px 12px;
@@ -159,7 +151,8 @@
     gap: 6px;
     cursor: pointer;
     transition: background-color 0.3s, transform 0.2s;
-    text-align: center;
+    justify-content: center;
+    width: 48%;
 }
 
 .btn:hover {
@@ -262,7 +255,6 @@
     .btn {
         padding: 8px 10px;
         font-size: 12px;
-        width: 100%;
         justify-content: center;
     }
 }

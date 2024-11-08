@@ -27,9 +27,15 @@ const userCarts = ({ user, restore }) => {
                     />
                     <div className={style.userInfo}>
                         <h3>{user.firstname} {user.lastname}</h3>
-                        <p className={style.username}>
-                            Manager
-                        </p>
+                        
+                        {user.roles[0]?.name  ? 
+                            <p className={style.username}>
+                                @{user.roles[0]?.name}
+                            </p>: 
+                            <p className={style.sansrole}>
+                                sans rôle
+                            </p>
+                        }
                     </div>
                 </div>
 

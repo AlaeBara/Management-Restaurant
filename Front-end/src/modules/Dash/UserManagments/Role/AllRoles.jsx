@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRoles } from './hooks/useRoles';
-import { SearchX, SquareChartGantt , ExternalLink , Plus , Ban } from 'lucide-react';
+import { SearchX, SquareChartGantt  , Plus , Ban } from 'lucide-react';
 import Spinner from '../../../../components/Spinner/Spinner';
 import PaginationNav from '../User/Components/PaginationNav';
 import RoleCart from './Components/RoleCarts';
@@ -72,17 +72,16 @@ const AllRoles = () => {
       <ToastContainer/>
     
       <div className={styles.Headerpage}>
-        <h1 className={styles.title}>Gestion Des Rôles</h1>
+        <div>
+          <h1 className={`${styles.title} !mb-0 `}>Gestion Des Rôles</h1>
+          <p className="text-base text-gray-600 mt-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium unde perspiciatis distinctio optio cupiditate, excepturi nostrum alias repudiandae libero perferendis facere, eius voluptates quo molestias nam corrupti eum assumenda doloribus.</p>
+        </div>
       </div>
       
       <div className={styles.Headerpage2}>
         <button onClick={() => navigate('/dash/Add-Role')} className={styles.showFormButton}>
-            <Plus className="mr-3 h-4 w-4 " /> Ajouter un Rôle
+          <Plus className="mr-3 h-4 w-4 " /> Ajouter un Rôle
         </button>
-        <div className={styles.total}>
-          <SquareChartGantt className="mr-2" />
-          Total des rôles : {totalRoles}
-        </div>
       </div>
 
       <div>

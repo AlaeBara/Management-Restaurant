@@ -26,16 +26,10 @@
 .Headerpage2{
     display: flex;
     flex-wrap: wrap;
-    justify-content: space-between;
+    justify-content: end;
     align-items: center;
     border-radius: 8px;
     margin-bottom: 30px;
-}
-
-.total{
-    display: flex;
-    margin: 10px;
-    font-family: "Poppins", sans-serif;
 }
 
 .title {

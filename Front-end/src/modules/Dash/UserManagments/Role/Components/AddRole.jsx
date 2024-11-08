@@ -8,6 +8,7 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
+import { useNavigate } from 'react-router-dom';
 
 // Zod schema for form validation
 const roleSchema = z.object({
@@ -16,57 +17,58 @@ const roleSchema = z.object({
 });
 
 export default function Component() {
-  const [formData, setFormData] = useState({
-    name: '',
-    label: ''
-  });
-  const [errors, setErrors] = useState({});
+    const navigate = useNavigate()
+    const [formData, setFormData] = useState({
+        name: '',
+        label: ''
+    });
+    const [errors, setErrors] = useState({});
 
-  const handleChange = (e) => {
-    setFormData({ ...formData, [e.target.name]: e.target.value });
-  };
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    try {
-        roleSchema.parse(formData);
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        try {
+            roleSchema.parse(formData);
 
-        const token = Cookies.get('access_token');
-        const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/roles`, formData, {
-            headers: {
-            Authorization: `Bearer ${token}`,
-            },
-        });
-
-        // Reset form data and errors on success
-        setFormData({
-            name: '',
-            label: ''
-        });
-        setErrors({});
-
-        toast.success('Rôle créé avec succès!', {
-            icon: '✅',
-            position: "top-right",
-            autoClose: 3000,
-        });
-    } catch (error) {
-        if (error instanceof z.ZodError) {
-            const fieldErrors = error.errors.reduce((acc, { path, message }) => {
-            acc[path[0]] = message;
-            return acc;
-            }, {});
-            setErrors(fieldErrors);
-        } else {
-            console.error('Error creating role:', error.response?.data?.message || error.message);
-            toast.error("Erreur lors de la création de rôle", {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            const token = Cookies.get('access_token');
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/roles`, formData, {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
             });
+
+            // Reset form data and errors on success
+            setFormData({
+                name: '',
+                label: ''
+            });
+            setErrors({});
+
+            toast.success('Rôle créé avec succès!', {
+                icon: '✅',
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } catch (error) {
+            if (error instanceof z.ZodError) {
+                const fieldErrors = error.errors.reduce((acc, { path, message }) => {
+                acc[path[0]] = message;
+                return acc;
+                }, {});
+                setErrors(fieldErrors);
+            } else {
+                console.error('Error creating role:', error.response?.data?.message || error.message);
+                toast.error("Erreur lors de la création de rôle", {
+                icon: '❌',
+                position: "top-right",
+                autoClose: 3000,
+                });
+            }
         }
-    }
-  };
+    };
 
   return (
     <>
@@ -112,9 +114,18 @@ export default function Component() {
                             )}
                         </div>
 
-                        <Button type="submit" className="w-full">
-                            Ajouter Rôle
-                        </Button>
+                        <div className='flex gap-4'>
+
+                            <Button type="submit" onClick={()=>navigate('/dash/Gestion-des-roles')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
+                                Annuler 
+                            </Button>
+                            <Button type="submit" className="w-full">
+                                Annuler
+                            </Button>
+
+                        </div>
+                        
+
                     </form>
                 </CardContent>
             </Card>
