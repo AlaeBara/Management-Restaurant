@@ -47,7 +47,7 @@ export class UserStatusService extends GenericService<User> {
       });
 
       if (!updateResult.affected) {
-        throw new Error('Update failed');
+        throw new BadRequestException('Update failed');
       }
 
       return await this.softDelete(user.id);

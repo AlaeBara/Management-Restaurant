@@ -1,4 +1,4 @@
-import { ConflictException, Injectable, UnauthorizedException } from '@nestjs/common';
+import { ConflictException, Injectable, NotFoundException, UnauthorizedException } from '@nestjs/common';
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateRoleDto } from 'src/user-management/dto/role/create.dto';
@@ -27,7 +27,7 @@ export class RoleService extends GenericService<Role> {
       relations: ['permissions'],
     });
     if (!role) {
-      throw new Error('Role not found');
+      throw new NotFoundException('Role not found');
     }
 
     const permissions = role.permissions.map((permission) => permission.name);

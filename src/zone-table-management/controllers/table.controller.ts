@@ -123,7 +123,7 @@ export class TableController {
   @Public()
   @ApiOperation({ summary: 'Generate a QR code for a table' })
   async generateQrCode(@Param('id') id: string) {
-    const table = await this.tableService.findOneByIdWithOptions(id, {select: ['qrcode']});
+    const table = await this.tableService.findOne(id);
     return `<img src="${table.qrcode}" alt="QR Code" />`;
   }
 }

@@ -10,7 +10,7 @@ import { RolesSeeder } from 'src/user-management/seeders/role.seeder';
 import { UserPermissionSeeder } from 'src/user-management/seeders/user-permission.seeder';
 import { TablePermissionSeeder } from 'src/zone-table-management/seeders/table-permissions.dto';
 import { ZonePermissionSeeder } from 'src/zone-table-management/seeders/zone-permissions.dto';
-
+import { StoragePermissionSeeder } from 'src/storage-management/seeders/storage-permissions.dto';
 
 @Injectable()
 export class MasterSeeder {
@@ -24,7 +24,8 @@ export class MasterSeeder {
         private readonly zonePermissionSeeder: ZonePermissionSeeder,
         private readonly clientPermissionSeeder: ClientPermissionSeeder,
         private readonly unitPermissionsSeeder: UnitPermissionsSeeder,
-        private readonly supplierPermissionsSeeder: SupplierPermissionsSeeder
+        private readonly supplierPermissionsSeeder: SupplierPermissionsSeeder,
+        private readonly storagePermissionSeeder: StoragePermissionSeeder
     ) { }
 
     async seedAll() {
@@ -38,6 +39,7 @@ export class MasterSeeder {
         await this.clientPermissionSeeder.seed();
         await this.unitPermissionsSeeder.seed();
         await this.supplierPermissionsSeeder.seed();
+        await this.storagePermissionSeeder.seed();
         console.log('All seeders executed');
     }
 }

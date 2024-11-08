@@ -7,11 +7,13 @@ import { ClientManagementModule } from 'src/client-management/client-management.
 import { UnitModule } from 'src/unit-management/unit.module';
 import { SupplierModule } from 'src/supplier-management/supplier.module';
 
+import { StorageModule } from 'src/storage-management/storage.module';
+
 @Global()
 @Module({
-  imports: [UserManagementModule, ZoneTableModule, ClientManagementModule, UnitModule, SupplierModule],
+  imports: [UserManagementModule, ZoneTableModule, ClientManagementModule, UnitModule, SupplierModule, StorageModule],
   controllers: [],
   providers: [MailService, MasterSeeder],
   exports: [MailService],
 })
-export class CommonModule {}
+export class CommonModule { }

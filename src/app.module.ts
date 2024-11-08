@@ -13,6 +13,7 @@ import { ZoneTableModule } from './zone-table-management/zone-table.module';
 import { ClientManagementModule } from './client-management/client-management.module';
 import { UnitModule } from './unit-management/unit.module';
 import { SupplierModule } from './supplier-management/supplier.module';
+import { StorageModule } from './storage-management/storage.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -29,29 +30,35 @@ import { SupplierModule } from './supplier-management/supplier.module';
     UnitModule,
     ZoneTableModule,
     SupplierModule,
+    StorageModule,
     CommonModule,
     TypeOrmModule.forRoot({
-        type: 'postgres',
-        host: process.env.DB_HOST,
-        port: parseInt(process.env.DB_PORT),
-        username: process.env.DB_USERNAME,
-        password: process.env.DB_PASSWORD,
-        database: process.env.DB_NAME,
-        autoLoadEntities: true,
-        synchronize: true,
+      type: 'postgres',
+      host: process.env.DB_HOST,
+      port: parseInt(process.env.DB_PORT),
+      username: process.env.DB_USERNAME,
+      password: process.env.DB_PASSWORD,
+      database: process.env.DB_NAME,
+      autoLoadEntities: true,
+      synchronize: true,
     }),
     MailerModule.forRoot({
       transport: {
         host: process.env.EMAIL_HOST,
+        port: 587, // Add explicit port
+        secure: true, // Add secure option for TLS
         auth: {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
         },
+        tls: {
+          rejectUnauthorized: false // Add this for development
+        }
       },
     }),
   ],
   controllers: [],
-  providers: [ {
+  providers: [{
     provide: APP_GUARD,
     useClass: JwtAuthGuard,
   },
@@ -65,4 +72,4 @@ import { SupplierModule } from './supplier-management/supplier.module';
   },],
   exports: [],
 })
-export class AppModule {}
+export class AppModule { }
