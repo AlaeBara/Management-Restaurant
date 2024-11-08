@@ -46,10 +46,10 @@ const RoleCart = ({ role  , Delete}) => {
                         <p className={style.roleLabel}>
                             {role.label ? (
                                 <>
-                                    {isExpanded || role.label.length <= 46 
+                                    {isExpanded || role.label.length <= 30
                                         ? role.label
-                                        : `${role.label.substring(0, 46 )}...`}
-                                    {role.label.length > 46  && (
+                                        : `${role.label.substring(0, 30 )}...`}
+                                    {role.label.length > 30  && (
                                         <button onClick={toggleExpand} className={style.toggleButton}>
                                             {isExpanded ? 'Voir moins' : 'Voir plus'}
                                         </button>

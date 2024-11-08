@@ -4,7 +4,7 @@ import { Edit, Trash2, Settings } from 'lucide-react';
 import UserStatus from './UserStatus';
 import { useNavigate } from 'react-router-dom';
 
-const userCarts = ({ user, updateStatus, deleteUser}) => {
+const userCarts = ({ user, deleteUser}) => {
 
     const navigate = useNavigate()
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -77,12 +77,6 @@ const userCarts = ({ user, updateStatus, deleteUser}) => {
                     <div className={style.btn} onClick={() => navigate(`/dash/Update-user/${user.id}`)}>
                         <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                     </div>
-
-                    {user.status !== "deleted" && (
-                        <div className={style.btn} onClick={() => updateStatus(user.status, user.id)}>
-                            <Settings className="mr-2 h-4 w-4" /> Changer le Statut
-                        </div>
-                    )}
 
                     {user.status !== "deleted" && (
                         <div

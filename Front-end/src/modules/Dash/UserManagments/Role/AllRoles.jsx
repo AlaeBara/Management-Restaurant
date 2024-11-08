@@ -68,7 +68,7 @@ const AllRoles = () => {
     };
 
   return (
-    <>
+    <div className={styles.container}>
       <ToastContainer/>
     
       <div className={styles.Headerpage}>
@@ -78,7 +78,11 @@ const AllRoles = () => {
       <div className={styles.Headerpage2}>
         <button onClick={() => navigate('/dash/Add-Role')} className={styles.showFormButton}>
             <Plus className="mr-3 h-4 w-4 " /> Ajouter un Rôle
-        </button> 
+        </button>
+        <div className={styles.total}>
+          <SquareChartGantt className="mr-2" />
+          Total des rôles : {totalRoles}
+        </div>
       </div>
 
       <div>
@@ -96,10 +100,6 @@ const AllRoles = () => {
           <>
             {roles.length > 0 ? (
               <>
-                <div className={styles.total}>
-                  <SquareChartGantt className="mr-2" />
-                  Total des rôles : {totalRoles}
-                </div>
 
                 <div className={styles.userGrid}>
                   {roles.map(role => (
@@ -126,7 +126,7 @@ const AllRoles = () => {
           </>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

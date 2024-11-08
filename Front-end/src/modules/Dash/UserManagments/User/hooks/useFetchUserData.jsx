@@ -14,6 +14,7 @@ const useFetchUserData = (id) => {
     address: '',
     phone: '',
     roleId: null,
+    status: ''
   });
   const [originalData, setOriginalData] = useState({});
   const [roles, setRoles] = useState([]);
@@ -46,9 +47,11 @@ const useFetchUserData = (id) => {
           gender: userResponse.data.gender,
           email: userResponse.data.email,
           roleId: userResponse.data.roleIds?.[0] || null,
+          status: userResponse.data.status
         }));
         
         setRoles(rolesResponse.data.data);
+
         setIsLoading(false);
       } catch (error) {
         console.error('Error fetching data:', error);

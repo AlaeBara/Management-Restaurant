@@ -31,4 +31,6 @@ export const UpdateSchema = z.object({
         }),
 
         roleId: z.number().int().nullable().optional(),
+    
+    status : z.string().optional().nullable().or(z.literal("")),
 });

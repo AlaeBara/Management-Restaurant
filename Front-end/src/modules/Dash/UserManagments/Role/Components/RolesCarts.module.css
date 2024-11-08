@@ -83,7 +83,8 @@
 }
 
 .editButton:hover {
-    background-color: #bbdefb;
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
 }
 
 .deleteButton {

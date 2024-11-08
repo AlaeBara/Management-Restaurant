@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import Spinner from '../../../../../components/Spinner/Spinner';
 import useFetchUserData from '../hooks/useFetchUserData';
 import useUpdateUser from '../hooks/useUpdateUser';
+import UserStatus from './UserStatus'; 
 
 
 
@@ -167,6 +168,30 @@ export default function UpdateUser() {
                                 </Select>
                                 {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
                             </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="status">Changer le statut de l'utilisateur:</Label>
+                                <Select
+                                    name="status"
+                                    value={formData.status}
+                                    onValueChange={(value) => handleChange({ target: { name: 'status', value } })}
+                                >
+                                    <SelectTrigger id="status">
+                                        <SelectValue placeholder="Sélectionner le statut" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {Object.values(UserStatus)
+                                          .filter((statusValue) => statusValue !== 'email-unverified' || formData.status === 'email-unverified')
+                                            .map((statusValue) => (
+                                                <SelectItem key={statusValue} value={statusValue}>
+                                                    {statusValue.charAt(0).toUpperCase() + statusValue.slice(1).replace(/-/g, ' ')}
+                                                </SelectItem>
+                                            ))}
+                                    </SelectContent>
+                                </Select>
+                                {errors.status && <p className="text-xs text-red-500 mt-1">{errors.status}</p>}
+                            </div>
+
 
                             <div className="space-y-2">
                                 <Label htmlFor="roleId">Rôle</Label>

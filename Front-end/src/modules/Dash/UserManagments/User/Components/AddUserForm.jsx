@@ -62,6 +62,7 @@ export default function Component() {
         autoClose: 3000,
       })
       navigate('/dash/Create-User')
+      
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {}

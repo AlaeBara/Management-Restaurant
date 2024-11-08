@@ -27,6 +27,32 @@
 }
 
 
+.Header{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+} 
+
+.total{
+    display: flex;
+    align-items: center;
+    font-family: "Poppins", sans-serif;
+}
+
+.Headerpage2{
+    display: flex;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+
+
+
 .title {
     font-size: 25px;
     font-weight: 600;
@@ -66,30 +92,7 @@
     background-color: red;
 }
 
-
-.total{
-    display: flex;
-    justify-content: end;
-    margin: 30px 0;
-    font-family: "Poppins", sans-serif;
-}
   
-
-@media (max-width: 600px) {
-    .nameContainer {
-       gap: 10px;
-    }
-    .title {
-        font-size: 22px;
-    }
-    .headerForm{
-        margin-bottom: 10px;
-    } 
-    
-    .showFormButton,.showdeleteuser{
-        font-size: 10px;
-    }
-}
 
 /* css for carts user */
 
@@ -101,214 +104,6 @@
     gap: 20px;
     padding: 20px;
 }
-
-
-/* .userGrid {
-    display: flex;
-    flex-wrap: wrap; 
-    justify-content: center; 
-    align-items: flex-start; 
-    gap: 20px; 
-    margin-top: 30px;
-} */
-/* 
-.userCard {
-    align-items: center;
-    background: #ffffff;
-    border-radius: 12px;
-    padding: 20px;
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
-    transition: transform 0.2s, box-shadow 0.2s;
-    position: relative;
-}
-
-.headerCart{
-    display: flex;
-    align-items: center;
-    margin-bottom: 20px;
-}
-
-.userCard:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-}
-
-.avatar {
-    width: 60px;
-    height: 60px;
-    border-radius: 50%;
-    object-fit: cover;
-    margin-right: 16px;
-    border: 2px solid #f0f0f0;
-}
-
-.userInfo {
-    flex: 1;
-}
-
-.userInfo h3 {
-    margin: 0 0 4px 0;
-    font-size: 16px;
-    font-weight: 600;
-    color: #000;
-}
-
-.username {
-    margin: 0 0 4px 0;
-    font-size: 14px;
-    color: #666;
-    font-family: "Poppins", sans-serif;
-}
-
-.email {
-    margin: 0 0 4px 0;
-    font-size: 14px;
-    color: #000;
-    font-family: "Poppins", sans-serif;
-}
-
-.lastLogin {
-    margin: 0 0 8px 0;
-    font-size: 14px;
-    color: #888;
-    font-family: "Poppins", sans-serif;
-}
-
-.status {
-    display: inline-block;
-    padding: 4px 12px;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 500;
-} */
-
-/* .active {
-    background-color: #e6f7ed;
-    color: #0d9f4f;
-}
-.email-unverified{
-    background-color: #e3e9e6;
-    color: #373937;
-}
-.inactive {
-    background-color: #f2f2f2;
-    color: #8a8a8a;
-}
-
-.suspended {
-    background-color: #fff4e5;
-    color: #d9822b;
-}
-
-.banned {
-    background-color: #ffe8e8;
-    color: #ff4d4d;
-}
-.archived {
-    background-color: #e3e9e6;
-    color: #737373;
-}
-.deleted {
-    background-color: #f5f5f5;
-    color: #9e9e9e;
-} */
-/* 
-.active {
-    background-color: #e6f7ed;
-    color: #0d9f4f;
-}
-.email-unverified {
-    background-color: #e6f0ff;
-    color: #2c6de3;
-}
-.inactive {
-    background-color: #f0f0f0;
-    color: #6b6b6b;
-}
-.suspended {
-    background-color: #fff3e0;
-    color: #ff9800;
-}
-.banned {
-    background-color: #ffe8e8;
-    color: #ff4d4d;
-}
-.archived {
-    background-color: #f0e6ff;
-    color: #8a4fff;
-}
-.deleted {
-    background-color: #f4e6e6;
-    color: #b35656;
-}
-
-.menuButton {
-    position: absolute;
-    top: 12px;
-    right: 5px;
-    background: transparent;
-    border: none;
-    cursor: pointer;
-    border-radius: 50%;
-    z-index: 2;
-}
-
-.menuButton:hover {
-    background: #f5f5f5;
-}
-
-
-.dropdownMenu {
-    position: absolute;
-    top: 40px;
-    right: 12px;
-    background: white;
-    border-radius: 8px;
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-    min-width: 150px;
-    opacity: 0;
-    visibility: hidden;
-    transform: translateY(-10px);
-    transition: all 0.2s ease;
-}
-
-.dropdownMenu.show {
-    opacity: 1;
-    visibility: visible;
-    transform: translateY(0);
-}
-
-.dropdownItem {
-    padding: 10px 16px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    color: #333;
-    font-size: 14px;
-    cursor: pointer;
-    transition: background-color 0.2s;
-}
-
-.dropdownItem:hover {
-    background-color: #f5f5f5;
-}
-
-.dropdownItem:first-child {
-    border-radius: 8px 8px 0 0;
-}
-
-.dropdownItem:last-child {
-    border-radius: 0 0 8px 8px;
-}
-
-.dropdownItem.delete {
-    color: #ff4d4d;
-}
-
-.dropdownItem.delete:hover {
-    background-color: #fff1f1;
-} */
-
 
 .notfound {
     display: flex;
@@ -369,5 +164,21 @@
     }
     .dropdownItem {
         padding: 6px 16px;
+    }
+}
+
+@media (max-width: 600px) {
+    .nameContainer {
+       gap: 10px;
+    }
+    .title {
+        font-size: 22px;
+    }
+    .headerForm{
+        margin-bottom: 10px;
+    } 
+    
+    .showFormButton,.showdeleteuser{
+        font-size: 10px;
     }
 }

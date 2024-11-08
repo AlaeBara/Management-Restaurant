@@ -12,7 +12,6 @@ import PaginationNav from './Components/PaginationNav'
 
 //components
 import Spinner from '../../../../components//Spinner/Spinner'
-import UpdateUserStatusForm from './components/UpdateUserStatusForm';
 import UserCarts from './Components/UserCarts'
 
  
@@ -91,58 +90,6 @@ const CreateUsers = () => {
         const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         return `${formattedDate} ${formattedTime}`;
     };
-
-    //for update the status 
-    const [status, setStatus] = useState("");
-    const [oldstatus, setoldStatus] = useState("");
-    const [isChangeStatus, setisChangeStatus] = useState(false);
-    const [statusError, setStatusError] = useState("");
-
-    const updateStatus =(status,id)=>{
-        formData.id = id
-        setisChangeStatus(true)
-        setoldStatus(status)
-    }
-
-    const handleStatus = (event) => {
-        const newStatus = event.target.value;
-        setStatus(newStatus);
-        setStatusError(""); 
-    }; 
-
-    const closeFormOfupdateStatus =()=>{
-        setisChangeStatus(false)
-    } 
-    const updateStatusOfUsers = async (e) => {
-        e.preventDefault();
-        try {
-            if (!status) {
-                setStatusError("Veuillez sélectionner un statut.");
-                return;
-            }
-            const token = Cookies.get('access_token');
-            const response = await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/users/${formData.id}/status`, {status:status} , {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            toast.success('Statut de l’utilisateur mis à jour avec succès!', {
-                icon: '✅',
-                position: "top-right",
-                autoClose: 3000,
-            });
-            fetchUsers();
-            setisChangeStatus(false)
-            setStatus("")
-        } catch (error) {
-            console.error('Erreur lors de la mise à jour de l’utilisateur:', error.response?.data?.message || error.message);
-            toast.error("Échec de la mise à jour du statut de l’utilisateur. Veuillez réessayer.", {
-                icon: '❌',
-                position: "top-right",
-                autoClose: 3000,
-            });
-        }
-    };
     
    // delete user
     const deleteUser = async (id) => {
@@ -188,17 +135,26 @@ const CreateUsers = () => {
         {/* header of page  */}
         <div className={style.Headerpage}>
             <h1 className={style.title}>Gestion Des Utilisateurs</h1>
+
+
         </div>
 
-        <div className={style.Headerpage}>
+        <div className={style.Header}>
 
-            <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
-            </button> 
-        
-            <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
-            </button> 
+            <div className={style.Headerpage2}>
+                <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
+                    <ExternalLink className="mr-3 h-4 w-4 "/>Les Utilisateurs Supprimés
+                </button> 
+            
+                <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
+                    <Plus className="mr-3 h-4 w-4 " /> Ajouter un utilisateur
+                </button> 
+            </div>
+
+            <div className={style.total}>
+                <UserRoundCog className="mr-2" />
+                Total des utilisateurs : {numberOfData}
+            </div>
         </div>
 
         {/* Carts Of users */}
@@ -219,10 +175,6 @@ const CreateUsers = () => {
                         <>
                         {dataUser.length - 1 > 0 ? (
                             <>
-                                <div className={style.total}>
-                                    <UserRoundCog className="mr-2" />
-                                    Total des utilisateurs : {numberOfData}
-                                </div>
                             
                                 <div className={style.userGrid}>
                                     {dataUser
@@ -232,7 +184,6 @@ const CreateUsers = () => {
                                         key={user.id}
                                         user={user}
                                         formatDate={formatDate}
-                                        updateStatus={updateStatus}
                                         deleteUser={deleteUser}
                                         />
                                     ))}
@@ -262,17 +213,6 @@ const CreateUsers = () => {
         )}
         </div>
 
-        {/* for update status of user */}
-        {isChangeStatus && (
-            <UpdateUserStatusForm
-                status={status}
-                oldstatus={oldstatus}
-                handleStatus={handleStatus}
-                updateStatusOfUsers={updateStatusOfUsers}
-                closeFormOfupdateStatus={closeFormOfupdateStatus}
-                statusError={statusError}
-            />
-        )}
     </div>
   );
 };
