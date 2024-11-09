@@ -14,6 +14,7 @@ import { ClientManagementModule } from './client-management/client-management.mo
 import { UnitModule } from './unit-management/unit.module';
 import { SupplierModule } from './supplier-management/supplier.module';
 import { StorageModule } from './storage-management/storage.module';
+import { ProductManagementModule } from './product-management/product.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -31,6 +32,7 @@ import { StorageModule } from './storage-management/storage.module';
     ZoneTableModule,
     SupplierModule,
     StorageModule,
+    ProductManagementModule,
     CommonModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

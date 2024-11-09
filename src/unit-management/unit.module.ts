@@ -9,6 +9,6 @@ import { UnitPermissionsSeeder } from './seeders/unit-permissions.seeder';
   imports: [TypeOrmModule.forFeature([Unit])],
   controllers: [UnitController],
   providers: [UnitService, UnitPermissionsSeeder],
-  exports: [UnitPermissionsSeeder],
+  exports: [UnitPermissionsSeeder, UnitService],
 })
 export class UnitModule {}
