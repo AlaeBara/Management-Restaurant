@@ -15,6 +15,7 @@ const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'))
 const UpdateUserpage = lazy(() => import('@/modules/Dash/UserManagments/User/Components/UpdateUserpage'))
 const AddRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/AddRole'))
 const UpdateRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/UpdateRole'))
+const RoleDetails = lazy(()=> import ('@/modules/Dash/UserManagments/Role/RoleDetails'))
 
 const ClientRoutes = () => {
   return (
@@ -105,6 +106,16 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateRole />
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/Gestion-des-roles/role-details/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <RoleDetails/>
               </MainLayout>
             </ProtectedRoute>
           } 

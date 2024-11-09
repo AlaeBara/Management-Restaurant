@@ -15,7 +15,8 @@ const RoleCart = ({ role  , Delete}) => {
         return `${formattedDate} ${formattedTime}`;
     };
 
-    const handleDelete = () => {
+    const handleDelete = (e) => {
+        e.stopPropagation();
         setIsModalVisible(true);
     };
 
@@ -25,9 +26,10 @@ const RoleCart = ({ role  , Delete}) => {
     };
     
 
-    const handleEdit = (id) =>{
-        navigate(`/dash/Update-Role/${id}`)
-    }
+    const handleEdit = (id, e) => {
+        e.stopPropagation();
+        navigate(`/dash/Update-Role/${id}`);
+    };
     
 
     const [isExpanded, setIsExpanded] = useState(false);
@@ -37,7 +39,7 @@ const RoleCart = ({ role  , Delete}) => {
 
     return (
         <>
-            <div className={style.roleCard}>
+            <div className={style.roleCard} onClick={() => navigate(`/dash/Gestion-des-roles/role-details/${role.id}`)}  >
 
                 <div className={style.header}>
 
@@ -67,12 +69,12 @@ const RoleCart = ({ role  , Delete}) => {
 
                 </div>
 
-                <div className={style.actions}>
+                <div className={`${style.actions}`}>
                     <button
-                        onClick={() => handleEdit(role.id)}
+                        onClick={(e) => handleEdit(role.id, e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit  className="mr-2 h-4 w-4" /> Modifier
+                        <Edit className="mr-2 h-4 w-4" /> Modifier
                     </button>
                     <button
                         onClick={handleDelete}

@@ -1,0 +1,140 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
+.container {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.header h1{
+    font-size: 25px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+}
+
+.header p{
+    font-size: 16px;
+    color: #666;
+}
+
+.RoleDetails {
+    margin-top: 30px;
+    position: relative;
+}
+
+.roleCard {
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    width: 100%; 
+    border: 1px solid #e0e0e0;
+}
+
+.RoleDetails h1 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    z-index: 1;
+}
+
+.roleInfo {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.infoItem h2{
+    text-transform: capitalize;
+}
+
+.label {
+    color: #666;
+    display: block;
+    font-family: "Poppins", sans-serif;
+}
+
+
+
+/* permission section */
+
+.Permissions {
+    margin-top: 30px;
+}
+
+.permissionsTitle {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 20px;
+}
+
+.permissionsContainer{
+    display: flex;
+    flex-wrap: wrap;
+    gap: 20px;
+}
+
+.permissionGroup {
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    width: 100%; 
+    border: 1px solid #e0e0e0;
+}
+
+  
+.resourceName {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 15px;
+    color: #333;
+    font-family: "Poppins", sans-serif;
+}
+
+.permissionList {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 30px;
+    list-style: none;
+    padding: 0;
+    margin: 0 auto;
+}
+.permissionItem {
+    margin-bottom: 15px;
+    padding: 10px;
+    border-radius: 6px;
+}
+.permissionHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 5px;
+}
+
+.permissionHeader input[type="checkbox"] {
+    width: 16px;
+    height: 16px;
+    cursor: pointer;
+}
+
+.permissionName {
+    font-weight: 500;
+    color: #444;
+    font-size: 16px;
+}
+
+.permissionLabel {
+    margin: 0;
+    padding-left: 26px;
+    color: #666;
+    font-size: 14px;
+    line-height: 1.4;
+}

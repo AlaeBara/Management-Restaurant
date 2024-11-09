@@ -102,7 +102,7 @@ const AllRoles = () => {
 
                 <div className={styles.userGrid}>
                   {roles.map(role => (
-                    <RoleCart key={role.id} role={role} Delete={Delete} />
+                    <RoleCart key={role.id} role={role} Delete={Delete}/>
                   ))}
                 </div>
 
