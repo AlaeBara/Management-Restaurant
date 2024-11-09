@@ -59,9 +59,10 @@ export default function Component() {
       toast.success('Utilisateur créé avec succès!', {
         icon: '✅',
         position: "top-right",
-        autoClose: 3000,
+        autoClose: 1000,
+        onClose: () => navigate('/dash/Create-User')
       })
-      navigate('/dash/Create-User')
+      
       
     } catch (error) {
       if (error instanceof z.ZodError) {

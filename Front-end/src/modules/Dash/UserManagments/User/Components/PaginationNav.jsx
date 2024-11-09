@@ -31,8 +31,8 @@ const PaginationNav = ({
                 </Button>
 
                 <div className="text-muted-foreground">
-                    Page <span className="font-bold">{currentPage}</span> sur{' '}
-                    <span className="font-bold">{totalPages}</span>
+                    <span className='text-sm'> Page</span>  <span className="font-bold text-sm">{currentPage}</span> sur{' '}
+                    <span className="font-bold text-sm">{totalPages}</span>
                 </div>
 
                 <Button

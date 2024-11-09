@@ -133,7 +133,7 @@ const CreateUsers = () => {
         <div className={style.Headerpage}>
             <div>
                 <h1 className={`${style.title} !mb-0 `}>Gestion Des Utilisateurs</h1>
-                <p className="text-base text-gray-600 mt-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium unde perspiciatis distinctio optio cupiditate, excepturi nostrum alias repudiandae libero perferendis facere, eius voluptates quo molestias nam corrupti eum assumenda doloribus.</p>
+                <p className="text-base text-gray-600 mt-0">Gérez efficacement tous les utilisateurs de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des utilisateurs, ainsi que gérer leurs rôles et leurs permissions.</p>
             </div>
         </div> 
 

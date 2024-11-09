@@ -8,9 +8,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import { useParams } from 'react-router-dom';
 import { useFetchRole } from '../hooks/useFetchRole';
 import { useUpdateRole } from '../hooks/useUpdateRole';
-
+import { useNavigate } from 'react-router-dom';
 
 export default function Component() {
+    const navigate = useNavigate()
     const { id } = useParams();
     const { formData, setFormData, initialData, setInitialData , message  } = useFetchRole(id);
     const { errors, updateRole } = useUpdateRole(id, formData, setFormData, initialData, setInitialData);
@@ -70,10 +71,18 @@ return (
                                     <div className="text-xs text-red-500 mt-1">{errors.label}</div>
                                 )}
                                 </div>
+
+                                <div className='flex gap-4'>
+                                    <Button type="submit" onClick={()=>navigate('/dash/Gestion-des-roles')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
+                                        Annuler
+                                    </Button>
+
+                                    <Button type="submit" className="w-full">
+                                        Mettre à jour le rôle
+                                    </Button>
+                                </div>
                 
-                                <Button type="submit" className="w-full">
-                                    Mettre à jour le rôle
-                                </Button>
+                               
                             </form>
                         </CardContent>
                     </Card>

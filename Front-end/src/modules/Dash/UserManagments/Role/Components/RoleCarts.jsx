@@ -42,7 +42,7 @@ const RoleCart = ({ role  , Delete}) => {
                 <div className={style.header}>
 
                     <div className={style.roleInfo}>
-                        <h3 className={style.roleTitle}>{role.name} Rôle</h3>
+                        <h3 className={style.roleTitle}><span className='font-bold text-sm'>Rôle : </span>{role.name} </h3>
                         <p className={style.roleLabel}>
                             {role.label ? (
                                 <>

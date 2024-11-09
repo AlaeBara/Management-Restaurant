@@ -7,7 +7,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import Spinner from '../../../../../components/Spinner/Spinner';
 import useFetchUserData from '../hooks/useFetchUserData';
 import useUpdateUser from '../hooks/useUpdateUser';
@@ -16,19 +16,20 @@ import UserStatus from './UserStatus';
 
 
 export default function UpdateUser() {
-  const { id } = useParams();
-  const { formData, setFormData, originalData, roles, isLoading, setOriginalData , messageError } = useFetchUserData(id);
-  const { updateSubmit, errors } = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
+    const navigate = useNavigate();
+    const { id } = useParams();
+    const { formData, setFormData, originalData, roles, isLoading, setOriginalData , messageError } = useFetchUserData(id);
+    const { updateSubmit, errors } = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
 
-  const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] = useState(false);
 
-  const handleChange = ({ target: { name, value } }) => {
-    setFormData((prevData) => ({ ...prevData, [name]: value }));
-  };
+    const handleChange = ({ target: { name, value } }) => {
+        setFormData((prevData) => ({ ...prevData, [name]: value }));
+    };
 
-  if (isLoading) {
-    return <Spinner/>;
-  }
+    if (isLoading) {
+        return <Spinner/>;
+    }
 
 
   return (
@@ -222,9 +223,15 @@ export default function UpdateUser() {
                                 {errors.roleId && <p className="text-xs text-red-500 mt-1">{errors.roleId}</p>}
                             </div>
 
-                            <Button type="submit" className="w-full">
-                                Mettre à jour
-                            </Button>
+                            <div className='flex gap-4'>
+                                <Button type="submit" onClick={()=>navigate('/dash/Create-User')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
+                                    Annuler
+                                </Button>
+
+                                <Button type="submit" className="w-full">
+                                    Mettre à jour
+                                </Button>
+                            </div>
                         </form>
                     </CardContent>
                 </Card>

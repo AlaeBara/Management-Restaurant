@@ -46,13 +46,16 @@ export default function Component() {
                 label: ''
             });
             setErrors({});
-            navigate("/dash/Gestion-des-roles")
+            
 
             toast.success('Rôle créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
-                autoClose: 3000,
+                autoClose: 1000,
+                onClose: () => navigate("/dash/Gestion-des-roles")
             });
+
+           
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.errors.reduce((acc, { path, message }) => {

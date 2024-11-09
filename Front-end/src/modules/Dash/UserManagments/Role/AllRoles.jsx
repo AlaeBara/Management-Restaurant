@@ -74,7 +74,7 @@ const AllRoles = () => {
       <div className={styles.Headerpage}>
         <div>
           <h1 className={`${styles.title} !mb-0 `}>Gestion Des Rôles</h1>
-          <p className="text-base text-gray-600 mt-0">Lorem ipsum dolor sit amet consectetur adipisicing elit. Praesentium unde perspiciatis distinctio optio cupiditate, excepturi nostrum alias repudiandae libero perferendis facere, eius voluptates quo molestias nam corrupti eum assumenda doloribus.</p>
+          <p className="text-base text-gray-600 mt-0">Gérez efficacement les rôles et les permissions des utilisateurs. Cette interface vous permet de créer, modifier et supprimer des rôles, ainsi que de définir les autorisations spécifiques pour chaque rôle dans le système. Un contrôle d'accès précis garantit la sécurité et le bon fonctionnement de votre application.</p>
         </div>
       </div>
       
