@@ -89,18 +89,23 @@ export default function UpdateUser() {
                                     />
                                     {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username}</p>}
                                 </div>
-
+                                
                                 <div className="space-y-2">
-                                    <Label htmlFor="email">Email</Label>
-                                    <Input
-                                        id="email"
-                                        name="email"
-                                        type="email"
-                                        value={formData.email}
-                                        onChange={handleChange}
-                                        placeholder="Email"
-                                    />
-                                    {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                                    <Label htmlFor="gender">Genre</Label>
+                                    <Select
+                                        name="gender"
+                                        value={formData.gender}
+                                        onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}
+                                    >
+                                    <SelectTrigger id="gender">
+                                        <SelectValue placeholder="Sélectionnez le genre" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        <SelectItem value="male">Masculin</SelectItem>
+                                        <SelectItem value="female">Féminin</SelectItem>
+                                    </SelectContent>
+                                    </Select>
+                                    {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
                                 </div>
                             </div>
 
@@ -131,6 +136,19 @@ export default function UpdateUser() {
                             </div>
 
                             <div className="space-y-2">
+                                <Label htmlFor="email">Email</Label>
+                                <Input
+                                    id="email"
+                                    name="email"
+                                    type="email"
+                                    value={formData.email}
+                                    onChange={handleChange}
+                                    placeholder="Email"
+                                />
+                                {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
+                            </div>
+
+                            <div className="space-y-2">
                                 <Label htmlFor="password">Mot de passe</Label>
                                 <div className="relative">
                                 <Input
@@ -152,23 +170,7 @@ export default function UpdateUser() {
                                 {errors.password && <p className="text-xs text-red-500 mt-1">{errors.password}</p>}
                             </div>
 
-                            <div className="space-y-2">
-                                <Label htmlFor="gender">Genre</Label>
-                                <Select
-                                    name="gender"
-                                    value={formData.gender}
-                                    onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}
-                                >
-                                <SelectTrigger id="gender">
-                                    <SelectValue placeholder="Sélectionnez le genre" />
-                                </SelectTrigger>
-                                <SelectContent>
-                                    <SelectItem value="male">Masculin</SelectItem>
-                                    <SelectItem value="female">Féminin</SelectItem>
-                                </SelectContent>
-                                </Select>
-                                {errors.gender && <p className="text-xs text-red-500 mt-1">{errors.gender}</p>}
-                            </div>
+                            
 
                             <div className="space-y-2">
                                 <Label htmlFor="status">Changer le statut de l'utilisateur:</Label>

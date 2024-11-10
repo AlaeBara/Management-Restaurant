@@ -12,8 +12,8 @@ import {
   FormMessage,
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Eye, EyeOff } from "react-feather";
-import {useNavigate } from 'react-router-dom';
+import { Eye, EyeOff, Loader } from "lucide-react";
+import { useNavigate } from 'react-router-dom';
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -29,6 +29,7 @@ const loginSchema = z.object({
 
 const Login = () => {
   const [showPassword, setShowPassword] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const navigate = useNavigate();
   const { fetchUserData } = useUserContext();
 
@@ -44,8 +45,10 @@ const Login = () => {
     setShowPassword((prev) => !prev);
   };
 
-
   const onSubmit = async (data) => {
+    if (isLoading) return; // Prevent multiple submissions
+    
+    setIsLoading(true);
     try {
       const response = await axios.post(
         `${import.meta.env.VITE_BACKEND_URL}/api/authentication/login`,
@@ -59,13 +62,8 @@ const Login = () => {
       ); 
       if (response.data) {
         Cookies.set('access_token', response.data.access_token, { expires: 1, secure: true, sameSite: 'None' });
-        
         await fetchUserData();
-
-        console.log(response.data.access_token)
-
         toast.success("Login successful!", { autoClose: 2000 });
-
         setTimeout(() => {
           navigate('/dash/Home');
         }, 2000);
@@ -76,6 +74,7 @@ const Login = () => {
       } else {
         toast.error("An error occurred. Please try again.");
       }
+      setIsLoading(false);
     }
   };
 
@@ -101,6 +100,7 @@ const Login = () => {
                   <Input
                     className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0"
                     placeholder="Email ou Username"
+                    disabled={isLoading}
                     {...field}
                   />
                 </FormControl>
@@ -121,6 +121,7 @@ const Login = () => {
                       className="ring-0 focus-visible:ring-offset-0 focus-visible:ring-0"
                       type={showPassword ? "text" : "password"}
                       placeholder="Password"
+                      disabled={isLoading}
                       {...field}
                     />
                   </FormControl>
@@ -128,6 +129,7 @@ const Login = () => {
                     type="button"
                     onClick={togglePasswordVisibility}
                     className="absolute inset-y-0 right-0 pr-3 flex items-center"
+                    disabled={isLoading}
                   >
                     {showPassword ? (
                       <Eye className="h-5 w-5 text-gray-600" />
@@ -141,8 +143,19 @@ const Login = () => {
             )}
           />
 
-          <Button type="submit" className="w-full bg-orange-500 hover:bg-orange-600 ring-0 focus-visible:ring-offset-0 focus-visible:ring-0">
-            Se Connecter
+          <Button 
+            type="submit" 
+            className="w-full bg-orange-500 hover:bg-orange-600 ring-0 focus-visible:ring-offset-0 focus-visible:ring-0"
+            disabled={isLoading}
+          >
+            {isLoading ? (
+              <div className="flex items-center gap-2">
+                <Loader className="h-4 w-4 animate-spin" />
+                <span>Connexion en cours...</span>
+              </div>
+            ) : (
+              "Se Connecter"
+            )}
           </Button>
         </form>
       </Form>
