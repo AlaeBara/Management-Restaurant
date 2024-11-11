@@ -61,13 +61,6 @@ export class PermissionController {
     );
   }
 
-  @Get('group-by-resource')
-  @Permissions('view-permissions')
-  @ApiOperation({ summary: 'Get all permissions grouped by resource' })
-  async findAllPermissionsGroupByResource(@Req() req: Request) {
-    return this.permissionService.findAndGroupPermissionsWithUserAccess(req);
-  }
-
   @Post()
   @Permissions('create-permission')
   @ApiOperation({ summary: 'Create a new permission' })
@@ -120,5 +113,12 @@ export class PermissionController {
       return this.permissionService.restore(id);
     }
     throw new ConflictException('Permission is not deleted');
+  }
+
+  @Get('group-by-resource')
+  @Permissions('view-permissions')
+  @ApiOperation({ summary: 'Get all permissions grouped by resource' })
+  async findAllPermissionsGroupByResource(@Req() req: Request) {
+    return this.permissionService.findAndGroupPermissionsWithUserAccess(req);
   }
 }
