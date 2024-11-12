@@ -77,30 +77,18 @@
     justify-content: center;
 }
 
-.editButton {
+.restorButton {
     display: flex;
     align-items: center;
     gap: 6px;
     background-color: #f1f1f1;
     color: #333;
-    width: 48%;
+    width: 100%;
 }
 
-.editButton:hover {
+.restorButton:hover {
     background-color: #e0e0e0;
     transform: translateY(-2px);
-}
-
-.deleteButton {
-    display: flex;
-    text-align: center;
-    background-color: #ffebee;
-    color: #d32f2f;
-    width: 48%;
-}
-
-.deleteButton:hover {
-    background-color: #ffcdd2;
 }
 
 

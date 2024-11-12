@@ -26,10 +26,6 @@
     margin-bottom: 30px;
 }
 
- 
-
-
-
 .Headerpage2{
     display: flex;
     flex-wrap: wrap;
@@ -38,9 +34,6 @@
     margin-bottom: 20px;
     gap: 15px;
 }
-
-
-
 
 .title {
     font-size: 25px;

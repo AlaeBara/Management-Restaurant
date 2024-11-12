@@ -1,21 +1,22 @@
 import React, { useEffect, useState } from 'react';
-import style from './Zones.module.css'
+import style from './DeletedZone.module.css'
 import { useNavigate } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchZone} from "./Hooks/useFetchZone"
-import ZoneCart from './Components/ZoneCart';
-import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
+import {useFetchZoneDeleted} from "../Hooks/useFetchzoneDeleted"
+import ZoneCart from './ZoneCart';
+import PaginationNav from '../../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-import { useDeleteZone } from './Hooks/useDeleteZone';
+import { useRestoreZone } from '../Hooks/useRestoreZone';
+import ZoneCartDeleted from './ZoneCartDeleted';
 
-const Zones = () => {
+const DeletedZones = () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const {  zones, totalZones, loading, error, fetchZones} = useFetchZone()
+    const {  zones, totalZones, loading, error, fetchZones} = useFetchZoneDeleted()
 
     //pagination
     const totalPages = Math.ceil(totalZones / limit);
@@ -38,7 +39,7 @@ const Zones = () => {
     }, [currentPage, limit, fetchZones]);
 
 
-    const {deleteZone} = useDeleteZone(fetchZones)
+    const {RestoreZone} = useRestoreZone(fetchZones)
     
 
   return (
@@ -48,29 +49,18 @@ const Zones = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Zones</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement toutes les zones de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des zones, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Zones Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des zones supprimées de votre plateforme. Vous pouvez visualiser les zones qui ont été supprimées et les restaurer si nécessaire.</p>
             </div>
         </div>
 
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Deleted-Zone')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Zones Supprimés
-            </button> 
-        
-            <button onClick={() => navigate('/dash/Add-Zone')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Zone
-            </button> 
-        </div>
-
-
-        {/* carts of zone */}
+        {/* carts of zone deleted */}
 
         <div>
 
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Zones..." />
+                <Spinner title="Chargement des Zones Supprimés..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -84,7 +74,7 @@ const Zones = () => {
 
                         <div className={style.userGrid}>
                         {zones.map(zone => (
-                            <ZoneCart key={zone.id} zone={zone}  Delete={deleteZone}/>
+                            <ZoneCartDeleted key={zone.id} zone={zone}  Restore={RestoreZone}/>
                         ))}
                         </div>
 
@@ -101,7 +91,7 @@ const Zones = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Zone trouvé</h1>
+                        <h1>Aucun Zone Supprimé trouvé</h1>
                     </div>
                     )}
                 </>
@@ -115,4 +105,4 @@ const Zones = () => {
   )
 }
 
-export default Zones
+export default DeletedZones
