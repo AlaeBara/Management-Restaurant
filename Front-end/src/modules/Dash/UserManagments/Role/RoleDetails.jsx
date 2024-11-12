@@ -183,7 +183,7 @@ const RoleDetails = () => {
                         {errors.update && <ErrorMessage message={errors.update} />}
                         {Object.keys(permissions).length > 0 && (
                             <div className={styles.permissionsContainer}>
-                                {Object.entries(permissions).map(([resource, permissionList]) => (
+                                {Object.entries(permissions).filter(([resource]) => resource !== "full-access").map(([resource, permissionList]) => (
                                     <div key={resource} className={styles.permissionGroup}>
                                         <h3 className={styles.resourceName}>{resource}</h3>
                                         <ul className={styles.permissionList}>
@@ -192,6 +192,7 @@ const RoleDetails = () => {
                                                     <div className={styles.permissionHeader}>
                                                         <input 
                                                             type="checkbox" 
+                                                            className={styles.checkboxinput}
                                                             checked={permission.currentUserHasPermission}
                                                             onChange={() => togglePermission(permission)}
                                                         />

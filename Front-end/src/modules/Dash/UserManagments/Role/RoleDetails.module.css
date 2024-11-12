@@ -103,6 +103,7 @@
     background: white;
     padding: 0 10px;
     z-index: 1;
+    text-transform: capitalize;
 }
 
 .permissionList {
@@ -112,6 +113,7 @@
     list-style: none;
     padding: 0;
     margin: 0 auto;
+    text-transform: capitalize;
 }
 .permissionItem {
     margin-bottom: 15px;
@@ -144,3 +146,23 @@
     font-size: 14px;
     line-height: 1.4;
 }
+
+
+.checkboxinput {
+    width: 20px; /* Adjust the size as needed */
+    height: 20px;
+    appearance: none;
+    border: 2px solid black;
+    border-radius: 3px; /* For a rounded look, adjust as needed */
+    cursor: pointer;
+    position: relative;
+}
+
+.checkboxinput:checked {
+    background-color: black;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='white'%3E%3Cpath d='M20.285 6.21a1 1 0 0 0-1.571-1.26L10 16.005 5.286 11.51a1 1 0 0 0-1.572 1.26l5 6a1 1 0 0 0 1.572 0l10-12z'/%3E%3C/svg%3E");
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+    background-position: center;
+}
+
