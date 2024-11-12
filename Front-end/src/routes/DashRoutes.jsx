@@ -9,13 +9,14 @@ const Home = lazy(() => import('../modules/Dash/Home/Home'));
 const Login = lazy(() => import('../modules/Dash/LoginPage/Login'));
 const AllUsers = lazy(() => import('@/modules/Dash/UserManagments/User/AllUsersPage'));
 const DeletedUsers = lazy(() => import('@/modules/Dash/UserManagments/User/DeletedUsersPage'));
-const Zones = lazy(() => import('@/modules/ZoneAndTable/Zones'));
+const Zones1 = lazy(() => import('@/modules/ZoneAndTable/Zones'));
 const AddUserForm = lazy(() => import('@/modules/Dash/UserManagments/User/Components/AddUserForm'));
 const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'));
 const UpdateUserpage = lazy(() => import('@/modules/Dash/UserManagments/User/Components/UpdateUserpage'))
 const AddRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/AddRole'))
 const UpdateRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/UpdateRole'))
 const RoleDetails = lazy(()=> import ('@/modules/Dash/UserManagments/Role/RoleDetails'))
+const Zones = lazy(()=> import ('@/modules/Dash/Zone&Table/Zones/Zones'))
 
 const ClientRoutes = () => {
   return (
@@ -121,27 +122,23 @@ const ClientRoutes = () => {
           } 
         />
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-        {/* Zones and table mock up */}
         <Route 
           path="/zones" 
           element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Zones/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        {/* Zones and table mock up */}
+        <Route 
+          path="/zones1" 
+          element={
             <MainLayout>
-              <Zones />
+              <Zones1 />
             </MainLayout>
           } 
         />
