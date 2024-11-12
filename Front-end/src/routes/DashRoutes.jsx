@@ -17,6 +17,7 @@ const AddRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components
 const UpdateRole = lazy(()=> import ('@/modules/Dash/UserManagments/Role/Components/UpdateRole'))
 const RoleDetails = lazy(()=> import ('@/modules/Dash/UserManagments/Role/RoleDetails'))
 const Zones = lazy(()=> import ('@/modules/Dash/Zone&Table/Zones/Zones'))
+const AddZone = lazy(()=> import ("@/modules/Dash/Zone&Table/Zones/Components/AddZone"))
 
 const ClientRoutes = () => {
   return (
@@ -132,6 +133,17 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/Add-Zone" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddZone/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />  
         
         {/* Zones and table mock up */}
         <Route 

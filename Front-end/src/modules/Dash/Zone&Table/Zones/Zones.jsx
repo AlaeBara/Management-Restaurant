@@ -45,7 +45,7 @@ const Zones = () => {
         </div>
 
         <div className={style.Headerpage2}>
-            <button onClick={() => navigate('#')} className={style.showFormButton}>
+            <button onClick={() => navigate('/dash/Add-Zone')} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter Zone
             </button> 
         </div>
