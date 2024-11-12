@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from "./ZoneCart.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, MapPin } from 'lucide-react';
+import { Edit, Trash2, LandPlot } from 'lucide-react';
 
 const ZoneCart = ({ zone , Delete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -34,7 +34,7 @@ const ZoneCart = ({ zone , Delete }) => {
                 <div className={style.header}>
 
                     <div className={style.zoneInfo}>
-                        <h3 className={style.zoneTitle}> <MapPin className="mr-2 " /> {zone.zoneLabel} </h3>
+                        <h3 className={style.zoneTitle}> <LandPlot className="mr-2 " /> {zone.zoneLabel} </h3>
                         <p className={style.zoneLabel}>Zone Code: {zone.zoneCode}</p>
                         <div className={style.dateInfo}>
                             <span>Créé le: {formatDate(zone.createdAt)}</span>

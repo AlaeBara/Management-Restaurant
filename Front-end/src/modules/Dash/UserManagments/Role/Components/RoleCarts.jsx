@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from "./RolesCarts.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2, Shield } from 'lucide-react';
 
 const RoleCart = ({ role  , Delete}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -44,7 +44,7 @@ const RoleCart = ({ role  , Delete}) => {
                 <div className={style.header}>
 
                     <div className={style.roleInfo}>
-                        <h3 className={style.roleTitle}><span className='font-bold text-sm'>Rôle : </span>{role.name} </h3>
+                        <h3 className={style.roleTitle}><Shield className="mr-2"/> {role.name} </h3>
                         <p className={style.roleLabel}>
                             {role.label ? (
                                 <>
