@@ -28,8 +28,8 @@ export function useFetchOneZone(id) {
                 zoneCode: response.data.zoneCode,
             });
             } catch (error) {
-            console.error('Error fetching role data:', error.response?.data?.message || error.message);
-            setmessage("Erreur lors de la récupération des données du zone")
+                console.error('Error fetching role data:', error.response?.data?.message || error.message);
+                setmessage("Erreur lors de la récupération des données du zone")
             }
         };
 

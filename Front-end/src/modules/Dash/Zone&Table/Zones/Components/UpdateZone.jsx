@@ -24,7 +24,7 @@ export default function Component() {
 
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-        }, [formData, setFormData]);
+    }, [formData, setFormData]);
 
 
   return (
@@ -43,7 +43,7 @@ export default function Component() {
                 <p className="font-bold">Erreur</p>
                 <p className="break-words">{message}</p>
             </div>
-            
+
             ) : (
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">

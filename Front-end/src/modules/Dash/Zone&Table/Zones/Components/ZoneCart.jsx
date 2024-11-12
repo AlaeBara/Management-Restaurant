@@ -3,7 +3,7 @@ import style from "./ZoneCart.module.css";
 import { useNavigate } from 'react-router-dom';
 import { Edit, Trash2, MapPin } from 'lucide-react';
 
-const ZoneCart = ({ zone }) => {
+const ZoneCart = ({ zone , Delete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -19,6 +19,7 @@ const ZoneCart = ({ zone }) => {
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
+        Delete(id)
     };
     
     const handleEdit = (id, e) => {

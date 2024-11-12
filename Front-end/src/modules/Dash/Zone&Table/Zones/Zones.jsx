@@ -2,10 +2,13 @@ import React, { useEffect, useState } from 'react';
 import style from './Zones.module.css'
 import { useNavigate } from 'react-router-dom'
 import {Plus, Ban, SearchX} from "lucide-react"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import {useFetchZone} from "./Hooks/useFetchZone"
 import ZoneCart from './Components/ZoneCart';
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
+import { useDeleteZone } from './Hooks/useDeleteZone';
 
 const Zones = () => {
     const  navigate = useNavigate()
@@ -34,8 +37,14 @@ const Zones = () => {
         fetchZones(currentPage, limit);
     }, [currentPage, limit, fetchZones]);
 
+
+    const {deleteZone} = useDeleteZone(fetchZones)
+    
+
   return (
     <div className={style.container}>
+
+        <ToastContainer/>
 
         <div className={style.Headerpage}>
             <div>
@@ -71,7 +80,7 @@ const Zones = () => {
 
                         <div className={style.userGrid}>
                         {zones.map(zone => (
-                            <ZoneCart key={zone.id} zone={zone} />
+                            <ZoneCart key={zone.id} zone={zone}  Delete={deleteZone}/>
                         ))}
                         </div>
 
