@@ -23,7 +23,7 @@ const ZoneCart = ({ zone }) => {
     
     const handleEdit = (id, e) => {
         e.stopPropagation();
-        navigate(`#`);
+        navigate(`/dash/Update-Zone/${id}`);
     };
     
     return (
