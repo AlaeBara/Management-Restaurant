@@ -117,7 +117,7 @@ const SideBar = () => {
           { 
             title: "Fournisseurs",
             icon: Truck,
-            url:'#'
+            url:'/dash/Supliers'
           },
           
         ],
