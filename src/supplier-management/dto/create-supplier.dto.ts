@@ -23,9 +23,9 @@ export class CreateSupplierDto {
   @ApiProperty({description: 'The phone of the supplier',example: '123-456-7890',required: true})
   phone: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsEmail()
-  @ApiProperty({description: 'The email of the supplier',example: 'john.doe@example.com',required: false})
+  @ApiProperty({description: 'The email of the supplier',example: 'john.doe@example.com',required: true})
   email: string;
 
   @IsOptional()

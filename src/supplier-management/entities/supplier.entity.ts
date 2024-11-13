@@ -21,7 +21,7 @@ export class Supplier {
   @Column()
   address: string;
 
-  @Column()
+  @Column({ nullable: true })
   fax: string;
 
   @Column()
@@ -30,10 +30,10 @@ export class Supplier {
   @Column()
   email: string;
 
-  @Column()
+  @Column({ nullable: true })
   website: string;
 
-  @Column()
+  @Column({ nullable: true })
   description: string;
 
   @Column({ type: 'enum', enum: SupplierStatus ,default: SupplierStatus.ACTIVE})
