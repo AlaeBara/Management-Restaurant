@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import {
   BadgeCheck,
   Bell,
-  UserCheck,
+  LandPlot,
   ChevronRight,
   ChevronsUpDown,
   Command,
@@ -11,11 +11,12 @@ import {
   Sparkles,
   Users,
   Shield,
-  Key,
+  Grid,
   User,
-  List,
-  UserPlus,
-  Grid2x2Check
+  Package,
+  Layers,
+  Database,
+  Truck
 } from "lucide-react"
 
 import {
@@ -82,18 +83,44 @@ const SideBar = () => {
             title: "Rôles",
             icon: Shield,
             url:'/dash/Gestion-des-roles'
-          },
-          { 
-            title: "Permissions",
-            icon: Key,
           }
         ],
       },
       {
-        title: "Zones",
-        icon: Grid2x2Check,
+        title: "Gestion des Espaces",
+        icon: Layers,
         isActive: true,
-        url:"/dash/zones"
+        items: [
+          { 
+            title: "Zones",
+            icon: LandPlot,
+            url: "/dash/zones",
+          },
+          { 
+            title: "Tables",
+            icon: Grid,
+            url:'#'
+          },
+          
+        ],
+      },
+      {
+        title: "Gestion des Stocks",
+        icon: Package,
+        isActive: true,
+        items: [
+          { 
+            title: "Stockage",
+            icon: Database,
+            url: "#",
+          },
+          { 
+            title: "Fournisseurs",
+            icon: Truck,
+            url:'#'
+          },
+          
+        ],
       },
     ],
     

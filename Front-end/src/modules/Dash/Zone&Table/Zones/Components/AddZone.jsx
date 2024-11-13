@@ -1,14 +1,16 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import {useFetchZone} from '../Hooks/useFetchZone'
 
 // Zod schema for form validation
 const zoneSchema = z.object({
@@ -18,6 +20,7 @@ const zoneSchema = z.object({
     zoneCode: z.string()
       .min(1, "Le code de la zone ne peut pas être vide")
       .max(50, "Le code de la zone ne peut pas dépasser 50 caractères"),
+    parentZoneUUID: z.string().nullable().optional()
 });
   
 
@@ -25,12 +28,23 @@ export default function Component() {
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
         zoneLabel: '',
-        zoneCode: ''
+        zoneCode: '',
+        parentZoneUUID : null
     });
     const [errors, setErrors] = useState({});
 
+    const {  zones, totalZones, loading, error, fetchZones} = useFetchZone()
+    useEffect(() => {
+        fetchZones(1, totalZones);
+    }, [fetchZones, totalZones]);
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+   
+    const handleSelectChange = (value) => {
+        const parentZoneValue = value === "none" ? null : value;
+        setFormData({ ...formData, parentZoneUUID: parentZoneValue });
     };
 
     const handleSubmit = async (e) => {
@@ -47,7 +61,8 @@ export default function Component() {
 
             setFormData({
                 zoneLabel: '',
-                zoneCode: ''
+                zoneCode: '',
+                parentZoneUUID : null
             });
             setErrors({});
             
@@ -118,6 +133,35 @@ export default function Component() {
                             />
                             {errors.zoneCode && (
                                 <p className="text-xs text-red-500 mt-1">{errors.zoneCode}</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                        <Label htmlFor="parentZoneUUID">Parent zone</Label>
+                        <Select
+                                value={formData.parentZoneUUID || ""}
+                                onValueChange={handleSelectChange}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionnez un Parent Zone">
+                                        {
+                                            zones.find((zone) => zone.id === formData.parentZoneUUID)?.zoneLabel ||
+                                            'Sélectionnez un Parent Zone'
+                                        }
+                                    </SelectValue>
+                                </SelectTrigger>
+
+                                <SelectContent>
+                                    <SelectItem value="none">Aucun Parent Zone</SelectItem>
+                                    {zones.map((zone) => (
+                                        <SelectItem key={zone.id} value={zone.id}>
+                                            {zone.zoneLabel}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                            {errors.parentZoneUUID && (
+                                <p className="text-xs text-red-500 mt-1">{errors.parentZoneUUID}</p>
                             )}
                         </div>
 
