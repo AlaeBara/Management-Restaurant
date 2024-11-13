@@ -151,4 +151,11 @@ export class TableService extends GenericService<Table> {
       tables: tablesWithZones.filter((table) => table.zone?.id === zone.zoneId),
     }));
   }
+
+  async findAllTablesByZoneUUID(id: string) {
+    return this.tableRepository.find({
+      where: { zone: { id } },
+    //  relations: ['parentZone'],
+    });
+  }
 }

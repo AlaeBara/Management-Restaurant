@@ -13,17 +13,21 @@ import {
 import { ZoneService } from '../services/zone.service';
 import { CreateZoneDto } from '../dtos/zone/create-zone.dto';
 import { Body } from '@nestjs/common';
-import { Permissions } from 'src/user-management/decorators/auth.decorator';
+import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
 import { Zone } from '../entities/zone.entity';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateZoneDto } from '../dtos/zone/update-zone.dto';
 import { ReassignZoneDto } from '../dtos/zone/reassign-zone.dto';
+import { TableService } from '../services/table.service';
 
 @Controller('api/zones')
 @ApiTags('Zones')
 @ApiBearerAuth()
 export class ZoneController {
-  constructor(private readonly zoneService: ZoneService) {}
+  constructor(
+    private readonly zoneService: ZoneService,
+    private readonly tableService: TableService,
+  ) {}
 
   /* private readonly PERMISSIONS = [
     { name: 'view-zones', label: 'Consulter toutes les zones', resource: 'zone' },
@@ -108,5 +112,12 @@ export class ZoneController {
     @Body() reassignZoneDto: ReassignZoneDto,
   ) {
     return this.zoneService.reassignChildZones(id, reassignZoneDto.uuid);
+  }
+
+  @Get(':id/tables')
+  @Permissions('view-tables')
+  @ApiOperation({ summary: 'Get all tables of a zone' })
+  async findTables(@Param('id', ParseUUIDPipe) id: string) {
+    return this.tableService.findAllTablesByZoneUUID(id);
   }
 }

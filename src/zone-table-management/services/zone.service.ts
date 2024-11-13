@@ -26,19 +26,18 @@ export class ZoneService extends GenericService<Zone> {
   async createZone(zoneDto: CreateZoneDto) {
     let parentZone: Zone | null = null;
 
-    await this.throwIfFoundByAnyAttribute(
-      { zoneCode: zoneDto.zoneCode },
-      [],
-      true,
-    );
+    await this.throwIfFoundByAnyAttribute({ zoneCode: zoneDto.zoneCode }, [], true,);
+
+    const zone = this.zoneRepository.create(zoneDto);
 
     if (zoneDto.parentZoneUUID) {
       parentZone = await this.zoneRepository.findOne({
         where: { id: zoneDto.parentZoneUUID },
       });
-      if (parentZone) zoneDto = { ...parentZone, ...zoneDto };
+      if (parentZone) zone.parentZone = parentZone;
     }
-    return this.zoneRepository.save(zoneDto);
+
+    return this.zoneRepository.save(zone);
   }
 
   async updateZoneByUUID(id: string, zoneDto: UpdateZoneDto) {
