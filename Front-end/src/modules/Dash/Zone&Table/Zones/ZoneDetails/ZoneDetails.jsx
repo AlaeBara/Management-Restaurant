@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import style from './ZoneDetails.module.css'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useParams } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -10,6 +10,7 @@ import TableCarts from '../Components/TableCarts'
 
 const Zones = () => {
     const  navigate = useNavigate()
+    const {id} = useParams()
 
   return (
     <div className={style.container}>
@@ -24,7 +25,7 @@ const Zones = () => {
         </div>
 
         <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Add-Zone')} className={style.showFormButton}>
+            <button onClick={() => navigate(`/dash/Zone/${id}/Add-table`)} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter Table
             </button> 
         </div>

@@ -21,6 +21,7 @@ const AddZone = lazy(()=> import ("@/modules/Dash/Zone&Table/Zones/Components/Ad
 const UpdateZone = lazy(()=> import ("@/modules/Dash/Zone&Table/Zones/Components/UpdateZone"))
 const DeletedZone = lazy(()=> import('@/modules/Dash/Zone&Table/Zones/Components/DeletedZone'))
 const ZoneDetails = lazy(()=>  import ('@/modules/Dash/Zone&Table/Zones/ZoneDetails/ZoneDetails'))
+const AddTable = lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/AddTable'))
 
 const ClientRoutes = () => {
   return (
@@ -176,7 +177,18 @@ const ClientRoutes = () => {
               </MainLayout>
             </ProtectedRoute>
           } 
-        /> 
+        />
+
+        <Route 
+          path="/Zone/:id/Add-table/" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddTable/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />  
         
         {/* Zones and table mock up */}
         <Route 
