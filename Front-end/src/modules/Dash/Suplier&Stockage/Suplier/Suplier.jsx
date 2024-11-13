@@ -51,11 +51,11 @@ const Supliers = () => {
         </div>
 
         <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Deleted-Zone')} className={style.showdeleteuser}>
+            <button onClick={() => navigate('#')} className={style.showdeleteuser}>
                 <ExternalLink className="mr-3 h-4 w-4 "/>Fournisseur Supprimés
             </button> 
         
-            <button onClick={() => navigate('/dash/Add-Zone')} className={style.showFormButton}>
+            <button onClick={() => navigate('/dash/Add-Suplier')} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter Fournisseur
             </button> 
         </div>

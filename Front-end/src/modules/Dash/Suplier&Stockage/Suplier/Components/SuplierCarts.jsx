@@ -11,6 +11,7 @@ const STATUS = {
     ACTIVE : 'ACTIVE',
     INACTIVE : 'INACTIVE',
     BLOCKED : 'BLOCKED',
+    
 };
 
 const SupplierCard = ({ supplier }) => {
