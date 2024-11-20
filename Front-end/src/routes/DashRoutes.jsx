@@ -25,7 +25,7 @@ const AddTable = lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/A
 const Suplier = lazy(()=> import ("@/modules/Dash/Suplier&Stockage/Suplier/Suplier"))
 const AddSuplier = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Suplier/Components/AddSuplier'))
 const UpdateSuplier = lazy(()=>import('@/modules/Dash/Suplier&Stockage/Suplier/Components/UpdateSuplier'))
-
+const SuplierDeleted = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Suplier/Components/SuppliersDeleted'))
 
 
 const ClientRoutes = () => {
@@ -224,6 +224,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateSuplier/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />   
+
+        <Route 
+          path="/Deleted-Suplier" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <SuplierDeleted/>
               </MainLayout>
             </ProtectedRoute>
           } 

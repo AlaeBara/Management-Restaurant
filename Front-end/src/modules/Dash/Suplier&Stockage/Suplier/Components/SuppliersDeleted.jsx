@@ -1,14 +1,15 @@
 import React, { useEffect, useState } from 'react';
-import style from './Suplier.module.css'
+import style from './SuppliersDeleted.module.css'
 import { useNavigate } from 'react-router-dom'
-import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
+import {Ban, SearchX} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import Spinner from '@/components/Spinner/Spinner';
-import { useFetchSupliers } from './Hooks/useFetchSupliers';
-import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
-import SuplierCart from './Components/SuplierCarts'
-import {useDeleteSupplier} from './Hooks/useDeleteSuplier'
+import { useFetchSupliersDeleted  } from '../Hooks/useFetchSuppliersDeleted';
+import PaginationNav from '../../../UserManagments/User/Components/PaginationNav'
+import  SupplierDeletedCard  from '../Components/CartDeletedSupplier'
+import axios from 'axios';
+import Cookies from 'js-cookie';
 
 
 const Supliers = () => {
@@ -16,7 +17,7 @@ const Supliers = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { Supliers, totalSupliers, loading, error, fetchSupliers} = useFetchSupliers()
+    const { Supliers, totalSupliers, loading, error, fetchSupliersDeleted} = useFetchSupliersDeleted()
 
     //pagination
     const totalPages = Math.ceil(totalSupliers / limit);
@@ -35,11 +36,35 @@ const Supliers = () => {
   
     
     useEffect(() => {
-        fetchSupliers(currentPage, limit);
-    }, [currentPage, limit, fetchSupliers]);
+        fetchSupliersDeleted(currentPage, limit);
+    }, [currentPage, limit,  fetchSupliersDeleted]);
 
 
-    const {deleteSupplier} = useDeleteSupplier(fetchSupliers)
+    
+    // Restore user function
+    const restoreSuppliers = async (id) => {
+        const token = Cookies.get('access_token');
+        try {
+            await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}/restore`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            fetchSupliersDeleted();
+            toast.success("Fournisseur restauré avec succès !", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } catch (error) {
+            console.error(error.response);
+            toast.error("Erreur lors de la restauration dU Fournisseur.", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+    };
+
+
 
 
 
@@ -50,28 +75,18 @@ const Supliers = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Fournisseurs</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement tous les fournisseurs de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des fournisseurs, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Fournisseurs Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des fournisseurs supprimés de votre plateforme. Vous pouvez voir les détails des fournisseurs qui ont été retirés du système et, si nécessaire, les restaurer.</p>
             </div>
         </div>
 
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Deleted-Suplier')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Fournisseur Supprimés
-            </button> 
-        
-            <button onClick={() => navigate('/dash/Add-Suplier')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Fournisseur
-            </button> 
-        </div>
 
 
         {/* carts of zone */}
-
         <div>
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Fournisseurs..." />
+                <Spinner title="Chargement des Fournisseurs Supprimés..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -85,7 +100,7 @@ const Supliers = () => {
 
                         <div className={style.userGrid}>
                         {Supliers.map(suplier => (
-                            <SuplierCart key={suplier.id} supplier={suplier} Delete={deleteSupplier}  />
+                            <SupplierDeletedCard  key={suplier.id} supplier={suplier} RESTORE={restoreSuppliers}  />
                         ))}
                         </div>
 
@@ -102,7 +117,7 @@ const Supliers = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Fournisseurs trouvé</h1>
+                        <h1>Aucun Fournisseurs Supprimés trouvé</h1>
                     </div>
                     )}
                 </>
