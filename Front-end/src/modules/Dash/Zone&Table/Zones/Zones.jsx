@@ -16,7 +16,6 @@ const Zones = () => {
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
     const {  zones, totalZones, loading, error, fetchZones} = useFetchZone()
-
     //pagination
     const totalPages = Math.ceil(totalZones / limit);
     const handleNextPage = () => {
