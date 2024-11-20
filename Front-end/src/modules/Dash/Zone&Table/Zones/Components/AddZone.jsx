@@ -1,15 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import Cookies from 'js-cookie';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import { useFetchZone } from "../Hooks/useFetchZone"
 
 // Zod schema for form validation
 const zoneSchema = z.object({
@@ -17,8 +18,9 @@ const zoneSchema = z.object({
         .min(1, "Le label de la zone ne peut pas être vide")
         .max(50, "Le label de la zone ne peut pas dépasser 50 caractères"),
     zoneCode: z.string()
-      .min(1, "Le code de la zone ne peut pas être vide")
-      .max(50, "Le code de la zone ne peut pas dépasser 50 caractères"),
+        .min(1, "Le code de la zone ne peut pas être vide")
+        .max(50, "Le code de la zone ne peut pas dépasser 50 caractères"),
+    parentZone: z.string().optional()
 });
 
 
@@ -36,22 +38,13 @@ export default function Component() {
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
         zoneLabel: '',
-        zoneCode: ''
+        zoneCode: '',
+        parentZoneUUID: null
     });
     const [errors, setErrors] = useState({});
 
-    const {  zones, totalZones, loading, error, fetchZones} = useFetchZone()
-    useEffect(() => {
-        fetchZones(1, totalZones);
-    }, [fetchZones, totalZones]);
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-    };
-   
-    const handleSelectChange = (value) => {
-        const parentZoneValue = value === "none" ? null : value;
-        setFormData({ ...formData, parentZoneUUID: parentZoneValue });
     };
 
     const handleSubmit = async (e) => {
@@ -68,7 +61,8 @@ export default function Component() {
 
             setFormData({
                 zoneLabel: '',
-                zoneCode: ''
+                zoneCode: '',
+                parentZoneUUID: null
             });
             setErrors({});
 
@@ -128,19 +122,46 @@ export default function Component() {
                                 )}
                             </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="label">Code de la Zone</Label>
-                            <Input
-                                id="zoneCode"
-                                name="zoneCode"  
-                                value={formData.zoneCode}
-                                onChange={handleChange}
-                                placeholder="Code de la Zone"
-                            />
-                            {errors.zoneCode && (
-                                <p className="text-xs text-red-500 mt-1">{errors.zoneCode}</p>
-                            )}
-                        </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="label">Code de la Zone</Label>
+                                <Input
+                                    id="zoneCode"
+                                    name="zoneCode"
+                                    value={formData.zoneCode}
+                                    onChange={handleChange}
+                                    placeholder="Code de la Zone"
+                                />
+                                {errors.zoneCode && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.zoneCode}</p>
+                                )}
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="parentZone">Zone Parent</Label>
+                                <Select
+                                    id="parentZone"
+                                    name="parentZone"
+                                    value={formData.parentZone}
+                                    onValueChange={(value) => handleChange({ target: { name: 'parentZoneUUID', value } })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner la zone parent" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {zones.map((zone) => (
+                                            <SelectItem key={zone.id} value={zone.id}>
+                                                {zone.zoneLabel}
+                                            </SelectItem>
+                                        ))}
+                                    </SelectContent>
+                                </Select>
+                                <p className="text-xs text-gray-600 mt-0">
+                                    Sélectionnez une zone parent si cette zone doit être rattachée à une zone existante. Cette hiérarchisation permet d'organiser les zones de manière structurée.
+                                </p>
+                                {errors.parentZone && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.parentZoneUUID}</p>
+                                )}
+                            </div>
 
                             <div className='flex gap-4'>
 
