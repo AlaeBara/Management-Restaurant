@@ -138,6 +138,7 @@ export default function Component() {
 
                             <div className="space-y-2">
                                 <Label htmlFor="parentZone">Zone Parent</Label>
+                           
                                 <Select
                                     id="parentZone"
                                     name="parentZone"
@@ -155,6 +156,9 @@ export default function Component() {
                                         ))}
                                     </SelectContent>
                                 </Select>
+                                     <p className="text-xs text-gray-600 mt-0">
+                                    Sélectionnez une zone parent si cette zone doit être rattachée à une zone existante. Cette hiérarchisation permet d'organiser les zones de manière structurée.
+                                </p>
                                 {errors.parentZone && (
                                     <p className="text-xs text-red-500 mt-1">{errors.parentZoneUUID}</p>
                                 )}
