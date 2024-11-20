@@ -13,7 +13,7 @@ import {
 import { Zone } from './zone.entity';
 import { TableStatus } from '../enums/table-status.enum';
 
-@Entity('table')
+@Entity(process.env.DATASET_PREFIX + 'tables')
 @Index(['id', 'tableCode','zone'])
 export class Table {
   @PrimaryGeneratedColumn('uuid')

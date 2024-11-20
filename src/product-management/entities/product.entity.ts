@@ -5,7 +5,7 @@ import { ProductType } from "../enums/type.enum";
 import { Unit } from "src/unit-management/entities/unit.entity";
 
 
-@Entity('products')
+@Entity(process.env.DATASET_PREFIX + 'products')
 @Index(['productSKU', 'productName'])
 export class Product extends BaseEntity {
 

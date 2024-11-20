@@ -4,7 +4,7 @@ import { CategoryStatus } from "../enums/category-status.enum";
 
 
 
-@Entity('categories')
+@Entity(process.env.DATASET_PREFIX + 'categories')
 @Index(['categoryCode', 'categoryName', 'parentCategory'])
 export class Category extends BaseEntity {
 
@@ -40,6 +40,11 @@ export class Category extends BaseEntity {
 
     status: CategoryStatus; // New property (not a column)
 
+
+    private capitalizeFirstLetter(string: string): string {
+        return string.charAt(0).toUpperCase() + string.slice(1);
+    }
+
     @AfterLoad()
     calculateStatus() {
         if (!this.isActive) {
@@ -56,7 +61,7 @@ export class Category extends BaseEntity {
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
         const startMinutes = this.timeToMinutes(this.activeTimeStart);
         const endMinutes = this.timeToMinutes(this.activeTimeEnd);
-        const currentDay = now.toLocaleDateString('en-US', { weekday: 'long' }).toLowerCase();
+        const currentDay = this.capitalizeFirstLetter(now.toLocaleDateString('en-US', { weekday: 'long' }));
 
         const isTimeValid = startMinutes <= endMinutes
             ? currentMinutes >= startMinutes && currentMinutes <= endMinutes

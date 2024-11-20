@@ -2,7 +2,7 @@ import { BaseEntity } from "src/common/entities/base.entity";
 import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, RelationId } from "typeorm";
 
 
-@Entity()
+@Entity(process.env.DATASET_PREFIX + 'storages')
 export class Storage extends BaseEntity {
     @Column({type: 'varchar', length: 15})
     storageCode: string;

@@ -15,7 +15,7 @@ import {
 import { statusClient } from '../enums/client.enum';
 
 @Index(['username','id','email'])
-@Entity('client')
+@Entity(process.env.DATASET_PREFIX + 'clients')
 export class Client {
   @PrimaryGeneratedColumn('uuid')
   id: string;

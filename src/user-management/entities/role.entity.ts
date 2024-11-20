@@ -13,7 +13,7 @@ import {
 import { Permission } from './permission.entity';
 import { Exclude } from 'class-transformer';
 
-@Entity()
+@Entity(process.env.DATASET_PREFIX + 'roles')
 @Index(['name', 'id'])
 export class Role {
   @PrimaryGeneratedColumn()
@@ -35,7 +35,7 @@ export class Role {
   deletedAt: Date;
 
   @ManyToMany(() => Permission)
-  @JoinTable()
+  @JoinTable({ name: process.env.DATASET_PREFIX + 'role_permissions' })
   permissions: Permission[];
 
   @RelationId((role: Role) => role.permissions)

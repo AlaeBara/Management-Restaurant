@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 import { SupplierStatus } from '../enums/status-supplier.enum';
 
-@Entity('supplier')
+@Entity(process.env.DATASET_PREFIX + 'suppliers')
 @Index(['name'])
 export class Supplier {
   @PrimaryGeneratedColumn('uuid')

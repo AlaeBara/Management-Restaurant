@@ -40,8 +40,21 @@ export class ProductService extends GenericService<Product> {
         return this.productRepository.save(product);
     }
 
-    async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<UpdateResult> {
-        return this.productRepository.update(id, updateProductDto);
+    async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
+        const product = await this.findOneByIdWithOptions(id);
+
+        if (updateProductDto.productSKU || updateProductDto.productName) {
+            await this.validateUniqueExcludingSelf({
+                productSKU: updateProductDto.productSKU,
+                productName: updateProductDto.productName
+            }, id);
+        }
+
+        if (updateProductDto.unitId) {
+            const unit = await this.unitService.findOneByIdWithOptions(updateProductDto.unitId);
+            await this.assignUnit(product, unit);
+        }
+        return this.productRepository.save(product);
     }
 
 }

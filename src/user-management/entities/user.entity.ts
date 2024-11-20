@@ -15,7 +15,7 @@ import { Gender } from '../../common/enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';
 
 @Index(['id','username','phone','email','status'])
-@Entity()
+@Entity(process.env.DATASET_PREFIX + 'users')
 export class User  {
   @PrimaryGeneratedColumn()
   id: number;
@@ -72,7 +72,7 @@ export class User  {
   deletedAt: Date;
 
   @ManyToMany(() => Role)
-  @JoinTable()
+  @JoinTable({ name: process.env.DATASET_PREFIX + 'user_roles' })
   roles: Role[];
 
   @RelationId((user: User) => user.roles)

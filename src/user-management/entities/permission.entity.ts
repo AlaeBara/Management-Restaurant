@@ -9,7 +9,7 @@ import {
 } from 'typeorm';
 
 @Index(['name', 'id'])
-@Entity()
+@Entity(process.env.DATASET_PREFIX + 'permissions')
 export class Permission {
   @PrimaryGeneratedColumn()
   id: number;

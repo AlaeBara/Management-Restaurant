@@ -14,7 +14,7 @@ import {
 import { TokenType } from '../enums/token.enum';
 import { User } from './user.entity';
 
-@Entity()
+@Entity(process.env.DATASET_PREFIX + 'user-action-tokens')
 @Index(['token', 'id', 'user', 'type'])
 export class UserActionToken {
   @PrimaryGeneratedColumn()

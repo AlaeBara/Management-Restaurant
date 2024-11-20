@@ -4,7 +4,7 @@ import { Column, CreateDateColumn, DeleteDateColumn, Entity } from 'typeorm';
 import { BaseUnit } from '../enums/base-unit.enum';
 import { UnitType } from '../enums/unit.enum';
 
-@Entity()
+@Entity(process.env.DATASET_PREFIX + 'units')
 export class Unit {
   @PrimaryGeneratedColumn('uuid')
   id: string;

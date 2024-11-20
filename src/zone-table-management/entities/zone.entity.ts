@@ -1,7 +1,7 @@
 import { Column, CreateDateColumn, DeleteDateColumn, Entity, Index, JoinColumn, ManyToOne, PrimaryGeneratedColumn, RelationId, UpdateDateColumn } from "typeorm";
 
 
-@Entity('zone')
+@Entity(process.env.DATASET_PREFIX + 'zones')
 @Index(['id','zoneCode','parentZone'])
 export class Zone {
   @PrimaryGeneratedColumn('uuid')
