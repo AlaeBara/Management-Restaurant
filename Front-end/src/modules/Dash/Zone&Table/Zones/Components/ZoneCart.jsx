@@ -29,7 +29,7 @@ const ZoneCart = ({ zone , Delete }) => {
     
     return (
         <>
-            <div className={style.zoneCart} onClick={() => navigate(`#`)}  >
+            <div className={style.zoneCart} onClick={() => navigate(`/dash/Zone/${zone.id}`)}  >
 
                 <div className={style.header}>
 
