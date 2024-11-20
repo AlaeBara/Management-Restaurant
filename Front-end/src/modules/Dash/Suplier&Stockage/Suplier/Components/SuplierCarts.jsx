@@ -2,10 +2,7 @@ import React, { useState } from 'react';
 import style from "./SupliersCarts.module.css";
 import { Edit, Trash2} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import { Badge } from "@/components/ui/badge";
 import { Building2, Mail, Phone, Printer, Globe } from 'lucide-react'
-
-
 
 const STATUS = {
     ACTIVE : 'ACTIVE',
@@ -14,7 +11,7 @@ const STATUS = {
     
 };
 
-const SupplierCard = ({ supplier }) => {
+const SupplierCard = ({ supplier , Delete }) => {
 
     const navigate = useNavigate()
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -27,8 +24,14 @@ const SupplierCard = ({ supplier }) => {
         return `${formattedDate} ${formattedTime}`;
     };
 
-    const confirmDelete = () => {
-        setIsModalVisible(false);
+    const confirmDelete = (id) => {
+        setIsModalVisible(false)
+        Delete(id)
+    };
+
+    const handleDelete = (e) => {
+        e.stopPropagation();
+        setIsModalVisible(true);
     };
 
     const cancelDelete = () => {
@@ -92,11 +95,11 @@ const SupplierCard = ({ supplier }) => {
 
 
                 <div className={style.userAction}>
-                    <div className={style.btn} onClick={() => navigate(`#`)}>
+                    <div className={style.btn} onClick={() => navigate(`/dash/Update-Suplier/${supplier.id}`)}>
                         <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                     </div>
 
-                    <div className={`${style.btn} ${style.delete}`}>
+                    <div className={`${style.btn} ${style.delete}`} onClick={handleDelete}>
                         <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                     </div>
                     
@@ -111,7 +114,7 @@ const SupplierCard = ({ supplier }) => {
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto transform transition-all ease-in-out duration-300">
                         <div className="p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirmation</h3>
-                            <p className="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer cet utilisateur ?</p>
+                            <p className="text-gray-700 mb-6">Êtes-vous sûr de vouloir supprimer le fournisseur <strong>{supplier.name}</strong> ?</p>
                             <div className="flex justify-end space-x-4">
                             <button 
                                 className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors"
@@ -121,7 +124,7 @@ const SupplierCard = ({ supplier }) => {
                             </button>
                             <button 
                                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
-                                onClick={confirmDelete}
+                                onClick={()=>confirmDelete(supplier.id)}
                             >
                                 Supprimer
                             </button>

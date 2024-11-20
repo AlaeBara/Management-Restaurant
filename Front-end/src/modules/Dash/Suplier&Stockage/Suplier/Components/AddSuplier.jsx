@@ -17,11 +17,12 @@ const SuplierSchema = z.object({
     address: z.string().min(1, "L'adresse du fournisseur ne peut pas être vide"),
     fax: z.string().nullable().optional(),
     phone:z.string()
+        .min(1, "Le numéro de téléphone du fournisseur ne peut pas être vide")
         .refine(value => value === null || /^[+]?[0-9\s]*$/.test(value), {
             message: 'Numéro de téléphone invalide.',
         }),
     email: z.string().email("Format d'email invalide").nullable().optional(),
-    website: z.string().url("L'URL du site web n'est pas valide").nullable().optional(),
+    website: z.string().nullable().optional(),
     description: z.string().nullable().optional(),
     status: z.string().nullable().optional(),
     rcNumber: z.string().min(1, "Le numéro RC du fournisseur ne peut pas être vide"),

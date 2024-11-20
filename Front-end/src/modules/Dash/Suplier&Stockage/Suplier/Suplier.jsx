@@ -8,6 +8,8 @@ import Spinner from '@/components/Spinner/Spinner';
 import { useFetchSupliers } from './Hooks/useFetchSupliers';
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import SuplierCart from './Components/SuplierCarts'
+import {useDeleteSupplier} from './Hooks/useDeleteSuplier'
+
 
 const Supliers = () => {
     const  navigate = useNavigate()
@@ -35,6 +37,9 @@ const Supliers = () => {
     useEffect(() => {
         fetchSupliers(currentPage, limit);
     }, [currentPage, limit, fetchSupliers]);
+
+
+    const {deleteSupplier} = useDeleteSupplier(fetchSupliers)
 
 
 
@@ -80,7 +85,7 @@ const Supliers = () => {
 
                         <div className={style.userGrid}>
                         {Supliers.map(suplier => (
-                            <SuplierCart key={suplier.id} supplier={suplier}  />
+                            <SuplierCart key={suplier.id} supplier={suplier} Delete={deleteSupplier}  />
                         ))}
                         </div>
 
