@@ -112,7 +112,7 @@ const SideBar = () => {
           { 
             title: "Stockage",
             icon: Database,
-            url: "#",
+            url: "/dash/Storage",
           },
           { 
             title: "Fournisseurs",
