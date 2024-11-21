@@ -1,17 +1,47 @@
 import React, { useEffect, useState } from 'react';
 import style from './Storage.module.css'
 import { useNavigate } from 'react-router-dom'
-import {Plus,  ExternalLink} from "lucide-react"
+import {Plus,  ExternalLink , Ban,SearchX} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import {useFetchStorage} from './Hooks/useFetchStorage'
+import {useDeleteStorage} from './Hooks/useDeleteStorage'
+import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
+import CartStorage  from './Components/CartStorage'
+import Spinner from '../../../../components/Spinner/Spinner'
 
 
 
 const Storage = () => {
     const navigate = useNavigate()
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    const { Storages, totalStorage, loading, error, fetchStorage } = useFetchStorage()
+
+    //pagination
+    const totalPages = Math.ceil(totalStorage / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+          setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalStorage);
+  
+    useEffect(() => {
+        fetchStorage({ page: currentPage , limit :limit  });
+    }, [currentPage, limit, fetchStorage]);
+
+
+    const {deleteStorage} = useDeleteStorage(fetchStorage)
+
    
-
-
   return (
     <div className={style.container}>
 
@@ -35,12 +65,11 @@ const Storage = () => {
         </div>
 
 
-        {/* carts of zone */}
 
-        {/* <div>
+        <div>
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Fournisseurs..." />
+                <Spinner title="Chargement des Stockage..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -49,12 +78,11 @@ const Storage = () => {
             </div>
             ) : (
                 <>
-                    {Supliers.length > 0 ? (
+                    {Storages.length > 0 ? (
                     <>
-
                         <div className={style.userGrid}>
-                        {Supliers.map(suplier => (
-                            <SuplierCart key={suplier.id} supplier={suplier} Delete={deleteSupplier}  />
+                        {Storages.map(Storage => (
+                            <CartStorage key={Storage.id} Storage={Storage}  Delete={deleteStorage} />
                         ))}
                         </div>
 
@@ -63,7 +91,7 @@ const Storage = () => {
                             totalPages={totalPages}
                             startItem={startItem}
                             endItem={endItem}
-                            numberOfData={totalSupliers}
+                            numberOfData={totalStorage}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                         />
@@ -71,12 +99,12 @@ const Storage = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Fournisseurs trouvé</h1>
+                        <h1>Aucun Stock trouvé</h1>
                     </div>
                     )}
                 </>
             )}
-        </div>  */}
+        </div> 
 
     </div>
   )

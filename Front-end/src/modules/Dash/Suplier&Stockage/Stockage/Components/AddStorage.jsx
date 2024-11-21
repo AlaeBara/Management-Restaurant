@@ -47,8 +47,7 @@ export default function Component() {
     const { Storages, fetchStorage } = useFetchStorage()
 
     useEffect(() => {
-        fetchStorage();
-        console.log(Storages)
+        fetchStorage({ fetchAll: true });
     }, []);
 
     const handleSubmit = async (e) => {
@@ -159,7 +158,7 @@ export default function Component() {
                                 <Select
                                     id="subStorageId"
                                     name="subStorageId"
-                                    value={formData.subStorageId || undefined}
+                                    value={formData.subStorageId|| undefined}
                                     onValueChange={(value) => handleChange({ target: { name: 'subStorageId', value } })}
                                 >
                                 <SelectTrigger>

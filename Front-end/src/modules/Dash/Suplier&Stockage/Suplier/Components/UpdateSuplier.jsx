@@ -33,17 +33,8 @@ export default function Component() {
 
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
-      }, [formData, setFormData]);
+    }, [formData, setFormData]);
    
-
-    
-    
-
-   
-   
-
-   
-
   return (
     <>
         <ToastContainer />
