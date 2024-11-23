@@ -7,7 +7,7 @@ export abstract class BaseEntity {
     @CreateDateColumn()
     createdAt: Date;
 
-    @UpdateDateColumn({ select: false })
+    @UpdateDateColumn()
     updatedAt: Date;
 
     @DeleteDateColumn()

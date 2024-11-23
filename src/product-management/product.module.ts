@@ -12,6 +12,6 @@ import { UnitModule } from 'src/unit-management/unit.module';
     imports: [TypeOrmModule.forFeature([Category, Product]), UnitModule],
     controllers: [CategoryController, ProductController],
     providers: [CategoryService, ProductService],
-    exports: [],
+    exports: [ProductService],
 })
 export class ProductManagementModule { }

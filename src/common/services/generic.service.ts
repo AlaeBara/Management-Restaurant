@@ -215,6 +215,53 @@ export class GenericService<T> {
     return entity;
   }
 
+  //
+  async findOneWithoutBuilder(
+    id: string | number,
+    options: Partial<FindOneOptions> = {},
+  ): Promise<T> {
+    const {
+      relations = [],
+      withDeleted = false,
+      select = [],
+      onlyDeleted = false,
+      findOrThrow = true,
+    } = options;
+
+    const relationArray = await this.splitByComma(relations);
+    const selectArray = await this.splitByComma(select);
+
+    const entity = await this.repository.findOne({
+      where: { id } as any,
+      relations: relationArray,
+      select: selectArray.length > 0 ? ['id', ...selectArray] as any : undefined,
+      withDeleted: true,
+    });
+
+    // Handle deleted records filtering
+    if (entity && !withDeleted && !onlyDeleted && entity['deletedAt']) {
+      throw new NotFoundException(
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+      );
+    }
+
+    if (entity && onlyDeleted && !entity['deletedAt']) {
+      throw new NotFoundException(
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+      );
+    }
+
+    if (findOrThrow) {
+      if (!entity) {
+        throw new NotFoundException(
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        );
+      }
+    }
+
+    return entity;
+  }
+
   async validateUnique(attributes: Partial<T>) {
     // Create an array of conditions for each attribute
     const conditions = Object.entries(attributes).map(([key, value]) => ({

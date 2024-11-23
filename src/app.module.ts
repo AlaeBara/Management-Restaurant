@@ -15,6 +15,7 @@ import { UnitModule } from './unit-management/unit.module';
 import { SupplierModule } from './supplier-management/supplier.module';
 import { StorageModule } from './storage-management/storage.module';
 import { ProductManagementModule } from './product-management/product.module';
+import { InventoryModule } from './inventory-managemet/inventory.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -33,6 +34,7 @@ import { ProductManagementModule } from './product-management/product.module';
     SupplierModule,
     StorageModule,
     ProductManagementModule,
+    InventoryModule,
     CommonModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

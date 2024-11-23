@@ -1,12 +1,13 @@
 import { BaseEntity } from "src/common/entities/base.entity";
-import { Column, Entity, Index, JoinColumn, ManyToOne, RelationId } from "typeorm";
+import { AfterLoad, Column, Entity, Index, JoinColumn, ManyToOne, RelationId } from "typeorm";
 import { Category } from "./category.entity";
 import { ProductType } from "../enums/type.enum";
 import { Unit } from "src/unit-management/entities/unit.entity";
+import { Exclude } from "class-transformer";
 
 
 @Entity(process.env.DATASET_PREFIX + 'products')
-@Index(['productSKU', 'productName'])
+@Index(['productSKU', 'productName', 'productUnit'])
 export class Product extends BaseEntity {
 
     @Column({ type: 'varchar', length: 15 })
@@ -24,28 +25,26 @@ export class Product extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     isOffered: boolean;
 
-    // Defines the type of product
     @Column({ type: 'enum', enum: ProductType })
-    productType: ProductType;   
-/* 
-    // Defines the relationship with Category
-    @ManyToOne(() => Category, { nullable: false })
-    @JoinColumn({ name: 'categoryId' })
-    productCategory: Category;
+    productType: ProductType;
 
-    // Automatically loads the foreign key
-    @RelationId((product: Product) => product.productCategory)
-    categoryId: string; */
+    @ManyToOne(() => Unit, { nullable: true, eager: true })
+    @JoinColumn({ name: 'unitId' })
+    private productUnit: Unit;
 
-    // Gets active status from the category
-    /* get isActive(): boolean {
-        return this.productCategory?.isActive ?? false;
-    } */
+    unit: string;
 
-    @ManyToOne(() => Unit, { nullable: true })
-    @JoinColumn({ name: 'unitId' }) 
-    productUnit: Unit;
+    @AfterLoad()
+    getUnit(): void {
+        this.unit = this.productUnit?.unit;
+        delete this.productUnit;
+    }
 
-    @RelationId((product: Product) => product.productUnit)
-    unitId: string;
+    public setProductUnit(unit: Unit): void {
+        this.productUnit = unit;
+    }
+
+    public getProductUnit(): Unit {
+        return this.productUnit;
+    }
 }

@@ -5,6 +5,7 @@ import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Product } from "../entities/product.entity";
 import { CreateProductDto } from "../dtos/product/create-product.dto";
 import { UpdateProductDto } from "../dtos/product/update-product.dto";
+import { plainToInstance } from "class-transformer";
 
 @Controller('api/products')
 @ApiTags('Product Management - Products')
@@ -47,7 +48,7 @@ export class ProductController {
         @Query('select') select?: string[],
         @Query('findOrThrow') findOrThrow?: boolean,
     ) {
-        return this.productService.findOneByIdWithOptions(id, {
+        return await this.productService.findOneWithoutBuilder(id, {
             relations,
             select,
             withDeleted,

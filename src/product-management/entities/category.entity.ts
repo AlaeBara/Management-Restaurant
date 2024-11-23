@@ -61,7 +61,9 @@ export class Category extends BaseEntity {
         const currentMinutes = now.getHours() * 60 + now.getMinutes();
         const startMinutes = this.timeToMinutes(this.activeTimeStart);
         const endMinutes = this.timeToMinutes(this.activeTimeEnd);
-        const currentDay = this.capitalizeFirstLetter(now.toLocaleDateString('en-US', { weekday: 'long' }));
+        const currentDay = this.capitalizeFirstLetter(
+            new Intl.DateTimeFormat('en-US', { weekday: 'long' }).format(now)
+        );
 
         const isTimeValid = startMinutes <= endMinutes
             ? currentMinutes >= startMinutes && currentMinutes <= endMinutes
@@ -69,19 +71,19 @@ export class Category extends BaseEntity {
 
         const isDayValid = this.activeDays.includes(currentDay);
 
-        this.status = (isTimeValid && isDayValid) 
-            ? CategoryStatus.TIME_RESTRICTED 
+        this.status = (isTimeValid && isDayValid)
+            ? CategoryStatus.INSIDE_SCHEDULE
             : CategoryStatus.OUTSIDE_SCHEDULE;
     }
 
     private timeToMinutes(time: Date | string): number {
         if (!time) return 0;
-        
+
         if (typeof time === 'string') {
             const [hours, minutes] = time.split(':').map(Number);
             return hours * 60 + minutes;
         }
-        
+
         return time.getHours() * 60 + time.getMinutes();
     }
 }
