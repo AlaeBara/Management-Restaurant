@@ -7,6 +7,7 @@ export function useFetchSuplier(id) {
   const [initialData, setInitialData] = useState({ name: '', label: '' }); 
 
   const [message , setmessage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -43,6 +44,7 @@ export function useFetchSuplier(id) {
             rcNumber: response.data.rcNumber,
             iceNumber: response.data.rcNumber
         });
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching Suplier data:', error.response?.data?.message || error.message);
         setmessage("Erreur lors de la récupération des données du Fournisseur")
@@ -52,5 +54,5 @@ export function useFetchSuplier(id) {
     fetchSuplier();
   }, [id]);
 
-  return { formData, setFormData, initialData, setInitialData , message };
+  return { formData, setFormData, initialData, setInitialData , message  , loading};
 }

@@ -7,6 +7,7 @@ export function useFetchRole(id) {
   const [initialData, setInitialData] = useState({ name: '', label: '' }); 
 
   const [message , setmessage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
 
   useEffect(() => {
@@ -27,6 +28,7 @@ export function useFetchRole(id) {
           name: response.data.name,
           label: response.data.label,
         });
+        setLoading(false);
       } catch (error) {
         console.error('Error fetching role data:', error.response?.data?.message || error.message);
         setmessage("Erreur lors de la récupération des données du rôle")
@@ -36,5 +38,5 @@ export function useFetchRole(id) {
     fetchRole();
   }, [id]);
 
-  return { formData, setFormData, initialData, setInitialData , message };
+  return { formData, setFormData, initialData, setInitialData , message , loading };
 }

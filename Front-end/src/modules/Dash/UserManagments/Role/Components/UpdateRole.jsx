@@ -9,11 +9,12 @@ import { useParams } from 'react-router-dom';
 import { useFetchRole } from '../hooks/useFetchRole';
 import { useUpdateRole } from '../hooks/useUpdateRole';
 import { useNavigate } from 'react-router-dom';
+import Spinner from '@/components/Spinner/Spinner';
 
 export default function Component() {
     const navigate = useNavigate()
     const { id } = useParams();
-    const { formData, setFormData, initialData, setInitialData , message  } = useFetchRole(id);
+    const { formData, setFormData, initialData, setInitialData , message , loading  } = useFetchRole(id);
     const { errors, updateRole } = useUpdateRole(id, formData, setFormData, initialData, setInitialData);
   
     // Memoize handleChange function with useCallback
@@ -32,7 +33,11 @@ return (
           </p>
         </div>
 
-        {message ? (
+        {loading ? (
+            <div className="flex flex-col items-center justify-center my-10">
+                <Spinner title="Chargement des données, veuillez patienter..." />
+            </div>
+            ) : message ? (
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
                     <p className="font-bold">Erreur</p>
                     <p className="break-words">{message}</p>

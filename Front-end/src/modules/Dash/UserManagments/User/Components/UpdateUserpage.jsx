@@ -27,10 +27,6 @@ export default function UpdateUser() {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
     };
 
-    if (isLoading) {
-        return <Spinner/>;
-    }
-
 
   return (
     <>
@@ -40,7 +36,12 @@ export default function UpdateUser() {
             <p className="text-base text-gray-600">Complétez les champs ci-dessous pour actualiser les informations de l’utilisateur.</p>
         </div>
 
-        {messageError ? (
+
+        {isLoading ? (
+            <div className="flex flex-col items-center justify-center my-10">
+                <Spinner title="Chargement des données, veuillez patienter..." />
+            </div>
+        ) : messageError ? (
             <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
                 <p className="font-bold">Erreur</p>
                 <p className="break-words">{messageError}</p>

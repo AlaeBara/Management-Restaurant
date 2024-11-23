@@ -10,6 +10,7 @@ import { useNavigate } from 'react-router-dom';
 import { useParams } from 'react-router-dom';
 import { useFetchSuplier } from '../Hooks/useFetchSuplier';
 import { useUpdateSupplier } from '../Hooks/useUpdateSuplier';
+import Spinner from '@/components/Spinner/Spinner';
 
 const STATUS = {
     ACTIVE : 'ACTIVE',
@@ -23,7 +24,7 @@ export default function Component() {
     const navigate = useNavigate()
     const { id } = useParams();
 
-    const { formData, setFormData, initialData, setInitialData , message  } = useFetchSuplier(id);
+    const { formData, setFormData, initialData, setInitialData , message, loading  } = useFetchSuplier(id);
     const { errors, updateSupplier } = useUpdateSupplier(id, formData, setFormData, initialData, setInitialData);
 
 
@@ -46,13 +47,17 @@ export default function Component() {
             </p>
         </div>
 
-        {message ? (
-                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
-                    <p className="font-bold">Erreur</p>
-                    <p className="break-words">{message}</p>
+        {loading ? (
+                <div className="flex flex-col items-center justify-center my-10">
+                    <Spinner title="Chargement des données, veuillez patienter..." />
                 </div>
+        ) : message ? (
+            <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                <p className="font-bold">Erreur</p>
+                <p className="break-words">{message}</p>
+            </div>
 
-            ) : (
+        ) : (
 
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">

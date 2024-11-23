@@ -11,6 +11,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue,   Select
 import {useFetchStorage} from '../Hooks/useFetchStorage'
 import {useFetchStorages} from '../Hooks/useFetchStorages'
 import {useUpdateStorage} from '../Hooks/useUpdateStorage'
+import Spinner from '@/components/Spinner/Spinner';
 
 
 export default function Component() {
@@ -25,7 +26,7 @@ export default function Component() {
     }, []);
 
 
-    const { formData, setFormData, initialData, setInitialData , message} = useFetchStorage(id);
+    const { formData, setFormData, initialData, setInitialData , message , loading} = useFetchStorage(id);
     const { errors, updateStorage } = useUpdateStorage(id, formData, setFormData, initialData, setInitialData);
 
     const handleChange = useCallback((e) => {
@@ -44,7 +45,11 @@ export default function Component() {
                 </p>
             </div>
 
-            {message ? (
+            {loading ? (
+                <div className="flex flex-col items-center justify-center my-10">
+                    <Spinner title="Chargement des données, veuillez patienter..." />
+                </div>
+            ) : message ? (
                 <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
                     <p className="font-bold">Erreur</p>
                     <p className="break-words">{message}</p>

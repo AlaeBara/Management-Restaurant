@@ -12,6 +12,7 @@ import { useUpdateZone } from '../Hooks/useUpdateZone';
 import { useFetchZone } from "../Hooks/useFetchZone";
 import Spinner from '@/components/Spinner/Spinner';
 
+
 export default function Component() {
     const { id } = useParams();
     const navigate = useNavigate();

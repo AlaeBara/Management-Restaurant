@@ -16,6 +16,7 @@ export function useFetchStorage(id) {
   
 
   const [message , setmessage] = useState(null);
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchStorage = async () => {
@@ -37,6 +38,7 @@ export function useFetchStorage(id) {
           storageName: response.data.storageName,
           parentStorageId: response.data.parentStorageId || null,
         });
+        setLoading(false)
       } catch (error) {
         console.error('Error fetching Stock data:', error.response?.data?.message || error.message);
         setmessage("Erreur lors de la récupération des données du Stock")
@@ -46,5 +48,5 @@ export function useFetchStorage(id) {
     fetchStorage();
   }, [id]);
 
-  return { formData, setFormData, initialData, setInitialData , message };
+  return { formData, setFormData, initialData, setInitialData , message , loading };
 }
