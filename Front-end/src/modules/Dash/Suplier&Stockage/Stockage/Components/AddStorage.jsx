@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
-import {useFetchStorage} from '../Hooks/useFetchStorage'
+import {useFetchStorages} from '../Hooks/useFetchStorages'
 
 
 // Zod schema for form validation
@@ -44,7 +44,7 @@ export default function Component() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const { Storages, fetchStorage } = useFetchStorage()
+    const { Storages, fetchStorage } = useFetchStorages()
 
     useEffect(() => {
         fetchStorage({ fetchAll: true });
@@ -186,7 +186,7 @@ export default function Component() {
 
                             <div className='flex gap-4'>
 
-                                <Button type="submit" onClick={() => navigate('/dash/zones')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
+                                <Button type="submit" onClick={() => navigate('/dash/Storage')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                     Annuler
                                 </Button>
                                 <Button type="submit" className="w-full">

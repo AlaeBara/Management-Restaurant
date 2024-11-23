@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import {Plus,  ExternalLink , Ban,SearchX} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchStorage} from './Hooks/useFetchStorage'
+import {useFetchStorages} from './Hooks/useFetchStorages'
 import {useDeleteStorage} from './Hooks/useDeleteStorage'
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import CartStorage  from './Components/CartStorage'
@@ -17,7 +17,7 @@ const Storage = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { Storages, totalStorage, loading, error, fetchStorage } = useFetchStorage()
+    const { Storages, totalStorage, loading, error, fetchStorage } = useFetchStorages()
 
     //pagination
     const totalPages = Math.ceil(totalStorage / limit);

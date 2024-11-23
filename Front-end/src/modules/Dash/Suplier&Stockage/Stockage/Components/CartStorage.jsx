@@ -24,7 +24,7 @@ const ZoneCart = ({ Storage , Delete}) => {
     
     const handleEdit = (id, e) => {
         e.stopPropagation();
-        navigate(`/dash/Update-Zone/${id}`);
+        navigate(`/dash/Update-Storage/${id}`);
     };
     
     return (
@@ -45,7 +45,7 @@ const ZoneCart = ({ Storage , Delete}) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleEdit(zone.id, e)}
+                        onClick={(e) => handleEdit(Storage.id, e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
                         <Edit className="mr-2 h-4 w-4" /> Modifier

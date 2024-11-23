@@ -18,7 +18,7 @@ const STATUS = {
     DELETED : 'DELETED'
 };
 
-
+useUpdateStorage
 export default function Component() {
     const navigate = useNavigate()
     const { id } = useParams();
