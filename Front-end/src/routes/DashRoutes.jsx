@@ -29,7 +29,7 @@ const SuplierDeleted = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Suplier
 const Storage = lazy(()=> import ('@/modules/Dash/Suplier&Stockage/Stockage/Storage'))
 const AddStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/AddStorage'))
 const UpdateStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/UpdateStorage'))
-
+const StorageDeleted = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/StorageDeleted'))
 
 
 const ClientRoutes = () => {
@@ -273,6 +273,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateStorage/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />   
+
+        <Route 
+          path="/Deleted-Storage" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <StorageDeleted/>
               </MainLayout>
             </ProtectedRoute>
           } 

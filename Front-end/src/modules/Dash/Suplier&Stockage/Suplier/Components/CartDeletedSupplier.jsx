@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import style from "./CartsDeletedSupplier.module.css";
-import { Edit, Trash2} from 'lucide-react';
+import { RotateCcw, Trash2} from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { Building2, Mail, Phone, Printer, Globe } from 'lucide-react'
 
@@ -86,7 +86,7 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
 
                 <div className={style.userAction}>
                     <div className={style.btn} onClick={handleDelete}>
-                        <Edit className="mr-2 h-4 w-4" /> Réactiver le Fournisseur
+                        <RotateCcw className="mr-2 h-4 w-4" /> Réactiver le Fournisseur
                     </div>
                 </div>
             </div>
@@ -111,7 +111,7 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
                                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                                 onClick={()=>confirmDelete(supplier.id)}
                             >
-                                Supprimer
+                                Réactiver
                             </button>
                             </div>
                         </div>

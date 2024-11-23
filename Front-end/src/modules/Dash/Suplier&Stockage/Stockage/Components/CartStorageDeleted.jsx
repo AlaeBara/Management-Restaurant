@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import style from "./CartStorage.module.css";
+import style from "./CartStorageDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, LandPlot , Cylinder } from 'lucide-react';
+import { RotateCcw, Cylinder } from 'lucide-react';
 
-const StorageCart = ({ Storage , Delete}) => {
+const StorageDeletedCart = ({ Storage , RESTORE}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -19,14 +19,11 @@ const StorageCart = ({ Storage , Delete}) => {
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        Delete(id)
+        RESTORE(id)
     };
     
-    const handleEdit = (id, e) => {
-        e.stopPropagation();
-        navigate(`/dash/Update-Storage/${id}`);
-    };
-    
+
+
     return (
         <>
             <div className={style.zoneCart} >
@@ -45,16 +42,10 @@ const StorageCart = ({ Storage , Delete}) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleEdit(Storage.id, e)}
+                        onClick={handleDelete}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Modifier
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className={`${style.actionButton} ${style.deleteButton}`}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                        <RotateCcw className="mr-2 h-4 w-4" /> Réactiver le Stock
                     </button>
                 </div>
             </div>
@@ -62,9 +53,9 @@ const StorageCart = ({ Storage , Delete}) => {
             {isModalVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+                        <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer le Stock  <span style={{ textTransform: "capitalize" }}>"{Storage.storageName}"</span> ?
+                            Êtes-vous sûr de vouloir réactiver le Stock <span style={{ textTransform: "capitalize" }}>"{Storage.storageName}"</span> ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -77,7 +68,7 @@ const StorageCart = ({ Storage , Delete}) => {
                                 onClick={()=>confirmDelete(Storage.id)}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                Supprimer
+                                Réactiver
                             </button>
                         </div>
                     </div>
@@ -87,4 +78,4 @@ const StorageCart = ({ Storage , Delete}) => {
     );
 };
 
-export default StorageCart;
+export default StorageDeletedCart;

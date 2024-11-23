@@ -33,20 +33,14 @@ export default function Component() {
     }, [formData, setFormData]);
     
 
-    const selectedStorage = Storages?.find(
-        (storage) => storage.id === formData.subStorageId
-    );
-
-
-
     return (
         <>
             <ToastContainer />
 
             <div className="space-y-2 m-3">
-                <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Stock</h1>
+                <h1 className="text-2xl font-bold text-black font-sans">Modifier le Stock</h1>
                 <p className="text-base text-gray-600">
-                    Remplissez les informations ci-dessous pour ajouter un nouveau Stock au système.
+                    Modifiez les informations ci-dessous pour mettre à jour le Stock dans le système.
                 </p>
             </div>
 
@@ -209,7 +203,6 @@ export default function Component() {
                                     </Button>
 
                                 </div>
-
 
                             </form>
                         </CardContent>

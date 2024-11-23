@@ -1,23 +1,20 @@
 import React, { useEffect, useState } from 'react';
-import style from './Storage.module.css'
-import { useNavigate } from 'react-router-dom'
-import {Plus,  ExternalLink , Ban,SearchX} from "lucide-react"
+import style from '../Storage.module.css'
+import {Ban,SearchX} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchStorages} from './Hooks/useFetchStorages'
-import {useDeleteStorage} from './Hooks/useDeleteStorage'
-import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
-import CartStorage  from './Components/CartStorage'
-import Spinner from '../../../../components/Spinner/Spinner'
-
+import {useFetchStorageDeleted} from '../Hooks/useFetchDeleteStorage'
+import axios from 'axios';
+import Cookies from 'js-cookie';
+import PaginationNav from '../../../UserManagments/User/Components/PaginationNav'
+import CartStorageDeleted  from './CartStorageDeleted'
+import Spinner from '../../../../../components/Spinner/Spinner'
 
 
 const Storage = () => {
-    const navigate = useNavigate()
-
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { Storages, totalStorage, loading, error, fetchStorage } = useFetchStorages()
+    const { Storages, totalStorage, loading, error, fetchSupliersDeleted } = useFetchStorageDeleted()
 
     //pagination
     const totalPages = Math.ceil(totalStorage / limit);
@@ -35,13 +32,33 @@ const Storage = () => {
     const endItem = Math.min(currentPage * limit, totalStorage);
   
     useEffect(() => {
-        fetchStorage({ page: currentPage , limit :limit  });
-    }, [currentPage, limit, fetchStorage]);
+        fetchSupliersDeleted({ page: currentPage , limit :limit  });
+    }, [currentPage, limit, fetchSupliersDeleted]);
 
 
-    const {deleteStorage} = useDeleteStorage(fetchStorage)
+    // Restore Stock
+    const restoreStorage = async (id) => {
+        const token = Cookies.get('access_token');
+        try {
+            await axios.patch(`${import.meta.env.VITE_BACKEND_URL}/api/storages/${id}/restore`, {}, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            fetchSupliersDeleted();
+            toast.success("Stock restauré avec succès !", {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        } catch (error) {
+            console.error(error.response?.data?.message || error.message);
+            toast.error(error.response?.data?.message || error.message, {
+                position: "top-right",
+                autoClose: 3000,
+            });
+        }
+    };
 
-   
   return (
     <div className={style.container}>
 
@@ -49,27 +66,15 @@ const Storage = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Stock</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement tous les stocks de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des articles, ainsi que gérer leurs quantités et leurs emplacements.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Stock Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des stocks supprimés de votre plateforme. Vous pouvez visualiser les articles qui ont été retirés du système.</p>
             </div>
         </div>
-
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Deleted-Storage')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Stock Supprimés
-            </button> 
-        
-            <button onClick={() => navigate('/dash/Add-Storage')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Stock
-            </button> 
-        </div>
-
-
 
         <div>
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Stockage..." />
+                <Spinner title="Chargement des Stockage Supprimés..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -82,7 +87,7 @@ const Storage = () => {
                     <>
                         <div className={style.userGrid}>
                         {Storages.map(Storage => (
-                            <CartStorage key={Storage.id} Storage={Storage}  Delete={deleteStorage} />
+                            <CartStorageDeleted key={Storage.id} Storage={Storage}  RESTORE={restoreStorage} />
                         ))}
                         </div>
 
@@ -99,7 +104,7 @@ const Storage = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Stock trouvé</h1>
+                        <h1>Aucun Stock Supprimés Trouvé</h1>
                     </div>
                     )}
                 </>
