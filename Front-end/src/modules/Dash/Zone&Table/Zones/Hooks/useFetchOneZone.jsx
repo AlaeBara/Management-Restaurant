@@ -3,11 +3,11 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 export function useFetchOneZone(id) {
-    const [formData, setFormData] = useState({ zoneLabel: '', zoneCode: '' });
-    const [initialData, setInitialData] = useState({ zoneLabel: '',zoneCode: '' }); 
+    const [formData, setFormData] = useState({ zoneLabel: '', zoneCode: '' , parentZoneUUID: null });
+    const [initialData, setInitialData] = useState({ zoneLabel: '',zoneCode: '' , parentZoneUUID: null}); 
 
     const [message , setmessage] = useState(null);
-
+    const [loading, setLoading] = useState(true);
 
     useEffect(() => {
         const fetchZone = async () => {
@@ -18,15 +18,17 @@ export function useFetchOneZone(id) {
                 Authorization: `Bearer ${token}`,
                 },
             });
-    
             setFormData({
                 zoneLabel: response.data.zoneLabel,
                 zoneCode: response.data.zoneCode,
+                parentZoneUUID:  response.data.parentZoneId
             });
             setInitialData({
                 zoneLabel: response.data.zoneLabel,
                 zoneCode: response.data.zoneCode,
+                parentZoneUUID:  response.data.parentZoneId
             });
+            setLoading(false);
             } catch (error) {
                 console.error('Error fetching role data:', error.response?.data?.message || error.message);
                 setmessage("Erreur lors de la récupération des données du zone")
@@ -36,5 +38,5 @@ export function useFetchOneZone(id) {
         fetchZone();
     }, [id]);
 
-    return { formData, setFormData, initialData, setInitialData , message };
+    return { formData, setFormData, initialData, setInitialData , message , loading};
 }

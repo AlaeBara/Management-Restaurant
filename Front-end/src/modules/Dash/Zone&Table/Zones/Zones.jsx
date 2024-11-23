@@ -33,7 +33,7 @@ const Zones = () => {
   
     
     useEffect(() => {
-        fetchZones(currentPage, limit);
+        fetchZones({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchZones]);
 
 
@@ -88,13 +88,13 @@ const Zones = () => {
                         </div>
 
                         <PaginationNav
-                        currentPage={currentPage}
-                        totalPages={totalPages}
-                        startItem={startItem}
-                        endItem={endItem}
-                        numberOfData={totalZones}
-                        onPreviousPage={handlePreviousPage}
-                        onNextPage={handleNextPage}
+                            currentPage={currentPage}
+                            totalPages={totalPages}
+                            startItem={startItem}
+                            endItem={endItem}
+                            numberOfData={totalZones}
+                            onPreviousPage={handlePreviousPage}
+                            onNextPage={handleNextPage}
                         />
                     </>
                     ) : (
