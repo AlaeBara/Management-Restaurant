@@ -23,9 +23,8 @@ const StorageSchema = z.object({
         required_error: "Le nom du stockage est requis.",
     }).min(1, "Le nom du stockage ne peut pas être vide."),
     
-    subStorageId: z.string().nullable().optional(),
+    parentStorageId: z.string().nullable().optional(),
     
-    storagePlace: z.string().nullable().optional(),
 });
 
 
@@ -35,8 +34,7 @@ export default function Component() {
     const [formData, setFormData] = useState({
         storageCode: '',
         storageName: '',
-        subStorageId: null,
-        storagePlace: null
+        parentStorageId: null,
     });
     const [errors, setErrors] = useState({});
 
@@ -64,8 +62,7 @@ export default function Component() {
             setFormData({
                 storageCode: '',
                 storageName: '',
-                subStorageId: null,
-                storagePlace: null
+                parentStorageId: null,
             });
             setErrors({});
 
@@ -112,7 +109,7 @@ export default function Component() {
                     <CardContent className="pt-6">
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="storageCode">Code de stockage</Label>
+                                <Label htmlFor="storageCode">Code de stockage <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="storageCode"
                                     name="storageCode"
@@ -126,7 +123,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="storageName">Nom du stockage</Label>
+                                <Label htmlFor="storageName">Nom du stockage <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="storageName"
                                     name="storageName"
@@ -140,26 +137,12 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="storagePlace">Emplacement du stockage</Label>
-                                <Input
-                                    id="storagePlace"
-                                    name="storagePlace" 
-                                    value={formData.storagePlace || ""}
-                                    onChange={handleChange}
-                                    placeholder="Emplacement du stockage"
-                                />
-                                {errors.storagePlace && (
-                                    <p className="text-xs text-red-500 mt-1">{errors.storagePlace}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label htmlFor="parentZone">Identifiant du sous-stockage</Label>
                                 <Select
-                                    id="subStorageId"
-                                    name="subStorageId"
-                                    value={formData.subStorageId|| undefined}
-                                    onValueChange={(value) => handleChange({ target: { name: 'subStorageId', value } })}
+                                    id="parentStorageId"
+                                    name="parentStorageId"
+                                    value={formData.parentStorageId|| undefined}
+                                    onValueChange={(value) => handleChange({ target: { name: 'parentStorageId', value } })}
                                 >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Sélectionner du sous-stockage" />
@@ -179,8 +162,8 @@ export default function Component() {
                                 <p className="text-xs text-gray-600 mt-0">
                                     Sélectionnez un stockage parent si ce stockage doit être rattaché à un stockage existant. Cette hiérarchisation permet d'organiser les stockages de manière structurée.
                                 </p>
-                                {errors.subStorageId && (
-                                    <p className="text-xs text-red-500 mt-1">{errors.subStorageId}</p>
+                                {errors.parentStorageId && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.parentStorageId}</p>
                                 )}
                             </div>
 

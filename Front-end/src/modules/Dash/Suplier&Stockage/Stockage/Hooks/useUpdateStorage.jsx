@@ -14,9 +14,8 @@ const StorageSchema = z.object({
         required_error: "Le nom du stockage est requis.",
     }).min(1, "Le nom du stockage ne peut pas être vide."),
     
-    subStorageId: z.string().nullable().optional(),
+    parentStorageId: z.string().nullable().optional(),
     
-    storagePlace: z.string().nullable().optional(),
 });
 
 export function  useUpdateStorage(id, formData, setFormData, initialData, setInitialData) {

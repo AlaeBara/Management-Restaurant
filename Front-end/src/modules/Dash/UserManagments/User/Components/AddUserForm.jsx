@@ -118,7 +118,7 @@ export default function Component() {
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                 <div className="space-y-2">
-                  <Label htmlFor="firstname">Prénom</Label>
+                  <Label htmlFor="firstname">Prénom <span className='text-red-500 text-base'>*</span></Label>
                   <Input
                     id="firstname"
                     name="firstname"
@@ -132,7 +132,7 @@ export default function Component() {
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="lastname">Nom</Label>
+                  <Label htmlFor="lastname">Nom <span className='text-red-500 text-base'>*</span></Label>
                   <Input
                     id="lastname"
                     name="lastname"
@@ -149,7 +149,7 @@ export default function Component() {
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username">Nom d'utilisateur</Label>
+                  <Label htmlFor="username">Nom d'utilisateur <span className='text-red-500 text-base'>*</span></Label>
                   <Input
                     id="username"
                     name="username"
@@ -162,7 +162,7 @@ export default function Component() {
                   )}
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="gender">Genre</Label>
+                  <Label htmlFor="gender">Genre <span className='text-red-500 text-base'>*</span></Label>
                   <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
                     <SelectTrigger id="gender">
                       <SelectValue placeholder="Sélectionnez le genre" />
@@ -209,7 +209,7 @@ export default function Component() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">Email <span className='text-red-500 text-base'>*</span></Label>
                 <Input
                   id="email"
                   name="email"
@@ -224,7 +224,7 @@ export default function Component() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="password">Mot de passe</Label>
+                <Label htmlFor="password">Mot de passe <span className='text-red-500 text-base'>*</span></Label>
                 <div className="relative">
                   <Input
                     id="password"

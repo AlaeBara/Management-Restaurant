@@ -62,7 +62,7 @@ export default function Component() {
 
 
                             <div className="space-y-2">
-                                <Label htmlFor="name">Nom Complete :</Label>
+                                <Label htmlFor="name">Nom Complete</Label>
                                 <Input
                                     id="name"
                                     name="name"
@@ -76,7 +76,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="description">Description :</Label>
+                                <Label htmlFor="description">Description</Label>
                                 <Input
                                     id="description"
                                     name="description"
@@ -92,7 +92,7 @@ export default function Component() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone">Téléphone :</Label>
+                                    <Label htmlFor="phone">Téléphone</Label>
                                     <Input
                                         id="phone"
                                         name="phone"
@@ -106,7 +106,7 @@ export default function Component() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="status">Statut :</Label>
+                                    <Label htmlFor="status">Statut</Label>
                                     <Select
                                         value={formData.status}
                                         onValueChange={(value) => handleSelectChange({ target: { name: 'status', value } })}
@@ -131,7 +131,7 @@ export default function Component() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                 <div className="space-y-2">
-                                    <Label htmlFor=" website">Site Web :</Label>
+                                    <Label htmlFor=" website">Site Web</Label>
                                     <Input
                                         id="website"
                                         name="website"
@@ -145,7 +145,7 @@ export default function Component() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="fax">Fax :</Label>
+                                    <Label htmlFor="fax">Fax</Label>
                                     <Input
                                         id="fax "
                                         name="fax"
@@ -161,7 +161,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="address">Adresse :</Label>
+                                <Label htmlFor="address">Adresse</Label>
                                 <Input
                                     id="address"
                                     name="address"
@@ -175,7 +175,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="email">E-mail :</Label>
+                                <Label htmlFor="email">E-mail</Label>
                                 <Input
                                     id="email"
                                     name="email"
@@ -191,7 +191,7 @@ export default function Component() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="iceNumber">Numéro ICE :</Label>
+                                    <Label htmlFor="iceNumber">Numéro ICE</Label>
                                     <Input
                                         id="iceNumber"
                                         name="iceNumber"
@@ -205,7 +205,7 @@ export default function Component() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="rcNumber">Numéro RC :</Label>
+                                    <Label htmlFor="rcNumber">Numéro RC</Label>
                                     <Input
                                         id="rcNumber"
                                         name="rcNumber"
@@ -219,10 +219,7 @@ export default function Component() {
                                 </div>
 
                             </div>
-
-
-                        
-
+                            
                             <div className='flex gap-4'>
 
                                 <Button type="submit" onClick={()=>navigate('/dash/Supliers')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">

@@ -6,14 +6,12 @@ export function useFetchStorage(id) {
   const [formData, setFormData] = useState({  
     storageCode: '',
     storageName: '',
-    subStorageId: null,
-    storagePlace: null
+    parentStorageId: null,
   });
   const [initialData, setInitialData] = useState({ 
     storageCode: '',
     storageName: '',
-    subStorageId: null,
-    storagePlace: null
+    parentStorageId: null,
   }); 
   
 
@@ -32,14 +30,12 @@ export function useFetchStorage(id) {
         setFormData({
           storageCode: response.data.storageCode,
           storageName: response.data.storageName,
-          subStorageId: response.data.subStorageId || null,
-          storagePlace: response.data.storagePlace || null
+          parentStorageId: response.data.parentStorageId || null,
         });
         setInitialData({
           storageCode: response.data.storageCode,
           storageName: response.data.storageName,
-          subStorageId: response.data.subStorageId || null,
-          storagePlace: response.data.storagePlace || null
+          parentStorageId: response.data.parentStorageId || null,
         });
       } catch (error) {
         console.error('Error fetching Stock data:', error.response?.data?.message || error.message);

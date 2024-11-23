@@ -139,7 +139,7 @@ export default function Component() {
 
 
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nom Complete :</Label>
+                            <Label htmlFor="name">Nom Complete <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 id="name"
                                 name="name"
@@ -153,7 +153,7 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="description">Description :</Label>
+                            <Label htmlFor="description">Description</Label>
                             <Input
                                 id="description"
                                 name="description"
@@ -169,7 +169,7 @@ export default function Component() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                             <div className="space-y-2">
-                                <Label htmlFor="phone">Téléphone :</Label>
+                                <Label htmlFor="phone">Téléphone <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="phone"
                                     name="phone"
@@ -238,7 +238,7 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="address">Adresse :</Label>
+                            <Label htmlFor="address">Adresse <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 id="address"
                                 name="address"
@@ -252,7 +252,7 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="email">E-mail :</Label>
+                            <Label htmlFor="email">E-mail <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 id="email"
                                 name="email"
@@ -268,7 +268,7 @@ export default function Component() {
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                             <div className="space-y-2">
-                                <Label htmlFor="iceNumber">Numéro ICE :</Label>
+                                <Label htmlFor="iceNumber">Numéro ICE <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="iceNumber"
                                     name="iceNumber"
@@ -282,7 +282,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="rcNumber">Numéro RC :</Label>
+                                <Label htmlFor="rcNumber">Numéro RC <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="rcNumber"
                                     name="rcNumber"

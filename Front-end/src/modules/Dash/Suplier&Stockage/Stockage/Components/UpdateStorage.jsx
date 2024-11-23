@@ -84,42 +84,29 @@ export default function Component() {
                                     )}
                                 </div>
 
-                                <div className="space-y-2">
-                                    <Label htmlFor="storagePlace">Emplacement du stockage</Label>
-                                    <Input
-                                        id="storagePlace"
-                                        name="storagePlace" 
-                                        value={formData.storagePlace || ""}
-                                        onChange={handleChange}
-                                        placeholder="Emplacement du stockage"
-                                    />
-                                    {errors.storagePlace && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.storagePlace}</p>
-                                    )}
-                                </div>
                                 {/* <div className="space-y-2">
                                     <label
-                                        htmlFor="subStorageId"
+                                        htmlFor="parentStorageId"
                                         className="block text-sm font-medium text-gray-700"
                                     >
                                         Identifiant du sous-stockage
                                     </label>
                                     <div className="relative">
                                         <select
-                                            id="subStorageId"
-                                            value={formData.subStorageId || ""}
+                                            id="parentStorageId"
+                                            value={formData.parentStorageId || ""}
                                             onChange={(e) =>
                                                 setFormData((prevData) => ({
                                                     ...prevData,
-                                                    subStorageId: e.target.value,
+                                                    parentStorageId: e.target.value,
                                                 }))
                                             }
                                             className="block w-full px-3 py-2 text-sm text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm appearance-none focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
                                         >
                                             <option value="" disabled>
-                                                {formData.subStorageId
+                                                {formData.parentStorageId
                                                     ? Storages.find(
-                                                        (storage) => storage.id === formData.subStorageId
+                                                        (storage) => storage.id === formData.parentStorageId
                                                     )?.storageName
                                                     : "Sélectionner du sous-stockage"}
                                             </option>
@@ -152,16 +139,16 @@ export default function Component() {
                                     </div>
                                 </div> */}
                                 <div className="space-y-2">
-                                    <Label htmlFor="subStorageId">
+                                    <Label htmlFor="parentStorageId">
                                         Identifiant du sous-stockage
                                     </Label>
                                     <Select
-                                        value={formData.subStorageId || ""}
+                                        value={formData.parentStorageId || ""}
                                         onValueChange={(value) => {
                                             if (value) {
                                                 setFormData((prevData) => ({
                                                     ...prevData,
-                                                    subStorageId: value, 
+                                                    parentStorageId: value, 
                                                 }));
                                             }
                                         }}
@@ -169,7 +156,7 @@ export default function Component() {
                                         <SelectTrigger className="w-full">
                                             <SelectValue
                                                 placeholder={
-                                                    Storages.find((storage) => storage.id === formData.subStorageId)?.storageName ||
+                                                    Storages.find((storage) => storage.id === formData.parentStorageId)?.storageName ||
                                                     "Sélectionner du sous-stockage"
                                                 }
                                             />
@@ -199,7 +186,7 @@ export default function Component() {
                                         Annuler
                                     </Button>
                                     <Button type="submit" className="w-full">
-                                        Ajouter
+                                        Mettre à jour
                                     </Button>
 
                                 </div>

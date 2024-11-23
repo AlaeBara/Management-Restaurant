@@ -51,7 +51,6 @@ const SupplierCard = ({ supplier , Delete }) => {
                     }
                 </div>
                
-                
                 <div className={style.headerCart}>
                     <img
                         src="https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"
@@ -62,8 +61,7 @@ const SupplierCard = ({ supplier , Delete }) => {
                         <h3>{supplier.name}</h3>
                     </div>
                 </div>
-
-
+                
                 <div className={style.email}>
                     <Mail className="mr-2 h-4 w-4 text-muted-foreground" />
                     <a href={`mailto:${supplier.email}`} className="text-sm hover:underline">
@@ -80,17 +78,32 @@ const SupplierCard = ({ supplier , Delete }) => {
                         {supplier.phone}
                     </a>
                 </div>
-                <div className={style.fax} >
+                <div className={style.fax}>
                     <Printer className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{supplier.fax}</span>
-                </div>
-                <div className={style.website}>
-                    <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">
-                        {supplier.website}            
-                    </a>
+                    {supplier.fax ? (
+                        <a href={`tel:${supplier.fax}`} className="text-sm hover:underline">
+                        {supplier.fax}
+                        </a>
+                    ) : (
+                        <span className="text-sm text-gray-500">Fax non disponible</span>
+                    )}
                 </div>
 
+                <div className={style.website}>
+                    <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
+                    {supplier.website ? (
+                        <a
+                        href={supplier.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm hover:underline"
+                        >
+                        {supplier.website}
+                        </a>
+                    ) : (
+                        <span className="text-sm text-gray-500">Site web non disponible</span>
+                    )}
+                </div>
 
 
 

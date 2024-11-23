@@ -89,7 +89,7 @@ export default function Component() {
                 <CardContent className="pt-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
-                            <Label htmlFor="name">Nom de Rôle</Label>
+                            <Label htmlFor="name">Nom de Rôle <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 id="name"
                                 name="name"  // Fixed name attribute
