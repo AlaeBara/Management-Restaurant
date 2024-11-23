@@ -1,21 +1,20 @@
 import { BaseEntity } from "src/common/entities/base.entity";
-import { Column, Entity, ManyToOne, PrimaryGeneratedColumn, RelationId } from "typeorm";
-
-
+import { AfterLoad, Column, Entity, ManyToOne, PrimaryGeneratedColumn, RelationId, Tree, TreeParent } from "typeorm";
+import { getManager } from "typeorm";
 @Entity(process.env.DATASET_PREFIX + 'storages')
+@Tree("materialized-path")
 export class Storage extends BaseEntity {
-    @Column({type: 'varchar', length: 15})
+    @Column({ type: 'varchar', length: 15 })
     storageCode: string;
 
-    @Column({type: 'varchar', length: 100})
+    @Column({ type: 'varchar', length: 100 })
     storageName: string;
 
-    @ManyToOne(() => Storage, (storage) => storage.id, {nullable: true})
-    subStorage: Storage;
+    @TreeParent()
+    parentStorage: Storage;
 
-    @RelationId((storage: Storage) => storage.subStorage)
-    subStorageId: string;
+    @RelationId((storage: Storage) => storage.parentStorage)
+    parentStorageId: string;
 
-    @Column({type: 'varchar', length: 100 , nullable: true})
-    storagePlace: string;
+    hierarchyPath: string;
 }

@@ -6,7 +6,7 @@ import { Storage } from "../entities/storage.entity";
 import { CreateStorageDto } from "../dtos/create-storage.dto";
 import { UpdateStorageDto } from "../dtos/update-storage.dto";
 import { ApiTags } from "@nestjs/swagger";
-import { AssignSubStorageDto } from "../dtos/assign-subStorage.dto";
+import { AssignParentStorageDto } from "../dtos/assign-parentStorage.dto";
 
 @Controller('api/storages')
 @ApiTags('Storages')
@@ -36,7 +36,7 @@ export class StorageController {
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
     ): Promise<{ data: Storage[]; total: number; page: number; limit: number }> {
-        return this.storageService.findAll(
+        return this.storageService.findAllWithHierarchy(
             page,
             limit,
             relations,
@@ -59,13 +59,13 @@ export class StorageController {
         @Query('select') select?: string[],
         @Query('findOrThrow') findOrThrow?: boolean,
     ) {
-        return this.storageService.findOneByIdWithOptions(id, {
+        return this.storageService.getStorageWithHierarchy(id, {
             relations,
             select,
             withDeleted,
             onlyDeleted,
             findOrThrow,
-        });
+        }); 
     }
 
     @Post()
@@ -105,7 +105,7 @@ export class StorageController {
     @Patch(':id/assign-sub-storage')
     @Permissions('assign-sub-storage')
     @ApiOperation({ summary: 'Assign a sub-storage to a storage' })
-    async assignSubStorage(@Param('id', ParseUUIDPipe) id: string, @Body() assignSubStorageDto: AssignSubStorageDto) {
-        return this.storageService.assignSubStorage(id, assignSubStorageDto);
-    }   
+    async assignParentStorage(@Param('id', ParseUUIDPipe) id: string, @Body() assignParentStorageDto: AssignParentStorageDto) {
+        return this.storageService.assignParentStorage(id, assignParentStorageDto);
+    }
 }

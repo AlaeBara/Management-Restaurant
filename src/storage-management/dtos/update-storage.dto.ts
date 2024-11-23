@@ -1,7 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
-import { Column, RelationId } from "typeorm";
-
+import { IsOptional, IsString, IsUUID } from "class-validator";
 
 export class UpdateStorageDto {
     @IsString()
@@ -17,11 +15,6 @@ export class UpdateStorageDto {
 
     @IsUUID()
     @IsOptional()
-    @ApiProperty({ description: 'The sub storage id', example: '1', required: false })
-    subStorageId: string;
-
-    @IsString()
-    @IsOptional()
-    @ApiProperty({ description: 'The storage place', example: 'Storage 1', required: true })
-    storagePlace: string;
+    @ApiProperty({ description: 'The parent storage id', example: 'e7d9fd91-ac0e-4289-986f-46416f30ccbf', required: false })
+    parentStorageId: string;
 }
