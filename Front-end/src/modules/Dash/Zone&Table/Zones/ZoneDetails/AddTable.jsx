@@ -106,7 +106,7 @@ export default function Component() {
                 <CardContent className="pt-6">
                     <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
-                        <Label htmlFor="tableName">Label de la Zone</Label>
+                        <Label htmlFor="tableName">Nom de la Table  <span className='text-red-500 text-base'>*</span></Label>
                         <Input
                             id="tableName"
                             name="tableName"
@@ -120,7 +120,7 @@ export default function Component() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="tableCode">Code de la Zone</Label>
+                        <Label htmlFor="tableCode">Code de la Table  <span className='text-red-500 text-base'>*</span></Label>
                         <Input
                             id="tableCode"
                             name="tableCode"

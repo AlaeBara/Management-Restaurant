@@ -1,11 +1,12 @@
 import React from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Edit, Trash2 } from 'lucide-react';
 import style from './TableCarts.module.css';
 import TableShape from './TableShap';
 
 const TableCart = ({ table }) => {
   const navigate = useNavigate();
+  const {id} = useParams()
 
   const formatDate = (dateString) => {
     if (!dateString) return "introuvable";
@@ -14,6 +15,8 @@ const TableCart = ({ table }) => {
     const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
     return `${formattedDate} ${formattedTime}`;
   };
+
+
 
   // Map API statuses to styles
   const getStatusColors = (status) => {
@@ -39,6 +42,10 @@ const TableCart = ({ table }) => {
       default:
         return {};
     }
+  };
+  const handleEdit = (idd, e) => {
+    e.stopPropagation();
+    navigate(`/dash/Zone/${id}/Update-table/${idd}`);
   };
 
   return (
@@ -68,7 +75,7 @@ const TableCart = ({ table }) => {
       <div className={`${style.actions}`}>
         <button
           className={`${style.actionButton} ${style.editButton}`}
-          onClick={() => navigate(`/edit/${table.tableCode}`)}
+          onClick={(e) => handleEdit(table.id, e)}
         >
           <Edit className="mr-2 h-4 w-4" /> Modifier
         </button>
