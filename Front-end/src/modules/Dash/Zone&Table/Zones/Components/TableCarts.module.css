@@ -101,6 +101,7 @@
 
 .deleteButton:hover {
     background-color: #ffcdd2;
+    transform: translateY(-2px);
 }
 
 .shape{

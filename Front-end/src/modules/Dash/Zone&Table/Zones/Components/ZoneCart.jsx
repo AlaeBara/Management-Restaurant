@@ -36,6 +36,7 @@ const ZoneCart = ({ zone , Delete }) => {
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <LandPlot className="mr-2 " /> {zone.zoneLabel} </h3>
                         <p className={style.zoneLabel}>Zone Code: {zone.zoneCode}</p>
+                        <p className={style.zoneLabel}>Zone parent : {zone.parentZone?.zoneLabel || "Aucune"}</p> 
                         <div className={style.dateInfo}>
                             <span>Créé le: {formatDate(zone.createdAt)}</span>
                         </div>

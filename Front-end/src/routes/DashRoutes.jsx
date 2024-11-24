@@ -31,7 +31,7 @@ const Storage = lazy(()=> import ('@/modules/Dash/Suplier&Stockage/Stockage/Stor
 const AddStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/AddStorage'))
 const UpdateStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/UpdateStorage'))
 const StorageDeleted = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/StorageDeleted'))
-
+const Tables = lazy(()=>import('@/modules/Dash/Zone&Table/Tables/Tables'))
 
 const ClientRoutes = () => {
   return (
@@ -206,6 +206,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateTable/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Tables" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Tables/>
               </MainLayout>
             </ProtectedRoute>
           } 

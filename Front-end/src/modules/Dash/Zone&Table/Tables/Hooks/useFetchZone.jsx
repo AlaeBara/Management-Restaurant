@@ -5,16 +5,16 @@ import Cookies from "js-cookie";
 export const useFetchZone = () => {
   const [zones, setZones] = useState([]);
   const [totalZones, setTotalZones] = useState(0);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
+  const [isloading, setisloading] = useState(false);
+  const [message, setmessage] = useState(null);
 
   const fetchZones = useCallback(
     async ({ page = 1, limit = 10, fetchAll = false } = {}) => {
-      setLoading(true);
-      setError(null);
+      setisloading(true);
+      setmessage(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/zones?relations=parentZone`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/zones`;
 
       try {
         if (fetchAll) {
@@ -23,7 +23,7 @@ export const useFetchZone = () => {
 
           while (true) {
             const response = await axios.get(url, {
-              params: { page: currentPage, limit, sort: "createdAt:desc" },
+              params: { page: currentPage, limit, sort: "createdAt:desc" , select : "zoneLabel,id" },
               headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -48,13 +48,13 @@ export const useFetchZone = () => {
         }
       } catch (err) {
         console.error("Failed to fetch zones:", err);
-        setError("Une erreur s'est produite lors du chargement des zones.");
+        setmessage("Une erreur s'est produite lors du chargement des zones.");
       } finally {
-        setLoading(false);
+        setisloading(false);
       }
     },
     []
   );
 
-  return { zones, totalZones, loading, error, fetchZones };
+  return { zones, totalZones, isloading, message, fetchZones };
 };

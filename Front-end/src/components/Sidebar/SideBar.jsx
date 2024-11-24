@@ -99,7 +99,7 @@ const SideBar = () => {
           { 
             title: "Tables",
             icon: Grid,
-            url:'#'
+            url:'/dash/Tables'
           },
           
         ],

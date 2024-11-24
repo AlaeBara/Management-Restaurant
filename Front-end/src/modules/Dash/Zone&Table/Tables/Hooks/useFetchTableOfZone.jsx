@@ -2,23 +2,23 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const useFetchZone = () => {
-  const [zones, setZones] = useState([]);
-  const [totalZones, setTotalZones] = useState(0);
+export const useFetchTableOfZone = () => {
+  const [tables, setTables] = useState([]);
+  const [totalTables, setTotalTables] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchZones = useCallback(
-    async ({ page = 1, limit = 10, fetchAll = false } = {}) => {
+  const fetchTableOfZone = useCallback(
+    async ({ page = 1, limit = 10, fetchAll = false , id } = {}) => {
       setLoading(true);
       setError(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/zones?relations=parentZone`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/zones/${id}/tables`;
 
       try {
         if (fetchAll) {
-          const allZones = [];
+          const allTables = [];
           let currentPage = page;
 
           while (true) {
@@ -26,29 +26,27 @@ export const useFetchZone = () => {
               params: { page: currentPage, limit, sort: "createdAt:desc" },
               headers: { Authorization: `Bearer ${token}` },
             });
-
-            const { data, total } = response.data;
-            allZones.push(...data);
+            
+            allTables.push(...response.data);
 
             if (allZones.length >= total) break;
             currentPage++;
           }
 
-          setZones(allZones);
-          setTotalZones(allZones.length);
+          setTables(allTables);
+          setTotalTables(allTables.length);
+
         } else {
           const response = await axios.get(url, {
             params: { page, limit, sort: "createdAt:desc" },
             headers: { Authorization: `Bearer ${token}` },
           });
-
-          const { data, total } = response.data;
-          setZones(data);
-          setTotalZones(total);
+          setTables(response.data);
+          setTotalTables(response.data.length);
         }
       } catch (err) {
-        console.error("Failed to fetch zones:", err);
-        setError("Une erreur s'est produite lors du chargement des zones.");
+        console.error(`Failed to fetch table of zone  ${id} : `, err.response?.data?.message || err.message  );
+        setError("Une erreur s'est produite lors du chargement des Tables.");
       } finally {
         setLoading(false);
       }
@@ -56,5 +54,5 @@ export const useFetchZone = () => {
     []
   );
 
-  return { zones, totalZones, loading, error, fetchZones };
+  return { tables, totalTables, loading, error, fetchTableOfZone };
 };

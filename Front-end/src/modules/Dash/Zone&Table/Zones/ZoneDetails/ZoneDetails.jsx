@@ -9,6 +9,7 @@ import {useFetchTableOfZone } from '../Hooks/useFetchTableOfZone'
 import PaginationNav from  '@/modules/Dash/UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner'
 import {useGetInfoZone} from '../Hooks/useGetInfoZone'
+import {useDeleteTable} from '../Hooks/useDeleteTable'
 
 const ZoneDetails  = () => {
     const  navigate = useNavigate()
@@ -36,8 +37,11 @@ const ZoneDetails  = () => {
         fetchTableOfZone({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchTableOfZone]);
 
-
     const {info, message, isloading} = useGetInfoZone(id)
+
+    const {deleteTable} = useDeleteTable(fetchTableOfZone)
+
+
 
 
 return(
@@ -85,11 +89,11 @@ return(
                             <>
                                 <div className={style.userGrid}>
                                 {tables.map(table => (
-                                    <TableCarts key={table.id} table={table}/>
+                                    <TableCarts key={table.id} table={table} Delete={deleteTable}/>
                                 ))}
                                 </div>
 
-                                <PaginationNav
+                                {/* <PaginationNav
                                     currentPage={currentPage}
                                     totalPages={totalPages}
                                     startItem={startItem}
@@ -97,7 +101,7 @@ return(
                                     numberOfData={totalTables}
                                     onPreviousPage={handlePreviousPage}
                                     onNextPage={handleNextPage}
-                                />
+                                /> */}
                             </>
                             ) : (
                             <div className={style.notfound}>

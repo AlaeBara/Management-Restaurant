@@ -1,15 +1,12 @@
 import React , {useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Edit, Trash2 } from 'lucide-react';
-import style from './TableCarts.module.css';
-import TableShape from './TableShap';
+import style from './TableCart.module.css';
+import TableShape from '../../Zones/Components/TableShap';
 
-const TableCart = ({ table , Delete}) => {
+const TableCart = ({ table}) => {
   const navigate = useNavigate();
-  const {id} = useParams()
-
-  const [isModalVisible, setIsModalVisible] = useState(false);
-
+  
   const formatDate = (dateString) => {
     if (!dateString) return "introuvable";
     const date = new Date(dateString);
@@ -44,19 +41,7 @@ const TableCart = ({ table , Delete}) => {
         return {};
     }
   };
-  const handleEdit = (idd, e) => {
-    e.stopPropagation();
-    navigate(`/dash/Zone/${id}/Update-table/${idd}`);
-  };
-
-  const handleDelete = (e) => {
-    e.stopPropagation();
-    setIsModalVisible(true);
-  };
-  const confirmDelete = (id) => {
-    setIsModalVisible(false)
-    Delete(id)
-};
+  
 
 
   return (
@@ -86,47 +71,9 @@ const TableCart = ({ table , Delete}) => {
             </div>
           </div>
         </div>
-
-        <div className={`${style.actions}`}>
-          <button
-            className={`${style.actionButton} ${style.editButton}`}
-            onClick={(e) => handleEdit(table.id, e)}
-          >
-            <Edit className="mr-2 h-4 w-4" /> Modifier
-          </button>
-          <button
-            className={`${style.actionButton} ${style.deleteButton}`}
-            onClick={handleDelete}
-          >
-            <Trash2 className="mr-2 h-4 w-4" /> Supprimer
-          </button>
-        </div>
       </div>
 
-      {isModalVisible && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-            <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-                <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
-                <p className="mb-4">
-                    Êtes-vous sûr de vouloir supprimer la Table "{table?.tableName}" ?
-                </p>
-                <div className="flex justify-end gap-3">
-                    <button
-                        onClick={() => setIsModalVisible(false)}
-                        className="px-4 py-2 bg-gray-100 text-gray-700 rounded-md hover:bg-gray-200"
-                    >
-                        Annuler
-                    </button>
-                    <button
-                        onClick={()=>confirmDelete(table.id)}
-                        className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
-                    >
-                        Supprimer
-                    </button>
-                </div>
-            </div>
-        </div>
-      )}
+      
   </>
 )
 };

@@ -101,9 +101,12 @@
 
 .deleteButton:hover {
     background-color: #ffcdd2;
-    transform: translateY(-2px);
 }
 
+.shape{
+    display: flex;
+    justify-content: center;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

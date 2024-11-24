@@ -1,0 +1,139 @@
+import React, { useEffect, useState } from 'react';
+import style from './Tables.module.css';
+import { useNavigate } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import Spinner from '@/components/Spinner/Spinner';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Label } from "@/components/ui/label";
+import { useFetchZone } from './Hooks/useFetchZone';
+import { useFetchTableOfZone } from './Hooks/useFetchTableOfZone';
+import { Ban, SearchX,AlertTriangle} from "lucide-react"
+import TableCart from './Components/TableCart'
+
+
+const Zones = () => {
+    const navigate = useNavigate();
+
+    // Fetch zones state
+    const { zones, isloading: isLoadingZones, message, fetchZones } = useFetchZone();
+
+    // Fetch tables state
+    const { tables, isloading: isLoadingTables, error, fetchTableOfZone } = useFetchTableOfZone();
+
+    const [selectedZone, setSelectedZone] = useState(null);
+
+    useEffect(() => {
+        fetchZones({ fetchAll: true });
+    }, [fetchZones]);
+
+    const handleZoneChange = async (zoneId) => {
+        setSelectedZone(zoneId);
+        if (zoneId) {
+            try {
+                await fetchTableOfZone({ id: zoneId});
+            } catch (err) {
+                console.error("Une erreur s'est produite lors du chargement des Tables.");
+            }
+        }
+    };
+
+    return (
+        <div className={style.container}>
+            <ToastContainer />
+
+            <div className={style.Headerpage}>
+                <div>
+                    <h1 className={`${style.title} !mb-0`}>Gestion Des Tables</h1>
+                    <p className="text-base text-gray-600 mt-0">
+                    Simplifiez la gestion de vos zones grâce à cette interface intuitive. Sélectionnez une zone pour visualiser ses tables. Ajoutez, modifiez ou configurez les zones de manière simple et efficace.
+                    </p>
+                </div>
+
+            </div>
+
+
+
+            {isLoadingZones ? (
+                <Spinner title="Chargement des Zones..." />
+            ) : message ? (
+                <div className={style.notfound}>
+                    <Ban className={style.icon} />
+                    <span>{message }</span>
+                </div>
+                ) : (
+                <div className="p-0 max-w-sm mb-10">
+                    <div className="space-y-2">
+                        <Label htmlFor="parentZone">Zone</Label>
+                            <Select
+                                id="parentZone"
+                                name="parentZone"
+                                onValueChange={handleZoneChange}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner la zone parent" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                    {zones.map((zone) => (
+                                        <SelectItem key={zone.id} value={zone.id}>
+                                            {zone.zoneLabel}
+                                        </SelectItem>
+                                    ))}
+                                </SelectContent>
+                            </Select>
+                        <p className="text-xs text-gray-600 mt-0">
+                            Sélectionnez une zone pour afficher les tables qui y sont associées. Cela vous permettra de gérer les tables spécifiques à chaque espace.
+                        </p>
+                    </div>
+                </div>
+            )}
+
+
+            {selectedZone ? 
+                <div>
+                    {isLoadingTables ? (
+                        <div className={style.spinner}>
+                            <Spinner title="Chargement des Tables..." />
+                        </div>
+                        ) : error ? (
+                        <div className={style.notfound}>
+                            <Ban className={style.icon} />
+                            <span>{error}</span>
+                        </div>
+                    ) : (
+                        <>
+                            {tables.length > 0 ? (
+                            <>
+                                <div className={style.userGrid}>
+                                    {tables.map(table => (
+                                        <TableCart key={table.id} table={table}/>
+                                    ))}
+                                </div>
+                            </>
+                            ) : (
+                            <div className={style.notfound}>
+                                <SearchX className={style.icon} />
+                                <h1>Aucun Zone trouvé</h1>
+                            </div>
+                            )}
+                        </>
+                    )}
+                </div>
+                :
+                    <div className={style.notfound}>
+                        <AlertTriangle className={style.icon2} />
+                        <h1>Veuillez choisir une zone avant d'afficher les tables.</h1>
+                    </div>
+
+            }
+
+
+
+
+
+
+        </div>
+    );
+};
+
+export default Zones;
