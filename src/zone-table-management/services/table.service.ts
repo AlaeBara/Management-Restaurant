@@ -70,17 +70,12 @@ export class TableService extends GenericService<Table> {
       zone = await this.zoneService.findOrThrowByAttribute({
         id: tableDto.zoneUUID,
       });
+      tableContent.zone = zone;
     }
 
-    const updateData = {
-      ...(tableDto.tableCode && { tableCode: tableDto.tableCode }),
-      ...(tableDto.tableName && { tableName: tableDto.tableName }),
-      ...(tableDto.isActive && { isActive: tableDto.isActive }),
-      ...(tableDto.tableStatus && { tableStatus: tableDto.tableStatus }),
-      zone,
-    };
-
-    return this.tableRepository.update(id, updateData);
+    Object.assign(tableContent, tableDto);
+  
+    return this.tableRepository.save(tableContent);
   }
   /* 
   async getTableByUUID(
@@ -212,7 +207,7 @@ export class TableService extends GenericService<Table> {
         query.select(selectFields.map((field) => `table.${field}`));
       }
     }
-    
+
     const [data, total] = await query.getManyAndCount();
 
     return { data, total, page: currentPage, limit: itemsPerPage };
