@@ -4,40 +4,115 @@ import { useNavigate, useParams } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-
 import TableCarts from '../Components/TableCarts'
+import {useFetchTableOfZone } from '../Hooks/useFetchTableOfZone'
+import PaginationNav from  '@/modules/Dash/UserManagments/User/Components/PaginationNav'
+import Spinner from '@/components/Spinner/Spinner'
+import {useGetInfoZone} from '../Hooks/useGetInfoZone'
 
-
-const Zones = () => {
+const ZoneDetails  = () => {
     const  navigate = useNavigate()
     const {id} = useParams()
 
-  return (
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    const { tables, totalTables, loading, error, fetchTableOfZone} = useFetchTableOfZone(id)
+    //pagination
+    const totalPages = Math.ceil(totalTables / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+          setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalTables);
+
+    useEffect(() => {
+        fetchTableOfZone({page: currentPage, limit :limit});
+    }, [currentPage, limit, fetchTableOfZone]);
+
+
+    const {info, message, isloading} = useGetInfoZone(id)
+
+
+return(
     <div className={style.container}>
 
         <ToastContainer/>
 
-        <div className={style.Headerpage}>
-            <div>
-                <h1 className={`${style.title} !mb-0 `}>Table de Zone Terasse</h1>
-                <p className="text-base text-gray-600 mt-0">Consultez et gérez les détails spécifiques de cette zone. Vous pouvez voir les tables associées, leur disposition et modifier les paramètres de la zone sélectionnée.</p>
+        {isloading ? (
+            <div className={style.spinner}>
+                <Spinner title="Chargement des données de la zone..." />
             </div>
-        </div>
+            ) : message ? (
+                <div className={style.notfound}>
+                    <Ban className={style.icon} />
+                    <span>{message}</span>
+                </div>
+            ) : (
+            <>
+                <div className={style.Headerpage}>
+                    <div>
+                        <h1 className={`${style.title} !mb-0 `}>Tables de Zone : {info.zoneLabel}  </h1>
+                        <p className="text-base text-gray-600 mt-0">Consultez et gérez les détails spécifiques de cette zone. Vous pouvez voir les tables associées, leur disposition et modifier les paramètres de la zone sélectionnée.</p>
+                    </div>
+                </div>
 
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate(`/dash/Zone/${id}/Add-table`)} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Table
-            </button> 
-        </div>
+                <div className={style.Headerpage2}>
+                    <button onClick={() => navigate(`/dash/Zone/${id}/Add-table`)} className={style.showFormButton}>
+                        <Plus className="mr-3 h-4 w-4 " /> Ajouter Table
+                    </button> 
+                </div>
 
-        <div className={style.userGrid}>
-            <TableCarts/>
-            <TableCarts/>
-            <TableCarts/>
-            <TableCarts/>
-        </div>
+                <div>
+                    {loading ? (
+                        <div className={style.spinner}>
+                            <Spinner title="Chargement des Tables..." />
+                        </div>
+                    ) : error ? (
+                        <div className={style.notfound}>
+                            <Ban className={style.icon} />
+                            <span>{error}</span>
+                        </div>
+                    ) : (
+                        <>
+                            {tables.length > 0 ? (
+                            <>
+                                <div className={style.userGrid}>
+                                {tables.map(table => (
+                                    <TableCarts key={table.id} table={table}/>
+                                ))}
+                                </div>
+
+                                <PaginationNav
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    startItem={startItem}
+                                    endItem={endItem}
+                                    numberOfData={totalTables}
+                                    onPreviousPage={handlePreviousPage}
+                                    onNextPage={handleNextPage}
+                                />
+                            </>
+                            ) : (
+                            <div className={style.notfound}>
+                                <SearchX className={style.icon} />
+                                <h1>Aucun Table trouvé</h1>
+                            </div>
+                            )}
+                        </>
+                    )}
+                </div>
+            </>
+        )}
+  
     </div>
-  )
+)
 }
 
-export default Zones
+export default ZoneDetails 

@@ -138,12 +138,12 @@ export default function Component() {
                         <Select value={formData.isActive} onValueChange={(value) => handleSelectChange('isActive', value === 'true')}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Sélectionnez l'État">
-                                    {formData.isActive ? 'Active' : 'Inactive'}
+                                    {formData.isActive ? 'Actif' : 'Inactif'}
                                 </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
-                                <SelectItem value="true">Active</SelectItem>
-                                <SelectItem value="false">Inactive</SelectItem>
+                                <SelectItem value="true">Actif</SelectItem>
+                                <SelectItem value="false">Inactif</SelectItem>
                             </SelectContent>
                         </Select>
                         {errors.isActive && (
@@ -157,7 +157,13 @@ export default function Component() {
                         <Select value={formData.tableStatus} onValueChange={(value) => handleSelectChange('tableStatus', value)}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Sélectionnez un Statut">
-                                    {formData.tableStatus || "Sélectionnez un Statut"}
+                                {
+                                    {
+                                        [TABLE_STATUSES.AVAILABLE]: "Disponible",
+                                        [TABLE_STATUSES.RESERVED]: "Réservée",
+                                        [TABLE_STATUSES.OCCUPIED]: "Occupée",
+                                    }[formData.tableStatus]
+                                }
                                 </SelectValue>
                             </SelectTrigger>
                             <SelectContent>
