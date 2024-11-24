@@ -10,33 +10,52 @@ import { useFetchZone } from './Hooks/useFetchZone';
 import { useFetchTableOfZone } from './Hooks/useFetchTableOfZone';
 import { Ban, SearchX,AlertTriangle} from "lucide-react"
 import TableCart from './Components/TableCart'
+import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 
 
 const Zones = () => {
-    const navigate = useNavigate();
 
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
     // Fetch zones state
     const { zones, isloading: isLoadingZones, message, fetchZones } = useFetchZone();
 
     // Fetch tables state
-    const { tables, isloading: isLoadingTables, error, fetchTableOfZone } = useFetchTableOfZone();
+    const { tables,  totalTables, isloading: isLoadingTables, error, fetchTableOfZone } = useFetchTableOfZone();
 
     const [selectedZone, setSelectedZone] = useState(null);
 
-    useEffect(() => {
-        fetchZones({ fetchAll: true });
-    }, [fetchZones]);
-
-    const handleZoneChange = async (zoneId) => {
-        setSelectedZone(zoneId);
-        if (zoneId) {
-            try {
-                await fetchTableOfZone({ id: zoneId});
-            } catch (err) {
-                console.error("Une erreur s'est produite lors du chargement des Tables.");
-            }
+    //pagination
+    const totalPages = Math.ceil(totalTables / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+          setCurrentPage(prev => prev + 1);
         }
     };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalTables);
+
+    useEffect(() => {
+        fetchZones({fetchAll:true});
+    }, [fetchZones]);
+
+    useEffect(() => {
+        if (selectedZone) {
+            fetchTableOfZone({ page: currentPage, limit, id: selectedZone })
+                .catch((err) => console.error("Erreur lors du chargement des tables :", err));
+        }
+    }, [currentPage, selectedZone, limit, fetchTableOfZone]);
+    
+    const handleZoneChange = (zoneId) => {
+        setSelectedZone(zoneId);
+        setCurrentPage(1); // Reset to page 1 when zone changes
+    };
+    
 
     return (
         <div className={style.container}>
@@ -109,6 +128,16 @@ const Zones = () => {
                                         <TableCart key={table.id} table={table}/>
                                     ))}
                                 </div>
+
+                                <PaginationNav
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    startItem={startItem}
+                                    endItem={endItem}
+                                    numberOfData={totalTables}
+                                    onPreviousPage={handlePreviousPage}
+                                    onNextPage={handleNextPage}
+                                />
                             </>
                             ) : (
                             <div className={style.notfound}>

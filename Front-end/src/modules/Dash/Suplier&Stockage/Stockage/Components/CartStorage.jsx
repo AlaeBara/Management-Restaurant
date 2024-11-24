@@ -39,6 +39,11 @@ const StorageCart = ({ Storage , Delete}) => {
                         <div className={style.dateInfo}>
                             <span>Créé le: {formatDate(Storage.createdAt)}</span>
                         </div>
+                        {Storage.hierarchyPath && (
+                            <p className={style.hierarchyPath}>
+                                <span className={style.hierarchyLabel}>Hiérarchie:</span> {Storage.hierarchyPath}
+                            </p>
+                        )}
                     </div>
 
                 </div>

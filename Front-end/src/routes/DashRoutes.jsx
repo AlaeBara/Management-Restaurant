@@ -32,7 +32,7 @@ const AddStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Co
 const UpdateStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/UpdateStorage'))
 const StorageDeleted = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/StorageDeleted'))
 const Tables = lazy(()=>import('@/modules/Dash/Zone&Table/Tables/Tables'))
-
+const TableDeleted = lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/TableDeleted'))
 const ClientRoutes = () => {
   return (
     <Suspense fallback={<Spinner title="Chargement en cours..." />}>
@@ -206,6 +206,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateTable/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Zone/:id/Table-deleted" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <TableDeleted/>
               </MainLayout>
             </ProtectedRoute>
           } 

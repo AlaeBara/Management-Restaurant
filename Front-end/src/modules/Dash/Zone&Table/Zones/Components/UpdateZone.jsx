@@ -127,7 +127,7 @@ export default function Component() {
                                         onClick={() => navigate('/dash/zones')}
                                         className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]"
                                     >
-                                        Annuler
+                                        Retour
                                     </Button>
                                     <Button type="submit" className="w-full">
                                         Mettre à jour

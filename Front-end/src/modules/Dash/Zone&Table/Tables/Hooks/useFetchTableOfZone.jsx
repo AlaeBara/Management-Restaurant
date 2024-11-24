@@ -27,7 +27,7 @@ export const useFetchTableOfZone = () => {
               headers: { Authorization: `Bearer ${token}` },
             });
             
-            allTables.push(...response.data);
+            allTables.push(...response.data.data);
 
             if (allZones.length >= total) break;
             currentPage++;
@@ -41,8 +41,8 @@ export const useFetchTableOfZone = () => {
             params: { page, limit, sort: "createdAt:desc" },
             headers: { Authorization: `Bearer ${token}` },
           });
-          setTables(response.data);
-          setTotalTables(response.data.length);
+          setTables(response.data.data);
+          setTotalTables(response.data.total);
         }
       } catch (err) {
         console.error(`Failed to fetch table of zone  ${id} : `, err.response?.data?.message || err.message  );

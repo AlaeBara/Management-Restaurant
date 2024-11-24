@@ -83,7 +83,7 @@
     gap: 6px;
     background-color: #f1f1f1;
     color: #333;
-    width: 48%;
+    width: 100%;
 }
 
 .editButton:hover {
@@ -101,21 +101,13 @@
 
 .deleteButton:hover {
     background-color: #ffcdd2;
+    transform: translateY(-2px);
 }
 
-
-.hierarchyPath {
-    font-size: 1rem; 
-    color: #4a5568; 
-    margin-top: 8px; 
+.shape{
+    display: flex;
+    justify-content: center;
 }
-
-.hierarchyLabel {
-    font-weight: bold; /* Emphasize the label */
-    color: #2d3748; /* Slightly darker shade for contrast */
-}
-
-
 
 /* Responsive Design */
 @media (max-width: 768px) {
