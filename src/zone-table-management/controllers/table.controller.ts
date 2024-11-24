@@ -25,7 +25,7 @@ import { UpdateTableDto } from '../dtos/table/update-table.dto';
 @ApiTags('Tables')
 @ApiBearerAuth()
 export class TableController {
-  constructor(private readonly tableService: TableService) {}
+  constructor(private readonly tableService: TableService) { }
 
   /* private readonly PERMISSIONS = [
     { name: 'view-tables', label: 'Consulter toutes les tables', resource: 'table' },
@@ -62,7 +62,7 @@ export class TableController {
   @Get('group-by-zone')
   @Permissions('view-tables')
   @ApiOperation({ summary: 'Get all tables grouped by zone' })
-  async findAllGroupByZone(){
+  async findAllGroupByZone() {
     return this.tableService.findAllGroupByZone();
   }
 
@@ -102,7 +102,7 @@ export class TableController {
     @Body() updateTableDto: UpdateTableDto,
   ) {
     await this.tableService.updateTable(id, updateTableDto);
-    return { message: 'Great! Your table has been updated successfully', status: 200 };
+    return { message: 'Done! Your table has been updated successfully', status: 200 };
   }
 
   @Delete(':id')
@@ -110,15 +110,17 @@ export class TableController {
   @ApiOperation({ summary: 'Delete a table' })
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOrThrowByUUID(id);
-    return this.tableService.softDelete(id);
+    await this.tableService.softDelete(id);
+    return { message: 'Table has been DELETED successfully', status: 200 };
   }
 
   @Patch(':id/restore')
   @Permissions('restore-table')
   @ApiOperation({ summary: 'Restore a table' })
   async restore(@Param('id', ParseUUIDPipe) id: string) {
-    await this.tableService.findOrThrowByUUID(id);
-    return this.tableService.restoreByUUID(id, true, ['tableCode']);
+    await this.tableService.findOneByIdWithOptions(id, { onlyDeleted: true });
+    await this.tableService.restoreByUUID(id, true, ['tableCode']);
+    return { message: 'COOL! Table has been RESTORED successfully', status: 200 };
   }
 
   @Get('qrcode/:id')
