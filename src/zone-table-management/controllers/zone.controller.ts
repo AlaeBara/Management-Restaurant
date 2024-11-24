@@ -27,7 +27,7 @@ export class ZoneController {
   constructor(
     private readonly zoneService: ZoneService,
     private readonly tableService: TableService,
-  ) {}
+  ) { }
 
   /* private readonly PERMISSIONS = [
     { name: 'view-zones', label: 'Consulter toutes les zones', resource: 'zone' },
@@ -117,7 +117,16 @@ export class ZoneController {
   @Get(':id/tables')
   @Permissions('view-tables')
   @ApiOperation({ summary: 'Get all tables of a zone' })
-  async findTables(@Param('id', ParseUUIDPipe) id: string) {
-    return this.tableService.findAllTablesByZoneUUID(id);
+
+  async findTables(@Param('id', ParseUUIDPipe) id: string,
+    @Query('page') page?: number,
+    @Query('limit') limit?: number,
+    @Query('relations') relations?: string[],
+    @Query('sort') sort?: string,
+    @Query('withDeleted') withDeleted?: boolean,
+    @Query('onlyDeleted') onlyDeleted?: boolean,
+    @Query('select') select?: string[],
+  ) {
+    return this.tableService.findAllTablesByZoneUUID(id, page, limit, relations, sort, withDeleted, onlyDeleted, select);
   }
 }
