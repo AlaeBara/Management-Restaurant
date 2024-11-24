@@ -12,7 +12,7 @@ const zoneSchema = z.object({
     zoneCode: z.string()
       .min(1, "Le code de la zone ne peut pas être vide")
       .max(50, "Le code de la zone ne peut pas dépasser 50 caractères"),
-    parentZoneUUID: z.string().optional()
+    parentZoneUUID: z.string().nullable().optional()
 });
 
 export function useUpdateZone(id, formData, setFormData, initialData, setInitialData) {
