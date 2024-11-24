@@ -135,7 +135,7 @@ export class TableService extends GenericService<Table> {
       .addSelect('COUNT(table.id)', 'tableCount')
       .groupBy('zone.id')
       .addGroupBy('zone.zoneLabel')
-      .addGroupBy('parentZone.zoneLabel') 
+      .addGroupBy('parentZone.zoneLabel')
       .getRawMany();
 
     // Second query to get all tables with their zone information
@@ -152,10 +152,69 @@ export class TableService extends GenericService<Table> {
     }));
   }
 
-  async findAllTablesByZoneUUID(id: string) {
-    return this.tableRepository.find({
-      where: { zone: { id } },
-    //  relations: ['parentZone'],
-    });
+  async findAllTablesByZoneUUID(
+    id: string,
+    page?: number | string,
+    limit?: number | string,
+    relations?: string[],
+    sort?: string,
+    withDeleted: boolean = false,
+    onlyDeleted: boolean = false,
+    select?: string[],
+  ): Promise<{ data: Table[]; total: number; page: number; limit: number }> {
+    const query = this.tableRepository.createQueryBuilder('table');
+    query.where({ zone: { id } });
+
+    const currentPage = Math.max(1, Number(page) || 1);
+    const itemsPerPage = Math.max(1, Number(limit) || 10);
+
+    const relationArray = await this.splitByComma(relations);
+
+    if (relationArray && relationArray.length > 0) {
+      relationArray.forEach((relation) => {
+        query.leftJoinAndSelect(`table.${relation}`, relation);
+      });
+    }
+
+    if (sort) {
+      const [field, order] = sort.split(':');
+      query.orderBy(
+        `table.${field}`,
+        order.toUpperCase() as 'ASC' | 'DESC',
+      );
+    } else {
+      query.orderBy(`table.id`, 'ASC');
+    }
+
+    query
+      .skip((currentPage - 1) * itemsPerPage)
+      .take(itemsPerPage)
+      .setFindOptions({
+        relations: relationArray?.reduce(
+          (acc, rel) => ({ ...acc, [rel]: true }),
+          {},
+        ),
+        withDeleted: true,
+      });
+
+    if (!withDeleted && !onlyDeleted) {
+      query.andWhere(`table.deletedAt IS NULL`);
+    }
+
+    if (onlyDeleted) {
+      query.andWhere(`table.deletedAt IS NOT NULL`);
+    }
+
+    if (select) {
+      const selectArray = await this.splitByComma(select);
+      if (selectArray.length > 0) {
+        const selectFields = ['id', ...selectArray];
+        query.select(selectFields.map((field) => `table.${field}`));
+      }
+    }
+    
+    const [data, total] = await query.getManyAndCount();
+
+    return { data, total, page: currentPage, limit: itemsPerPage };
   }
 }
