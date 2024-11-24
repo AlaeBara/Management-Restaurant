@@ -90,7 +90,8 @@ export class TableController {
   @Permissions('create-table')
   @ApiOperation({ summary: 'Create a table' })
   async create(@Body() createTableDto: CreateTableDto) {
-    return this.tableService.createTable(createTableDto);
+    await this.tableService.createTable(createTableDto);
+    return { message: 'Great! Your new table has been created successfully', status: 201 };
   }
 
   @Put(':id')
@@ -100,7 +101,8 @@ export class TableController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() updateTableDto: UpdateTableDto,
   ) {
-    return this.tableService.updateTable(id, updateTableDto);
+    await this.tableService.updateTable(id, updateTableDto);
+    return { message: 'Great! Your table has been updated successfully', status: 200 };
   }
 
   @Delete(':id')
