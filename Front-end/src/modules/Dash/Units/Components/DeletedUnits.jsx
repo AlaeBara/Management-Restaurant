@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import style from './Units.module.css'
+import style from '../Units.module.css'
 import { useNavigate } from 'react-router-dom'
-import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
+import {Ban, SearchX } from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchUnits} from "./Hooks/useFetchUnits"
+import {useFetchUnitsDeleted} from "../Hooks/useFetchDeletedUnits"
 import PaginationNav from '@/modules/Dash/UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-import CartUnits from './Components/CartUnits'
-import {useDeleteUnit} from './Hooks/useDeleteUnit'
+import CartUnits from './CartUnitDeleted'
+import {useRestoreUnit} from '../Hooks/useRestorUnit'
 
-const Units = () => {
+const UnitsDeleted = () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { units, totalUnits, loading, error,  fetchUnits} = useFetchUnits()
+    const { units, totalUnits, loading, error,  fetchUnits} = useFetchUnitsDeleted()
 
     //pagination
     const totalPages = Math.ceil(totalUnits / limit);
@@ -37,7 +37,9 @@ const Units = () => {
         fetchUnits({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchUnits]);
 
-    const {deleteUnit} = useDeleteUnit(fetchUnits)
+
+    const {RestoreUnit} = useRestoreUnit(fetchUnits)
+
 
   return (
     <div className={style.container}>
@@ -46,22 +48,12 @@ const Units = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Unités</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement toutes les unités de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des unités, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Unités Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des  Unités supprimées de votre plateforme. Vous pouvez visualiser les unités qui ont été supprimées et les restaurer si nécessaire.</p>
             </div>
         </div>
 
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Deleted-Unites')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Unités Supprimés
-            </button> 
         
-            <button onClick={() => navigate('/dash/Units/Add-Units')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter unité
-            </button> 
-        </div>
-
-
         {/* carts of zone */}
 
         <div>
@@ -80,7 +72,7 @@ const Units = () => {
                     <>
                         <div className={style.userGrid}>
                         {units.map(unit => (
-                            <CartUnits key={unit.id} unit={unit} Delete={deleteUnit}/>
+                            <CartUnits key={unit.id} unit={unit} RESTOR={RestoreUnit}/>
                         ))}
                         </div>
 
@@ -97,7 +89,7 @@ const Units = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Unités trouvé</h1>
+                        <h1>Aucun Unités Supprimé  trouvé</h1>
                     </div>
                     )}
                 </>
@@ -111,4 +103,4 @@ const Units = () => {
   )
 }
 
-export default Units
+export default UnitsDeleted

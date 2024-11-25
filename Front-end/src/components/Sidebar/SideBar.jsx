@@ -16,7 +16,9 @@ import {
   Package,
   Layers,
   Database,
-  Truck
+  Truck,
+  FolderOpen,
+  Boxes 
 } from "lucide-react"
 
 import {
@@ -124,12 +126,12 @@ const SideBar = () => {
       },
       {
         title: "Gestion des Unités",
-        icon: Package,
+        icon: FolderOpen,
         isActive: true,
         items: [
           { 
             title: "Unités",
-            icon: Database,
+            icon: Boxes ,
             url: "/dash/Units",
           }
         ],

@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import style from "./CartsUnits.module.css";
+import style from "./CartUnitDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, Boxes  } from 'lucide-react';
+import { RotateCcw ,  Boxes  } from 'lucide-react';
 
-const UnitsCart = ({unit , Delete}) => {
+const UnitsCartDeleted = ({unit , RESTOR}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -13,19 +13,15 @@ const UnitsCart = ({unit , Delete}) => {
         const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         return `${formattedDate} ${formattedTime}`;
     };
-    const handleDelete = (e) => {
+    const handleRestor= (e) => {
         e.stopPropagation();
         setIsModalVisible(true);
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        Delete(id)
+        RESTOR(id)
     };
     
-    const handleEdit = (id, e) => {
-        e.stopPropagation();
-        navigate(`/dash/Update-Units/${id}`);
-    };
     
     return (
         <>
@@ -46,16 +42,10 @@ const UnitsCart = ({unit , Delete}) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleEdit(unit.id, e)}
+                        onClick={(e) => handleRestor( e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Modifier
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className={`${style.actionButton} ${style.deleteButton}`}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                        <RotateCcw  className="mr-2 h-4 w-4" /> Restaurer
                     </button>
                 </div>
             </div>
@@ -63,9 +53,9 @@ const UnitsCart = ({unit , Delete}) => {
             {isModalVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+                        <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer le Unité "{unit?.unit}" ?
+                            Êtes-vous sûr de vouloir restaurer  le Unité "{unit?.unit}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -78,7 +68,7 @@ const UnitsCart = ({unit , Delete}) => {
                                 onClick={()=>confirmDelete(unit.id)}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                Supprimer
+                                Restaurer
                             </button>
                         </div>
                     </div>
@@ -88,4 +78,4 @@ const UnitsCart = ({unit , Delete}) => {
     );
 };
 
-export default UnitsCart ;
+export default UnitsCartDeleted;

@@ -36,6 +36,7 @@ const TableDeleted = lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetai
 const Units = lazy(()=> import ('@/modules/Dash/Units/Units'))
 const AddUnits = lazy(()=> import('@/modules/Dash/Units/Components/AddUnits'))
 const UpdateUnits = lazy(()=>import('@/modules/Dash/Units/Components/UpdateUnits'))
+const DeletedUnits = lazy(()=>import('@/modules/Dash/Units/Components/DeletedUnits'))
 
 const ClientRoutes = () => {
   return (
@@ -355,6 +356,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateUnits/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Deleted-Unites" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DeletedUnits/>
               </MainLayout>
             </ProtectedRoute>
           } 
