@@ -127,6 +127,6 @@ export class ZoneController {
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
   ) {
-    return this.tableService.findAllTablesByZoneUUID(id, page, limit, relations, sort, withDeleted, onlyDeleted, select);
+    return this.tableService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted, select, { zone: { id } });
   }
 }

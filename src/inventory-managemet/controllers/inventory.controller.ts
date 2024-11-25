@@ -3,8 +3,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { InventoryService } from "../services/inventory.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Inventory } from "../entities/inventory.entity";
-import { CreateInventoryDto } from "../dtos/create-inventory.dto";
-import { UpdateInventoryDto } from "../dtos/update-inventory.dto";
+import { CreateInventoryDto } from "../dtos/inventory/create-inventory.dto";
+import { UpdateInventoryDto } from "../dtos/inventory/update-inventory.dto";
 
 
 @Controller('api/inventories')

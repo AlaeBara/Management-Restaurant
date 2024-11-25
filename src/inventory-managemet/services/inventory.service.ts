@@ -9,8 +9,8 @@ import { ProductService } from "src/product-management/services/product.service"
 import { Product } from "src/product-management/entities/product.entity";
 import { Storage } from "src/storage-management/entities/storage.entity";
 import { StorageService } from "src/storage-management/services/storage.service";
-import { CreateInventoryDto } from "../dtos/create-inventory.dto";
-import { UpdateInventoryDto } from "../dtos/update-inventory.dto";
+import { CreateInventoryDto } from "../dtos/inventory/create-inventory.dto";
+import { UpdateInventoryDto } from "../dtos/inventory/update-inventory.dto";
 
 @Injectable()
 export class InventoryService extends GenericService<Inventory> {
@@ -36,8 +36,9 @@ export class InventoryService extends GenericService<Inventory> {
         inventory.storage = storage;
     }
 
-    async createInventory(createInventoryDto: CreateInventoryDto): Promise<Inventory> {
+    async createInventory(createInventoryDto: CreateInventoryDto) {
         const inventory = this.inventoryRepository.create(createInventoryDto);
+        //inventory.totalQuantity = createInventoryDto.initialQuantity;
 
         if (createInventoryDto.productId) {
             await this.assignProduct(inventory, createInventoryDto.productId);
@@ -46,8 +47,8 @@ export class InventoryService extends GenericService<Inventory> {
         if (createInventoryDto.storageId) {
             await this.assignStorage(inventory, createInventoryDto.storageId);
         }
-
-        return this.inventoryRepository.save(inventory);
+   
+        return this.inventoryRepository.save(inventory); 
     }
 
     async updateInventory(id: string, updateInventoryDto: UpdateInventoryDto): Promise<UpdateResult> {

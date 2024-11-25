@@ -11,9 +11,9 @@ export class CreateInventoryDto  {
     @IsNotEmpty()
     warningQuantity: number;
 
-    @ApiProperty({ description: 'The total quantity of the inventory', required: true , example: 10})
+   /*  @ApiProperty({ description: 'The total quantity of the inventory', required: true , example: 10})
     @IsNotEmpty()
-    totalQuantity: number;
+    initialQuantity: number; */
 
     @ApiProperty({ description: 'The storage id of the inventory', required: true , example: '1234567890'})
     @IsUUID()

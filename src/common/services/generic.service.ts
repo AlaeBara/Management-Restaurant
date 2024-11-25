@@ -5,7 +5,7 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { Repository, DeleteResult, UpdateResult } from 'typeorm';
+import { Repository, DeleteResult, UpdateResult, Table } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityTarget } from 'typeorm';
 import FindOneOptions from '../interface/findoneoption.interface';
@@ -39,8 +39,13 @@ export class GenericService<T> {
     withDeleted: boolean = false,
     onlyDeleted: boolean = false,
     select?: string[],
+    FindBy?:Record<string, any>
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const query = this.repository.createQueryBuilder(this.name);
+
+    if (FindBy) {
+      query.where(FindBy);
+    }
 
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.max(1, Number(limit) || 10);

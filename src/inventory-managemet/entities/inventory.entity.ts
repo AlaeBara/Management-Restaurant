@@ -31,9 +31,15 @@ export class Inventory extends BaseEntity {
     productId: string | null;
 
     productUnit: string;
+    productName: string;
+    storageName: string;
 
     @AfterLoad()
-    setProductUnit(): void {
-        this.productUnit = this.product?.getProductUnit()?.unit ?? null;
+    setProductDetails(): void {
+        this.productUnit = this.product?.unit ?? null;
+        this.productName = this.product?.productName ?? null;
+        this.storageName = this.storage?.storageName ?? null;
+        delete this.product;
+        delete this.storage;
     }
 }
