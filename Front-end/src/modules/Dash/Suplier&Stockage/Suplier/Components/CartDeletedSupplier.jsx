@@ -72,13 +72,28 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
                 </div>
                 <div className={style.fax} >
                     <Printer className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <span className="text-sm">{supplier.fax}</span>
+                    {supplier.fax ? (
+                        <a href={`tel:${supplier.fax}`} className="text-sm hover:underline">
+                        {supplier.fax}
+                        </a>
+                    ) : (
+                        <span className="text-sm text-gray-500">Fax non disponible</span>
+                    )}
                 </div>
                 <div className={style.website}>
                     <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <a href={supplier.website} target="_blank" rel="noopener noreferrer" className="text-sm hover:underline">
-                        {supplier.website}            
-                    </a>
+                    {supplier.website ? (
+                        <a
+                        href={supplier.website}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-sm hover:underline"
+                        >
+                        {supplier.website}
+                        </a>
+                    ) : (
+                        <span className="text-sm text-gray-500">Site web non disponible</span>
+                    )}
                 </div>
 
 
@@ -86,7 +101,7 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
 
                 <div className={style.userAction}>
                     <div className={style.btn} onClick={handleDelete}>
-                        <RotateCcw className="mr-2 h-4 w-4" /> Réactiver le Fournisseur
+                        <RotateCcw className="mr-2 h-4 w-4" /> Restaurer
                     </div>
                 </div>
             </div>
@@ -99,7 +114,7 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
                     <div className="bg-white rounded-lg shadow-xl w-full max-w-md mx-auto transform transition-all ease-in-out duration-300">
                         <div className="p-6">
                             <h3 className="text-lg font-semibold text-gray-900 mb-4">Confirmer la restauration</h3>
-                            <p className="text-gray-700 mb-6">Êtes-vous sûr de vouloir réactiver le fournisseur <strong>{supplier.name}</strong> ?</p>
+                            <p className="text-gray-700 mb-6">Êtes-vous sûr de vouloir restaurer le fournisseur <span style={{ textTransform: "capitalize" }}></span> "{supplier.name}" ?</p>
                             <div className="flex justify-end space-x-4">
                             <button 
                                 className="px-4 py-2 bg-gray-100 text-gray-800 rounded-md hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-300 transition-colors"
@@ -111,7 +126,7 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
                                 className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600 focus:outline-none focus:ring-2 focus:ring-red-500 transition-colors"
                                 onClick={()=>confirmDelete(supplier.id)}
                             >
-                                Réactiver
+                                Restaurer
                             </button>
                             </div>
                         </div>

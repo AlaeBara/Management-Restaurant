@@ -32,7 +32,7 @@ const ZoneCartDeleted = ({ zone , Restore }) => {
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <LandPlot className="mr-2 " /> {zone.zoneLabel} </h3>
                         <p className={style.zoneLabel}>Zone Code: {zone.zoneCode}</p>
-                        <div className={style.dateInfo}>
+                        <div className={style.zoneLabel}>
                             <span>Créé le: {formatDate(zone.createdAt)}</span>
                         </div>
                     </div>

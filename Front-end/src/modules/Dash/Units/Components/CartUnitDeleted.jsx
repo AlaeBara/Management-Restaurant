@@ -31,10 +31,10 @@ const UnitsCartDeleted = ({unit , RESTOR}) => {
 
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <Boxes  className="mr-2 " /> {unit.unit} </h3>
-                        <p className={style.zoneLabel}>Unité de base: {unit.baseUnit}</p>
+                        <p className={style.zoneLabel}>Unité de base : {unit.baseUnit}</p>
                         <p className={style.zoneLabel}>Facteur de conversion : {unit.conversionFactorToBaseUnit}</p> 
                         <div className={style.zoneLabel}>
-                            <span>Créé le: {formatDate(unit.createdAt)}</span>
+                            <span>Créé le : {formatDate(unit.createdAt)}</span>
                         </div>
                     </div>
 
@@ -55,7 +55,7 @@ const UnitsCartDeleted = ({unit , RESTOR}) => {
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                         <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir restaurer  le Unité "{unit?.unit}" ?
+                            Êtes-vous sûr de vouloir restaurer le Unité "{unit?.unit}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button

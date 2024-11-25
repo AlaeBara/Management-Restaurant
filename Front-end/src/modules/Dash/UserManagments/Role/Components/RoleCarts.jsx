@@ -62,7 +62,7 @@ const RoleCart = ({ role  , Delete}) => {
                             )}
                         </p>
 
-                        <div className={style.dateInfo}>
+                        <div className={style.roleLabel}>
                             <span>Créé le: {formatDate(role.createdAt)}</span>
                         </div>
                     </div>

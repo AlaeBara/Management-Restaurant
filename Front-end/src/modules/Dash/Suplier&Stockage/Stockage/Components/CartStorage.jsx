@@ -36,7 +36,7 @@ const StorageCart = ({ Storage , Delete}) => {
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <Cylinder className="mr-2 " /> {Storage.storageName} </h3>
                         <p className={style.zoneLabel}>Stock Code: {Storage.storageCode}</p>
-                        <div className={style.dateInfo}>
+                        <div className={style.zoneLabel}>
                             <span>Créé le: {formatDate(Storage.createdAt)}</span>
                         </div>
                         {Storage.hierarchyPath && (

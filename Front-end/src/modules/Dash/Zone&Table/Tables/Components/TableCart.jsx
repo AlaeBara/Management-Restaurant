@@ -66,7 +66,7 @@ const TableCart = ({ table}) => {
 
             </p>
             <p className={style.zoneLabel}>Code de Table : {table.tableCode}</p>
-            <div className={style.dateInfo}>
+            <div className={style.zoneLabel}>
               <span>Créé le: {formatDate(table.createdAt)}</span>
             </div>
           </div>
