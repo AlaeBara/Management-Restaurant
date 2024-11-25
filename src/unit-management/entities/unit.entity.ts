@@ -15,7 +15,7 @@ export class Unit {
   @Column({ type: 'enum', enum: BaseUnit })
   baseUnit: BaseUnit;
 
-  @Column()
+  @Column({type:"float"})
   conversionFactorToBaseUnit: number;
 
   @CreateDateColumn()
