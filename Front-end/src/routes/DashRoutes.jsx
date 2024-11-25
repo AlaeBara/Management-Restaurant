@@ -33,6 +33,10 @@ const UpdateStorage = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage
 const StorageDeleted = lazy(()=> import('@/modules/Dash/Suplier&Stockage/Stockage/Components/StorageDeleted'))
 const Tables = lazy(()=>import('@/modules/Dash/Zone&Table/Tables/Tables'))
 const TableDeleted = lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/TableDeleted'))
+const Units = lazy(()=> import ('@/modules/Dash/Units/Units'))
+const AddUnits = lazy(()=> import('@/modules/Dash/Units/Components/AddUnits'))
+const UpdateUnits = lazy(()=>import('@/modules/Dash/Units/Components/UpdateUnits'))
+
 const ClientRoutes = () => {
   return (
     <Suspense fallback={<Spinner title="Chargement en cours..." />}>
@@ -322,6 +326,39 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />   
+
+        <Route 
+          path="/Units" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Units/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />  
+
+        <Route 
+          path="/Units/Add-Units" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddUnits/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Update-Units/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <UpdateUnits/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
         
         {/* Zones and table mock up */}
         <Route 

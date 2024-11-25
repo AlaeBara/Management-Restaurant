@@ -122,6 +122,18 @@ const SideBar = () => {
           
         ],
       },
+      {
+        title: "Gestion des Unités",
+        icon: Package,
+        isActive: true,
+        items: [
+          { 
+            title: "Unités",
+            icon: Database,
+            url: "/dash/Units",
+          }
+        ],
+      },
     ],
     
   }
