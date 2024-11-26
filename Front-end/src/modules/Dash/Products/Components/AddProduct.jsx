@@ -218,11 +218,16 @@ export default function Component() {
                                 <SelectValue placeholder="Sélectionner l'unité" />
                             </SelectTrigger>
                             <SelectContent>
-                                {units.map((unit) => (
-                                    <SelectItem key={unit.id} value={unit.id}>
-                                        {unit.unit} - {unit.baseUnit}
-                                    </SelectItem>
-                                ))}
+                                {units.length > 0 ? (
+                                    units
+                                        .map((unit) => (
+                                            <SelectItem key={unit.id} value={unit.id}>
+                                                {unit.unit} - {unit.baseUnit}
+                                            </SelectItem>
+                                        ))
+                                ) : (
+                                    <p className='text-sm'>Aucune donnée disponible</p>
+                                )}
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-gray-600 mt-0">

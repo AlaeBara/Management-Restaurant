@@ -139,6 +139,11 @@ const SideBar = () => {
             title: "Produits",
             icon: ShoppingBag  ,
             url: "/dash/Produits",
+          },
+          { 
+            title: "Categories",
+            icon: ShoppingBag  ,
+            url: "/dash/categories-Produits",
           }
         ],
       },

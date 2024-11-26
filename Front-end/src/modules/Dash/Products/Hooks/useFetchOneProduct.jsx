@@ -39,7 +39,7 @@ export function useFetchOneProduct(id) {
                 productDescription: response.data.productDescription || "",
                 isOffered: response.data.isOffered,
                 productType: response.data.productType,
-                unitId:response.data.unitId || ""
+                unitId:response.data.unitId || null
             });
             setInitialData({
                 productSKU: response.data.productSKU,
@@ -47,7 +47,7 @@ export function useFetchOneProduct(id) {
                 productDescription: response.data.productDescription || "",
                 isOffered: response.data.isOffered,
                 productType: response.data.productType,
-                unitId:response.data.unitId || ""
+                unitId:response.data.unitId || null
             });
             setLoading(false);
             } catch (error) {

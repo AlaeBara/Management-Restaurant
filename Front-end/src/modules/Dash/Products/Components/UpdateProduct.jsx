@@ -154,7 +154,7 @@ export default function Component() {
                         <Select
                             id="unitId"
                             name="unitId"
-                            value={formData.unitId}
+                            value={formData.unitId || ""}
                             onValueChange={(value) => handleChange({ target: { name: 'unitId', value } })}
                         >
                             <SelectTrigger>
