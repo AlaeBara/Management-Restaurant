@@ -56,7 +56,10 @@ export class InvetoryMovementController {
             withDeleted,
             onlyDeleted,
             select,
-            {inventory:{id}}
+            [
+                { inventory: { id } },
+                { destinationInventory: { id } }
+            ]
         );
     }
 

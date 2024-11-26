@@ -26,7 +26,7 @@ export class InventoryMovement extends BaseEntity {
     @Column()
     quantity: number;
 
-    @ManyToOne(() => Storage, { nullable: true })
+    /* @ManyToOne(() => Storage, { nullable: true })
     @JoinColumn({ name: 'sourceStorageId' })
     sourceStorage: Storage;
 
@@ -38,7 +38,14 @@ export class InventoryMovement extends BaseEntity {
     destinationStorage: Storage;
 
     @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.destinationStorage)
-    destinationStorageId: string;
+    destinationStorageId: string; */
+
+    @ManyToOne(() => Inventory, { nullable: true })
+    @JoinColumn({ name: 'destinationInventoryId' })
+    destinationInventory: Inventory;
+
+    @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.destinationInventory)
+    destinationInventoryId: string;
 
     @ManyToOne(() => User, { nullable: true })
     @JoinColumn({ name: 'userId' })

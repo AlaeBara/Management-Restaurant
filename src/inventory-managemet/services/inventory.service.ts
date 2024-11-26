@@ -40,6 +40,8 @@ export class InventoryService extends GenericService<Inventory> {
         const inventory = this.inventoryRepository.create(createInventoryDto);
         //inventory.totalQuantity = createInventoryDto.initialQuantity;
 
+        await this.validateUnique({ sku: inventory.sku })
+
         if (createInventoryDto.productId) {
             await this.assignProduct(inventory, createInventoryDto.productId);
         }
@@ -47,8 +49,8 @@ export class InventoryService extends GenericService<Inventory> {
         if (createInventoryDto.storageId) {
             await this.assignStorage(inventory, createInventoryDto.storageId);
         }
-   
-        return this.inventoryRepository.save(inventory); 
+
+        return this.inventoryRepository.save(inventory);
     }
 
     async updateInventory(id: string, updateInventoryDto: UpdateInventoryDto): Promise<UpdateResult> {

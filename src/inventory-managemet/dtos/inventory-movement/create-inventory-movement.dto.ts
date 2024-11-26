@@ -10,6 +10,11 @@ export class CreateInventoryMovementDto {
     @IsNotEmpty()
     inventoryId: string;
 
+    @ApiProperty({ description: 'The destinationInventory id of the Movement For Transfert Movement Type', required: false , example: '1234567890'})
+    @IsUUID()
+    @IsOptional()
+    destinationInventoryId: string;   
+
     @ApiProperty({ description: 'The Quantity of the Movement', required: true , example: '2'})
     @IsNotEmpty()
     quantity :number
