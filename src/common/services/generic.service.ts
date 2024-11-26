@@ -288,29 +288,24 @@ export class GenericService<T> {
 
   async validateUniqueExcludingSelf(attributes: Partial<T>, excludeId?: number | string) {
     // Create query builder
-    const query = this.repository.createQueryBuilder(this.name);
-
-    // Add OR conditions for each attribute
-    const conditions = Object.entries(attributes);
-    conditions.forEach(([key, value], index) => {
-      if (index === 0) {
-        query.where(`${this.name}.${key} = :${key}`, { [key]: value });
-      } else {
-        query.orWhere(`${this.name}.${key} = :${key}`, { [key]: value });
+    for (const [key, value] of Object.entries(attributes)) {
+      const query = this.repository.createQueryBuilder(this.name);
+      
+      // Check for the specific attribute
+      query.where(`${this.name}.${key} = :value`, { value });
+  
+      // Exclude the current entity if excludeId is provided
+      if (excludeId) {
+        query.andWhere(`${this.name}.id != :excludeId`, { excludeId });
       }
-    });
-
-    // Exclude the current entity if excludeId is provided
-    if (excludeId) {
-      query.andWhere(`${this.name}.id != :excludeId`, { excludeId });
-    }
-
-    const entity = await query.getOne();
-
-    if (entity) {
-      throw new ConflictException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with one of these attributes already exists`
-      );
+  
+      const entity = await query.getOne();
+  
+      if (entity) {
+        throw new ConflictException(
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with ${key} "${value}" already exists`
+        );
+      }
     }
   }
 
