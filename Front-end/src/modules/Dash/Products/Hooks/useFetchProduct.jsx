@@ -56,5 +56,5 @@ export const useFetchProduct = () => {
     []
   );
 
-  return { product, setTotalProduct, loading, error, fetchProduct };
+  return { product, totalProduct, loading, error, fetchProduct };
 };

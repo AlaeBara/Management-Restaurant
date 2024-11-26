@@ -7,16 +7,16 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useFetchProduct} from "./Hooks/useFetchProduct"
 import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
+import ProductCart  from './Components/ProductCart'
 
-
-const Zones = () => {
+const Product = () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { product, setTotalProduct, loading, error, fetchProduct} = useFetchProduct()
+    const { product, totalProduct, loading, error, fetchProduct} = useFetchProduct()
     //pagination
-    const totalPages = Math.ceil(setTotalProduct / limit);
+    const totalPages = Math.ceil(totalProduct / limit);
     const handleNextPage = () => {
         if (currentPage < totalPages) {
           setCurrentPage(prev => prev + 1);
@@ -28,7 +28,7 @@ const Zones = () => {
         }
     };
     const startItem = (currentPage - 1) * limit + 1;
-    const endItem = Math.min(currentPage * limit, setTotalProduct);
+    const endItem = Math.min(currentPage * limit, totalProduct);
   
     
     useEffect(() => {
@@ -62,11 +62,11 @@ const Zones = () => {
 
         {/* carts of zone */}
 
-        {/* <div>
+        <div>
 
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Zones..." />
+                <Spinner title="Chargement des Produits..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -75,12 +75,12 @@ const Zones = () => {
             </div>
             ) : (
                 <>
-                    {zones.length > 0 ? (
+                    {product.length > 0 ? (
                     <>
 
                         <div className={style.userGrid}>
-                        {zones.map(zone => (
-                            <ZoneCart key={zone.id} zone={zone}  Delete={deleteZone}/>
+                        {product.map(product => (
+                            <ProductCart key={product.id} product={product}  />
                         ))}
                         </div>
 
@@ -89,7 +89,7 @@ const Zones = () => {
                             totalPages={totalPages}
                             startItem={startItem}
                             endItem={endItem}
-                            numberOfData={totalZones}
+                            numberOfData={totalProduct}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                         />
@@ -97,12 +97,12 @@ const Zones = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Zone trouvé</h1>
+                        <h1>Aucun Produit trouvé</h1>
                     </div>
                     )}
                 </>
             )}
-        </div> */}
+        </div>
 
 
 
@@ -111,4 +111,4 @@ const Zones = () => {
   )
 }
 
-export default Zones
+export default Product
