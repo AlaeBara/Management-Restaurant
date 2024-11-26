@@ -273,13 +273,12 @@ export class GenericService<T> {
       [key]: value,
     }));
 
-    // Use findOne with OR conditions
-    const entity = await this.repository.findOne({
+     // Use count with OR conditions
+     const count = await this.repository.count({
       where: conditions as any,
-      select: ['id'] as any,
     });
 
-    if (entity) {
+    if (count > 0) {
       throw new ConflictException(
         `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with one of these attributes already exists`
       );
@@ -299,9 +298,9 @@ export class GenericService<T> {
         query.andWhere(`${this.name}.id != :excludeId`, { excludeId });
       }
   
-      const entity = await query.getOne();
+      const entity = await query.getCount();
   
-      if (entity) {
+      if (entity > 0) {
         throw new ConflictException(
           `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with ${key} "${value}" already exists`
         );
