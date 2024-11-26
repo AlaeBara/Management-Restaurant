@@ -1,21 +1,23 @@
 import React, { useEffect, useState } from 'react';
-import style from './Product.module.css'
+import style from '../Product.module.css'
 import { useNavigate } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchProduct} from "./Hooks/useFetchProduct"
-import PaginationNav from '../UserManagments/User/Components/PaginationNav'
+import {useFetchProductDeleted} from "../Hooks/useFetchProductDeleted"
+import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-import ProductCart  from './Components/ProductCart'
-import {useDeleteProduct} from './Hooks/useDeleteProduct'
+import ProductCartDeleted  from './ProductCartDeleted'
+import {useRestoreProduct} from '../Hooks/useRestoreProduct'
 
-const Product = () => {
+
+
+const ProductDeleted = () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { product, totalProduct, loading, error, fetchProduct} = useFetchProduct()
+    const { product, totalProduct, loading, error, fetchProduct} = useFetchProductDeleted()
     //pagination
     const totalPages = Math.ceil(totalProduct / limit);
     const handleNextPage = () => {
@@ -36,9 +38,7 @@ const Product = () => {
         fetchProduct({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchProduct]);
 
-
-    const{deleteProduct}=useDeleteProduct(fetchProduct)
-
+    const {RestoreProduct} = useRestoreProduct(fetchProduct)
 
   return (
     <div className={style.container}>
@@ -47,21 +47,10 @@ const Product = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Produits</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement toutes les produits de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des produits, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Produits Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des Produits supprimées de votre plateforme. Vous pouvez visualiser les Produits qui ont été supprimées et les restaurer si nécessaire.</p>
             </div>
         </div>
-
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/Produits/produits-supprimés')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Produit Supprimés
-            </button> 
-        
-            <button onClick={() => navigate('/dash/Produits/Ajouter-Produits')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Produits
-            </button> 
-        </div>
-
 
         {/* carts of zone */}
 
@@ -69,7 +58,7 @@ const Product = () => {
 
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Produits..." />
+                <Spinner title="Chargement des Produits Supprimés..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -82,7 +71,7 @@ const Product = () => {
                     <>
                         <div className={style.userGrid}>
                         {product.map(product => (
-                            <ProductCart key={product.id} product={product} Delete={deleteProduct} />
+                            <ProductCartDeleted key={product.id} product={product} Restore={RestoreProduct}  />
                         ))}
                         </div>
 
@@ -99,7 +88,7 @@ const Product = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Produit trouvé</h1>
+                        <h1>Aucun Produit Supprimés trouvé</h1>
                     </div>
                     )}
                 </>
@@ -113,4 +102,4 @@ const Product = () => {
   )
 }
 
-export default Product
+export default ProductDeleted

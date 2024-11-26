@@ -18,7 +18,8 @@ import {
   Database,
   Truck,
   FolderOpen,
-  Boxes 
+  Boxes ,
+  ShoppingBag 
 } from "lucide-react"
 
 import {
@@ -136,7 +137,7 @@ const SideBar = () => {
           },
           { 
             title: "Produits",
-            icon: Boxes ,
+            icon: ShoppingBag  ,
             url: "/dash/Produits",
           }
         ],

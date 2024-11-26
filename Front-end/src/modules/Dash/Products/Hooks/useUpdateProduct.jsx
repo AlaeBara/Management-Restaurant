@@ -5,25 +5,39 @@ import { z } from 'zod';
 import Cookies from 'js-cookie';
 
 // Zod schema for form validation
-const UnitsSchema = z.object({
-    unit: z.string().min(1, { message: "L'unité est obligatoire." }),
-    baseUnit: z.string().min(1, { message: "L'unité de base est obligatoire." }),
-    conversionFactorToBaseUnit: z.coerce.number({
-        required_error: "Le facteur de conversion est obligatoire.",
-        invalid_type_error: "Le facteur de conversion est obligatoire.",
-    })
-      .positive({ message: "Le facteur de conversion doit être un nombre positif." }),
+const ProductAddSchema = z.object({
+    productSKU: z
+        .string()
+        .max(15, "Le SKU du produit ne doit pas dépasser 15 caractères")
+        .nonempty("Le SKU du produit est requis"),
+  
+    productName: z
+        .string()
+        .max(75, "Le nom du produit ne doit pas dépasser 75 caractères")
+        .nonempty("Le nom du produit est requis"),
+        
+    productDescription: z
+        .string().nullable()
+        .optional(),
+
+    isOffered: z.boolean().optional(),
+    
+    productType: z.string({
+        required_error: "Le type de produit est requis.",
+        }).min(1, "Le produit type ne peut pas être vide."),
+
+    unitId: z.string().nullable().optional()
 });
 
-export function useUpdateUnit(id, formData, setFormData, initialData, setInitialData) {
+
+export function useUpdateProduct(id, formData, setFormData, initialData, setInitialData) {
   const [errors, setErrors] = useState({});
 
   // Memoizing the updateRole function with useCallback
-  const updateUnit = useCallback(async (e) => {
+  const updateProduct = useCallback(async (e) => {
     e.preventDefault();
 
-    formData.conversionFactorToBaseUnit= parseFloat(formData.conversionFactorToBaseUnit)
-    
+
     // Check if formData is the same as initialData (meaning no change)
     const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialData);
 
@@ -37,9 +51,10 @@ export function useUpdateUnit(id, formData, setFormData, initialData, setInitial
     }
 
     try {
-        UnitsSchema.parse(formData);
+        ProductAddSchema.parse(formData);
+        console.log(formData)
         const token = Cookies.get('access_token');
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/units/${id}`, formData, {
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, formData, {
             headers: {
             Authorization: `Bearer ${token}`,
             },
@@ -48,8 +63,9 @@ export function useUpdateUnit(id, formData, setFormData, initialData, setInitial
         // On success, set initialData to the current formData
         setInitialData(formData); // Update the initial data to reflect the changes
 
+
         setErrors({});
-        toast.success('Unité mis à jour avec succès!', {
+        toast.success('Produit miss à jour avec succès!', {
             icon: '✅',
             position: "top-right",
             autoClose: 3000,
@@ -62,8 +78,8 @@ export function useUpdateUnit(id, formData, setFormData, initialData, setInitial
         }, {});
         setErrors(fieldErrors);
       } else {
-        console.error('Error updating Unit:', error.response?.data?.message || error.message);
-        toast.error(error.response?.data?.message[0] || error.message, {
+        console.error('Error updating produit:', error.response?.data?.message || error.message);
+        toast.error(error.response?.data?.message || error.message, {
           icon: '❌',
           position: "top-right",
           autoClose: 3000,
@@ -72,5 +88,5 @@ export function useUpdateUnit(id, formData, setFormData, initialData, setInitial
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateUnit };
+  return { errors, updateProduct };
 }

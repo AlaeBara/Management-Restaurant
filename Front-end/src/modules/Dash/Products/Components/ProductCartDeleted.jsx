@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import style from "./ProductCart.module.css";
+import style from "./ProductCartDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
 import { Edit, Trash2, ShoppingBag  } from 'lucide-react';
 
-const ProductCart = ({ product , Delete }) => {
+const ProductCartDeleted = ({ product  , Restore}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -19,13 +19,9 @@ const ProductCart = ({ product , Delete }) => {
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        Delete(id)
+        Restore(id)
     };
     
-    const handleEdit = (id, e) => {
-        e.stopPropagation();
-        navigate(`/dash/Produits/Mettre-à-jour-Produit/${id}`);
-    };
 
     const [isExpanded, setIsExpanded] = useState(false);
     const toggleExpand = (e) => {
@@ -70,16 +66,10 @@ const ProductCart = ({ product , Delete }) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleEdit(product.id, e)}
+                        onClick={(e) => handleDelete(e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Modifier
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className={`${style.actionButton} ${style.deleteButton}`}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                        <Edit className="mr-2 h-4 w-4" /> Restaurer
                     </button>
                 </div>
             </div>
@@ -89,7 +79,7 @@ const ProductCart = ({ product , Delete }) => {
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                         <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer le produit "{product?.productName}" ?
+                            Êtes-vous sûr de vouloir restaurer le produit "{product?.unit}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -102,7 +92,7 @@ const ProductCart = ({ product , Delete }) => {
                                 onClick={()=>confirmDelete(product.id)}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                Supprimer
+                                Restaurer
                             </button>
                         </div>
                     </div>
@@ -112,4 +102,4 @@ const ProductCart = ({ product , Delete }) => {
     );
 };
 
-export default ProductCart ;
+export default ProductCartDeleted ;

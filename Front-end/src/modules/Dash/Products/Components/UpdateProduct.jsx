@@ -4,59 +4,31 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Cookies from 'js-cookie';
-import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchUnits} from '../../Units/Hooks/useFetchUnits'
+import {useFetchOneProduct} from '../Hooks/useFetchOneProduct'
+import {useUpdateProduct} from '../Hooks/useUpdateProduct'
+import Spinner from '@/components/Spinner/Spinner';
 
-
-// Zod schema for form validation
-const ProductAddSchema = z.object({
-    productSKU: z
-        .string()
-        .max(15, "Le SKU du produit ne doit pas dépasser 15 caractères")
-        .nonempty("Le SKU du produit est requis"),
-  
-    productName: z
-        .string()
-        .max(75, "Le nom du produit ne doit pas dépasser 75 caractères")
-        .nonempty("Le nom du produit est requis"),
-        
-    productDescription: z
-        .string().nullable()
-        .optional(),
-
-    isOffered: z.boolean().optional(),
-    
-    productType: z.string({
-        required_error: "Le type de produit est requis.",
-        }).min(1, "Le produit type ne peut pas être vide."),
-
-    unitId: z.string().nullable().optional()
-});
 
 export default function Component() {
 
     const navigate = useNavigate();
 
+    const {id} = useParams()
+
+    const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneProduct(id);
+    const { errors, updateProduct} = useUpdateProduct(id, formData, setFormData, initialData, setInitialData);
+
     const { units, fetchUnits  } = useFetchUnits()
+
     useEffect(() => {
         fetchUnits({fetchAll: true});
     }, []);
 
-    const [formData, setFormData] = useState({
-        productSKU: '',
-        productName: '',
-        productDescription: "",
-        isOffered: true,
-        productType: "",
-        unitId: null
-    });
-
-    const [errors, setErrors] = useState({});
+   
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -66,64 +38,35 @@ export default function Component() {
         setFormData({ ...formData, [field]: value });
     };
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            ProductAddSchema.parse(formData);
-            const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, formData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setFormData({
-                productSKU: '',
-                productName: '',
-                productDescription: "",
-                isOffered: true,
-                productType: "",
-                unitId: null
-            });
-            setErrors({});
-            toast.success('Produit créé avec succès!', {
-                icon: '✅',
-                position: "top-right",
-                autoClose: 1000,
-                onClose: () => navigate(`/dash/Produits`),
-            });
-        } catch (error) {
-        if (error instanceof z.ZodError) {
-            const fieldErrors = error.errors.reduce((acc, { path, message }) => {
-            acc[path[0]] = message;
-            return acc;
-            }, {});
-            setErrors(fieldErrors);
-        } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating produits:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
-            });
-        }
-        }
-    };
-
+    
   return (
     <>
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Produit</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Mettre à jour le Produit</h1>
             <p className="text-base text-gray-600">
-                Remplissez les informations ci-dessous pour ajouter un nouveau Produit au système.
+                Modifiez les informations ci-dessous pour mettre à jour le produit dans le système.
             </p>
         </div>
+
+
+        {loading ? (
+                <div className="flex flex-col items-center justify-center my-10">
+                    <Spinner title="Chargement des données, veuillez patienter..." />
+                </div>
+            ) : message ? (
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                    <p className="font-bold">Erreur</p>
+                    <p className="break-words">{message}</p>
+                </div>
+            ) : (
 
         <div className="container p-0 max-w-2xl">
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={updateProduct} className="space-y-4">
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -159,7 +102,7 @@ export default function Component() {
                         <textarea
                             id="productDescription"
                             name="productDescription"
-                            value={formData.productDescription || ""}
+                            value={formData.productDescription}
                             onChange={handleChange}
                             placeholder="Description du produit"
                             className="w-full p-2 border border-gray-300 rounded-md"
@@ -211,18 +154,28 @@ export default function Component() {
                         <Select
                             id="unitId"
                             name="unitId"
-                            value={formData.unitId || ""}
+                            value={formData.unitId}
                             onValueChange={(value) => handleChange({ target: { name: 'unitId', value } })}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner l'unité" />
+                            <SelectValue
+                                placeholder={
+                                    units.find((unit) => unit.id === formData.unitId)?.baseUnit ||
+                                    "Sélectionner la zone parent"
+                                }
+                            />
                             </SelectTrigger>
                             <SelectContent>
-                                {units.map((unit) => (
-                                    <SelectItem key={unit.id} value={unit.id}>
-                                        {unit.unit} - {unit.baseUnit}
-                                    </SelectItem>
-                                ))}
+                                {units.length > 0 ? (
+                                    units
+                                        .map((unit) => (
+                                            <SelectItem key={unit.id} value={unit.id}>
+                                                {unit.unit} - {unit.baseUnit}
+                                            </SelectItem>
+                                        ))
+                                ) : (
+                                    <p>Aucune donnée disponible</p>
+                                )}
                             </SelectContent>
                         </Select>
                         <p className="text-xs text-gray-600 mt-0">
@@ -239,13 +192,15 @@ export default function Component() {
                             Annuler
                         </Button>
                         <Button type="submit" className="w-full">
-                            Ajouter
+                            Mettre à jour
                         </Button>
                     </div>
                     </form>
                 </CardContent>
             </Card>
         </div>
+
+        )}
     </>
   );
 }
