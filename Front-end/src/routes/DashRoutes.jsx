@@ -37,6 +37,9 @@ const Units = lazy(()=> import ('@/modules/Dash/Units/Units'))
 const AddUnits = lazy(()=> import('@/modules/Dash/Units/Components/AddUnits'))
 const UpdateUnits = lazy(()=>import('@/modules/Dash/Units/Components/UpdateUnits'))
 const DeletedUnits = lazy(()=>import('@/modules/Dash/Units/Components/DeletedUnits'))
+const RoleDeleted = lazy(()=>import('@/modules/Dash/UserManagments/Role/Components/RoleDeleted'))
+
+
 
 const ClientRoutes = () => {
   return (
@@ -127,6 +130,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateRole />
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Deleted-Role" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <RoleDeleted/>
               </MainLayout>
             </ProtectedRoute>
           } 

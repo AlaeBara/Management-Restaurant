@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useRoles } from './hooks/useRoles';
-import { SearchX, SquareChartGantt  , Plus , Ban } from 'lucide-react';
+import { SearchX, SquareChartGantt  , Plus , Ban,ExternalLink } from 'lucide-react';
 import Spinner from '../../../../components/Spinner/Spinner';
 import PaginationNav from '../User/Components/PaginationNav';
 import RoleCart from './Components/RoleCarts';
@@ -79,6 +79,9 @@ const AllRoles = () => {
       </div>
       
       <div className={styles.Headerpage2}>
+        <button onClick={() => navigate('/dash/Deleted-Role')} className={styles.showdeleteuser}>
+          <ExternalLink className="mr-3 h-4 w-4 "/>Role Supprimés
+        </button>
         <button onClick={() => navigate('/dash/Add-Role')} className={styles.showFormButton}>
           <Plus className="mr-3 h-4 w-4 " /> Ajouter Rôle
         </button>
