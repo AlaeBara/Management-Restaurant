@@ -4,137 +4,36 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import Cookies from 'js-cookie';
-import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchCategory} from '../Hooks/useFetchCategory'
+import {useFetchOneCategory} from '../Hooks/useFetchOneCategory'
+import {useUpdateCategory} from '../Hooks/useUpdateCategory'
 import ReactSelect from 'react-select';
+import Spinner from '@/components/Spinner/Spinner'
 
-
-// Zod schema for form validation
-const CategorieAddSchema = z.object({
-    categoryName: z
-        .string()
-        .nonempty({ message: "Le nom de la catégorie ne peut pas être vide." })
-        .max(50, { message: "Le nom de la catégorie ne peut pas dépasser 50 caractères." }),
-
-    categoryCode: z
-        .string()
-        .nonempty({ message: "Le code de la catégorie ne peut pas être vide." })
-        .max(15, { message: "Le code de la catégorie ne peut pas dépasser 15 caractères." }),
-
-    categoryDescription: z.string().nullable().optional(),
-
-    parentCategoryId: z
-        .string()
-        .uuid({ message: "L'ID de la catégorie parente doit être un UUID valide." })
-        .nullable()
-        .optional(),
-
-    isTimeRestricted: z.boolean({
-        required_error: "L'indicateur de restriction temporelle est obligatoire.",
-        invalid_type_error: "L'indicateur de restriction temporelle est obligatoire.",
-    }),
-
-    activeTimeStart: z
-        .string()
-        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "L'heure de début doit être au format HH:mm." }),
-
-    activeTimeEnd: z
-        .string()
-        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "L'heure de fin doit être au format HH:mm." }),
-
-    activeDays: z
-        .array(z.string())
-        .optional()
-        .refine(
-            (days) => days.every((day) => ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"].includes(day)),
-            {
-                message: "Les jours actifs doivent être des jours de la semaine valides.",
-            }
-        )
-});
 
 export default function Component() {
 
     const navigate = useNavigate();
+    const {id} = useParams()
 
     const { categories, fetchCategorie  } = useFetchCategory()
     useEffect(() => {
         fetchCategorie ({fetchAll: true});
     }, []);
 
-    const [formData, setFormData] = useState({
-        categoryName: '',
-        categoryCode: '',
-        categoryDescription: "",
-        parentCategoryId: null,
-        isTimeRestricted: "",
-        activeTimeStart:  "",
-        activeTimeEnd: "",
-        activeDays: [],
-    });
+    const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneCategory(id);
+    const { errors, updateCategory} = useUpdateCategory(id, formData, setFormData, initialData, setInitialData);
 
-    const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
     const handleSelectChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
     };
-
-    const handleSubmit = async (e) => {
-        e.preventDefault();
-        try {
-            CategorieAddSchema.parse(formData);
-            const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/categories`, formData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            setFormData({
-                categoryName: '',
-                categoryCode: '',
-                categoryDescription: null,
-                parentCategoryId: null,
-                isTimeRestricted: null,
-                activeTimeStart:  null,
-                activeTimeEnd: null,
-                activeDays: [],
-            });
-            setErrors({});
-            toast.success('Catégorie créée avec succès!', {
-                icon: '✅',
-                position: "top-right",
-                autoClose: 1000,
-                onClose: () => navigate(`/dash/categories-Produits`),
-            });
-        } catch (error) {
-        if (error instanceof z.ZodError) {
-            const fieldErrors = error.errors.reduce((acc, { path, message }) => {
-            acc[path[0]] = message;
-            return acc;
-            }, {});
-            setErrors(fieldErrors);
-        } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating category:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
-            });
-        }
-        }
-    };
-
-
-
-
     const daysOptions = [
         { value: 'Monday', label: 'Lundi' },
         { value: 'Tuesday', label: 'Mardi' },
@@ -157,11 +56,23 @@ export default function Component() {
             </p>
         </div>
 
+
+        {loading ? (
+                <div className="flex flex-col items-center justify-center my-10">
+                    <Spinner title="Chargement des données, veuillez patienter..." />
+                </div>
+            ) : message ? (
+                <div className="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-4" role="alert">
+                    <p className="font-bold">Erreur</p>
+                    <p className="break-words">{message}</p>
+                </div>
+            ) : (
+
         <div className="container p-0 max-w-2xl">
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    <form onSubmit={updateCategory} className="space-y-4">
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-2">
@@ -197,7 +108,7 @@ export default function Component() {
                         <textarea
                             id="categoryDescription"
                             name="categoryDescription"
-                            value={formData.categoryDescription || ""}
+                            value={formData.categoryDescription}
                             onChange={handleChange}
                             placeholder="Description de la catégorie"
                             className="w-full p-2 border border-gray-300 rounded-md"
@@ -213,15 +124,19 @@ export default function Component() {
                         <Select
                             id="parentCategoryId"
                             name="parentCategoryId"
-                            value={formData.parentCategoryId || ""}
+                            value={formData.parentCategoryId}
                             onValueChange={(value) => handleChange({ target: { name: 'parentCategoryId', value } })}
                         >
                             <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner une catégorie parente" />
+                                <SelectValue placeholder={
+                                    categories.find((categorie) => categorie.id === formData.parentCategoryId)?.categoryName ||
+                                    'Sélectionner une catégorie parent'
+                                } />
                             </SelectTrigger>
                             <SelectContent>
                                 {categories.length > 0 ? (
-                                     categories
+                                    categories
+                                        .filter((category) => category.id !== id)
                                         .map((categorie) => (
                                             <SelectItem key={categorie.id} value={ categorie.id}>
                                                 {categorie.categoryName}
@@ -263,7 +178,7 @@ export default function Component() {
                             <Input
                                 id="activeTimeStart"
                                 name="activeTimeStart"
-                                value={formData.activeTimeStart || ""}
+                                value={formData.activeTimeStart}
                                 onChange={handleChange}
                                 placeholder="Heure de début de la restriction"
                             />
@@ -277,7 +192,7 @@ export default function Component() {
                             <Input
                                 id="activeTimeEnd"
                                 name="activeTimeEnd"
-                                value={formData.activeTimeEnd || ""}
+                                value={formData.activeTimeEnd}
                                 onChange={handleChange}
                                 placeholder="Heure de fin de la restriction"
                             />
@@ -312,22 +227,20 @@ export default function Component() {
                     </div>
 
 
-
-                    
-
-
                     <div className="flex gap-4">
                         <Button type="button" onClick={() => navigate(`/dash/categories-Produits`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
-                            Annuler
+                            Retour
                         </Button>
                         <Button type="submit" className="w-full">
-                            Ajouter
+                            Mise à jour
                         </Button>
                     </div>
                     </form>
                 </CardContent>
             </Card>
         </div>
+
+        )}
     </>
   );
 }

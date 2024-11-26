@@ -7,10 +7,10 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useFetchCategory} from "./Hooks/useFetchCategory"
 import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
+import CategoryCart from './Components/CartCategory'
 
 
-
-const Product = () => {
+const Category= () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -35,10 +35,6 @@ const Product = () => {
     useEffect(() => {
         fetchCategorie({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchCategorie]);
-
-
-   
-
 
   return (
     <div className={style.container}>
@@ -65,11 +61,11 @@ const Product = () => {
 
         {/* carts of zone */}
 
-        {/* <div>
+        <div>
 
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Produits..." />
+                <Spinner title="Chargement des Catégories..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -78,11 +74,11 @@ const Product = () => {
             </div>
             ) : (
                 <>
-                    {product.length > 0 ? (
+                    {categories.length > 0 ? (
                     <>
                         <div className={style.userGrid}>
-                        {product.map(product => (
-                            <ProductCart key={product.id} product={product} Delete={deleteProduct} />
+                        {categories.map(categorie => (
+                            <CategoryCart key={categorie.id} category={categorie}  />
                         ))}
                         </div>
 
@@ -91,7 +87,7 @@ const Product = () => {
                             totalPages={totalPages}
                             startItem={startItem}
                             endItem={endItem}
-                            numberOfData={totalProduct}
+                            numberOfData={totalCategorie}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                         />
@@ -99,12 +95,12 @@ const Product = () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Produit trouvé</h1>
+                        <h1>Aucun Catégorie trouvé</h1>
                     </div>
                     )}
                 </>
             )}
-        </div> */}
+        </div>
 
 
 
@@ -113,4 +109,4 @@ const Product = () => {
   )
 }
 
-export default Product
+export default Category
