@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from "./ProductCartDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, ShoppingBag  } from 'lucide-react';
+import { RotateCcw , Trash2, ShoppingBag  } from 'lucide-react';
 
 const ProductCartDeleted = ({ product  , Restore}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -69,7 +69,7 @@ const ProductCartDeleted = ({ product  , Restore}) => {
                         onClick={(e) => handleDelete(e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Restaurer
+                        <RotateCcw  className="mr-2 h-4 w-4" /> Restaurer
                     </button>
                 </div>
             </div>
