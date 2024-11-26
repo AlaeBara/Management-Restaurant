@@ -32,6 +32,9 @@ export class Product extends BaseEntity {
     @JoinColumn({ name: 'unitId' })
     private productUnit: Unit;
 
+    @RelationId((product: Product) => product.productUnit)
+    unitId: string;
+
     unit: string;
 
     @AfterLoad()
