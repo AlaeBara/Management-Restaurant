@@ -38,8 +38,8 @@ const AddUnits = lazy(()=> import('@/modules/Dash/Units/Components/AddUnits'))
 const UpdateUnits = lazy(()=>import('@/modules/Dash/Units/Components/UpdateUnits'))
 const DeletedUnits = lazy(()=>import('@/modules/Dash/Units/Components/DeletedUnits'))
 const RoleDeleted = lazy(()=>import('@/modules/Dash/UserManagments/Role/Components/RoleDeleted'))
-
-
+const Products =lazy(()=> import('@/modules/Dash/Products/Product'))
+const AddProduct = lazy(()=> import('@/modules/Dash/Products/Components/AddProduct'))
 
 const ClientRoutes = () => {
   return (
@@ -381,6 +381,28 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <DeletedUnits/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Produits" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Products/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Produits/Ajouter-Produits" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddProduct/>
               </MainLayout>
             </ProtectedRoute>
           } 

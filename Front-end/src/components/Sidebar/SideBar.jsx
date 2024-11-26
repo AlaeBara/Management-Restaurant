@@ -133,6 +133,11 @@ const SideBar = () => {
             title: "Unités",
             icon: Boxes ,
             url: "/dash/Units",
+          },
+          { 
+            title: "Produits",
+            icon: Boxes ,
+            url: "/dash/Produits",
           }
         ],
       },
