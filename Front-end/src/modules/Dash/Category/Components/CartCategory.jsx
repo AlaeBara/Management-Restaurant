@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import style from "./CartCategory.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, ShoppingBag  } from 'lucide-react';
+import { Edit, Trash2, Component } from 'lucide-react';
 
-const ProductCart = ({ category }) => {
+const CategorieCart = ({ category ,Delete}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -12,14 +12,14 @@ const ProductCart = ({ category }) => {
         const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
         const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
         return `${formattedDate} ${formattedTime}`;
-    };
+    }
     const handleDelete = (e) => {
         e.stopPropagation();
         setIsModalVisible(true);
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        // Delete(id)
+        Delete(id)
     };
     
     const handleEdit = (id, e) => {
@@ -40,10 +40,28 @@ const ProductCart = ({ category }) => {
                 <div className={style.header}>
 
                     <div className={style.zoneInfo}>
-                        <h3 className={style.zoneTitle}> <ShoppingBag  className="mr-2 " /> {category.categoryName}  </h3>
+                        <h3 className={style.zoneTitle}> <Component className="mr-2 " /> {category.categoryName}  </h3>
                         <p className={style.zoneLabel}>Code de catégorie : {category.categoryCode}</p>
+                        <p className={style.zoneLabel}>Parent catégorie : {category.parentCategory?.categoryName || "-"}</p>
                         <p className={style.zoneLabel}>Temps actif : {category.isTimeRestricted ? `De ${category.activeTimeStart} à ${category.activeTimeEnd}` : "Non restreint"}</p>
-                        <p className={style.zoneLabel}>Jours actifs : {category.activeDays.join(", ") || "-"}</p>  
+                        <p className={style.zoneLabel}>
+                            Jours actifs : 
+                            {category.activeDays && category.activeDays.length > 0 ? (
+                                <>
+                                {isExpanded || category.activeDays.length <= 2
+                                    ? category.activeDays.join(", ")
+                                    : `${category.activeDays.slice(0, 2).join(", ")}...`}
+                                {category.activeDays.length > 2 && (
+                                    <button onClick={toggleExpand} className={style.toggleButton}>
+                                    {isExpanded ? 'Voir moins' : 'Voir plus'}
+                                    </button>
+                                )}
+                                </>
+                            ) : (
+                                <span className={style.vide}> - </span>
+                            )}      
+                        </p>
+  
                         <p className={style.zoneLabel}>Description : 
                             {category.categoryDescription ? (
                                 <>
@@ -111,4 +129,4 @@ const ProductCart = ({ category }) => {
     );
 };
 
-export default ProductCart ;
+export default CategorieCart ;

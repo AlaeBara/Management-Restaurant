@@ -45,7 +45,7 @@ const DeletedProduct = lazy(()=>import('@/modules/Dash/Products/Components/Delet
 const Category = lazy(()=> import('@/modules/Dash/Category/Category'))
 const AddCategory = lazy(()=>import('@/modules/Dash/Category/Components/AddCategory'))
 const UpdateCategorie =lazy(()=>import('@/modules/Dash/Category/Components/UpdateCategorie'))
-
+const DeletedCategory = lazy(()=>import('@/modules/Dash/Category/Components/DeletedCategorie'))
 
 
 const ClientRoutes = () => {
@@ -467,6 +467,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateCategorie/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        
+        <Route 
+          path="/categories-Produits/categories-supprimés" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DeletedCategory/>
               </MainLayout>
             </ProtectedRoute>
           } 

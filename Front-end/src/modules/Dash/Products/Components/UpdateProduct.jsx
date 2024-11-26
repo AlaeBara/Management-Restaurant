@@ -189,7 +189,7 @@ export default function Component() {
 
                     <div className="flex gap-4">
                         <Button type="button" onClick={() => navigate(`/dash/Produits`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
-                            Annuler
+                           Retour
                         </Button>
                         <Button type="submit" className="w-full">
                             Mettre à jour

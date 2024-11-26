@@ -19,7 +19,8 @@ import {
   Truck,
   FolderOpen,
   Boxes ,
-  ShoppingBag 
+  ShoppingBag ,
+  Component
 } from "lucide-react"
 
 import {
@@ -142,7 +143,7 @@ const SideBar = () => {
           },
           { 
             title: "Categories",
-            icon: ShoppingBag  ,
+            icon: Component  ,
             url: "/dash/categories-Produits",
           }
         ],

@@ -1,22 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import style from './Category.module.css'
+import style from '../Category.module.css'
 import { useNavigate } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchCategory} from "./Hooks/useFetchCategory"
-import PaginationNav from '../UserManagments/User/Components/PaginationNav'
+import {useFetchCategoryDeleted} from "../Hooks/useFetchCategoryDeleted"
+import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-import CategoryCart from './Components/CartCategory'
-import {useDeleteCategorie} from './Hooks/useDeletedCategorie'
+import CategoryCartDeleted from './CartCategorieDeleted'
+import {useRestoreCategorie} from '../Hooks/useRestorCategorie'
 
-
-const Category= () => {
+const CategoryDeleted= () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { categories, totalCategorie, loading, error, fetchCategorie} = useFetchCategory()
+    const { categories, totalCategorie, loading, error, fetchCategorie} = useFetchCategoryDeleted()
     //pagination
     const totalPages = Math.ceil(totalCategorie / limit);
     const handleNextPage = () => {
@@ -37,8 +36,8 @@ const Category= () => {
         fetchCategorie({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchCategorie]);
 
-    const {deleteCategorie}=useDeleteCategorie(fetchCategorie)
 
+    const {RestoreCategorie}=useRestoreCategorie(fetchCategorie)
 
   return (
     <div className={style.container}>
@@ -47,21 +46,10 @@ const Category= () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Catégorie</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement toutes les Catégorie de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des produits, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Catégorie Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des Catégorie supprimées de votre plateforme. Vous pouvez visualiser les Catégorie qui ont été supprimées et les restaurer si nécessaire.</p>
             </div>
         </div>
-
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/categories-Produits/categories-supprimés')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Catégorie Supprimés
-            </button> 
-        
-            <button onClick={() => navigate('/dash/categories-Produits/ajouter-categorie')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Catégorie
-            </button> 
-        </div>
-
 
         {/* carts of zone */}
 
@@ -69,7 +57,7 @@ const Category= () => {
 
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Catégories..." />
+                <Spinner title="Chargement des Catégories Supprimés..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -82,7 +70,7 @@ const Category= () => {
                     <>
                         <div className={style.userGrid}>
                         {categories.map(categorie => (
-                            <CategoryCart key={categorie.id} category={categorie}  Delete={deleteCategorie} />
+                            <CategoryCartDeleted  key={categorie.id} category={categorie}  Restore={RestoreCategorie} />
                         ))}
                         </div>
 
@@ -99,7 +87,7 @@ const Category= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Catégorie trouvé</h1>
+                        <h1>Aucun Catégorie trouvé Supprimés</h1>
                     </div>
                     )}
                 </>
@@ -113,4 +101,4 @@ const Category= () => {
   )
 }
 
-export default Category
+export default CategoryDeleted

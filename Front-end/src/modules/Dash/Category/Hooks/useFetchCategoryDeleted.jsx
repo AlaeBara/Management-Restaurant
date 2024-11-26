@@ -2,7 +2,7 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const useFetchCategory = () => {
+export const useFetchCategoryDeleted=() => {
   const [categories, setCategories] = useState([]);
   const [totalCategorie, setTotalCategorie] = useState(0);
   const [loading, setLoading] = useState(false);
@@ -14,7 +14,7 @@ export const useFetchCategory = () => {
       setError(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/categories?relations=parentCategory`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/categories?onlyDeleted=true`;
 
       try {
         if (fetchAll) {

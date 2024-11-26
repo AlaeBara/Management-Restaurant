@@ -238,7 +238,7 @@ export default function Component() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="isTimeRestricted">Restriction temporelle </Label>
+                        <Label htmlFor="isTimeRestricted">Restriction temporelle <span className="text-red-500 text-base">*</span> </Label>
                         <Select value={formData.isTimeRestricted} onValueChange={(value) => handleSelectChange('isTimeRestricted', value === 'true')}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Sélectionnez l'État">
@@ -259,7 +259,7 @@ export default function Component() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         <div className="space-y-2">
-                            <Label htmlFor="activeTimeStart">Heure de début de la restriction</Label>
+                            <Label htmlFor="activeTimeStart">Heure de début de la restriction <span className="text-red-500 text-base">*</span></Label>
                             <Input
                                 id="activeTimeStart"
                                 name="activeTimeStart"
@@ -273,7 +273,7 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="activeTimeEnd">Heure de fin de la restriction</Label>
+                            <Label htmlFor="activeTimeEnd">Heure de fin de la restriction <span className="text-red-500 text-base">*</span></Label>
                             <Input
                                 id="activeTimeEnd"
                                 name="activeTimeEnd"
