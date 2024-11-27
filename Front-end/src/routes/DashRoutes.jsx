@@ -46,6 +46,9 @@ const Category = lazy(()=> import('@/modules/Dash/Category/Category'))
 const AddCategory = lazy(()=>import('@/modules/Dash/Category/Components/AddCategory'))
 const UpdateCategorie =lazy(()=>import('@/modules/Dash/Category/Components/UpdateCategorie'))
 const DeletedCategory = lazy(()=>import('@/modules/Dash/Category/Components/DeletedCategorie'))
+const Inventory =lazy(()=>import('@/modules/Dash/Inventory/Inventory/inventory'))
+const AddInventory = lazy(()=>import('@/modules/Dash/Inventory/Inventory/Components/AddIventory'))
+
 
 
 const ClientRoutes = () => {
@@ -478,6 +481,29 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <DeletedCategory/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+
+        <Route 
+          path="/inventaires" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Inventory/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/inventaires/ajouter-inventaire" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddInventory/>
               </MainLayout>
             </ProtectedRoute>
           } 

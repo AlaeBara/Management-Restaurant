@@ -2,23 +2,23 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const useFetchProduct = () => {
-  const [product, setProduct] = useState([]);
-  const [totalProduct, setTotalProduct] = useState(0);
+export const useFetchIventory = () => {
+  const [iventory, setIventory] = useState([]);
+  const [totalIventory, setTotalIventory] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  const fetchProduct= useCallback(
+  const fetchIventory= useCallback(
     async ({ page = 1, limit = 10, fetchAll = false } = {}) => {
       setLoading(true);
       setError(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/products`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/inventories`;
 
       try {
         if (fetchAll) {
-          const allProduct = [];
+          const allIventory = [];
           let currentPage = page;
 
           while (true) {
@@ -28,14 +28,14 @@ export const useFetchProduct = () => {
             });
 
             const { data, total } = response.data;
-            allProduct.push(...data);
+            allIventory.push(...data);
 
-            if (allProduct.length >= total) break;
+            if (allIventory.length >= total) break;
             currentPage++;
           }
 
-          setProduct(allProduct);
-          setTotalProduct(allProduct.length);
+          setIventory(allIventory);
+          setTotalIventory(total);
         } else {
           const response = await axios.get(url, {
             params: { page, limit, sort: "createdAt:desc" },
@@ -43,12 +43,12 @@ export const useFetchProduct = () => {
           });
 
           const { data, total } = response.data;
-          setProduct(data);
-          setTotalProduct(total);
+          setIventory(data);
+          setTotalIventory(total);
         }
       } catch (err) {
-        console.error("Failed to fetch product:", err);
-        setError("Une erreur s'est produite lors du chargement des Produits.");
+        console.error("Failed to fetch iventorys:", err);
+        setError("Une erreur s'est produite lors du chargement des inventaires.");
       } finally {
         setLoading(false);
       }
@@ -56,5 +56,5 @@ export const useFetchProduct = () => {
     []
   );
 
-  return { product, totalProduct, loading, error, fetchProduct };
+  return { iventory, totalIventory, loading, error, fetchIventory };
 };

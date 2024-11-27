@@ -145,7 +145,12 @@ const SideBar = () => {
             title: "Categories",
             icon: Component  ,
             url: "/dash/categories-Produits",
-          }
+          },
+          { 
+            title: "Inventaires",
+            icon: Component  ,
+            url: "/dash/inventaires",
+          },
         ],
       },
     ],
