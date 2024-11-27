@@ -9,7 +9,6 @@ import { forwardRef, Inject, NotFoundException } from "@nestjs/common";
 import { Unit } from "src/unit-management/entities/unit.entity";
 import { UnitService } from "src/unit-management/services/unit.service";
 
-
 export class ProductService extends GenericService<Product> {
 
     constructor(
@@ -43,7 +42,7 @@ export class ProductService extends GenericService<Product> {
     async updateProduct(id: string, updateProductDto: UpdateProductDto): Promise<Product> {
         const product = await this.findOneByIdWithOptions(id);
 
-        
+
         if (updateProductDto.productSKU || updateProductDto.productName) {
             await this.validateUniqueExcludingSelf({
                 productSKU: updateProductDto.productSKU,
@@ -59,5 +58,4 @@ export class ProductService extends GenericService<Product> {
         Object.assign(product, updateProductDto);
         return this.productRepository.save(product);
     }
-
 }

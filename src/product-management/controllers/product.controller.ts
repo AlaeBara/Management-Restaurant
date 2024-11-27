@@ -6,13 +6,14 @@ import { Product } from "../entities/product.entity";
 import { CreateProductDto } from "../dtos/product/create-product.dto";
 import { UpdateProductDto } from "../dtos/product/update-product.dto";
 import { plainToInstance } from "class-transformer";
+import { InventoryService } from "src/inventory-managemet/services/inventory.service";
 
 @Controller('api/products')
 @ApiTags('Product Management - Products')
 @ApiBearerAuth()
 export class ProductController {
 
-    constructor(private readonly productService: ProductService) { }
+    constructor(private readonly productService: ProductService, private readonly inventoryService: InventoryService) { }
 
     @Get()
     @Permissions('view-products')
@@ -90,4 +91,17 @@ export class ProductController {
         return { message: 'Product has been RESTORED successfully', status: 200 };
     }
 
+    @Get(':id/inventories')
+    @Permissions('view-inventories')
+    @ApiOperation({ summary: 'Get all inventories by product id' })
+    async getInventoriesByProductId(@Param('id', ParseUUIDPipe) id: string,
+        @Query('limit') limit?: 100,
+        @Query('sort') sort?: string,
+    ) {
+        const inventories = await this.inventoryService.findAll(undefined, 100, undefined, sort, undefined, undefined, undefined, [{ product: { id } }
+        ]
+        );
+        const product = await this.productService.findOneByIdWithOptions(id);
+        return { product, inventories: inventories.data }
+    }
 }
