@@ -11,9 +11,9 @@ export class UpdateInventoryDto  {
     @IsOptional()
     warningQuantity: number;
 
-    @ApiProperty({ description: 'The total quantity of the inventory', required: true , example: 10})
+    /* @ApiProperty({ description: 'The total quantity of the inventory', required: true , example: 10})
     @IsOptional()
-    totalQuantity: number;
+    totalQuantity: number; */
 
     @ApiProperty({ description: 'The storage id of the inventory', required: true , example: '1234567890'})
     @IsUUID()

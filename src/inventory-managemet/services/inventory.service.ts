@@ -58,6 +58,6 @@ export class InventoryService extends GenericService<Inventory> {
     }
 
     async deleteInventory(id: string): Promise<DeleteResult> {
-        return this.inventoryRepository.delete(id);
+        return this.inventoryRepository.softDelete(id);
     }
 }

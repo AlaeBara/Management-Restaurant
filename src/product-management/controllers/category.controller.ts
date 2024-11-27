@@ -76,7 +76,7 @@ export class CategoryController {
     @Permissions('delete-category')
     @ApiOperation({ summary: 'Delete a category' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
-        await this.categoryService.softDelete(id);
+        await this.categoryService.deleteCategory(id);
         return { message: 'Category has been DELETED successfully', status: 200 };
     }
     @Patch(':id/restore')

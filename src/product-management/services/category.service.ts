@@ -120,4 +120,12 @@ export class CategoryService extends GenericService<Category> {
         Object.assign(category, updateCategoryDto);
         return await this.categoryRepository.save(category);
     }
+
+    async deleteCategory(id: string) {
+        const category = await this.findOneByIdWithOptions(id);
+        if (await this.countByAttribute({parentCategoryId:id})) {
+            throw new BadRequestException('Category has subcategories and cannot be deleted');
+        }
+        return await this.categoryRepository.softDelete(id);
+    }
 }
