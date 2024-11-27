@@ -9,10 +9,12 @@ import { ProductController } from './controllers/product.controller';
 import { UnitService } from 'src/unit-management/services/unit.service';
 import { UnitModule } from 'src/unit-management/unit.module';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
+import { CategoryPermissionSeeder } from './seeders/category-permission.seeder';
+import { ProductPermissionSeeder } from './seeders/product-permission.seeder';
 @Module({
     imports: [TypeOrmModule.forFeature([Category, Product]), UnitModule, forwardRef(() => InventoryModule)],
     controllers: [CategoryController, ProductController],
-    providers: [CategoryService, ProductService],
-    exports: [ProductService],
+    providers: [CategoryService, ProductService, CategoryPermissionSeeder, ProductPermissionSeeder],
+    exports: [ProductService, CategoryService, CategoryPermissionSeeder, ProductPermissionSeeder],
 })
 export class ProductManagementModule { }

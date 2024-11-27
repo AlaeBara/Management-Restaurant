@@ -59,18 +59,16 @@ export class CategoryService extends GenericService<Category> {
             throw new BadRequestException('A category cannot be its own parent');
         }
 
-        if (category.parentCategoryId === parentCategory.id) {
-            throw new BadRequestException('Parent category is already assigned to this category');
-        }
-
         if (category.id === parentCategory.parentCategoryId) {
             throw new BadRequestException('Circular reference detected - cannot create category loop');
         }
     }
 
-
     async assignParentCategory(category: Category, parentCategory: Category) {
         await this.validateAssignParentCategory(category, parentCategory);
+        if (category.parentCategoryId === parentCategory.id) {
+            return;
+        }
         category.parentCategory = parentCategory;
     }
 
@@ -123,7 +121,7 @@ export class CategoryService extends GenericService<Category> {
 
     async deleteCategory(id: string) {
         const category = await this.findOneByIdWithOptions(id);
-        if (await this.countByAttribute({parentCategoryId:id})) {
+        if (await this.countByAttribute({ parentCategoryId: id })) {
             throw new BadRequestException('Category has subcategories and cannot be deleted');
         }
         return await this.categoryRepository.softDelete(id);

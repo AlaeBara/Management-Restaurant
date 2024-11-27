@@ -6,12 +6,14 @@ import { ZoneTableModule } from 'src/zone-table-management/zone-table.module';
 import { ClientManagementModule } from 'src/client-management/client-management.module';
 import { UnitModule } from 'src/unit-management/unit.module';
 import { SupplierModule } from 'src/supplier-management/supplier.module';
-
 import { StorageModule } from 'src/storage-management/storage.module';
+import { InventoryModule } from 'src/inventory-managemet/inventory.module';
+import { ProductManagementModule } from 'src/product-management/product.module';
 
 @Global()
 @Module({
-  imports: [UserManagementModule, ZoneTableModule, ClientManagementModule, UnitModule, SupplierModule, StorageModule],
+  imports: [UserManagementModule, ZoneTableModule, ClientManagementModule,
+    UnitModule, SupplierModule, StorageModule, InventoryModule, ProductManagementModule],
   controllers: [],
   providers: [MailService, MasterSeeder],
   exports: [MailService],

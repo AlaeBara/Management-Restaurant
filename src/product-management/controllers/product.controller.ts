@@ -14,6 +14,14 @@ import { InventoryService } from "src/inventory-managemet/services/inventory.ser
 export class ProductController {
 
     constructor(private readonly productService: ProductService, private readonly inventoryService: InventoryService) { }
+    /* PERMISSIONS = [
+        { name: 'view-products', label: 'Voir tous les produits', resource: 'product' },
+        { name: 'view-product', label: 'Voir un produit spécifique', resource: 'product' },
+        { name: 'create-product', label: 'Créer un nouveau produit', resource: 'product' },
+        { name: 'update-product', label: 'Modifier un produit', resource: 'product' },
+        { name: 'delete-product', label: 'Supprimer un produit', resource: 'product' },
+        { name: 'restore-product', label: 'Restaurer un produit supprimé', resource: 'product' }
+    ]; */
 
     @Get()
     @Permissions('view-products')
@@ -39,8 +47,8 @@ export class ProductController {
     }
 
     @Get(':id')
-    @Permissions('view-category')
-    @ApiOperation({ summary: 'Get a category by id' })
+    @Permissions('view-product')
+    @ApiOperation({ summary: 'Get a product by id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
         @Query('withDeleted') withDeleted?: boolean,
@@ -92,7 +100,7 @@ export class ProductController {
     }
 
     @Get(':id/inventories')
-    @Permissions('view-inventories')
+    @Permissions('view-product')
     @ApiOperation({ summary: 'Get all inventories by product id' })
     async getInventoriesByProductId(@Param('id', ParseUUIDPipe) id: string,
         @Query('limit') limit?: 100,

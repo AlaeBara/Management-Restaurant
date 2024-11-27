@@ -16,12 +16,12 @@ export class StoragePermissionSeeder {
 
 
     const storagePermissions = [
-      { name: 'view-storages', label: 'View all storages', resource: 'storage' },
-      { name: 'view-storage', label: 'View specific storage', resource: 'storage' }, 
-      { name: 'create-storage', label: 'Create new storage', resource: 'storage' },
-      { name: 'update-storage', label: 'Update storage', resource: 'storage' },
-      { name: 'delete-storage', label: 'Delete storage', resource: 'storage' },
-      { name: 'restore-storage', label: 'Restore deleted storage', resource: 'storage' }
+      { name: 'view-storages', label: 'Voir tous les Location de stockage', resource: 'storage' },
+      { name: 'view-storage', label: 'Voir une Location de stockage spécifique', resource: 'storage' }, 
+      { name: 'create-storage', label: 'Créer une nouvelle Location de stockage', resource: 'storage' },
+      { name: 'update-storage', label: 'Modifier une Location de stockage', resource: 'storage' },
+      { name: 'delete-storage', label: 'Supprimer une Location de stockage', resource: 'storage' },
+      { name: 'restore-storage', label: 'Restaurer une Location de stockage supprimée', resource: 'storage' }
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

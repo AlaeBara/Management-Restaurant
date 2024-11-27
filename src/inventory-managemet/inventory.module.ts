@@ -9,11 +9,13 @@ import { InventoryMovement } from './entities/inventory-movement.entity';
 import { UserManagementModule } from 'src/user-management/user-management.module';
 import { InvetoryMovementController } from './controllers/inventory-movement.controller';
 import { InventoryMovementService } from './services/inventory-movement.service';
+import { InventoryMovementPermissionSeeder } from './seeders/inventory-movement-permissions.seeder';
+import { InventoryPermissionSeeder } from './seeders/inventory-permission.seeder';
 
 @Module({
   imports: [TypeOrmModule.forFeature([Inventory, InventoryMovement]), ProductManagementModule, forwardRef(() => StorageModule), forwardRef(() => UserManagementModule)],
   controllers: [InventoryController, InvetoryMovementController],
-  providers: [InventoryService, InventoryMovementService, Inventory],
-  exports: [InventoryService, InventoryMovementService, Inventory],
+  providers: [InventoryService, InventoryMovementService, Inventory, InventoryPermissionSeeder, InventoryMovementPermissionSeeder],
+  exports: [InventoryService, InventoryMovementService, Inventory, InventoryPermissionSeeder, InventoryMovementPermissionSeeder],
 })
 export class InventoryModule { }

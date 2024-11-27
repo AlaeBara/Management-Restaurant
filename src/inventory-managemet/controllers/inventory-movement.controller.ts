@@ -12,6 +12,11 @@ export class InvetoryMovementController {
 
     constructor(private readonly inventoryMovementService : InventoryMovementService){}
 
+   /*  private inventoryMovementPermissions = [
+        { name: 'view-inventories-movements', label: 'View all inventory movements', resource: 'inventory-movement' },
+        { name: 'create-inventory-movement', label: 'Create new inventory movement', resource: 'inventory-movement' },
+    ]; */
+
     @Get()
     @Permissions('view-inventories-movements')
     @ApiOperation({ summary: 'Get all inventories Movements' })
@@ -68,6 +73,6 @@ export class InvetoryMovementController {
     @ApiOperation({ summary: 'Create a inventory movement' })
     async create(@Body() createInventoryMovementDto: CreateInventoryMovementDto,@Req() request: Request) {
         await this.inventoryMovementService.createInvenotryMovement(createInventoryMovementDto,request);
-        return { message: 'Great! Your new inventory Movement has been created successfully', status: 201 };
+        return { message: 'Great! new inventory Movement has been created successfully', status: 201 };
     }
 }

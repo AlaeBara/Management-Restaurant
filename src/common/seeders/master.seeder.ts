@@ -11,6 +11,10 @@ import { UserPermissionSeeder } from 'src/user-management/seeders/user-permissio
 import { TablePermissionSeeder } from 'src/zone-table-management/seeders/table-permissions.dto';
 import { ZonePermissionSeeder } from 'src/zone-table-management/seeders/zone-permissions.dto';
 import { StoragePermissionSeeder } from 'src/storage-management/seeders/storage-permissions.dto';
+import { InventoryMovementPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-movement-permissions.seeder';
+import { InventoryPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-permission.seeder';
+import { CategoryPermissionSeeder } from 'src/product-management/seeders/category-permission.seeder';
+import { ProductPermissionSeeder } from 'src/product-management/seeders/product-permission.seeder';
 
 @Injectable()
 export class MasterSeeder {
@@ -25,7 +29,12 @@ export class MasterSeeder {
         private readonly clientPermissionSeeder: ClientPermissionSeeder,
         private readonly unitPermissionsSeeder: UnitPermissionsSeeder,
         private readonly supplierPermissionsSeeder: SupplierPermissionsSeeder,
-        private readonly storagePermissionSeeder: StoragePermissionSeeder
+        private readonly storagePermissionSeeder: StoragePermissionSeeder,
+        private readonly inventoryPermissionSeeder: InventoryPermissionSeeder,
+        private readonly inventoryMovementPermissionSeeder: InventoryMovementPermissionSeeder,
+        private readonly categoryPermissionSeeder: CategoryPermissionSeeder,
+        private readonly productPermissionSeeder: ProductPermissionSeeder
+
     ) { }
 
     async seedAll() {
@@ -40,6 +49,10 @@ export class MasterSeeder {
         await this.unitPermissionsSeeder.seed();
         await this.supplierPermissionsSeeder.seed();
         await this.storagePermissionSeeder.seed();
+        await this.inventoryPermissionSeeder.seed();
+        await this.inventoryMovementPermissionSeeder.seed();
+        await this.categoryPermissionSeeder.seed();
+        await this.productPermissionSeeder.seed();
         console.log('All seeders executed');
     }
 }
