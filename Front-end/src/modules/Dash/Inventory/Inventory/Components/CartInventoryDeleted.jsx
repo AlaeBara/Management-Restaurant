@@ -51,7 +51,7 @@ const InventoryCartDeleted = ({ inventory ,Restore}) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleDelete(inventory.id, e)}
+                        onClick={(e) => handleDelete(e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
                         <RotateCcw className="mr-2 h-4 w-4" /> Restuarer

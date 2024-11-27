@@ -39,9 +39,7 @@ const InventoryDeleted= () => {
 
 
     const {RestoreInventory}= useRestoreInventory(fetchIventory)
-
-
-
+    
   return (
     <div className={style.container}>
 
