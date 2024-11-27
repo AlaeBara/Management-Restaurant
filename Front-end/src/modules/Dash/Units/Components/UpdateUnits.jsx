@@ -9,6 +9,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchOneUnits} from '../Hooks/useFetchOneUnit'
 import {useUpdateUnit} from "../Hooks/useUpdateUnit"
 import Spinner from '@/components/Spinner/Spinner'
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 
@@ -22,6 +23,13 @@ export default function Component() {
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }, [formData, setFormData]);
+
+    const units = [
+        "kg", "g", "mg", "lb", "oz", "l", "ml", "gal", "qt", "pt", "cup", 
+        "fl oz", "tbsp", "tsp", "pc", "doz", "pack", "box", "case", "in", 
+        "cm", "bunch", "head", "slice", "serving", "portion"
+    ];
+    const baseUnits = ["kg", "g", "l", "ml"];
 
 
     return (
@@ -51,43 +59,73 @@ export default function Component() {
                     <CardContent className="pt-6">
                         <form onSubmit={updateUnit} className="space-y-4">
 
-                            <div className="space-y-2">
-                                <Label htmlFor="name">Unité<span className='text-red-500 text-base'>*</span></Label>
-                                <Input
+                        <div className="space-y-2">
+                                <Label htmlFor="name">Unité <span className='text-red-500 text-base'>*</span></Label>
+                                <Select
                                     id="unit"
-                                    name="unit" 
+                                    name="unit"
                                     value={formData.unit}
-                                    onChange={handleChange}
-                                    placeholder="Unité"
-                                />
+                                    onValueChange={(value) => handleChange({ target: { name: 'unit', value } })}
+                                >
+                                    <SelectTrigger>
+                                        {/* <SelectValue placeholder="Sélectionner une Unité" /> */}
+                                        <SelectValue placeholder={
+                                            formData.unit ||
+                                            'Sélectionner une Unité'
+                                        } />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {units.map((unit) => (
+                                        <SelectItem key={unit} value={unit}>
+                                        {unit}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
                                 {errors.unit && (
                                     <p className="text-xs text-red-500 mt-1">{errors.unit}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="label">Unité de base<span className='text-red-500 text-base'>*</span></Label>
-                                <Input
+                                <Label htmlFor="label">Unité de base</Label>
+                                <Select
                                     id="baseUnit"
                                     name="baseUnit"
-                                    value={formData.baseUnit}
-                                    onChange={handleChange}
-                                    placeholder="Unité de base"
-                                />
+                                    value={formData.baseUnit || ""}
+                                    onValueChange={(value) => handleChange({ target: { name: 'baseUnit', value } })}
+                                >
+                                    <SelectTrigger>
+                                        {/* <SelectValue placeholder="Sélectionner une Unité de base" /> */}
+                                        <SelectValue placeholder={
+                                            formData.baseUnit ||
+                                            'Sélectionner une Unité de base'
+                                        } />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {baseUnits.map((baseUnit) => (
+                                        <SelectItem key={baseUnit} value={baseUnit}>
+                                            {baseUnit}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
                                 {errors.baseUnit && (
                                     <p className="text-xs text-red-500 mt-1">{errors.baseUnit}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="label">Facteur de conversion vers l'unité de base<span className='text-red-500 text-base'>*</span></Label>
+                                <Label htmlFor="label">Facteur de conversion vers l'unité de base</Label>
                                 <Input
                                     id="conversionFactorToBaseUnit"
                                     name="conversionFactorToBaseUnit"
-                                    value={formData.conversionFactorToBaseUnit}
+                                    value={formData.conversionFactorToBaseUnit || ""}
                                     onChange={handleChange}
                                     placeholder="Facteur de conversion vers l'unité de base"
                                     type='Number'
+                                    step="any"
+                                    min="0"
                                    
                                 />
                                 {errors.conversionFactorToBaseUnit && (

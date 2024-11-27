@@ -7,19 +7,23 @@ import Cookies from 'js-cookie';
 import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import { z } from 'zod';
+import { nullable, z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
 
 // Zod schema for form validation
 const UnitsSchema = z.object({
-    unit: z.string().min(1, { message: "L'unité est obligatoire." }),
-    baseUnit: z.string().min(1, { message: "L'unité de base est obligatoire." }),
-    conversionFactorToBaseUnit: z.coerce.number({
-        required_error: "Le facteur de conversion est obligatoire.",
-        invalid_type_error: "Le facteur de conversion est obligatoire.",
-    })
-      .positive({ message: "Le facteur de conversion doit être un nombre positif." }),
+    unit: z.string().nonempty({ message: "L'unité est obligatoire." }),
+    baseUnit: z
+        .string()
+        .nullable()
+        .optional(),
+    conversionFactorToBaseUnit: z
+        .number()
+        .nullable()
+        .optional(),
+    
 });
 
 
@@ -28,7 +32,7 @@ export default function Component() {
 
     const [formData, setFormData] = useState({
         unit: '',
-        baseUnit: '',
+        baseUnit: null,
         conversionFactorToBaseUnit: null
     });
     const [errors, setErrors] = useState({});
@@ -37,13 +41,27 @@ export default function Component() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+
+    const units = [
+        "kg", "g", "mg", "lb", "oz", "l", "ml", "gal", "qt", "pt", "cup", 
+        "fl oz", "tbsp", "tsp", "pc", "doz", "pack", "box", "case", "in", 
+        "cm", "bunch", "head", "slice", "serving", "portion"
+    ];
+    const baseUnits = ["kg", "g", "l", "ml"];
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
+
+            if (formData.conversionFactorToBaseUnit !== null && formData.conversionFactorToBaseUnit !== '') {
+                formData.conversionFactorToBaseUnit = parseFloat(formData.conversionFactorToBaseUnit);
+            } else {
+                formData.conversionFactorToBaseUnit = null;
+            }
             const validatedData = UnitsSchema.parse({
                 ...formData,
-                conversionFactorToBaseUnit: parseFloat(formData.conversionFactorToBaseUnit)
             });
+            
             console.log('Validated data being sent:', validatedData);
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/units`,  validatedData, {
@@ -98,35 +116,55 @@ export default function Component() {
                         <form onSubmit={handleSubmit} className="space-y-4">
 
                             <div className="space-y-2">
-                                <Label htmlFor="name">Unité<span className='text-red-500 text-base'>*</span></Label>
-                                <Input
+                                <Label htmlFor="name">Unité <span className='text-red-500 text-base'>*</span></Label>
+                                <Select
                                     id="unit"
-                                    name="unit" 
+                                    name="unit"
                                     value={formData.unit}
-                                    onChange={handleChange}
-                                    placeholder="Unité"
-                                />
+                                    onValueChange={(value) => handleChange({ target: { name: 'unit', value } })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner une Unité" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {units.map((unit) => (
+                                        <SelectItem key={unit} value={unit}>
+                                        {unit}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
                                 {errors.unit && (
                                     <p className="text-xs text-red-500 mt-1">{errors.unit}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="label">Unité de base<span className='text-red-500 text-base'>*</span></Label>
-                                <Input
+                                <Label htmlFor="label">Unité de base</Label>
+                                <Select
                                     id="baseUnit"
                                     name="baseUnit"
-                                    value={formData.baseUnit}
-                                    onChange={handleChange}
-                                    placeholder="Unité de base"
-                                />
+                                    value={formData.baseUnit || ""}
+                                    onValueChange={(value) => handleChange({ target: { name: 'baseUnit', value } })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner une Unité de base" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                    {baseUnits.map((baseUnit) => (
+                                        <SelectItem key={baseUnit} value={baseUnit}>
+                                            {baseUnit}
+                                        </SelectItem>
+                                    ))}
+                                    </SelectContent>
+                                </Select>
                                 {errors.baseUnit && (
                                     <p className="text-xs text-red-500 mt-1">{errors.baseUnit}</p>
                                 )}
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="label">Facteur de conversion vers l'unité de base<span className='text-red-500 text-base'>*</span></Label>
+                                <Label htmlFor="label">Facteur de conversion vers l'unité de base</Label>
                                 <Input
                                     id="conversionFactorToBaseUnit"
                                     name="conversionFactorToBaseUnit"
@@ -134,6 +172,9 @@ export default function Component() {
                                     onChange={handleChange}
                                     placeholder="Facteur de conversion vers l'unité de base"
                                     type='Number'
+                                    step="any"
+                                    min="0"
+                                  
                                    
                                 />
                                 {errors.conversionFactorToBaseUnit && (

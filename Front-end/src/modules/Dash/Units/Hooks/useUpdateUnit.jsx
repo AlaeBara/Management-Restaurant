@@ -6,13 +6,16 @@ import Cookies from 'js-cookie';
 
 // Zod schema for form validation
 const UnitsSchema = z.object({
-    unit: z.string().min(1, { message: "L'unité est obligatoire." }),
-    baseUnit: z.string().min(1, { message: "L'unité de base est obligatoire." }),
-    conversionFactorToBaseUnit: z.coerce.number({
-        required_error: "Le facteur de conversion est obligatoire.",
-        invalid_type_error: "Le facteur de conversion est obligatoire.",
-    })
-      .positive({ message: "Le facteur de conversion doit être un nombre positif." }),
+  unit: z.string().nonempty({ message: "L'unité est obligatoire." }),
+  baseUnit: z
+      .string()
+      .nullable()
+      .optional(),
+  conversionFactorToBaseUnit: z
+      .number()
+      .nullable()
+      .optional(),
+  
 });
 
 export function useUpdateUnit(id, formData, setFormData, initialData, setInitialData) {
@@ -22,7 +25,12 @@ export function useUpdateUnit(id, formData, setFormData, initialData, setInitial
   const updateUnit = useCallback(async (e) => {
     e.preventDefault();
 
-    formData.conversionFactorToBaseUnit= parseFloat(formData.conversionFactorToBaseUnit)
+    if (formData.conversionFactorToBaseUnit !== null && formData.conversionFactorToBaseUnit !== '') {
+      formData.conversionFactorToBaseUnit = parseFloat(formData.conversionFactorToBaseUnit);
+    } else {
+        formData.conversionFactorToBaseUnit = null;
+    }
+  
     
     // Check if formData is the same as initialData (meaning no change)
     const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialData);

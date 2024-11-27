@@ -5,12 +5,12 @@ import Cookies from 'js-cookie';
 export function useFetchOneUnits(id) {
     const [formData, setFormData] = useState({
         unit: '',
-        baseUnit: '',
-        conversionFactorToBaseUnit: null 
+        baseUnit: null,
+        conversionFactorToBaseUnit: null
     });
     const [initialData, setInitialData] = useState({ 
         unit: '',
-        baseUnit: '',
+        baseUnit: null,
         conversionFactorToBaseUnit: null
     }); 
 

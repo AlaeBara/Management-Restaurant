@@ -31,8 +31,8 @@ const UnitsCartDeleted = ({unit , RESTOR}) => {
 
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <Boxes  className="mr-2 " /> {unit.unit} </h3>
-                        <p className={style.zoneLabel}>Unité de base : {unit.baseUnit}</p>
-                        <p className={style.zoneLabel}>Facteur de conversion : {unit.conversionFactorToBaseUnit}</p> 
+                        <p className={style.zoneLabel}>Unité de base : {unit.baseUnit || '-'}</p>
+                        <p className={style.zoneLabel}>Facteur de conversion : {unit.conversionFactorToBaseUnit || '-'}</p> 
                         <div className={style.zoneLabel}>
                             <span>Créé le : {formatDate(unit.createdAt)}</span>
                         </div>
