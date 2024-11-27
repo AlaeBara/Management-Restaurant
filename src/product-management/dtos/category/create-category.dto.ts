@@ -26,10 +26,12 @@ export class CreateCategoryDto {
     parentCategoryId?: string | null;
 
     @IsBoolean()
+    @IsOptional()
     @ApiProperty({ description: 'Whether the category is time restricted', example: true, required: false })
     isTimeRestricted: boolean;
 
     @IsString()
+    @IsOptional()
     @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
         message: 'Time must be in HH:mm format'
     })
@@ -37,6 +39,7 @@ export class CreateCategoryDto {
     activeTimeStart: string;
 
     @IsString()
+    @IsOptional()
     @Matches(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, {
         message: 'Time must be in HH:mm format'
     })
@@ -44,6 +47,7 @@ export class CreateCategoryDto {
     activeTimeEnd: string;
 
     @IsArray()
+    @IsOptional()
     @IsString({ each: true })  // Changed this line to validate each element
     @ApiProperty({
         description: 'The days of the week the category is active',
