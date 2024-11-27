@@ -8,9 +8,9 @@ export function useFetchOneCategory(id) {
         categoryCode: '',
         categoryDescription: "",
         parentCategoryId: null,
-        isTimeRestricted: "",
-        activeTimeStart:  "",
-        activeTimeEnd: "",
+        isTimeRestricted: false,
+        activeTimeStart: null,
+        activeTimeEnd: null,
         activeDays: [],
     });
     const [initialData, setInitialData] = useState({ 
@@ -18,9 +18,9 @@ export function useFetchOneCategory(id) {
         categoryCode: '',
         categoryDescription: "",
         parentCategoryId: null,
-        isTimeRestricted: "",
-        activeTimeStart:  "",
-        activeTimeEnd: "",
+        isTimeRestricted: false,
+        activeTimeStart: null,
+        activeTimeEnd: null,
         activeDays: [],
     }); 
 
@@ -28,9 +28,11 @@ export function useFetchOneCategory(id) {
     const [loading, setLoading] = useState(true);
 
     const parseTime = (timeString) => {
+        if (!timeString) return null; // Handle null or undefined input
         const [hours, minutes] = timeString.split(':');
         return `${hours}:${minutes}`;
     };
+      
 
     useEffect(() => {
         const fetchCategory = async () => {
@@ -48,7 +50,7 @@ export function useFetchOneCategory(id) {
                 categoryDescription: response.data.categoryDescription,
                 parentCategoryId: response.data.parentCategoryId || "",
                 isTimeRestricted: response.data.isTimeRestricted,
-                activeTimeStart:  parseTime(response.data.activeTimeStart),
+                activeTimeStart:  parseTime(response.data.activeTimeStart ),
                 activeTimeEnd: parseTime(response.data.activeTimeEnd),
                 activeDays: response.data.activeDays || []
             });
@@ -58,8 +60,8 @@ export function useFetchOneCategory(id) {
                 categoryDescription: response.data.categoryDescription,
                 parentCategoryId: response.data.parentCategoryId || "",
                 isTimeRestricted: response.data.isTimeRestricted,
-                activeTimeStart:  response.data.activeTimeStart,
-                activeTimeEnd: response.data.activeTimeEnd,
+                activeTimeStart:  parseTime(response.data.activeTimeStart) ,
+                activeTimeEnd: parseTime(response.data.activeTimeEnd),
                 activeDays: response.data.activeDays || []
             });
             setLoading(false);

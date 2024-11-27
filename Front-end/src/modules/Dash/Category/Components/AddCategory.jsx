@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect ,useCallback} from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -29,23 +29,34 @@ const CategorieAddSchema = z.object({
     categoryDescription: z.string().nullable().optional(),
 
     parentCategoryId: z
-        .string()
-        .uuid({ message: "L'ID de la catégorie parente doit être un UUID valide." })
-        .nullable()
-        .optional(),
+    .string()
+    .nullable()
+    .optional(),
 
-    isTimeRestricted: z.boolean({
-        required_error: "L'indicateur de restriction temporelle est obligatoire.",
-        invalid_type_error: "L'indicateur de restriction temporelle est obligatoire.",
-    }),
+    isTimeRestricted: z
+        .boolean()
+        .optional(),
+      
 
     activeTimeStart: z
         .string()
-        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "L'heure de début doit être au format HH:mm." }),
+        .optional()
+        .nullable()
+        .refine((val) => {
+            if (val === null || val === undefined) return true;
+            return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+        }, { message: "L'heure de début doit être au format HH:mm." }),
+
 
     activeTimeEnd: z
         .string()
-        .regex(/^([0-1]?[0-9]|2[0-3]):[0-5][0-9]$/, { message: "L'heure de fin doit être au format HH:mm." }),
+        .optional()
+        .nullable()
+        .refine((val) => {
+            if (val === null || val === undefined) return true;
+            return /^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(val);
+        }, { message: "L'heure de début doit être au format HH:mm." }),
+
 
     activeDays: z
         .array(z.string())
@@ -72,9 +83,9 @@ export default function Component() {
         categoryCode: '',
         categoryDescription: "",
         parentCategoryId: null,
-        isTimeRestricted: "",
-        activeTimeStart:  "",
-        activeTimeEnd: "",
+        isTimeRestricted: false,
+        activeTimeStart: null,
+        activeTimeEnd: null,
         activeDays: [],
     });
 
@@ -88,9 +99,72 @@ export default function Component() {
         setFormData({ ...formData, [field]: value });
     };
 
+   
+    const resetTimeRestrictionFields = useCallback(() => {
+        setFormData((prev) => ({
+        ...prev,
+        activeTimeStart: null,
+        activeTimeEnd: null,
+        activeDays: [],
+        }));
+    }, []);
+
+    useEffect(() => {
+        if (!formData.isTimeRestricted) {
+        resetTimeRestrictionFields();
+        }
+    }, [formData.isTimeRestricted, resetTimeRestrictionFields]);
+
+    const validateCategoryForm = (formData) => {
+        const errors = {};
+    
+        // Validate time-related fields only when time restriction is enabled
+        if (formData.isTimeRestricted) {
+            // Validate start time
+            if (!formData.activeTimeStart || formData.activeTimeStart.trim() === '') {
+                errors.activeTimeStart = "L'heure de début est requise lorsque les restrictions temporelles sont activées.";
+            } else if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(formData.activeTimeStart)) {
+                errors.activeTimeStart = "L'heure de début doit être au format HH:mm.";
+            }
+    
+            // Validate end time
+            if (!formData.activeTimeEnd || formData.activeTimeEnd.trim() === '') {
+                errors.activeTimeEnd = "L'heure de fin est requise lorsque les restrictions temporelles sont activées.";
+            } else if (!/^([01]?[0-9]|2[0-3]):[0-5][0-9]$/.test(formData.activeTimeEnd)) {
+                errors.activeTimeEnd = "L'heure de fin doit être au format HH:mm.";
+            }
+    
+            // Validate active days
+            if (!formData.activeDays || formData.activeDays.length === 0) {
+                errors.activeDays = "Les jours actifs sont requis lorsque les restrictions temporelles sont activées.";
+            } else {
+                const validDays = ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"];
+                const invalidDays = formData.activeDays.filter(day => !validDays.includes(day));
+                
+                if (invalidDays.length > 0) {
+                    errors.activeDays = "Les jours actifs doivent être des jours de la semaine valides.";
+                }
+            }
+        }
+    
+        return errors;
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
+
         try {
+            const timeValidationErrors = validateCategoryForm(formData);
+
+            // If there are any time-related validation errors
+            if (Object.keys(timeValidationErrors).length > 0) {
+                setErrors(prevErrors => ({
+                    ...prevErrors,
+                    ...timeValidationErrors
+                }));
+                return;
+            }
+
             CategorieAddSchema.parse(formData);
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/categories`, formData, {
@@ -238,7 +312,7 @@ export default function Component() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="isTimeRestricted">Restriction temporelle <span className="text-red-500 text-base">*</span> </Label>
+                        <Label htmlFor="isTimeRestricted">Restriction temporelle</Label>
                         <Select value={formData.isTimeRestricted} onValueChange={(value) => handleSelectChange('isTimeRestricted', value === 'true')}>
                             <SelectTrigger>
                                 <SelectValue placeholder="Sélectionnez l'État">
@@ -259,13 +333,14 @@ export default function Component() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         <div className="space-y-2">
-                            <Label htmlFor="activeTimeStart">Heure de début de la restriction <span className="text-red-500 text-base">*</span></Label>
+                            <Label htmlFor="activeTimeStart">Heure de début de la restriction {formData.isTimeRestricted && <span className="text-red-500 text-base">*</span> }</Label>
                             <Input
                                 id="activeTimeStart"
                                 name="activeTimeStart"
                                 value={formData.activeTimeStart || ""}
                                 onChange={handleChange}
                                 placeholder="Heure de début de la restriction"
+                                disabled={!formData.isTimeRestricted}
                             />
                             {errors.activeTimeStart && (
                                 <p className="text-xs text-red-500 mt-1">{errors.activeTimeStart}</p>
@@ -273,13 +348,14 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="activeTimeEnd">Heure de fin de la restriction <span className="text-red-500 text-base">*</span></Label>
+                            <Label htmlFor="activeTimeEnd">Heure de fin de la restriction {formData.isTimeRestricted && <span className="text-red-500 text-base">*</span> }</Label>
                             <Input
                                 id="activeTimeEnd"
                                 name="activeTimeEnd"
                                 value={formData.activeTimeEnd || ""}
                                 onChange={handleChange}
                                 placeholder="Heure de fin de la restriction"
+                                disabled={!formData.isTimeRestricted}
                             />
                             {errors.activeTimeEnd && (
                                 <p className="text-xs text-red-500 mt-1">{errors.activeTimeEnd}</p>
@@ -288,9 +364,10 @@ export default function Component() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="activeDays">Jours actifs</Label>
+                        <Label htmlFor="activeDays">Jours actifs {formData.isTimeRestricted && <span className="text-red-500 text-base">*</span> }</Label>
                         <ReactSelect
                             id="activeDays"
+                            isDisabled={!formData.isTimeRestricted}
                             isMulti
                             options={daysOptions}
                             className="basic-multi-select"
@@ -303,9 +380,6 @@ export default function Component() {
                             )
                             }
                         />
-                        {errors.activeDays && (
-                            <p className="text-xs text-red-500 mt-1">{errors.activeDays}</p>
-                        )}
                         {errors.activeDays && (
                             <p className="text-xs text-red-500 mt-1">{errors.activeDays}</p>
                         )}

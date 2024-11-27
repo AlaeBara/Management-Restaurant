@@ -1,4 +1,4 @@
-import React, { useState,useEffect } from 'react';
+import React, { useState,useEffect , useCallback} from 'react';
 import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,6 +34,22 @@ export default function Component() {
     const handleSelectChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
     };
+
+    const resetTimeRestrictionFields = useCallback(() => {
+        setFormData((prev) => ({
+        ...prev,
+        activeTimeStart: null,
+        activeTimeEnd: null,
+        activeDays: [],
+        }));
+    }, []);
+
+    useEffect(() => {
+        if (!formData.isTimeRestricted) {
+        resetTimeRestrictionFields();
+        }
+    }, [formData.isTimeRestricted, resetTimeRestrictionFields]);
+
     const daysOptions = [
         { value: 'Monday', label: 'Lundi' },
         { value: 'Tuesday', label: 'Mardi' },
@@ -52,7 +68,7 @@ export default function Component() {
         <div className="space-y-2 m-3">
             <h1 className="text-2xl font-bold text-black font-sans">Mettre à jour la Catégorie ​</h1>
             <p className="text-base text-gray-600">
-                Modifiez les informations ci-dessous pour mettre à jour la Catégorie dans le système..
+                Modifiez les informations ci-dessous pour mettre à jour la Catégorie dans le système.
             </p>
         </div>
 
@@ -174,13 +190,14 @@ export default function Component() {
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                         <div className="space-y-2">
-                            <Label htmlFor="activeTimeStart">Heure de début de la restriction <span className="text-red-500 text-base">*</span></Label>
+                            <Label htmlFor="activeTimeStart">Heure de début de la restriction {formData.isTimeRestricted && <span className="text-red-500 text-base">*</span> }</Label>
                             <Input
                                 id="activeTimeStart"
                                 name="activeTimeStart"
-                                value={formData.activeTimeStart}
+                                value={formData.activeTimeStart || ""}
                                 onChange={handleChange}
                                 placeholder="Heure de début de la restriction"
+                                disabled={!formData.isTimeRestricted}
                             />
                             {errors.activeTimeStart && (
                                 <p className="text-xs text-red-500 mt-1">{errors.activeTimeStart}</p>
@@ -188,13 +205,14 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="activeTimeEnd">Heure de fin de la restriction <span className="text-red-500 text-base">*</span></Label>
+                            <Label htmlFor="activeTimeEnd">Heure de fin de la restriction {formData.isTimeRestricted && <span className="text-red-500 text-base">*</span> }</Label>
                             <Input
                                 id="activeTimeEnd"
                                 name="activeTimeEnd"
-                                value={formData.activeTimeEnd}
+                                value={formData.activeTimeEnd || ""}
                                 onChange={handleChange}
                                 placeholder="Heure de fin de la restriction"
+                                disabled={!formData.isTimeRestricted}
                             />
                             {errors.activeTimeEnd && (
                                 <p className="text-xs text-red-500 mt-1">{errors.activeTimeEnd}</p>
@@ -203,9 +221,10 @@ export default function Component() {
                     </div>
 
                     <div className="space-y-2">
-                        <Label htmlFor="activeDays">Jours actifs</Label>
+                        <Label htmlFor="activeDays">Jours actifs {formData.isTimeRestricted && <span className="text-red-500 text-base">*</span> }</Label>
                         <ReactSelect
                             id="activeDays"
+                            isDisabled={!formData.isTimeRestricted}
                             isMulti
                             options={daysOptions}
                             className="basic-multi-select"
@@ -218,9 +237,6 @@ export default function Component() {
                             )
                             }
                         />
-                        {errors.activeDays && (
-                            <p className="text-xs text-red-500 mt-1">{errors.activeDays}</p>
-                        )}
                         {errors.activeDays && (
                             <p className="text-xs text-red-500 mt-1">{errors.activeDays}</p>
                         )}
