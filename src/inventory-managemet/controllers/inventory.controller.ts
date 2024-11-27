@@ -90,6 +90,6 @@ export class InventoryController {
     @ApiOperation({ summary: 'Restore a inventory' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.inventoryService.findOneByIdWithOptions(id, { onlyDeleted: true });
-        return this.inventoryService.restoreByUUID(id, true, ['storageCode']);
+        return this.inventoryService.restoreByUUID(id, true, ['sku']);
     }
 }
