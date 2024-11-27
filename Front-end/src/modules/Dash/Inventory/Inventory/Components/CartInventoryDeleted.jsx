@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import style from "./CartInventory.module.css";
+import style from "./CartInventoryDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, ClipboardList } from 'lucide-react';
+import { RotateCcw , Trash2, ClipboardList } from 'lucide-react';
 
-const InventoryCart = ({ inventory ,Delete }) => {
+const InventoryCartDeleted = ({ inventory ,Restore}) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -19,13 +19,9 @@ const InventoryCart = ({ inventory ,Delete }) => {
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        Delete(id)
+        Restore(id)
     };
     
-    const handleEdit = (id, e) => {
-        e.stopPropagation();
-        navigate(`/dash/inventaires/mettre-à-jour-inventaire/${id}`);
-    };
 
     return (
         <>
@@ -55,16 +51,10 @@ const InventoryCart = ({ inventory ,Delete }) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleEdit(inventory.id, e)}
+                        onClick={(e) => handleDelete(inventory.id, e)}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Modifier
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className={`${style.actionButton} ${style.deleteButton}`}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                        <RotateCcw className="mr-2 h-4 w-4" /> Restuarer
                     </button>
                 </div>
             </div>
@@ -72,9 +62,9 @@ const InventoryCart = ({ inventory ,Delete }) => {
             {isModalVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+                        <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer l'inventaire "{inventory?.sku}" ?
+                            Êtes-vous sûr de vouloir restaurer l'inventaire "{inventory?.sku}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -87,7 +77,7 @@ const InventoryCart = ({ inventory ,Delete }) => {
                                 onClick={()=>confirmDelete(inventory.id)}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                Supprimer
+                                Restuarer
                             </button>
                         </div>
                     </div>
@@ -97,4 +87,4 @@ const InventoryCart = ({ inventory ,Delete }) => {
     );
 };
 
-export default InventoryCart ;
+export default InventoryCartDeleted;

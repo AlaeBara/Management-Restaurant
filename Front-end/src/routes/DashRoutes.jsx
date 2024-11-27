@@ -48,8 +48,8 @@ const UpdateCategorie =lazy(()=>import('@/modules/Dash/Category/Components/Updat
 const DeletedCategory = lazy(()=>import('@/modules/Dash/Category/Components/DeletedCategorie'))
 const Inventory =lazy(()=>import('@/modules/Dash/Inventory/Inventory/inventory'))
 const AddInventory = lazy(()=>import('@/modules/Dash/Inventory/Inventory/Components/AddIventory'))
-
-
+const UpdateInventory = lazy(()=> import('@/modules/Dash/Inventory/Inventory/Components/UpdateInventory'))
+const DeletedInventory =lazy(()=> import('@/modules/Dash/Inventory/Inventory/Components/DeletedInventory'))
 
 const ClientRoutes = () => {
   return (
@@ -509,6 +509,27 @@ const ClientRoutes = () => {
           } 
         />
         
+        <Route 
+          path="/inventaires/mettre-à-jour-inventaire/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <UpdateInventory/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/inventaires/inventaire-supprimés" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DeletedInventory/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
         {/* Zones and table mock up */}
         <Route 
           path="/zones1" 

@@ -8,10 +8,10 @@ import {useFetchIventory} from "./Hooks/useFetchIventory"
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
 import CartInventory from './Components/CartInventory'
+import {useDeleteInventory} from './Hooks/useDeleteInventory'
 
 
-
-const Category= () => {
+const Inventory= () => {
     const  navigate = useNavigate()
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -38,6 +38,9 @@ const Category= () => {
     }, [currentPage, limit, fetchIventory]);
 
 
+    const {deleteInventory}= useDeleteInventory(fetchIventory)
+
+
 
   return (
     <div className={style.container}>
@@ -52,7 +55,7 @@ const Category= () => {
         </div>
 
         <div className={style.Headerpage2}>
-            <button onClick={() => navigate('#')} className={style.showdeleteuser}>
+            <button onClick={() => navigate('/dash/inventaires/inventaire-supprimés')} className={style.showdeleteuser}>
                 <ExternalLink className="mr-3 h-4 w-4 "/>Inventaire Supprimés
             </button> 
         
@@ -77,7 +80,7 @@ const Category= () => {
                     <>
                         <div className={style.userGrid}>
                         {inventorys.map(inventory => (
-                            <CartInventory key={inventory.id} inventory={inventory} />
+                            <CartInventory key={inventory.id} inventory={inventory} Delete={deleteInventory} />
                         ))}
                         </div>
 
@@ -108,4 +111,4 @@ const Category= () => {
   )
 }
 
-export default Category
+export default Inventory

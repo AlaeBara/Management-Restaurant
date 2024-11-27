@@ -50,9 +50,9 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Catégorie ​</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Mettre à jour la Catégorie ​</h1>
             <p className="text-base text-gray-600">
-                Remplissez les informations ci-dessous pour ajouter un nouveau Catégorie ​​​ au système.
+                Modifiez les informations ci-dessous pour mettre à jour la Catégorie dans le système..
             </p>
         </div>
 
