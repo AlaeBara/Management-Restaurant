@@ -20,7 +20,8 @@ import {
   FolderOpen,
   Boxes ,
   ShoppingBag ,
-  Component
+  Component,
+  ClipboardList
 } from "lucide-react"
 
 import {
@@ -148,7 +149,7 @@ const SideBar = () => {
           },
           { 
             title: "Inventaires",
-            icon: Component  ,
+            icon: ClipboardList  ,
             url: "/dash/inventaires",
           },
         ],

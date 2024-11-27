@@ -7,8 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {useFetchIventory} from "./Hooks/useFetchIventory"
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-
-
+import CartInventory from './Components/CartInventory'
 
 
 
@@ -17,7 +16,7 @@ const Category= () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const { iventory, totalIventory, loading, error, fetchIventory} = useFetchIventory()
+    const { inventorys, totalIventory, loading, error, fetchIventory} = useFetchIventory()
     //pagination
     const totalPages = Math.ceil(totalIventory / limit);
     const handleNextPage = () => {
@@ -62,14 +61,10 @@ const Category= () => {
             </button> 
         </div>
 
-
-        {/* carts of zone */}
-
-        {/* <div>
-
+        <div>
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Catégories..." />
+                <Spinner title="Chargement des Inventaires..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -78,11 +73,11 @@ const Category= () => {
             </div>
             ) : (
                 <>
-                    {categories.length > 0 ? (
+                    {inventorys.length > 0 ? (
                     <>
                         <div className={style.userGrid}>
-                        {categories.map(categorie => (
-                            <CategoryCart key={categorie.id} category={categorie}  Delete={deleteCategorie} />
+                        {inventorys.map(inventory => (
+                            <CartInventory key={inventory.id} inventory={inventory} />
                         ))}
                         </div>
 
@@ -91,7 +86,7 @@ const Category= () => {
                             totalPages={totalPages}
                             startItem={startItem}
                             endItem={endItem}
-                            numberOfData={totalCategorie}
+                            numberOfData={totalIventory}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                         />
@@ -99,12 +94,12 @@ const Category= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Catégorie trouvé</h1>
+                        <h1>Aucun Inventaire trouvé</h1>
                     </div>
                     )}
                 </>
             )}
-        </div> */}
+        </div>
 
 
 

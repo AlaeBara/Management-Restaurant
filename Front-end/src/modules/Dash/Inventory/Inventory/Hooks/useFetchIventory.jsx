@@ -3,7 +3,7 @@ import axios from "axios";
 import Cookies from "js-cookie";
 
 export const useFetchIventory = () => {
-  const [iventory, setIventory] = useState([]);
+  const [inventorys, setIventory] = useState([]);
   const [totalIventory, setTotalIventory] = useState(0);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -56,5 +56,5 @@ export const useFetchIventory = () => {
     []
   );
 
-  return { iventory, totalIventory, loading, error, fetchIventory };
+  return { inventorys, totalIventory, loading, error, fetchIventory };
 };
