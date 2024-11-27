@@ -145,7 +145,7 @@ export default function Component() {
                                 </div> */}
                                 <div className="space-y-2">
                                     <Label htmlFor="parentStorageId">
-                                        Identifiant du sous-stockage
+                                        Hiérarchie
                                     </Label>
                                     <Select
                                         value={formData.parentStorageId || ""}
@@ -161,8 +161,8 @@ export default function Component() {
                                         <SelectTrigger className="w-full">
                                             <SelectValue
                                                 placeholder={
-                                                    Storages.find((storage) => storage.id === formData.parentStorageId)?.storageName ||
-                                                    "Sélectionner du sous-stockage"
+                                                    Storages.find((storage) => storage.id === formData.parentStorageId)?.hierarchyPath ||
+                                                    "Sélectionner Hiérarchie"
                                                 }
                                             />
                                         </SelectTrigger>
@@ -171,7 +171,7 @@ export default function Component() {
                                                 {Storages.length > 0 ? (
                                                     Storages.map((storage) => (
                                                         <SelectItem key={storage.id} value={storage.id}>
-                                                            {storage.storageName}
+                                                            {storage.hierarchyPath}
                                                         </SelectItem>
                                                     ))
                                                 ) : (

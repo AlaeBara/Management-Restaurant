@@ -137,7 +137,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="parentZone">Identifiant du sous-stockage</Label>
+                                <Label htmlFor="parentZone">Hiérarchie</Label>
                                 <Select
                                     id="parentStorageId"
                                     name="parentStorageId"
@@ -145,13 +145,13 @@ export default function Component() {
                                     onValueChange={(value) => handleChange({ target: { name: 'parentStorageId', value } })}
                                 >
                                 <SelectTrigger>
-                                    <SelectValue placeholder="Sélectionner du sous-stockage" />
+                                    <SelectValue placeholder="Sélectionner Hiérarchie" />
                                 </SelectTrigger>
                                 <SelectContent>
                                     {Storages.length > 0 ? (
                                         Storages.map((Storage) => (
                                             <SelectItem key={Storage.id} value={Storage.id}>
-                                                {Storage.storageName}
+                                                {Storage.hierarchyPath}
                                             </SelectItem>
                                         ))
                                     ) : (
