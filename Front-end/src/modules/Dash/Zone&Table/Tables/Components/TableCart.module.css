@@ -107,6 +107,10 @@
     justify-content: center;
 }
 
+.blacktext{
+    color: #000000;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .zoneCart {

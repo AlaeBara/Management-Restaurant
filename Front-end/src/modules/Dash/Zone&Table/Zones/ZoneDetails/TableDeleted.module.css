@@ -98,6 +98,11 @@
 }
 
 
+.blacktext{
+    color: #000000;
+}
+
+
 @media (max-width: 480px) {
     .userGrid {
         grid-template-columns: 1fr;

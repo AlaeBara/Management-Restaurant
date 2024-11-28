@@ -142,7 +142,7 @@ const Zones = () => {
                             ) : (
                             <div className={style.notfound}>
                                 <SearchX className={style.icon} />
-                                <h1>Aucun Zone trouvé</h1>
+                                <h1>Aucun Table trouvé</h1>
                             </div>
                             )}
                         </>

@@ -122,6 +122,11 @@
     color: #616161;
 }
 
+.blacktext{
+    color: #000000;
+}
+
+
 /* Modal Styles */
 .modal {
     position: fixed;

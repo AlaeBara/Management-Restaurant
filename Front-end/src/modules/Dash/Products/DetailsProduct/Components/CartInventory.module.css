@@ -1,0 +1,113 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
+.InventoryDetails {
+    margin-top: 30px;
+    position: relative;
+}
+
+.InventoryCart {
+    border-radius: 10px;
+    padding:  10px 20px;
+    position: relative;
+    width: 100%; 
+    border: 1px solid #e0e0e0;
+}
+
+.InventoryDetails h1 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    z-index: 1;
+    display: flex;
+}
+
+.InventoryInfo {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.infoItem h2 , h1{
+    text-transform: capitalize;
+}
+
+.label {
+    color: #666;
+    display: block;
+    font-family: "Poppins", sans-serif;
+}
+
+
+
+
+
+
+/* btn */
+
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    justify-content: end;
+    margin-top: 26px;
+}
+
+.actionButton {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+    justify-content: center;
+}
+
+.AddButton {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.AddButton:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+.MovementButton {
+    display: flex;
+    text-align: center;
+    background-color: #ffebee;
+    color: #d32f2f;
+}
+
+.MovementButton:hover {
+    background-color: #ffcdd2;
+    transform: translateY(-2px);
+}
+
+
+@media (max-width: 768px) {
+    .actions {
+        flex-direction: row;
+        margin-top: 12px;
+    }
+    .actionButton {
+        flex: 1;
+    }
+}
+
+
+

@@ -112,7 +112,11 @@
 
 .hierarchyLabel {
     font-weight: bold; /* Emphasize the label */
-    color: #2d3748; /* Slightly darker shade for contrast */
+    color: #000000; /* Slightly darker shade for contrast */
+}
+
+.blacktext{
+    color: #000000;
 }
 
 

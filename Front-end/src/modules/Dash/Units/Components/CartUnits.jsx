@@ -35,10 +35,10 @@ const UnitsCart = ({unit , Delete}) => {
 
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <Boxes  className="mr-2 " /> {unit.unit} </h3>
-                        <p className={style.zoneLabel}>Unité de base: {unit.baseUnit || '-'}</p>
-                        <p className={style.zoneLabel}>Facteur de conversion : {unit.conversionFactorToBaseUnit || '-'}</p> 
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Unité de base :</span> {unit.baseUnit || '-'}</p>
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Facteur de conversion :</span> {unit.conversionFactorToBaseUnit || '-'}</p> 
                         <div className={style.zoneLabel}>
-                            <span>Créé le: {formatDate(unit.createdAt)}</span>
+                            <span><span className={style.blacktext}>Créé le :</span> {formatDate(unit.createdAt)}</span>
                         </div>
                     </div>
 

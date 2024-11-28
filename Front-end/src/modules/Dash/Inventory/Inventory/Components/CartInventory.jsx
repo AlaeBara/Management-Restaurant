@@ -36,18 +36,20 @@ const InventoryCart = ({ inventory ,Delete }) => {
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <ClipboardList className="mr-2 " /> {inventory.sku}  </h3>
                         <p className={style.zoneLabel}>
-                            Quantité d'alerte : {inventory.warningQuantity || 'Non spécifié'}
+                            <span className={style.blacktext}>Quantité d'alerte :</span> {inventory.warningQuantity || 'Non spécifié'}
                         </p>
-                        <p className={style.zoneLabel}>Quantité totale : {inventory.totalQuantity || 0}</p>
+                        <p className={style.zoneLabel}> <span className={style.blacktext}>Quantité totale :</span> {inventory.totalQuantity || 0}</p>
                         <p className={style.zoneLabel}>
-                            Stock : {inventory.storageName || '-'}
+                            <span className={style.blacktext}>Stock :</span> {inventory.storageName || '-'}
                         </p>
                         <p className={style.zoneLabel}>
-                            Produit : {inventory.productName || '-'}
+                            <span className={style.blacktext}>Produit :</span> {inventory.productName || '-'}
                         </p>
-                        <p className={style.zoneLabel}>Unité : {inventory.productUnit || '-'}</p>
+                        <p className={style.zoneLabel}>
+                            <span className={style.blacktext}> Unité :</span> {inventory.productUnit || '-'}
+                        </p>
                         <div className={style.zoneLabel}>
-                            <span>Créé le: {formatDate(inventory.createdAt)}</span>
+                            <span> <span className={style.blacktext}>Créé le :</span> {formatDate(inventory.createdAt)}</span>
                         </div>
                     </div>
 

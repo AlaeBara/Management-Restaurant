@@ -78,7 +78,6 @@
 } 
 
 .lastLogin {
-    margin: 0 0 8px 0;
     font-size: 14px;
     color: #888;
     font-family: "Poppins", sans-serif;
@@ -96,7 +95,9 @@
     right: 20px;
 }
 
-
+.blacktext{
+    color: #000000;
+}
 
 .active {
     background-color: #e6f7ed;

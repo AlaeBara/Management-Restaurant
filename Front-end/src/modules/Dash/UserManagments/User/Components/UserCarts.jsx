@@ -70,8 +70,9 @@ const userCarts = ({ user, deleteUser}) => {
                 </div>
 
                 <p className={style.email}>{user.email}</p>
-                <p className={style.lastLogin}>Dernier Login: {formatDate(user.lastLogin)}</p>
-                <p className={style.lastLogin}>Créer à: {formatDate(user.createdAt)}</p>
+                <p className={style.lastLogin}><span className={style.blacktext}>Dernier Login :</span> {formatDate(user.lastLogin)}</p>
+                <p className={style.lastLogin}><span className={style.blacktext}>Créer à : </span>{formatDate(user.createdAt)}</p>
+
 
                 <div className={style.userAction}>
                     <div className={style.btn} onClick={() => navigate(`/dash/Update-user/${user.id}`)}>

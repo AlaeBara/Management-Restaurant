@@ -104,6 +104,9 @@
     transform: translateY(-2px);
 }
 
+.blacktext{
+    color: #000000;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

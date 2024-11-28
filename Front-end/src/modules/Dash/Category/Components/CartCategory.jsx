@@ -41,11 +41,11 @@ const CategorieCart = ({ category ,Delete}) => {
 
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <Component className="mr-2 " /> {category.categoryName}  </h3>
-                        <p className={style.zoneLabel}>Code de catégorie : {category.categoryCode}</p>
-                        <p className={style.zoneLabel}>Parent catégorie : {category.parentCategory?.categoryName || "-"}</p>
-                        <p className={style.zoneLabel}>Temps actif : {category.isTimeRestricted ? `De ${category.activeTimeStart} à ${category.activeTimeEnd}` : "Non restreint"}</p>
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Code de catégorie :</span> {category.categoryCode}</p>
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Parent catégorie :</span> {category.parentCategory?.categoryName || "-"}</p>
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Temps actif :</span> {category.isTimeRestricted ? `De ${category.activeTimeStart} à ${category.activeTimeEnd}` : "Non restreint"}</p>
                         <p className={style.zoneLabel}>
-                            Jours actifs : 
+                            <span className={style.blacktext}>Jours actifs :</span> 
                             {category.activeDays && category.activeDays.length > 0 ? (
                                 <>
                                 {isExpanded || category.activeDays.length <= 2
@@ -62,7 +62,7 @@ const CategorieCart = ({ category ,Delete}) => {
                             )}      
                         </p>
   
-                        <p className={style.zoneLabel}>Description : 
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Description : </span> 
                             {category.categoryDescription ? (
                                 <>
                                     {isExpanded || category.categoryDescription.length <= 30
@@ -79,7 +79,7 @@ const CategorieCart = ({ category ,Delete}) => {
                             )}
                         </p> 
                         <div className={style.zoneLabel}>
-                            <span>Créé le: {formatDate(category.createdAt)}</span>
+                            <span><span className={style.blacktext}>Créé le :</span> {formatDate(category.createdAt)}</span>
                         </div>
                     </div>
 

@@ -41,24 +41,25 @@ const RoleCartDeleted = ({ role  ,  Restore}) => {
                     <div className={style.roleInfo}>
                         <h3 className={style.roleTitle}><Shield className="mr-2"/> {role.name} </h3>
                         <p className={style.roleLabel}>
+                            <span className={style.blacktext}>Description : </span> 
                             {role.label ? (
                                 <>
-                                    {isExpanded || role.label.length <= 30
+                                    {isExpanded || role.label.length <= 20
                                         ? role.label
-                                        : `${role.label.substring(0, 30 )}...`}
-                                    {role.label.length > 30  && (
+                                        : `${role.label.substring(0, 20 )}...`}
+                                    {role.label.length > 20  && (
                                         <button onClick={toggleExpand} className={style.toggleButton}>
                                             {isExpanded ? 'Voir moins' : 'Voir plus'}
                                         </button>
                                     )}
                                 </>
                             ) : (
-                                <span className={style.vide}>*Description vide*</span>
+                                <span className={style.vide}> - </span>
                             )}
                         </p>
 
                         <div className={style.roleLabel}>
-                            <span>Créé le: {formatDate(role.createdAt)}</span>
+                            <span><span className={style.blacktext}>Créé le :</span> {formatDate(role.createdAt)}</span>
                         </div>
                     </div>
 

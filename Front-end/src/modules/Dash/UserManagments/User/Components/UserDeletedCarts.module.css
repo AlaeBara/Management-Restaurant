@@ -66,7 +66,9 @@
     color: red;
     font-family: "Poppins", sans-serif;
 }
-
+.blacktext{
+    color: #000000;
+}
 .email {
     margin: 0 0 4px 0;
     font-size: 14px;
@@ -75,7 +77,6 @@
 }
 
 .lastLogin {
-    margin: 0 0 8px 0;
     font-size: 14px;
     color: #888;
     font-family: "Poppins", sans-serif;

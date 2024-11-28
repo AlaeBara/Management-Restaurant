@@ -32,10 +32,15 @@ const StorageDeletedCart = ({ Storage , RESTORE}) => {
 
                     <div className={style.zoneInfo}>
                         <h3 className={style.zoneTitle}> <Cylinder className="mr-2 " /> {Storage.storageName} </h3>
-                        <p className={style.zoneLabel}>Stock Code: {Storage.storageCode}</p>
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Stock Code :</span> {Storage.storageCode}</p>
                         <div className={style.zoneLabel}>
-                            <span>Créé le: {formatDate(Storage.createdAt)}</span>
+                            <span><span className={style.blacktext}>Créé le :</span> {formatDate(Storage.createdAt)}</span>
                         </div>
+                        {Storage.hierarchyPath && (
+                            <p className={style.hierarchyPath}>
+                                <span className={style.hierarchyLabel}>Hiérarchie:</span> {Storage.hierarchyPath}
+                            </p>
+                        )}
                     </div>
 
                 </div>

@@ -54,7 +54,7 @@ const TableCart = ({ table}) => {
               <TableShape colors={getStatusColors(table.tableStatus)} />
             </div>
             <p className={style.zoneLabel}>
-              Status : {table.tableStatus === 'available' 
+              <span className={style.blacktext}>Status :</span> {table.tableStatus === 'available' 
                 ? 'Disponible' 
                 : table.tableStatus === 'reserved' 
                 ? 'Réservée' 
@@ -62,12 +62,12 @@ const TableCart = ({ table}) => {
                 ? 'Occupée' 
                 : 'Inconnu'}
             </p>
-            <p className={style.zoneLabel}>État de la Table : {table.isActive === true ? "Actif" : "Inactif"}
+            <p className={style.zoneLabel}><span className={style.blacktext}>État de la Table : </span>{table.isActive === true ? "Actif" : "Inactif"}
 
             </p>
-            <p className={style.zoneLabel}>Code de Table : {table.tableCode}</p>
+            <p className={style.zoneLabel}><span className={style.blacktext}>Code de Table :</span> {table.tableCode}</p>
             <div className={style.zoneLabel}>
-              <span>Créé le: {formatDate(table.createdAt)}</span>
+              <span><span className={style.blacktext}>Créé le :</span> {formatDate(table.createdAt)}</span>
             </div>
           </div>
         </div>

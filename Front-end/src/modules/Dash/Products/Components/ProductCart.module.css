@@ -12,6 +12,7 @@
     width: 100%;
     max-width: 400px;
     max-height: fit-content;
+    cursor: pointer;
 }
 
 .zoneCart:hover {
@@ -114,7 +115,9 @@
     background-color: #ffcdd2;
     transform: translateY(-2px);
 }
-
+.blacktext{
+    color: #000000;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {

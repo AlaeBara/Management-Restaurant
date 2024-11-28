@@ -90,8 +90,19 @@
     background-color: #e0e0e0;
     transform: translateY(-2px);
 }
+.hierarchyPath {
+    font-size: 1rem; 
+    color: #4a5568; 
+    margin-top: 8px; 
+}
 
-
+.hierarchyLabel {
+    font-weight: bold; /* Emphasize the label */
+    color: #000000; /* Slightly darker shade for contrast */
+}
+.blacktext{
+    color: #000000;
+}
 
 /* Responsive Design */
 @media (max-width: 768px) {
