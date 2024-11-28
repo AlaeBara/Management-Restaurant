@@ -12,10 +12,10 @@ export class Unit {
   @Column({ type: 'enum', enum: UnitType })
   unit: UnitType;
 
-  @Column({ type: 'enum', enum: BaseUnit })
+  @Column({ type: 'enum', enum: BaseUnit,nullable:true })
   baseUnit: BaseUnit;
 
-  @Column({type:"float"})
+  @Column({type:"float" , nullable:true})
   conversionFactorToBaseUnit: number;
 
   @CreateDateColumn()

@@ -10,12 +10,12 @@ import { CreateInventoryMovementDto } from "../dtos/inventory-movement/create-in
 @ApiBearerAuth()
 export class InvetoryMovementController {
 
-    constructor(private readonly inventoryMovementService : InventoryMovementService){}
+    constructor(private readonly inventoryMovementService: InventoryMovementService) { }
 
-   /*  private inventoryMovementPermissions = [
-        { name: 'view-inventories-movements', label: 'View all inventory movements', resource: 'inventory-movement' },
-        { name: 'create-inventory-movement', label: 'Create new inventory movement', resource: 'inventory-movement' },
-    ]; */
+    /*  private inventoryMovementPermissions = [
+         { name: 'view-inventories-movements', label: 'View all inventory movements', resource: 'inventory-movement' },
+         { name: 'create-inventory-movement', label: 'Create new inventory movement', resource: 'inventory-movement' },
+     ]; */
 
     @Get()
     @Permissions('view-inventories-movements')
@@ -52,8 +52,9 @@ export class InvetoryMovementController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
+        @Query('findByMovementType') findByMovementType?: string,
     ): Promise<{ data: InventoryMovement[]; total: number; page: number; limit: number }> {
-        return this.inventoryMovementService.findAll(
+        return await this.inventoryMovementService.findAll(
             page,
             limit,
             relations,
@@ -71,8 +72,8 @@ export class InvetoryMovementController {
     @Post()
     @Permissions('create-inventory-movement')
     @ApiOperation({ summary: 'Create a inventory movement' })
-    async create(@Body() createInventoryMovementDto: CreateInventoryMovementDto,@Req() request: Request) {
-        await this.inventoryMovementService.createInvenotryMovement(createInventoryMovementDto,request);
+    async create(@Body() createInventoryMovementDto: CreateInventoryMovementDto, @Req() request: Request) {
+        await this.inventoryMovementService.createInvenotryMovement(createInventoryMovementDto, request);
         return { message: 'Great! new inventory Movement has been created successfully', status: 201 };
     }
 }

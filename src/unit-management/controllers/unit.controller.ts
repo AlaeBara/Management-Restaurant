@@ -21,7 +21,7 @@ import { CreateUnitDto } from '../dto/create-unit.dto';
 @ApiTags('Units')
 @ApiBearerAuth()
 export class UnitController {
-  constructor(private unitService: UnitService) {}
+  constructor(private unitService: UnitService) { }
 
   /* private unitPermissions = [
     { name: 'view-units', label: 'Voir toutes les unités', resource: 'unit' },
@@ -59,13 +59,14 @@ export class UnitController {
   @Permissions('create-unit')
   @ApiOperation({ summary: 'Create a unit' })
   async createUnits(@Body() createUnitDto: CreateUnitDto) {
-    return await this.unitService.create(createUnitDto);
+    await this.unitService.createUnit(createUnitDto);
+    return { message: 'Great! The unit has been created successfully', status: 200 };
   }
 
   @Get(':id')
   @Permissions('view-unit')
   @ApiOperation({ summary: 'Get a unit by id' })
-  async findOne(  
+  async findOne(
     @Param('id', ParseUUIDPipe) id: string,
     @Query('withDeleted') withDeleted?: boolean,
     @Query('findOrThrow') findOrThrow?: boolean,
@@ -73,7 +74,7 @@ export class UnitController {
     @Query('select') select?: string[],
 
   ) {
-    return this.unitService.findOneByIdWithOptions(id,{select,withDeleted,onlyDeleted,findOrThrow:true});
+    return this.unitService.findOneByIdWithOptions(id, { select, withDeleted, onlyDeleted, findOrThrow: true });
   }
 
   @Put(':id')
@@ -83,14 +84,15 @@ export class UnitController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() unitdto: UpdateUnitDto,
   ) {
-    return this.unitService.update(id, unitdto);
+    await this.unitService.updateUnit(id, unitdto);
+    return { message: 'Great! The unit has been updated successfully', status: 200 };
   }
 
   @Delete(':id')
   @Permissions('delete-unit')
   @ApiOperation({ summary: 'Delete a unit' })
   async deleteUnits(@Param('id', ParseUUIDPipe) id: string) {
-    await this.unitService.findOneByIdWithOptions(id,{findOrThrow:true});
+    await this.unitService.findOneByIdWithOptions(id, { findOrThrow: true });
     return this.unitService.softDelete(id);
   }
 
@@ -98,6 +100,6 @@ export class UnitController {
   @Permissions('restore-unit')
   @ApiOperation({ summary: 'Restore a unit' })
   async restoreUnits(@Param('id', ParseUUIDPipe) id: string) {
-    return this.unitService.restoreByUUID(id);
+    return this.unitService.restoreByUUID(id, true);
   }
 }
