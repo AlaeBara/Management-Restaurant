@@ -3,12 +3,10 @@ import { PrimaryGeneratedColumn, UpdateDateColumn } from 'typeorm';
 import { Column, CreateDateColumn, DeleteDateColumn, Entity } from 'typeorm';
 import { BaseUnit } from '../enums/base-unit.enum';
 import { UnitType } from '../enums/unit.enum';
+import { BaseEntity } from 'src/common/entities/base.entity';
 
 @Entity(process.env.DATASET_PREFIX + 'units')
-export class Unit {
-  @PrimaryGeneratedColumn('uuid')
-  id: string;
-
+export class Unit extends BaseEntity {
   @Column({ type: 'enum', enum: UnitType })
   unit: UnitType;
 
@@ -17,13 +15,4 @@ export class Unit {
 
   @Column({type:"float" , nullable:true})
   conversionFactorToBaseUnit: number;
-
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn({ select: false })
-  updatedAt: Date;
-
-  @DeleteDateColumn()
-  deletedAt: Date;
 }
