@@ -42,7 +42,7 @@ const CartIventory = ({inventory}) => {
 
                     <div className={`${styles.actions}`}>
                         <button
-                            className={`${styles.actionButton} ${styles.MovementButton}`}
+                            className={`${styles.actionButton} ${styles.AddButton}`}
                         >
                             <Move className="mr-2 h-5 w-4" />Movement
                         </button>

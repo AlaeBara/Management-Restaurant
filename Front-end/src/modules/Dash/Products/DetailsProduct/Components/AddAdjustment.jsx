@@ -29,16 +29,16 @@ const InventoriesMovements = z.object({
             required_error: "La quantité  est obligatoire.",
             invalid_type_error: "La quantité  est obligatoire.",
         })
-        .positive({ message: "La quantitédoit être un nombre positif." }),
+        .nonnegative({ message: "La quantité doit être un nombre positif." }),
 
     movementType:z
         .string()
         .nonempty({ message: "Le type de mouvement est obligatoire." }),
     
-
     movementDate: z
         .string()
-        .nonempty({ message: "La date de mouvement est obligatoire." }),
+        .nullable()
+        .optional(),
 
     storageId:  z
         .string()
@@ -81,7 +81,7 @@ export default function Component() {
         destinationInventoryId: null,
         quantity: null,
         movementType:'',
-        movementDate: '',
+        movementDate: null,
         storageId: null,
         notes:null,
         reason:null,
@@ -93,13 +93,34 @@ export default function Component() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const handleSelectChange = (field, value) => {
-        setFormData({ ...formData, [field]: value });
+
+    const validateCategoryForm = (formData) => {
+        const errors = {};
+        if (formData.movementType == 'transfer_in' || formData.movementType == 'transfer_out') {
+            // Validate start time
+            if (!formData.destinationInventoryId || formData.destinationInventoryIddestinationInventoryId === null) {
+                errors.destinationInventoryId = "L'inventaire de Destination requise lorsque Type de Mouvement est Transfert Entrant et Transfert Sortrant.";
+            }
+        }
+    
+        return errors;
     };
+
 
     const Submit = async (e) => {
         e.preventDefault();
         try {
+
+            const timeValidationErrors = validateCategoryForm(formData);
+
+            // If there are any time-related validation errors
+            if (Object.keys(timeValidationErrors).length > 0) {
+                setErrors(prevErrors => ({
+                    ...prevErrors,
+                    ...timeValidationErrors
+                }));
+                return;
+            }
             InventoriesMovements.parse(formData);
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, formData, {
@@ -109,7 +130,7 @@ export default function Component() {
                 inventoryId: id_iventory,
                 destinationInventoryId: null,
                 quantity: null,
-                movementDate: '',
+                movementDate: null,
                 storageId: null,
                 notes:null,
                 reason:null,
@@ -139,7 +160,6 @@ export default function Component() {
         }
         }
     };
-
     const movementTypes = [
         { value: 'allocation_product', label: 'Affectation de Produit' },
         { value: 'wastage', label: 'Perte' },
@@ -154,16 +174,15 @@ export default function Component() {
         { value: 'inventory_count_decrease', label: 'Comptage d\'Inventaire (Diminution)' },
         { value: 'inventory_initial', label: 'Initialisation de l\'Inventaire' },
     ];
-      
 
   return (
     <>
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">infoooooo</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Inventaire : {inventory.sku} - {inventory.productName}</h1>
             <p className="text-base text-gray-600">
-                Remplissez les informations ci-dessous pour ajouter un nouveau Produit au système.
+                Remplissez les informations ci-dessous pour effectuer un ajustement d'inventaire.
             </p>
         </div>
 
@@ -172,7 +191,6 @@ export default function Component() {
 
                 <CardContent className="pt-6">
                     <form onSubmit={Submit} className="space-y-4">
-
                         <div className="space-y-2">
                             <Label htmlFor="movementType">Type de Mouvement <span className='text-red-500 text-base'>*</span></Label>
                             <Select
@@ -209,7 +227,10 @@ export default function Component() {
                                 name="destinationInventoryId"
                                 value={formData.destinationInventoryId || ""}
                                 onValueChange={(value) => handleChange({ target: { name: 'destinationInventoryId', value } })}
-                                disabled={true}
+                                disabled={
+                                    formData.movementType !== 'transfer_in' && 
+                                    formData.movementType !== 'transfer_out'
+                                }
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Sélectionnez un inventaire" />
@@ -227,6 +248,9 @@ export default function Component() {
                                     )}
                                 </SelectContent>
                             </Select>
+                            {/* <p className="text-xs text-gray-600 mt-0">
+                                Veuillez sélectionner l'inventaire de destination pour les transferts entrants ou sortants.
+                            </p> */}
                             {errors.destinationInventoryId && (
                                 <p className="text-xs text-red-500 mt-1">{errors.destinationInventoryId}</p>
                             )}
@@ -235,18 +259,19 @@ export default function Component() {
                         <div className="space-y-2">
                             <Label htmlFor="quantity">Quantité <span className='text-red-500 text-base'>*</span></Label>
                             <Input
+                                type='Number'
                                 id="quantity"
                                 name="quantity"
                                 value={formData.quantity || ''}
                                 onChange={handleChange}
                                 placeholder="Entrez la quantité"
+                                min='0'
+                                step="any"
                             />
                             {errors.quantity && (
                             <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
                             )}
                         </div>
-
-
 
                         <div className="space-y-2">
                             <Label htmlFor="storageId">Stockage</Label>
@@ -280,7 +305,24 @@ export default function Component() {
                             )}
                         </div>
 
-                    
+                        <div className="space-y-2">
+                            <Label htmlFor="storageId">Date</Label>
+                            <input
+                                type="datetime-local"
+                                id="movementDate"
+                                name="movementDate"
+                                value={formData.movementDate || ""}
+                                onChange={handleChange}
+                                className="w-full p-2 border border-gray-300 rounded-md"
+                            />
+                            <p className="text-xs text-gray-600 mt-0">
+                                Sélectionnez la date et l'heure du mouvement d'inventaire.
+                            </p>
+                            {errors.storageId && (
+                                <p className="text-xs text-red-500 mt-1">{errors.storageId}</p>
+                            )}
+                        </div>
+                        
                         <div className="space-y-2">
                             <Label htmlFor="notes">Notes</Label>
                             <textarea
@@ -296,6 +338,7 @@ export default function Component() {
                             <p className="text-xs text-red-500 mt-1">{errors.notes}</p>
                             )}
                         </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="reason">Raison</Label>
                             <textarea
@@ -312,11 +355,6 @@ export default function Component() {
                             )}
                         </div>
                         
-
-
-
-
-
                         <div className="flex gap-4">
                             <Button type="button" onClick={() => navigate(`/dash/Produits/detail-produit/${id}`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                 Annuler

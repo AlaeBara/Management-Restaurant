@@ -379,6 +379,7 @@ export default function Component() {
                                 selectedOptions.map((option) => option.value)
                             )
                             }
+                            menuPlacement="top" 
                         />
                         {errors.activeDays && (
                             <p className="text-xs text-red-500 mt-1">{errors.activeDays}</p>
