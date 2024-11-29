@@ -9,6 +9,9 @@ import { Repository, DeleteResult, UpdateResult, Table } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityTarget } from 'typeorm';
 import FindOneOptions from '../interface/findoneoption.interface';
+interface SearchQuery {
+  [key: string]: string[];
+}
 
 @Injectable()
 export class GenericService<T> {
@@ -31,6 +34,8 @@ export class GenericService<T> {
         : [];
   }
 
+
+
   async findAll(
     page?: number | string,
     limit?: number | string,
@@ -39,12 +44,42 @@ export class GenericService<T> {
     withDeleted: boolean = false,
     onlyDeleted: boolean = false,
     select?: string[],
-    FindBy?:Record<string, any>
+    searchQuery?: Record<string, string | string[]>,
+    FindBy?: Record<string, any>,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const query = this.repository.createQueryBuilder(this.name);
 
     if (FindBy) {
       query.where(FindBy);
+    }
+
+    if (searchQuery) {
+      const searchCriteria: SearchQuery = {};
+      Object.entries(searchQuery).forEach(([key, value]) => {
+       if (key.startsWith('search.')) {
+         const field = key.split('.')[1];
+         const values = Array.isArray(value) ? value : [value];
+         searchCriteria[field] = values;
+       }
+     });
+      Object.entries(searchCriteria).forEach(([column, values], index) => {
+       // Get the column metadata to check if it's an enum
+       const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(column);
+       const isEnum = columnMetadata?.type === 'enum';
+        const conditions = values.map((value, valueIndex) => {
+         const paramName = `search${index}_${valueIndex}`;
+         // Use exact matching for enums, ILIKE for text
+         return isEnum 
+           ? `${this.name}.${column} = :${paramName}`
+           : `${this.name}.${column} ILIKE :${paramName}`;
+       });
+        query.andWhere(`(${conditions.join(' OR ')})`,
+         values.reduce((params, value, valueIndex) => ({
+           ...params,
+           [`search${index}_${valueIndex}`]: isEnum ? value : `%${value}%`
+         }), {})
+       );
+     });
     }
 
     const currentPage = Math.max(1, Number(page) || 1);
@@ -273,8 +308,8 @@ export class GenericService<T> {
       [key]: value,
     }));
 
-     // Use count with OR conditions
-     const count = await this.repository.count({
+    // Use count with OR conditions
+    const count = await this.repository.count({
       where: conditions as any,
     });
 
@@ -289,17 +324,17 @@ export class GenericService<T> {
     // Create query builder
     for (const [key, value] of Object.entries(attributes)) {
       const query = this.repository.createQueryBuilder(this.name);
-      
+
       // Check for the specific attribute
       query.where(`${this.name}.${key} = :value`, { value });
-  
+
       // Exclude the current entity if excludeId is provided
       if (excludeId) {
         query.andWhere(`${this.name}.id != :excludeId`, { excludeId });
       }
-  
+
       const entity = await query.getCount();
-  
+
       if (entity > 0) {
         throw new ConflictException(
           `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with ${key} "${value}" already exists`

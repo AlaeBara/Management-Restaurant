@@ -28,6 +28,7 @@ export class InvetoryMovementController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
+        @Query() query?: any,
     ): Promise<{ data: InventoryMovement[]; total: number; page: number; limit: number }> {
         return this.inventoryMovementService.findAll(
             page,
@@ -37,6 +38,7 @@ export class InvetoryMovementController {
             withDeleted,
             onlyDeleted,
             select,
+            query,
         );
     }
 
@@ -52,8 +54,9 @@ export class InvetoryMovementController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
-        @Query('findByMovementType') findByMovementType?: string,
+        @Query() query?: any,
     ): Promise<{ data: InventoryMovement[]; total: number; page: number; limit: number }> {
+        console.log('Search:', query);
         return await this.inventoryMovementService.findAll(
             page,
             limit,
@@ -62,10 +65,11 @@ export class InvetoryMovementController {
             withDeleted,
             onlyDeleted,
             select,
+            query,
             [
                 { inventory: { id } },
                 { destinationInventory: { id } }
-            ]
+            ],
         );
     }
 

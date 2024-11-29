@@ -34,6 +34,7 @@ export class InventoryController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
+        @Query() query?: any,
     ): Promise<{ data: Inventory[]; total: number; page: number; limit: number }> {
         return this.inventoryService.findAll(
             page,
@@ -43,6 +44,7 @@ export class InventoryController {
             withDeleted,
             onlyDeleted,
             select,
+            query,
         );
     }
 

@@ -35,6 +35,7 @@ export class StorageController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
+        @Query() query?: any,
     ): Promise<{ data: Storage[]; total: number; page: number; limit: number }> {
         return this.storageService.findAllWithHierarchy(
             page,
@@ -44,6 +45,7 @@ export class StorageController {
             withDeleted,
             onlyDeleted,
             select,
+            query
         );
     }
 

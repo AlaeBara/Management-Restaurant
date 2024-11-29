@@ -47,6 +47,7 @@ export class TableController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: Table[]; total: number; page: number; limit: number }> {
     return this.tableService.findAll(
       page,
@@ -56,6 +57,7 @@ export class TableController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
   }
 

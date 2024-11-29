@@ -46,6 +46,10 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         await this.inventoryRepository.save(Invenetory);
     }
 
+    async validateQuantity(quantity: number): Promise<void> {
+        if (quantity <= 0) throw new BadRequestException('Quantity must be greater than 0');
+    }
+
     /**
      * Transfers inventory quantity between two inventory records
      * @param sourceInventory - The source inventory to transfer from
@@ -132,7 +136,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
     async createInvenotryMovement(InventoryMovementDto: CreateInventoryMovementDto, request: Request) {
         // Initialize the movement object with basic validation
         const inventoryMovementObject = await this.initializeInventoryMovement(InventoryMovementDto, request);
-
+        await this.validateQuantity(inventoryMovementObject.quantity);
         // Handle inventory transfers
         if (InventoryMovementDto.movementType === MovementType.TRANSFER_IN || InventoryMovementDto.movementType === MovementType.TRANSFER_OUT) {
             // Handle transfer inventory

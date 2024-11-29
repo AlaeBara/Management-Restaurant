@@ -50,6 +50,7 @@ export class ZoneController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: Zone[]; total: number; page: number; limit: number }> {
     return this.zoneService.findAll(
       page,
@@ -59,6 +60,7 @@ export class ZoneController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
   }
 
@@ -126,7 +128,8 @@ export class ZoneController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ) {
-    return this.tableService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted, select, { zone: { id } });
+    return this.tableService.findAll(page, limit, relations, sort, withDeleted, onlyDeleted, select, query, { zone: { id } });
   }
 }

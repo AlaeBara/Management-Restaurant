@@ -24,6 +24,7 @@ export class FundOperationController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
+        @Query() query?: any,
     ): Promise<{ data: FundOperationEntity[]; total: number; page: number; limit: number }> {
         return this.fundOperationService.findAll(
             page,
@@ -33,6 +34,7 @@ export class FundOperationController {
             withDeleted,
             onlyDeleted,
             select,
+            query,
         );
     }
 

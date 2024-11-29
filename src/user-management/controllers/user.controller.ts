@@ -58,6 +58,7 @@ export class UserController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: User[]; total: number; page: number; limit: number }> {
     return this.userService.findAll(
       page,
@@ -67,6 +68,7 @@ export class UserController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
   }
 

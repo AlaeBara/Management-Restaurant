@@ -48,6 +48,7 @@ export class ClientController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: Client[]; total: number; page: number; limit: number }> {
     return this.clientService.findAll(
       page,
@@ -57,6 +58,7 @@ export class ClientController {
       withDeleted,
       onlyDeleted,
       select,
+      query,
     );
   }
 

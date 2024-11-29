@@ -21,7 +21,7 @@ export class CategoryController {
         { name: 'delete-category', label: 'Supprimer une catégorie', resource: 'category' },
         { name: 'restore-category', label: 'Restaurer une catégorie supprimée', resource: 'category' }
     ]; */
-    
+
     @Get()
     @Permissions('view-categories')
     @ApiOperation({ summary: 'Get all Categories' })
@@ -33,6 +33,7 @@ export class CategoryController {
         @Query('withDeleted') withDeleted?: boolean,
         @Query('onlyDeleted') onlyDeleted?: boolean,
         @Query('select') select?: string[],
+        @Query() query?: any,
     ): Promise<{ data: Category[]; total: number; page: number; limit: number }> {
         return this.categoryService.findAll(
             page,
@@ -42,6 +43,7 @@ export class CategoryController {
             withDeleted,
             onlyDeleted,
             select,
+            query
         );
     }
 

@@ -44,6 +44,7 @@ export class PermissionController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{
     data: Permission[];
     total: number;
@@ -58,6 +59,7 @@ export class PermissionController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
   }
 

@@ -27,8 +27,11 @@ export class StorageService extends GenericService<Storage> {
         sort?: string,
         withDeleted: boolean = false,
         onlyDeleted: boolean = false,
-        select?: string[]): Promise<{ data: Storage[]; total: number; page: number; limit: number }> {
-        const storages = await this.findAll(page, limit, ['parentStorage'], sort, withDeleted, onlyDeleted, select);
+        select?: string[],
+        searchQuery?: Record<string, string | string[]>,
+    ): Promise<{ data: Storage[]; total: number; page: number; limit: number }> {
+        const storages = await this.findAll(page, limit, ['parentStorage'], sort, withDeleted, onlyDeleted, select,
+            searchQuery);
         storages.data = await Promise.all(storages.data.map(async (storage) => await this.sethierarchyPath(storage)));
         return storages;
     }

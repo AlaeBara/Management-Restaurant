@@ -33,6 +33,7 @@ export class SupplierController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: Supplier[]; total: number; page: number; limit: number }> {
     return this.supplierService.findAll(
       page,
@@ -42,6 +43,7 @@ export class SupplierController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
   }
 

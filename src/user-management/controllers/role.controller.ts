@@ -54,6 +54,7 @@ export class RoleController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: Role[]; total: number; page: number; limit: number }> {
     const roles = await this.roleService.findAll(
       page,
@@ -63,6 +64,7 @@ export class RoleController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
     roles.data = roles.data.filter(role => role.name !== 'superadmin');
     return roles;

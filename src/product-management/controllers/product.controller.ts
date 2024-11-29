@@ -105,10 +105,10 @@ export class ProductController {
     async getInventoriesByProductId(@Param('id', ParseUUIDPipe) id: string,
         @Query('limit') limit?: 100,
         @Query('sort') sort?: string,
+        @Query() query?: any,
     ) {
-        const inventories = await this.inventoryService.findAll(undefined, 100, undefined, sort, undefined, undefined, undefined, [{ product: { id } }
-        ]
-        );
+        const inventories = await this.inventoryService.findAll(undefined, 100, undefined, sort, undefined, undefined, undefined, query, [{ product: { id } }
+        ]);
         const product = await this.productService.findOneByIdWithOptions(id);
         return { product, inventories: inventories.data }
     }

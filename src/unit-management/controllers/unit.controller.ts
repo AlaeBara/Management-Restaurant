@@ -43,6 +43,7 @@ export class UnitController {
     @Query('withDeleted') withDeleted?: boolean,
     @Query('onlyDeleted') onlyDeleted?: boolean,
     @Query('select') select?: string[],
+    @Query() query?: any,
   ): Promise<{ data: Unit[]; total: number; page: number; limit: number }> {
     return this.unitService.findAll(
       page,
@@ -52,6 +53,7 @@ export class UnitController {
       withDeleted,
       onlyDeleted,
       select,
+      query
     );
   }
 
