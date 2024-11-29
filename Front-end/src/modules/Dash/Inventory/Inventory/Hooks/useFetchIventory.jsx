@@ -35,7 +35,7 @@ export const useFetchIventory = () => {
           }
 
           setIventory(allIventory);
-          setTotalIventory(total);
+          setTotalIventory(allIventory.length);
         } else {
           const response = await axios.get(url, {
             params: { page, limit, sort: "createdAt:desc" },

@@ -2,8 +2,15 @@ import React from 'react'
 import styles from './CartInventory.module.css'
 import 'react-toastify/dist/ReactToastify.css';
 import {formatDate }from '@/components/dateUtils/dateUtils'
-import{ClipboardList ,Trash2 , Edit}from 'lucide-react'
+import{ClipboardList ,Move , Sliders}from 'lucide-react'
+import { useNavigate, useParams } from 'react-router-dom';
+
+
+
 const CartIventory = ({inventory}) => {
+    const navigate = useNavigate()
+    const {id}=useParams()
+
 
     return (
         <>
@@ -35,14 +42,15 @@ const CartIventory = ({inventory}) => {
 
                     <div className={`${styles.actions}`}>
                         <button
-                            className={`${styles.actionButton} ${styles.AddButton}`}
-                        >
-                            <Edit className="mr-2 h-4 w-4" /> Modifier
-                        </button>
-                        <button
                             className={`${styles.actionButton} ${styles.MovementButton}`}
                         >
-                            <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                            <Move className="mr-2 h-5 w-4" />Movement
+                        </button>
+                        <button
+                            onClick={()=>navigate(`/dash/Produits/detail-produit/${id}/adjustment/${inventory.id}`)}
+                            className={`${styles.actionButton} ${styles.AddButton}`}
+                        >
+                            <Sliders className="mr-2 h-4 w-4" />Adjustment
                         </button>
                     </div>
                 </div>

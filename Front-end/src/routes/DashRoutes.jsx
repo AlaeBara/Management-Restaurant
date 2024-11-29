@@ -51,7 +51,7 @@ const AddInventory = lazy(()=>import('@/modules/Dash/Inventory/Inventory/Compone
 const UpdateInventory = lazy(()=> import('@/modules/Dash/Inventory/Inventory/Components/UpdateInventory'))
 const DeletedInventory =lazy(()=> import('@/modules/Dash/Inventory/Inventory/Components/DeletedInventory'))
 const DatailsProduct =lazy(()=>import('@/modules/Dash/Products/DetailsProduct/DetailsProduct'))
-
+const AddAdjustment =lazy(()=>import('@/modules/Dash/Products/DetailsProduct/Components/AddAdjustment'))
 
 
 
@@ -453,6 +453,16 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <DatailsProduct/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/Produits/detail-produit/:id/adjustment/:id_iventory" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddAdjustment/>
               </MainLayout>
             </ProtectedRoute>
           } 
