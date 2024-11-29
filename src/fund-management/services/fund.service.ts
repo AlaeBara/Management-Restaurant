@@ -3,8 +3,9 @@ import { GenericService } from "src/common/services/generic.service";
 import { Fund } from "../entities/fund.entity";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { DataSource, Repository } from "typeorm";
-import { CreateFundDto } from "../dtos/create-fund.dto";
-import { UpdateFundDto } from "../dtos/update-fund.dto";
+import { CreateFundDto } from "../dtos/fund/create-fund.dto";
+import { UpdateFundDto } from "../dtos/fund/update-fund.dto";
+import { FundOperation } from "../enums/fund-operation.enum";
 
 @Injectable()
 export class FundService extends GenericService<Fund> {
@@ -47,5 +48,4 @@ export class FundService extends GenericService<Fund> {
     async deleteFund(id: string) {
         return await this.fundRepository.softDelete(id);
     }
-
 }

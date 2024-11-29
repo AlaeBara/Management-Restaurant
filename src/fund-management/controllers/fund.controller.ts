@@ -3,8 +3,8 @@ import { FundService } from "../services/fund.service";
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Fund } from "../entities/fund.entity";
-import { CreateFundDto } from "../dtos/create-fund.dto";
-import { UpdateFundDto } from "../dtos/update-fund.dto";
+import { CreateFundDto } from "../dtos/fund/create-fund.dto";
+import { UpdateFundDto } from "../dtos/fund/update-fund.dto";
 @Controller('api/funds')
 @ApiTags('Fund Management - Funds')
 @ApiBearerAuth()

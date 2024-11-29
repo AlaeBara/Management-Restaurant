@@ -1,6 +1,6 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsBoolean, IsEnum, IsOptional } from "class-validator";
-import { FundType } from "../enums/fund-type.enum";
+import { FundType } from "../../enums/fund-type.enum";
 
 
 export class UpdateFundDto {

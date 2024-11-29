@@ -14,7 +14,7 @@ export class Fund extends BaseEntity {
     type: FundType;
     
     @Column({default:0,type:"decimal",precision:10,scale:2})
-    currentBalance: number;
+    balance: number;
 
     @Column({default:true})
     isActive: boolean;
