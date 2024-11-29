@@ -89,12 +89,11 @@ const ProduitDetails = () => {
                     </>
                 )}
 
-
-
                 <div className={styles.inventorys}>
                     <h2 className={styles.inventorysTitle}>Inventaires :</h2>
                     <p className={styles.inventorysDescription}>Consultez les informations détaillées du produit sélectionné</p>
                 </div>
+                
                 <div>
                     {iSloading ? (
                         <div className="mt-5">

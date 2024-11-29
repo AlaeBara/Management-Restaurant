@@ -300,7 +300,7 @@ export default function Component() {
                                 </SelectContent>
                             </Select>
                             <p className="text-xs text-gray-600 mt-0">
-                                Sélectionnez une zone parent si cette zone doit être rattachée à une zone existante. Cette hiérarchisation permet d'organiser les zones de manière structurée.
+                                Sélectionnez l'emplacement de stockage où le mouvement d'inventaire aura lieu.
                             </p>
                             {errors.storageId && (
                                 <p className="text-xs text-red-500 mt-1">{errors.storageId}</p>

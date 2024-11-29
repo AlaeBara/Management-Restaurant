@@ -27,6 +27,10 @@ const CartIventory = ({inventory}) => {
                             <h2>{inventory.productName}</h2>
                         </div>
                         <div className={styles.infoItem}>
+                            <span className={styles.label}>Quantité totale:</span>
+                            <h2>{inventory.totalQuantity}</h2>
+                        </div>
+                        <div className={styles.infoItem}>
                             <span className={styles.label}>L'unité de produit:</span>
                             <p>{inventory.productUnit}</p>
                         </div>
