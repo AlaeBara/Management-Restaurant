@@ -116,6 +116,32 @@
 }
 
 
+
+.actionButton2{
+    margin-top: 10px;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+    justify-content: center;
+}
+.btnAdjustement{
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background-color: #f1f1f1;
+    color: #333;
+    width: 100%;
+}
+
+.btnAdjustement:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
 .blacktext{
     color: #000000;
 }

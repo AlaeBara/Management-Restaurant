@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from "./CartInventory.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, ClipboardList } from 'lucide-react';
+import { Edit, Trash2, ClipboardList ,Sliders} from 'lucide-react';
 
 const InventoryCart = ({ inventory ,Delete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -25,6 +25,10 @@ const InventoryCart = ({ inventory ,Delete }) => {
     const handleEdit = (id, e) => {
         e.stopPropagation();
         navigate(`/dash/inventaires/mettre-à-jour-inventaire/${id}`);
+    };
+    const handleAddAdjustement = (id, e) => {
+        e.stopPropagation();
+        navigate(`/dash/inventaires/ajouter-adjustement/${id}`);
     };
 
     return (
@@ -66,6 +70,13 @@ const InventoryCart = ({ inventory ,Delete }) => {
                         <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                     </button>
                 </div>
+                
+                <button
+                    onClick={(e) => handleAddAdjustement(inventory.id, e)}
+                    className={`${style.actionButton2} ${style.btnAdjustement}`}
+                >
+                    <Sliders className="mr-2 h-4 w-4" /> Ajoute Adjustement
+                </button>
             </div>
 
             {isModalVisible && (
