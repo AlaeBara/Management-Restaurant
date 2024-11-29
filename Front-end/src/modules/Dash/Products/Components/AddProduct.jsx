@@ -192,12 +192,12 @@ export default function Component() {
                             <Select value={formData.isOffered} onValueChange={(value) => handleSelectChange('isOffered', value === 'true')}>
                                 <SelectTrigger>
                                     <SelectValue placeholder="Sélectionnez l'État">
-                                        {formData.isOffered ? 'Actif' : 'Inactif'}
+                                        {formData.isOffered ? 'Oui' : 'Non'}
                                     </SelectValue>
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="true">Actif</SelectItem>
-                                    <SelectItem value="false">Inactif</SelectItem>
+                                    <SelectItem value="true">Oui</SelectItem>
+                                    <SelectItem value="false">Non</SelectItem>
                                 </SelectContent>
                             </Select>
                             {errors.isOffered&& (

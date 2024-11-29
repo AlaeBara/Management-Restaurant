@@ -95,8 +95,9 @@ const ProduitDetails = () => {
                     </div>
                 </div> */}
 
+
                 {/* <div>
-                    {iSloading ? (
+                    {Isloading ? (
                         <div className="mt-5">
                             <Spinner title="Chargement des données..." />
                         </div>
