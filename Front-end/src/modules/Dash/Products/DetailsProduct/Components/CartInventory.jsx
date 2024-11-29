@@ -15,12 +15,12 @@ const CartIventory = ({inventory}) => {
     return (
         <>
             <div className={styles.InventoryDetails}>
-                <h1><ClipboardList className='mr-2'/> {inventory.storageName}</h1>
+                <h1><ClipboardList className='mr-2'/> {inventory.sku}</h1>
                 <div className={styles.InventoryCart}>
                     <div className={styles.InventoryInfo}>
                         <div className={styles.infoItem}>
-                            <span className={styles.label}>SKU du Inventaire :</span>
-                            <p>{inventory.sku}</p>
+                            <span className={styles.label}>Nom du Stock :</span>
+                            <p>{inventory.storageName || '-'}</p>
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Nom du produit :</span>
@@ -28,7 +28,7 @@ const CartIventory = ({inventory}) => {
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Quantité totale:</span>
-                            <h2>{inventory.totalQuantity}</h2>
+                            <h2>{inventory.totalQuantity} {inventory.productUnit}</h2>
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.label}>L'unité de produit:</span>

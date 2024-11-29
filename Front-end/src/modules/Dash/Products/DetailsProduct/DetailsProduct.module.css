@@ -79,12 +79,43 @@
 }
 
 
+.addBtn{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--button-add-bg-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+@media (max-width: 600px) {
+    .addBtn{
+        font-size: 10px;
+    }
+}
+
+
 
 
 /* inventory */
 
 .inventorys {
     margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.divBtn{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    align-items: center;
+    margin: 20px 0;
 }
 
 .inventorysTitle {

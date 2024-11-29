@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import styles from './DetailsProduct.module.css'
-import { useParams } from 'react-router-dom';   
+import { useNavigate, useParams } from 'react-router-dom';   
 import Spinner from '../../../../components/Spinner/Spinner';
 import { toast } from 'react-toastify';
 import { ToastContainer } from 'react-toastify';
@@ -8,10 +8,11 @@ import 'react-toastify/dist/ReactToastify.css';
 import {formatDate }from '@/components/dateUtils/dateUtils'
 import {useInfoProduct} from './hooks/useInfoProduct'
 import {useFetchInventorysProduct} from './hooks/useFetchInventoryProduct'
-import{Ban,SearchX}from 'lucide-react'
+import{Ban,SearchX,Plus}from 'lucide-react'
 import CartIventory from './Components/CartInventory'
 
 const ProduitDetails = () => {
+    const navigate = useNavigate()
     const { id } = useParams();
 
     const { product, loading, error, fetchProduct } =useInfoProduct(id)
@@ -90,10 +91,18 @@ const ProduitDetails = () => {
                 )}
 
                 <div className={styles.inventorys}>
-                    <h2 className={styles.inventorysTitle}>Inventaires :</h2>
-                    <p className={styles.inventorysDescription}>Consultez les informations détaillées du produit sélectionné</p>
+                    <div>
+                        <h2 className={styles.inventorysTitle}>Inventaires :</h2>
+                        <p className={styles.inventorysDescription}>Consultez les informations détaillées du produit sélectionné</p>
+                    </div>
                 </div>
-                
+
+                <div className={styles.divBtn}>
+                    <button onClick={() => navigate(`/dash/Produits/detail-produit/${id}/ajouter-inventaire`)} className={styles.addBtn}>
+                        <Plus className="mr-3 h-4 w-4 " /> Ajouter Inventaire
+                    </button> 
+                </div>
+
                 <div>
                     {iSloading ? (
                         <div className="mt-5">

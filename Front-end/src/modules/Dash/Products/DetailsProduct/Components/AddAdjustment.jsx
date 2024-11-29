@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchInfoInventoryAdjustments } from '../hooks/useFetchInfoInventory'
 import {useFetchIventory} from '../../../Inventory/Inventory/Hooks/useFetchIventory'
-import {useFetchStorages} from '../../../Suplier&Stockage/Stockage/Hooks/useFetchStorages'
+
 
 
 const InventoriesMovements = z.object({
@@ -40,10 +40,6 @@ const InventoriesMovements = z.object({
         .nullable()
         .optional(),
 
-    storageId:  z
-        .string()
-        .nullable()
-        .optional(),
 
     notes: z
         .string()
@@ -68,12 +64,10 @@ export default function Component() {
 
     const {inventory, iSloading, message, fetchIventoryAdjustments } = useFetchInfoInventoryAdjustments(id_iventory)
     const { inventorys, loading: inventoryLoading, error: inventoryError, fetchIventory } = useFetchIventory();
-    const { Storages, loading: storageLoading, error: storageError, fetchStorage } = useFetchStorages();
 
     useEffect(() => {
         fetchIventoryAdjustments();
         fetchIventory({fetchAll:true})
-        fetchStorage({fetchAll:true})
     }, []);
 
     const [formData, setFormData] = useState({
@@ -82,7 +76,6 @@ export default function Component() {
         quantity: null,
         movementType:'',
         movementDate: null,
-        storageId: null,
         notes:null,
         reason:null,
     });
@@ -133,7 +126,6 @@ export default function Component() {
                 destinationInventoryId: null,
                 quantity: null,
                 movementDate: null,
-                storageId: null,
                 notes:null,
                 reason:null,
             });
@@ -275,37 +267,6 @@ export default function Component() {
                             )}
                         </div>
 
-                        <div className="space-y-2">
-                            <Label htmlFor="storageId">Stockage</Label>
-                            <Select
-                                id="storageId"
-                                name="storageId"
-                                value={formData.storageId || ""}
-                                onValueChange={(value) => handleChange({ target: { name: 'storageId', value } })}
-                            >
-                                <SelectTrigger>
-                                    <SelectValue  placeholder="Sélectionnez un stockage" />
-                                </SelectTrigger>
-                                <SelectContent  className="h-48 overflow-y-auto">
-                                    {Storages.length > 0 ? (
-                                        Storages
-                                            .map((Storage) => (
-                                                <SelectItem key={Storage.id} value={Storage.id}>
-                                                    {Storage.storageName}
-                                                </SelectItem>
-                                            ))
-                                    ) : (
-                                        <p className='text-sm'>Aucune donnée disponible</p>
-                                    )}
-                                </SelectContent>
-                            </Select>
-                            <p className="text-xs text-gray-600 mt-0">
-                                Sélectionnez l'emplacement de stockage où le mouvement d'inventaire aura lieu.
-                            </p>
-                            {errors.storageId && (
-                                <p className="text-xs text-red-500 mt-1">{errors.storageId}</p>
-                            )}
-                        </div>
 
                         <div className="space-y-2">
                             <Label htmlFor="storageId">Date</Label>
