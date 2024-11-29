@@ -32,12 +32,13 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
      * @throws BadRequestException if the movement action is invalid
      */
     async adjustInventory(Invenetory: Inventory, quantity: number, movementAction: string) {
+        const totalQuantity = Number(Invenetory.totalQuantity);
         switch (movementAction) {
-            case 'increase':
-                Invenetory.totalQuantity += quantity;
+            case 'increase':    
+                Invenetory.totalQuantity = totalQuantity + Number(quantity);
                 break;
             case 'decrease':
-                Invenetory.totalQuantity -= quantity;
+                Invenetory.totalQuantity = totalQuantity - Number(quantity);
                 break;
             default:
                 throw new BadRequestException(`Invalid movement action: ${movementAction}`);
@@ -59,14 +60,16 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
      * @throws BadRequestException if the movement action is invalid
      */
     async TransferInventory(sourceInventory: Inventory, destinationInventory: Inventory, quantity: number, movementAction: string) {
+        const sourceTotalQuantity = Number(sourceInventory.totalQuantity);
+        const destinationTotalQuantity = Number(destinationInventory.totalQuantity);
         switch (movementAction) {
             case 'increase':
-                sourceInventory.totalQuantity += quantity;
-                destinationInventory.totalQuantity -= quantity;
+                sourceInventory.totalQuantity = sourceTotalQuantity + Number(quantity);
+                destinationInventory.totalQuantity = destinationTotalQuantity - Number(quantity);
                 break;
             case 'decrease':
-                sourceInventory.totalQuantity -= quantity;
-                destinationInventory.totalQuantity += quantity;
+                sourceInventory.totalQuantity = sourceTotalQuantity - Number(quantity);
+                destinationInventory.totalQuantity = destinationTotalQuantity + Number(quantity);
                 break;
             default:
                 throw new BadRequestException(`Invalid movement action: ${movementAction}`);
