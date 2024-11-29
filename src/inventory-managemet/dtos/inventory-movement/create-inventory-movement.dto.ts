@@ -28,11 +28,6 @@ export class CreateInventoryMovementDto {
     @IsNotEmpty()
     movementDate: Date
 
-    @ApiProperty({ description: 'The Storage id of the Movement', required: false , example: '1234567890'})
-    @IsUUID()
-    @IsOptional()
-    storageId: string | null;
-
     @ApiProperty({ description: 'The Notes of the Movement', required: false , example: 'This is a note'})
     @IsString()
     @IsOptional()
