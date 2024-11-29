@@ -17,11 +17,11 @@ export class CreateInventoryDto  {
 
     @ApiProperty({ description: 'The storage id of the inventory', required: true , example: '1234567890'})
     @IsUUID()
-    @IsOptional()
+    @IsNotEmpty()
     storageId: string;
 
     @ApiProperty({ description: 'The product id of the inventory', required: true , example: '1234567890'})
     @IsUUID()
-    @IsOptional()
+    @IsNotEmpty()
     productId: string | null;
 }

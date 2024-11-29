@@ -1,7 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Product } from 'src/product-management/entities/product.entity';
 import { Storage } from 'src/storage-management/entities/storage.entity';
-import { AfterLoad, BeforeInsert, Index, JoinColumn, ManyToOne, RelationId } from 'typeorm';
+import { AfterLoad, BeforeInsert, CreateDateColumn, Index, JoinColumn, ManyToOne, RelationId } from 'typeorm';
 import { Column, Entity } from 'typeorm';
 import { Inventory } from './inventory.entity';
 import { getMovementAction, MovementType } from '../enums/movement_type.enum';
@@ -54,7 +54,7 @@ export class InventoryMovement extends BaseEntity {
     @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.movedBy)
     movedByUserId: string;
 
-    @Column({ type: 'timestamp', default: () => 'CURRENT_TIMESTAMP' })
+    @CreateDateColumn({ type: 'timestamp', nullable: true })
     movementDate: Date
 
     @Column({ nullable: true })
