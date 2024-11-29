@@ -25,7 +25,7 @@ export class CreateInventoryMovementDto {
     movementType: MovementType
 
     @ApiProperty({ description: 'The Movement Date of the Movement', required: true , example: '2024-11-24 14:00:00'})
-    @IsNotEmpty()
+    @IsOptional()
     movementDate: Date
 
     @ApiProperty({ description: 'The Notes of the Movement', required: false , example: 'This is a note'})
