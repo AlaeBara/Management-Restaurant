@@ -121,7 +121,9 @@ export default function Component() {
                 }));
                 return;
             }
+            formData.quantity = parseFloat(formData.quantity);
             InventoriesMovements.parse(formData);
+            console.log(formData)
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, formData, {
                 headers: { Authorization: `Bearer ${token}` },
