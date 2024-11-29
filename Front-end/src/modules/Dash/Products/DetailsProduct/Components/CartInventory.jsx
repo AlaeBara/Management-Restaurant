@@ -19,7 +19,7 @@ const CartIventory = ({inventory}) => {
                 <div className={styles.InventoryCart}>
                     <div className={styles.InventoryInfo}>
                         <div className={styles.infoItem}>
-                            <span className={styles.label}>Nom du Stock :</span>
+                            <span className={styles.label}>Placement de Stock :</span>
                             <p>{inventory.storageName || '-'}</p>
                         </div>
                         <div className={styles.infoItem}>
@@ -46,13 +46,13 @@ const CartIventory = ({inventory}) => {
 
                     <div className={`${styles.actions}`}>
                         <button
-                            className={`${styles.actionButton} ${styles.AddButton}`}
+                            className={`${styles.actionButton} ${styles.addButton}`}
                         >
                             <Move className="mr-2 h-5 w-4" />Movement
                         </button>
                         <button
                             onClick={()=>navigate(`/dash/Produits/detail-produit/${id}/adjustment/${inventory.id}`)}
-                            className={`${styles.actionButton} ${styles.AddButton}`}
+                            className={`${styles.actionButton} ${styles.addButton}`}
                         >
                             <Sliders className="mr-2 h-4 w-4" />Adjustment
                         </button>

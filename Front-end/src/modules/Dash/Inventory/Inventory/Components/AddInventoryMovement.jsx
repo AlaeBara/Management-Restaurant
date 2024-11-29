@@ -115,10 +115,17 @@ export default function Component() {
                 return;
             }
             formData.quantity = parseFloat(formData.quantity);
-            InventoriesMovements.parse(formData);
-            console.log(formData)
+             // Prepare a copy of formData and remove properties with null values
+            const preparedData = Object.fromEntries(
+                Object.entries(formData).filter(([key, value]) => value !== null)
+            );
+
+            preparedData.quantity = parseFloat(preparedData.quantity);
+            InventoriesMovements.parse(preparedData);
+
+          
             const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, formData, {
+            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
@@ -269,7 +276,7 @@ export default function Component() {
 
 
                         <div className="space-y-2">
-                            <Label htmlFor="storageId">Date</Label>
+                            <Label htmlFor="storageId">Date de movement</Label>
                             <input
                                 type="datetime-local"
                                 id="movementDate"

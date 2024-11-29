@@ -30,6 +30,5 @@ export const useFetchInventorysProduct = (id) => {
     },
     []
   );
-
   return { inventorys, iSloading, message, fetchIventory };
 };
