@@ -57,6 +57,9 @@ export class InventoryMovement extends BaseEntity {
     @CreateDateColumn({ type: 'timestamp', nullable: true })
     movementDate: Date
 
+    @Column({ type: 'timestamp', nullable: true })
+    dateExpiration: Date
+
     @Column({ nullable: true })
     notes: string
 

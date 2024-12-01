@@ -65,6 +65,7 @@ import { EmailVerificationService } from './services/authentication/email-verifi
     RolesSeeder,
     UserPermissionSeeder,
     RoleService,
+    UserService,
   ],
 })
-export class UserManagementModule {}
+export class UserManagementModule { }

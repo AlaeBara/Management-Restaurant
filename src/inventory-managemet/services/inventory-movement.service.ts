@@ -34,7 +34,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
     async adjustInventory(Invenetory: Inventory, quantity: number, movementAction: string) {
         const totalQuantity = Number(Invenetory.totalQuantity);
         switch (movementAction) {
-            case 'increase':    
+            case 'increase':
                 Invenetory.totalQuantity = totalQuantity + Number(quantity);
                 break;
             case 'decrease':

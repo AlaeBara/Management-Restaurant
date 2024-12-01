@@ -17,6 +17,7 @@ import { StorageModule } from './storage-management/storage.module';
 import { ProductManagementModule } from './product-management/product.module';
 import { InventoryModule } from './inventory-managemet/inventory.module';
 import { FundModule } from './fund-management/fund.module';
+import { ShiftZoneModule } from './shift-zone-management/shift-zone.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -37,6 +38,7 @@ import { FundModule } from './fund-management/fund.module';
     ProductManagementModule,
     InventoryModule,
     FundModule,
+    ShiftZoneModule,
     CommonModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -56,10 +58,10 @@ import { FundModule } from './fund-management/fund.module';
         auth: {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
-        },
+        }/* ,
         tls: {
           rejectUnauthorized: false // Add this for development
-        }
+        } */
       },
     }),
   ],

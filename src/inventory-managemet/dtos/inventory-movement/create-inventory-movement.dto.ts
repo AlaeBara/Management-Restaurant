@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsEnum, IsNotEmpty, IsOptional, IsString, IsUUID } from "class-validator";
+import { IsEnum, IsNotEmpty, IsNumber, isNumber, IsOptional, IsString, IsUUID } from "class-validator";
 import { MovementType } from "src/inventory-managemet/enums/movement_type.enum";
 
 
@@ -16,6 +16,7 @@ export class CreateInventoryMovementDto {
     destinationInventoryId: string;   
 
     @ApiProperty({ description: 'The Quantity of the Movement', required: true , example: '2'})
+    @IsNumber()
     @IsNotEmpty()
     quantity :number
 
@@ -27,6 +28,10 @@ export class CreateInventoryMovementDto {
     @ApiProperty({ description: 'The Movement Date of the Movement', required: true , example: '2024-11-24 14:00:00'})
     @IsOptional()
     movementDate: Date
+
+    @ApiProperty({ description: 'The Movement Expiration Date of the Movement', required: true , example: '2025-01-21 14:00:00'})
+    @IsOptional()
+    dateExpiration: Date
 
     @ApiProperty({ description: 'The Notes of the Movement', required: false , example: 'This is a note'})
     @IsString()

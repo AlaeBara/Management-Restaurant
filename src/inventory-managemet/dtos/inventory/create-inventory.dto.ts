@@ -1,5 +1,5 @@
 import { ApiProperty } from "@nestjs/swagger";
-import { IsNotEmpty, IsOptional, IsUUID } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsUUID } from "class-validator";
 
 export class CreateInventoryDto  {
 
@@ -8,12 +8,9 @@ export class CreateInventoryDto  {
     sku: string;
 
     @ApiProperty({ description: 'The warning quantity of the inventory', required: true , example: 10})
+    @IsNumber()
     @IsNotEmpty()
     warningQuantity: number;
-
-   /*  @ApiProperty({ description: 'The total quantity of the inventory', required: true , example: 10})
-    @IsNotEmpty()
-    initialQuantity: number; */
 
     @ApiProperty({ description: 'The storage id of the inventory', required: true , example: '1234567890'})
     @IsUUID()

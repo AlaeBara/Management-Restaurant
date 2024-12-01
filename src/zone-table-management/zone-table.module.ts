@@ -9,11 +9,12 @@ import { TableService } from './services/table.service';
 import { TablePermissionSeeder } from './seeders/table-permissions.dto';
 import { ZonePermissionSeeder } from './seeders/zone-permissions.dto';
 import { qrCodeModule } from 'src/qr-code/qr-code.module';
+import { User } from 'src/user-management/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Zone,Table]), qrCodeModule],
-  controllers: [ZoneController,TableController],
+  imports: [TypeOrmModule.forFeature([Zone, Table]), qrCodeModule, User],
+  controllers: [ZoneController, TableController],
   providers: [ZoneService, TableService, TablePermissionSeeder, ZonePermissionSeeder],
-  exports: [TablePermissionSeeder, ZonePermissionSeeder],
+  exports: [TablePermissionSeeder, ZonePermissionSeeder, ZoneService],
 })
-export class ZoneTableModule {}
+export class ZoneTableModule { }

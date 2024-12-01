@@ -16,7 +16,7 @@ export class ZoneService extends GenericService<Zone> {
   constructor(
     @InjectDataSource() dataSource: DataSource,
     @InjectRepository(Zone)
-    private zoneRepository: Repository<Zone>,
+    public readonly zoneRepository: Repository<Zone>,
     @Inject(forwardRef(() => TableService))
     private readonly tableService: TableService,
   ) {
