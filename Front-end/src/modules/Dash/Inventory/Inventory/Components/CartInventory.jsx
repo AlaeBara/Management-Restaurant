@@ -47,7 +47,7 @@ const InventoryCart = ({ inventory ,Delete }) => {
                             <span className={style.blacktext}>Quantité d'alerte :</span> {inventory.warningQuantity || 'Non spécifié'} {inventory.productUnit}
                         </p>
                         <p className={style.zoneLabel}>
-                            <span className={style.blacktext}>Stock :</span> {inventory.storageName || '-'}
+                            <span className={style.blacktext}>Placement de Stock :</span> {inventory.storageName || '-'}
                         </p>
                         <div className={style.zoneLabel}>
                             <span> <span className={style.blacktext}>Créé le :</span> {formatDate(inventory.createdAt)}</span>

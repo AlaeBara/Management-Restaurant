@@ -9,23 +9,24 @@ import {formatDate }from '@/components/dateUtils/dateUtils'
 import {useInfoInventory} from './hooks/useFetchInfoInventory'
 import{Ban,SearchX,Plus}from 'lucide-react'
 import {useFetchAdjustemetByInventory} from './hooks/useFetchAdjustemetByInventory'
+import ResponsiveTable from './Components/tableau'
 
 const ProduitDetails = () => {
     const navigate = useNavigate()
-    const { id } = useParams();
+    const { id_iventory } = useParams();
 
-    const { inventory, loading, error, fetchInventory}= useInfoInventory(id)
+    const { inventory, loading, error, fetchInventory}= useInfoInventory(id_iventory)
 
     useEffect(() => {
         fetchInventory();
     }, [fetchInventory]);
 
-    const {inventorysMovements, totalIventoryMovement, Isloading, message, fetchIventoryMovement}= useFetchAdjustemetByInventory(id)
+    const {inventorysMovements, totalIventoryMovement, Isloading, message, fetchIventoryMovement}= useFetchAdjustemetByInventory(id_iventory)
     useEffect(() => {
         fetchIventoryMovement({fetchAll:true});
-        console.log(inventorysMovements)
     }, [fetchIventoryMovement]);
 
+    
 
     return (
         <>
@@ -49,7 +50,7 @@ const ProduitDetails = () => {
                 ) : (
                     <>
                         <div className={styles.ProduitDetails}>
-                            <h1>Informations de Produit:</h1>
+                            <h1>Informations du Inventaire:</h1>
                             <div className={styles.ProduitCart}>
                                 {inventory && (
                                     <div className={styles.ProduitInfo}>
@@ -87,6 +88,7 @@ const ProduitDetails = () => {
                         </div>
                     </>
                 )}
+                
 
                 {/* <div className={styles.inventorys}>
                     <div>
@@ -96,7 +98,7 @@ const ProduitDetails = () => {
                 </div> */}
 
 
-                {/* <div>
+                <div>
                     {Isloading ? (
                         <div className="mt-5">
                             <Spinner title="Chargement des données..." />
@@ -108,23 +110,32 @@ const ProduitDetails = () => {
                     </div>
                     ) : (
                         <>
-                            {inventorys.length > 0 ? (
+                            {inventorysMovements.length > 0 ? (
                             <>
-                                <div>
-                                    <P>ASASA</P>
+                                <div className={styles.userGrid}>
+                                    <ResponsiveTable data={inventorysMovements} />
                                 </div>
                             </>
                             ) : (
                             <div className={styles.notfound}>
                                 <SearchX className={styles.icon} />
-                                <h1>Aucun inventaire associé au produit trouvé.</h1>
+                                <h1>Aucun inventaire movement trouvé.</h1>
                             </div>
                             )}
                         </>
                     )}
-                </div> */}
+                </div>
 
             </div>
+
+
+
+
+            
+
+
+
+
         </>
     )
 }

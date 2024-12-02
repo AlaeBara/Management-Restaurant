@@ -255,7 +255,7 @@ export default function Component() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label htmlFor="quantity">Quantité <span className='text-red-500 text-base'>*</span></Label>
+                            <Label htmlFor="quantity">Quantité {inventory.productUnit ? `(${inventory.productUnit})` : ""} <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 type='Number'
                                 id="quantity"

@@ -46,6 +46,7 @@ const CartIventory = ({inventory}) => {
 
                     <div className={`${styles.actions}`}>
                         <button
+                            onClick={()=>navigate(`/dash/Produits/detail-produit/${id}/inventaire/${inventory.id}`)}
                             className={`${styles.actionButton} ${styles.addButton}`}
                         >
                             <Move className="mr-2 h-5 w-4" />Movement

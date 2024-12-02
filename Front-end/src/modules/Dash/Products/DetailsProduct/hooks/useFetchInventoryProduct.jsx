@@ -17,6 +17,7 @@ export const useFetchInventorysProduct = (id) => {
 
       try {
         const response = await axios.get(url, {
+          params: {sort: "createdAt:desc" },
         headers: { Authorization: `Bearer ${token}` },
         });
        

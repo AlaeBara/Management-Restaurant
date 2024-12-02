@@ -478,6 +478,16 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+        <Route 
+          path="/Produits/detail-produit/:id/inventaire/:id_iventory" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DetailInventory/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
 
 
         
@@ -580,7 +590,7 @@ const ClientRoutes = () => {
           } 
         />
         <Route 
-          path="/inventaires/detail/:id" 
+          path="/inventaires/detail/:id_iventory" 
           element={
             <ProtectedRoute>
               <MainLayout>

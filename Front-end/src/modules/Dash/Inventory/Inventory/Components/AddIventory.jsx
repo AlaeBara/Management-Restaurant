@@ -22,7 +22,7 @@ const InventorySchema = z.object({
         required_error: "La quantité d'alerte est obligatoire.",
         invalid_type_error: "La quantité d'alerte est obligatoire.",
     })
-      .positive({ message: "Le facteur de conversion doit être un nombre positif." }),
+    .nonnegative({ message: "Le facteur de conversion doit être un nombre positif." }),
 
     storageId: z
         .string()
