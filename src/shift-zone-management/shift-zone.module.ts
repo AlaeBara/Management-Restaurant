@@ -6,12 +6,13 @@ import { ZoneTableModule } from 'src/zone-table-management/zone-table.module';
 import { ShiftZoneService } from './services/shift-zone.service';
 import { ShiftZoneController } from './controllers/shift-zone.controller';
 import { ShiftReassignmentRequest } from './entities/shift-reassignment-request.entity';
+import { ShiftZonePermissionSeeder } from './seeders/shift.permission';
 
 
 @Module({
-    imports: [TypeOrmModule.forFeature([ShiftZone,ShiftReassignmentRequest]), forwardRef(() => UserManagementModule), forwardRef(() => ZoneTableModule)],
+    imports: [TypeOrmModule.forFeature([ShiftZone, ShiftReassignmentRequest]), forwardRef(() => UserManagementModule), forwardRef(() => ZoneTableModule)],
     controllers: [ShiftZoneController],
-    providers: [ShiftZoneService],
-    exports: [],
+    providers: [ShiftZoneService, ShiftZonePermissionSeeder],
+    exports: [ShiftZonePermissionSeeder],
 })
 export class ShiftZoneModule { }

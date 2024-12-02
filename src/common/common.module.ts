@@ -9,11 +9,12 @@ import { SupplierModule } from 'src/supplier-management/supplier.module';
 import { StorageModule } from 'src/storage-management/storage.module';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { ProductManagementModule } from 'src/product-management/product.module';
+import { ShiftZoneModule } from 'src/shift-zone-management/shift-zone.module';
 
 @Global()
 @Module({
   imports: [UserManagementModule, ZoneTableModule, ClientManagementModule,
-    UnitModule, SupplierModule, StorageModule, InventoryModule, ProductManagementModule],
+    UnitModule, SupplierModule, StorageModule, InventoryModule, ProductManagementModule,ShiftZoneModule],
   controllers: [],
   providers: [MailService, MasterSeeder],
   exports: [MailService],

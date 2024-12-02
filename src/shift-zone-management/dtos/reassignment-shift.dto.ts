@@ -1,13 +1,13 @@
 import { ApiProperty } from "@nestjs/swagger";
 import { IsNotEmpty, IsNumber, IsOptional, IsString, IsUUID } from "class-validator";
-export class CreateEndShiftDTO {
-    /* @IsNotEmpty()
+export class ReassignmentShiftDTO {
+    @IsNotEmpty()
     @IsUUID()
-    @ApiProperty({ description: 'The zone id', example: 'e7d9fd91-ac0e-4289-986f-46416f30ccbf', required: true })
-    zoneId: string; */
+    @ApiProperty({ description: 'The Shift id', example: 'e7d9fd91-ac0e-4289-986f-46416f30ccbf', required: true })
+    zoneId: string;
 
-    @IsNumber()
+ /*    @IsNumber()
     @IsNotEmpty()
     @ApiProperty({ description: 'The waiter id', example: 'e7d9fd91-ac0e-4289-986f-46416f30ccbf', required: true })
-    waiterId: number;
+    RequestWaiterId: number; */
 }

@@ -15,6 +15,7 @@ import { InventoryMovementPermissionSeeder } from 'src/inventory-managemet/seede
 import { InventoryPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-permission.seeder';
 import { CategoryPermissionSeeder } from 'src/product-management/seeders/category-permission.seeder';
 import { ProductPermissionSeeder } from 'src/product-management/seeders/product-permission.seeder';
+import { ShiftZonePermissionSeeder } from 'src/shift-zone-management/seeders/shift.permission';
 
 @Injectable()
 export class MasterSeeder {
@@ -33,7 +34,8 @@ export class MasterSeeder {
         private readonly inventoryPermissionSeeder: InventoryPermissionSeeder,
         private readonly inventoryMovementPermissionSeeder: InventoryMovementPermissionSeeder,
         private readonly categoryPermissionSeeder: CategoryPermissionSeeder,
-        private readonly productPermissionSeeder: ProductPermissionSeeder
+        private readonly productPermissionSeeder: ProductPermissionSeeder,
+        private readonly shiftZonePermissionSeeder:ShiftZonePermissionSeeder
 
     ) { }
 
@@ -53,6 +55,8 @@ export class MasterSeeder {
         await this.inventoryMovementPermissionSeeder.seed();
         await this.categoryPermissionSeeder.seed();
         await this.productPermissionSeeder.seed();
+        await this.shiftZonePermissionSeeder.seed();
+
         console.log('All seeders executed');
     }
 }

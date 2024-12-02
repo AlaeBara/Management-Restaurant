@@ -2,6 +2,7 @@ import { Entity, Column, CreateDateColumn, ManyToOne, JoinColumn } from 'typeorm
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Zone } from 'src/zone-table-management/entities/zone.entity';
 import { User } from 'src/user-management/entities/user.entity';
+import { RequestShiftStatus } from '../enums/request-shift.enum';
 
 @Entity(process.env.DATASET_PREFIX + 'shift_reassignment_request')
 export class ShiftReassignmentRequest extends BaseEntity {
@@ -21,8 +22,8 @@ export class ShiftReassignmentRequest extends BaseEntity {
     @JoinColumn({ name: 'approvedById' })
     approvedBy: User; // The manager or current waiter who approved the reassignment
 
-    @Column({ type: 'enum', enum: ['PENDING', 'ACCEPTED', 'REJECTED'], default: 'PENDING' })
-    status: 'PENDING' | 'ACCEPTED' | 'REJECTED'; // The status of the reassignment request
+    @Column({ type: 'enum', enum: RequestShiftStatus, default: RequestShiftStatus.PENDING })
+    status: RequestShiftStatus; // The status of the reassignment request
 
     @CreateDateColumn({ type: 'timestamp' })
     requestedAt: Date; // When the reassignment request was made
