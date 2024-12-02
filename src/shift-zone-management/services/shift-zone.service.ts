@@ -15,6 +15,8 @@ import { ShiftReassignmentRequest } from "../entities/shift-reassignment-request
 import { RequestShiftStatus } from "../enums/request-shift.enum";
 import { ResponseReassignmentRequestDTO } from "../dtos/response-reassignment-request.dto";
 import { REDIRECT_METADATA } from "@nestjs/common/constants";
+import { User } from "src/user-management/entities/user.entity";
+import { Zone } from "src/zone-table-management/entities/zone.entity";
 
 @Injectable()
 export class ShiftZoneService extends GenericService<ShiftZone> {
@@ -49,12 +51,7 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
         const waiter = await this.userService.findOneByIdWithOptions(request['user'].sub);
         const zone = await this.zoneService.findOneByIdWithOptions(createStartShift.zoneId)
 
-        const shiftZone = this.shiftZoneRepository.create();
-        shiftZone.waiter = waiter;
-        shiftZone.auditingUser = waiter;
-        shiftZone.zone = zone;
-        shiftZone.actionType = ShiftZoneActionType.START;
-        const shift = await this.shiftZoneRepository.save(shiftZone);
+        const shift = await this.initializeShift(waiter, zone, ShiftZoneActionType.START, waiter);
 
         zone.currentWaiter = waiter;
         zone.status = ZoneStatus.ASSIGNED;
@@ -63,9 +60,15 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
         return shift;
     }
 
-    /*  async initializeShift(): Promise<ShiftZone> {
- 
-     } */
+    async initializeShift(waiter: User, zone: Zone, actionType: ShiftZoneActionType, auditingUser: User, requestReassignment?: ShiftReassignmentRequest): Promise<ShiftZone> {
+        const Shift = this.shiftZoneRepository.create();
+        Shift.waiter = waiter;
+        Shift.auditingUser = auditingUser;
+        Shift.zone = zone;
+        Shift.actionType = actionType;
+        Shift.reassignmentRequest = requestReassignment ? requestReassignment : null;
+        return await this.shiftZoneRepository.save(Shift);
+    }
 
     async endShiftByWaiter(createEndShift: EndShiftDTO, @Req() request: Request) {
         const lastShift = await this.shiftZoneRepository.findOne({
@@ -83,14 +86,13 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
             throw new BadRequestException('You are not authorized to end this shift.');
         }
 
-        const shiftZone = this.shiftZoneRepository.create();
-        shiftZone.waiter = shiftZone.auditingUser = lastShift.waiter;
-        shiftZone.zone = lastShift.zone;
-        shiftZone.actionType = ShiftZoneActionType.END;
+        await this.initializeShift(lastShift.waiter, lastShift.zone, ShiftZoneActionType.END, lastShift.auditingUser, null);
+
+
         lastShift.zone.status = ZoneStatus.AVAILABLE;
         lastShift.zone.currentWaiter = null;
         await this.zoneService.zoneRepository.save(lastShift.zone);
-        return await this.shiftZoneRepository.save(shiftZone);
+        return;
     }
 
     async requestReassignmentShift(reassignment: ReassignmentShiftDTO, @Req() request: Request) {
@@ -180,14 +182,7 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
                 return;
         }
 
-
-        const reassignShift = this.shiftZoneRepository.create();
-        reassignShift.waiter = requestReassignment.requestedWaiter;
-        reassignShift.zone = requestReassignment.zone;
-        reassignShift.auditingUser = auditingUser;
-        reassignShift.actionType = ShiftZoneActionType.REASSIGN;
-        reassignShift.reassignmentRequest = requestReassignment;
-        await this.shiftZoneRepository.save(reassignShift);
+        await this.initializeShift(requestReassignment.requestedWaiter, requestReassignment.zone, ShiftZoneActionType.REASSIGN, auditingUser, requestReassignment);
 
         const zone = await this.zoneService.findOneByIdWithOptions(requestReassignment.zone.id)
 
