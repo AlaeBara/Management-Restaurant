@@ -12,6 +12,7 @@
     width: 100%;
     max-width: 400px;
     max-height: fit-content;
+    cursor: pointer;
 }
 
 .zoneCart:hover {

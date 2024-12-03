@@ -35,7 +35,7 @@ const CartFund = ({ fund,Delete }) => {
     
     return (
         <>
-            <div className={style.zoneCart}>
+            <div className={style.zoneCart} onClick={()=>navigate(`/dash/caisses/detail/${fund.id}`)}>
 
                 <div className={style.header}>
 

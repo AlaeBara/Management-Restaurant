@@ -1,0 +1,143 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
+.container {
+    padding: 10px;
+    border-radius: 8px;
+}
+
+.header h1{
+    font-size: 25px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+}
+
+.header p{
+    font-size: 16px;
+    color: #666;
+}
+
+.ProduitDetails {
+    margin-top: 30px;
+    position: relative;
+}
+
+.ProduitCart {
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    width: 100%; 
+    border: 1px solid #e0e0e0;
+}
+
+.ProduitDetails h1 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    z-index: 1;
+}
+
+.ProduitInfo {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    justify-content: space-between;
+    width: 100%;
+    gap: 20px;
+}
+
+.infoItem h2{
+    text-transform: capitalize;
+}
+
+.label {
+    color: #666;
+    display: block;
+    font-family: "Poppins", sans-serif;
+}
+
+
+.notfound {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+    margin-top: 5%;
+}
+
+.icon {
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 20px;
+    color: #f44336; 
+}
+
+
+.addBtn{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: #000000;
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+@media (max-width: 600px) {
+    .addBtn{
+        font-size: 10px;
+    }
+}
+
+
+
+
+/* inventory */
+
+.inventorys {
+    margin-top: 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.divBtn{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    align-items: center;
+    margin: 20px 0;
+}
+
+.inventorysTitle {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+}
+
+.inventorysDescription{
+    font-size: 16px;
+    color: #666;
+    font-family: "Poppins", sans-serif;
+}
+
+
+
+
+
+/* table */
+
+
+/* .userGrid {
+    margin-top: 30px;
+    max-width: 100%; 
+} */
