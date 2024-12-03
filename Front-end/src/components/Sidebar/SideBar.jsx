@@ -21,7 +21,8 @@ import {
   Boxes ,
   ShoppingBag ,
   Component,
-  ClipboardList
+  ClipboardList,
+  Banknote
 } from "lucide-react"
 
 import {
@@ -151,6 +152,11 @@ const SideBar = () => {
             title: "Inventaires",
             icon: ClipboardList  ,
             url: "/dash/inventaires",
+          },
+          { 
+            title: "Caisses",
+            icon: Banknote,
+            url: "/dash/caisses",
           },
         ],
       },
