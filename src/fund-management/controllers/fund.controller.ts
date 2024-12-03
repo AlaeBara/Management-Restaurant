@@ -5,12 +5,14 @@ import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Fund } from "../entities/fund.entity";
 import { CreateFundDto } from "../dtos/fund/create-fund.dto";
 import { UpdateFundDto } from "../dtos/fund/update-fund.dto";
+import { FundOperationService } from "../services/fund-operation.service";
+import { FundOperationEntity } from "../entities/fund-operation.entity";
 @Controller('api/funds')
 @ApiTags('Fund Management - Funds')
 @ApiBearerAuth()
 export class FundController {
 
-    constructor(private readonly fundService: FundService) { }
+    constructor(private readonly fundService: FundService,private readonly fundOperationService:FundOperationService) { }
 
     @Get()
     @Permissions('view-funds')
@@ -91,5 +93,35 @@ export class FundController {
         await this.fundService.findOneByIdWithOptions(id, { onlyDeleted: true });
         await this.fundService.restoreByUUID(id, true, ['sku']);
         return {message: 'Your fund has been RESTORED successfully', status: 200};
+    }
+
+    @Get(':id/operations')
+    @Permissions('view-fund-operations')
+    @ApiOperation({ summary: 'Get all Operation by Fund id' })
+    async findAllByInventoryId(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('relations') relations?: string[],
+        @Query('sort') sort?: string,
+        @Query('withDeleted') withDeleted?: boolean,
+        @Query('onlyDeleted') onlyDeleted?: boolean,
+        @Query('select') select?: string[],
+        @Query() query?: any,
+    ): Promise<{ data: FundOperationEntity[]; total: number; page: number; limit: number }> {
+        console.log('Search:', query);
+        return await this.fundOperationService.findAll(
+            page,
+            limit,
+            relations,
+            sort,
+            withDeleted,
+            onlyDeleted,
+            select,
+            query,
+            [
+                { fund: { id } },
+            ],
+        );
     }
 }
