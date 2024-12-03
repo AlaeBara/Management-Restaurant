@@ -36,6 +36,7 @@ const FundDetails = () => {
                     <p>Consultez les informations détaillées de la Caisse sélectionné</p>
                 </div>
 
+
                 {loading ? (
                     <div className="mt-5">
                         <Spinner title="Chargement des données..." />
