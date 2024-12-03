@@ -8,8 +8,7 @@ import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
 import {useFetchFunds} from './hooks/useFetchFunds'
 import CartFund from './Components/CartFund'
-
-
+import {useDeleteFund} from './hooks/useDeleteFund'
 
 const Inventory= () => {
     const  navigate = useNavigate()
@@ -36,7 +35,8 @@ const Inventory= () => {
         fetchFunds({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchFunds]);
 
-    
+    const {deleteFund}= useDeleteFund(fetchFunds)
+
   return (
     <div className={style.container}>
 
@@ -75,7 +75,7 @@ const Inventory= () => {
                     <>
                         <div className={style.userGrid}>
                             {funds.map(fund => (
-                                <CartFund key={fund.id} fund={fund}/>
+                                <CartFund key={fund.id} fund={fund} Delete={deleteFund}/>
                             ))}
                         </div>
 

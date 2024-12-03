@@ -3,7 +3,7 @@ import style from "./CartFund.module.css";
 import { useNavigate } from 'react-router-dom';
 import { Edit, Trash2, Banknote } from 'lucide-react';
 
-const CartFund = ({ fund }) => {
+const CartFund = ({ fund,Delete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -19,7 +19,7 @@ const CartFund = ({ fund }) => {
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        // Delete(id)
+        Delete(id)
     };
     
     const handleEdit = (id, e) => {
