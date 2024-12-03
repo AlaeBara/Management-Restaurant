@@ -8,7 +8,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import {formatDate }from '@/components/dateUtils/dateUtils'
 import {useFetchFund} from './hooks/useFetchFund'
 import{Ban,SearchX,Plus}from 'lucide-react'
-
+import {useGetOperationFund} from './Hooks/useGetOperationFund'
 
 const FundDetails = () => {
     const navigate = useNavigate()
@@ -20,10 +20,10 @@ const FundDetails = () => {
         fetchFund();
     }, [fetchFund]);
 
-    // const {inventorysMovements, totalIventoryMovement, Isloading, message, fetchIventoryMovement}= useFetchAdjustemetByInventory(id_iventory)
-    // useEffect(() => {
-    //     fetchIventoryMovement({fetchAll:true});
-    // }, [fetchIventoryMovement]);
+    const { operations, totalOperations, Isloading, message, fetchOperation }= useGetOperationFund(id)
+    useEffect(() => {
+        fetchOperation ({fetchAll:true});
+    }, [fetchOperation ]);
 
 
     return (
@@ -93,12 +93,18 @@ const FundDetails = () => {
                 )}
                 
 
-                {/* <div className={styles.inventorys}>
+                <div className={styles.inventorys}>
                     <div>
-                        <h2 className={styles.inventorysTitle}>Inventaires :</h2>
-                        <p className={styles.inventorysDescription}>Consultez les informations détaillées du produit sélectionné</p>
+                        <h2 className={styles.inventorysTitle}>Les Operations :</h2>
+                        <p className={styles.inventorysDescription}>Consultez les informations détaillées des opérations de cette caisse</p>
                     </div>
-                </div> */}
+
+                    <div className={styles.btnadd}>
+                        <button onClick={() => navigate(`/dash/caisses/detail/${id}/ajouter-operation`)} className={styles.showFormButton}>
+                            <Plus className="mr-3 h-4 w-4 " /> Ajouter Operation
+                        </button> 
+                    </div>
+                </div>
 
 
                 {/* <div>

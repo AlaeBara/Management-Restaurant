@@ -60,6 +60,7 @@ const AddFund =lazy(()=>import('@/modules/Dash/Fund/Components/AddFund'))
 const UpdateFund =lazy(()=>import('@/modules/Dash/Fund/Components/UpdateFund'))
 const DeletedFund =lazy(()=>import('@/modules/Dash/Fund/Components/DeletedFund')) 
 const DetailsFund =lazy(()=>import('@/modules/Dash/Fund/Details/DetailsFund'))
+const AddOperation =lazy(()=>import('@/modules/Dash/Fund/Details/Components/AddOperation'))
 
 
 const ClientRoutes = () => {
@@ -653,6 +654,16 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <DetailsFund/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/caisses/detail/:id/ajouter-operation" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddOperation/>
               </MainLayout>
             </ProtectedRoute>
           } 
