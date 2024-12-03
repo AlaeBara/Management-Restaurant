@@ -9,6 +9,8 @@ import {formatDate }from '@/components/dateUtils/dateUtils'
 import {useFetchFund} from './hooks/useFetchFund'
 import{Ban,SearchX,Plus}from 'lucide-react'
 import {useGetOperationFund} from './Hooks/useGetOperationFund'
+import TableauOperation from './Components/TableauOpertion'
+import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 
 const FundDetails = () => {
     const navigate = useNavigate()
@@ -21,9 +23,27 @@ const FundDetails = () => {
     }, [fetchFund]);
 
     const { operations, totalOperations, Isloading, message, fetchOperation }= useGetOperationFund(id)
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    //pagination
+    const totalPages = Math.ceil(totalOperations / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+           setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+           setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalOperations);
+
+    
     useEffect(() => {
-        fetchOperation ({fetchAll:true});
-    }, [fetchOperation ]);
+        fetchOperation({page: currentPage, limit :limit});
+    }, [currentPage, limit,  fetchOperation]);
 
 
     return (
@@ -106,8 +126,7 @@ const FundDetails = () => {
                     </div>
                 </div>
 
-
-                {/* <div>
+                <div>
                     {Isloading ? (
                         <div className="mt-5">
                             <Spinner title="Chargement des données..." />
@@ -119,21 +138,30 @@ const FundDetails = () => {
                     </div>
                     ) : (
                         <>
-                            {inventorysMovements.length > 0 ? (
+                            {operations.length > 0 ? (
                             <>
                                 <div className={styles.userGrid}>
-                                    <ResponsiveTable data={inventorysMovements} />
+                                    <TableauOperation data={operations} />
                                 </div>
+                                <PaginationNav
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    startItem={startItem}
+                                    endItem={endItem}
+                                    numberOfData={totalOperations}
+                                    onPreviousPage={handlePreviousPage}
+                                    onNextPage={handleNextPage}
+                                />
                             </>
                             ) : (
                             <div className={styles.notfound}>
                                 <SearchX className={styles.icon} />
-                                <h1>Aucun inventaire movement trouvé.</h1>
+                                <h1>Aucun Operation trouvé.</h1>
                             </div>
                             )}
                         </>
                     )}
-                </div> */}
+                </div>
 
             </div>
 
