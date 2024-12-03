@@ -24,7 +24,7 @@ const CartFund = ({ fund }) => {
     
     const handleEdit = (id, e) => {
         e.stopPropagation();
-        navigate(`#`);
+        navigate(`/dash/caisses/mettre-à-jour-caisse/${id}`);
     };
 
     const [isExpanded, setIsExpanded] = useState(false);

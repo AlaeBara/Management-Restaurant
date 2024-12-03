@@ -57,6 +57,10 @@ const AddInventoryMovement =lazy(()=>import('@/modules/Dash/Inventory/Inventory/
 const DetailInventory =lazy(()=>import('@/modules/Dash/Inventory/Inventory/Details/DetailInventory'))
 const Fund = lazy(()=>import('@/modules/Dash/Fund/Fund'))
 const AddFund =lazy(()=>import('@/modules/Dash/Fund/Components/AddFund'))
+const UpdateFund =lazy(()=>import('@/modules/Dash/Fund/Components/UpdateFund'))
+
+
+
 
 const ClientRoutes = () => {
   return (
@@ -618,6 +622,16 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <AddFund/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/caisses/mettre-à-jour-caisse/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <UpdateFund/>
               </MainLayout>
             </ProtectedRoute>
           } 
