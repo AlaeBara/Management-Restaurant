@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
 import {useFetchFunds} from './hooks/useFetchFunds'
+import CartFund from './Components/CartFund'
 
 
 
@@ -14,6 +15,26 @@ const Inventory= () => {
     const  navigate = useNavigate()
 
     const { funds, totalFunds, loading, error, fetchFunds } = useFetchFunds()
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    //pagination
+    const totalPages = Math.ceil(totalFunds / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+           setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+           setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalFunds);
+   
+    useEffect(() => {
+        fetchFunds({page: currentPage, limit :limit});
+    }, [currentPage, limit, fetchFunds]);
 
     
   return (
@@ -38,10 +59,10 @@ const Inventory= () => {
             </button> 
         </div>
 
-        {/* <div>
+        <div>
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Inventaires..." />
+                <Spinner title="Chargement des Caisses..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -50,12 +71,12 @@ const Inventory= () => {
             </div>
             ) : (
                 <>
-                    {inventorys.length > 0 ? (
+                    {funds.length > 0 ? (
                     <>
                         <div className={style.userGrid}>
-                        {inventorys.map(inventory => (
-                            <CartInventory key={inventory.id} inventory={inventory} Delete={deleteInventory} />
-                        ))}
+                            {funds.map(fund => (
+                                <CartFund key={fund.id} fund={fund}/>
+                            ))}
                         </div>
 
                         <PaginationNav
@@ -63,7 +84,7 @@ const Inventory= () => {
                             totalPages={totalPages}
                             startItem={startItem}
                             endItem={endItem}
-                            numberOfData={totalIventory}
+                            numberOfData={totalFunds}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                         />
@@ -71,12 +92,12 @@ const Inventory= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Inventaire trouvé</h1>
+                        <h1>Aucun Caisses trouvé</h1>
                     </div>
                     )}
                 </>
             )}
-        </div> */}
+        </div>
 
 
 
