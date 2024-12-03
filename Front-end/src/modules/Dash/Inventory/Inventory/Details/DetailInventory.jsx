@@ -10,6 +10,7 @@ import {useInfoInventory} from './hooks/useFetchInfoInventory'
 import{Ban,SearchX,Plus}from 'lucide-react'
 import {useFetchAdjustemetByInventory} from './hooks/useFetchAdjustemetByInventory'
 import ResponsiveTable from './Components/tableau'
+import PaginationNav from '../../../UserManagments/User/Components/PaginationNav'
 
 const ProduitDetails = () => {
     const navigate = useNavigate()
@@ -22,9 +23,28 @@ const ProduitDetails = () => {
     }, [fetchInventory]);
 
     const {inventorysMovements, totalIventoryMovement, Isloading, message, fetchIventoryMovement}= useFetchAdjustemetByInventory(id_iventory)
+
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    //pagination
+    const totalPages = Math.ceil(totalIventoryMovement / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+           setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+           setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalIventoryMovement);
+
+    
     useEffect(() => {
-        fetchIventoryMovement({fetchAll:true});
-    }, [fetchIventoryMovement]);
+        fetchIventoryMovement({page: currentPage, limit :limit});
+    }, [currentPage, limit,  fetchIventoryMovement]);
 
     
 
@@ -115,6 +135,15 @@ const ProduitDetails = () => {
                                 <div className={styles.userGrid}>
                                     <ResponsiveTable data={inventorysMovements} />
                                 </div>
+                                <PaginationNav
+                                    currentPage={currentPage}
+                                    totalPages={totalPages}
+                                    startItem={startItem}
+                                    endItem={endItem}
+                                    numberOfData={totalIventoryMovement}
+                                    onPreviousPage={handlePreviousPage}
+                                    onNextPage={handleNextPage}
+                                />
                             </>
                             ) : (
                             <div className={styles.notfound}>

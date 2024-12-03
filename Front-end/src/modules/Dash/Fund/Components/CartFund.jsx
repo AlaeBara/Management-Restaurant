@@ -1,18 +1,12 @@
 import React, { useState } from 'react';
 import style from "./CartFund.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, Banknote } from 'lucide-react';
+import { Edit, Trash2, Wallet } from 'lucide-react';
 
 const CartFund = ({ fund,Delete }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
-    const formatDate = (dateString) => {
-        if (!dateString) return "introuvable";
-        const date = new Date(dateString);
-        const formattedDate = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, '0')}-${String(date.getDate()).padStart(2, '0')}`;
-        const formattedTime = `${String(date.getHours()).padStart(2, '0')}:${String(date.getMinutes()).padStart(2, '0')}`;
-        return `${formattedDate} ${formattedTime}`;
-    }
+    
     const handleDelete = (e) => {
         e.stopPropagation();
         setIsModalVisible(true);
@@ -27,12 +21,7 @@ const CartFund = ({ fund,Delete }) => {
         navigate(`/dash/caisses/mettre-à-jour-caisse/${id}`);
     };
 
-    const [isExpanded, setIsExpanded] = useState(false);
-    const toggleExpand = (e) => {
-        e.stopPropagation();
-        setIsExpanded(!isExpanded);
-    };
-    
+
     return (
         <>
             <div className={style.zoneCart} onClick={()=>navigate(`/dash/caisses/detail/${fund.id}`)}>
@@ -40,29 +29,16 @@ const CartFund = ({ fund,Delete }) => {
                 <div className={style.header}>
 
                     <div className={style.zoneInfo}>
-                        <h3 className={style.zoneTitle}> <Banknote className="mr-2 " /> {fund.sku}  </h3>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Nom de la Caisse :</span> {fund.name}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Type de la Caisse :</span> {fund.type}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Actif :</span> {fund.isActive ? "Oui" : "Non"}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Description : </span> 
-                            {fund.description? (
-                                <>
-                                    {isExpanded || fund.description.length <= 20
-                                        ? fund.description
-                                        : `${fund.description.substring(0, 20 )}...`}
-                                    {fund.description.length > 20  && (
-                                        <button onClick={toggleExpand} className={style.toggleButton}>
-                                            {isExpanded ? 'Voir moins' : 'Voir plus'}
-                                        </button>
-                                    )}
-                                </>
-                            ) : (
-                                <span className={style.vide}> - </span>
-                            )}
-                        </p> 
-                        <div className={style.zoneLabel}>
-                            <span><span className={style.blacktext}>Créé le :</span> {formatDate(fund.createdAt)} </span>
+
+                        <div className={style.walleticon}>
+                            <Wallet className="h-5 w-5 text-muted-foreground" />
                         </div>
+
+    
+                        <p className={style.zoneLabel}>{fund.sku} </p>
+                        <h3 className={style.zoneTitle}> {fund.balance} Dh </h3>
+                        <p className={style.zoneLabel}>Cliquez pour voir les transactions</p>
+
                     </div>
 
                 </div>

@@ -22,7 +22,8 @@ import {
   ShoppingBag ,
   Component,
   ClipboardList,
-  Banknote
+  Banknote,
+  Wallet
 } from "lucide-react"
 
 import {
@@ -153,12 +154,20 @@ const SideBar = () => {
             icon: ClipboardList  ,
             url: "/dash/inventaires",
           },
+        ],
+        
+      },
+      {
+        title: "Gestion des finanace",
+        icon: CreditCard,
+        isActive: true,
+        items: [
           { 
             title: "Caisses",
-            icon: Banknote,
+            icon: Wallet,
             url: "/dash/caisses",
           },
-        ],
+        ], 
       },
     ],
     
@@ -174,7 +183,7 @@ const SideBar = () => {
 
   // Recursive function to render menu items
   const renderMenuItem = (item) => {
-    const [isOpen, setIsOpen] = useState(item.isActive);
+    const [isOpen, setIsOpen] = useState(false);
     const hasSubMenu = (item.items?.length > 0 || item.subItems?.length > 0);
 
     return (

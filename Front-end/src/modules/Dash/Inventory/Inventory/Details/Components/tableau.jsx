@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { 
-  ArrowUpCircle, 
-  ArrowDownCircle,
+  CirclePlus , 
+  CircleMinus,
   ChevronDown,
   ChevronUp
 } from 'lucide-react';
@@ -48,8 +48,8 @@ const TableauMouvementsInventaire = ({ data }) => {
     };
 
     return action === 'increase' 
-      ? <ArrowUpCircle {...proprietesIcone} /> 
-      : <ArrowDownCircle {...proprietesIcone} />;
+      ? <CirclePlus  {...proprietesIcone} /> 
+      : <CircleMinus {...proprietesIcone} />;
   };
 
   // Fonction pour obtenir le libellé du type de mouvement
@@ -64,7 +64,9 @@ const TableauMouvementsInventaire = ({ data }) => {
       <td className="p-3 text-sm">
         <div className="flex items-center">
           {afficherIconeAction(movement.movementAction)}
-          {movement.movementAction === 'increase' ? 'Augmentation' : 'Diminution'}
+          <span className={movement.movementAction === 'increase' ? 'text-green-500 mr-2' : 'text-red-500 mr-2'}>
+            {movement.movementAction === 'increase' ? 'Augmentation' : 'Diminution'}
+          </span>
         </div>
       </td>
       <td className="p-3 text-sm">
@@ -83,7 +85,7 @@ const TableauMouvementsInventaire = ({ data }) => {
     return (
       <>
         <tr 
-          className={`md:hidden grid grid-cols-2 gap-2 p-2 ${!isLast ? 'border-b' : ''} cursor-pointer`}
+          className={`md:hidden grid grid-cols-1 gap-2 p-2 ${!isLast ? 'border-b' : ''} cursor-pointer`}
           onClick={() => basculerExtensionLigne(movement.id)}
         >
           <td className="font-bold">

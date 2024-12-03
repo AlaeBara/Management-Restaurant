@@ -78,7 +78,7 @@ export default function Component() {
     const statuses = [
         { value: 'pending', label: 'En attente' },
         { value: 'approved', label: 'Approuvé' },
-      ];
+    ];
       
       
 

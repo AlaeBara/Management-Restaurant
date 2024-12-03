@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import style from "./CartFundDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
-import {RotateCcw, Trash2, Banknote } from 'lucide-react';
+import {RotateCcw, Wallet} from 'lucide-react';
 
 const CartFund = ({ fund,Restore }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
@@ -32,35 +32,21 @@ const CartFund = ({ fund,Restore }) => {
         <>
             <div className={style.zoneCart}>
 
-                <div className={style.header}>
+            <div className={style.header}>
 
-                    <div className={style.zoneInfo}>
-                        <h3 className={style.zoneTitle}> <Banknote className="mr-2 " /> {fund.sku}  </h3>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Nom de la Caisse :</span> {fund.name}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Type de la Caisse :</span> {fund.type}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Actif :</span> {fund.isActive ? "Oui" : "Non"}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Description : </span> 
-                            {fund.description? (
-                                <>
-                                    {isExpanded || fund.description.length <= 15
-                                        ? fund.description
-                                        : `${fund.description.substring(0, 15)}...`}
-                                    {fund.description.length > 15 && (
-                                        <button onClick={toggleExpand} className={style.toggleButton}>
-                                            {isExpanded ? 'Voir moins' : 'Voir plus'}
-                                        </button>
-                                    )}
-                                </>
-                            ) : (
-                                <span className={style.vide}> - </span>
-                            )}
-                        </p> 
-                        <div className={style.zoneLabel}>
-                            <span><span className={style.blacktext}>Créé le :</span> {formatDate(fund.createdAt)} </span>
-                        </div>
+                <div className={style.zoneInfo}>
+
+                    <div className={style.walleticon}>
+                        <Wallet className="h-5 w-5 text-muted-foreground" />
                     </div>
 
+
+                    <p className={style.zoneLabel}>{fund.sku} </p>
+                    <h3 className={style.zoneTitle}> {fund.balance} Dh </h3>
+
                 </div>
+
+            </div>
 
                 <div className={`${style.actions}`}>
                     <button

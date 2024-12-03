@@ -46,6 +46,22 @@ const FundDetails = () => {
     }, [currentPage, limit,  fetchOperation]);
 
 
+    const TypeFunds = [
+        { value: 'main', label: 'Principal' },
+        { value: 'waiters', label: 'Serveurs' },
+        { value: 'kitchen', label: 'Cuisine' },
+        { value: 'bar', label: 'Bar' },
+        { value: 'delivery', label: 'Livraison' },
+        { value: 'online', label: 'En ligne' },
+        { value: 'other', label: 'Autre' },
+    ];
+
+    const obtenirLibelleType = (valeur) => {
+        const type = TypeFunds.find(t => t.value === valeur);
+        return type ? type.label : valeur;
+    };
+
+
     return (
         <>
             <ToastContainer position="top-right" autoClose={3000} />
@@ -83,7 +99,7 @@ const FundDetails = () => {
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Type de la Caisse :</span>
-                                            <h2>{fund.type}</h2>
+                                            <h2>{obtenirLibelleType(fund.type)}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Solde :</span>

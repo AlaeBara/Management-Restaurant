@@ -31,6 +31,10 @@ const transactionTypes = [
     { value: 'chargeback-refund', label: 'Remboursement de rétrofacturation' },
     { value: 'chargeback-charge', label: 'Frais de rétrofacturation' }
 ];
+const statuses = [
+  { value: 'pending', label: 'En attente' },
+  { value: 'approved', label: 'Approuvé' },
+];
 
 const TableauMouvementsInventaire = ({ data }) => {
   const [lignesExtendues, setLignesExtendues] = useState({});
@@ -61,6 +65,11 @@ const TableauMouvementsInventaire = ({ data }) => {
     return type ? type.label : valeur;
   };
 
+  const obtenirLibellestatus = (valeur) => {
+    const type = statuses.find(t => t.value === valeur);
+    return type ? type.label : valeur;
+  };
+
   const LigneDesktop = ({ operation, isLast }) => (
     <tr className={`hidden md:table-row ${!isLast ? 'border-b border-gray-200' : ''}`}>
       <td className="p-3 text-sm">{obtenirLibelleType(operation.operation)}</td>
@@ -74,10 +83,10 @@ const TableauMouvementsInventaire = ({ data }) => {
         </div>
       </td>
       <td className="p-3 text-sm">
-        {operation.amount}
+        {operation.amount} Dh
       </td>
       <td className="p-3 text-sm">{formatDate(operation.dateOperation)}</td>
-      <td className="p-3 text-sm">{operation.status}</td>
+      <td className="p-3 text-sm">{obtenirLibellestatus(operation.status)}</td>
       <td className="p-3 text-sm">{operation.reference || "-"}</td>
       <td className="p-3 text-sm">{operation.note || "-"}</td>
       <td className="p-3 text-sm">{formatDate(operation.updatedAt)}</td>
@@ -94,7 +103,7 @@ const TableauMouvementsInventaire = ({ data }) => {
     return (
       <>
         <tr 
-          className={`md:hidden grid grid-cols-2 gap-2 p-2 ${!isLast ? 'border-b' : ''} cursor-pointer`}
+          className={`md:hidden grid grid-cols-1 gap-2 p-2 ${!isLast ? 'border-b' : ''} cursor-pointer`}
           onClick={() => basculerExtensionLigne(operation.id)}
         >
           <td className="font-bold">
@@ -116,13 +125,16 @@ const TableauMouvementsInventaire = ({ data }) => {
                 <div className="font-semibold">Type:</div>
                 <div>{obtenirLibelleType(operation.operation)}</div>
 
+                <div className="font-semibold">Montant:</div>
+                <div>{operation.amount} Dh</div>
+
                 <div className="font-semibold">Date l'Operation:</div>
                 <div>
                   {formatDate(operation.dateOperation)}
                 </div>
                 
                 <div className="font-semibold">Status:</div>
-                <div>{operation.status}</div>
+                <div>{obtenirLibellestatus(operation.status)}</div>
                 
                 <div className="font-semibold">Référence:</div>
                 <div>{operation.reference || "-"}</div>

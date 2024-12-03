@@ -12,6 +12,7 @@
     width: 100%;
     max-width: 400px;
     max-height: fit-content;
+    cursor: pointer;
 }
 
 .zoneCart:hover {
@@ -32,20 +33,20 @@
 
 .zoneTitle {
     display: flex;
-    font-size: 18px;
+    font-size: 28px;
     font-weight: 600;
     color: #333;
-    margin: 0 0 4px 0;
     text-transform: capitalize;
-    margin-bottom: 20px;
+    font-family: "Poppins", sans-serif;
 }
 
 .zoneLabel {
     font-size: 14px;
     color: #666;
-    margin: 0;
+    margin-bottom: 10px;
     font-family: "Poppins", sans-serif;
 }
+
 
 .dateInfo {
     font-size: 12px;
@@ -103,6 +104,7 @@
 }
 
 
+
 .blacktext{
     color: #000000;
 }
@@ -122,4 +124,11 @@
     .actionButton {
         flex: 1;
     }
+}
+
+
+
+.walleticon{
+    display: flex;
+    justify-content: end;
 }
