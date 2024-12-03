@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
-import style from "./CartFund.module.css";
+import style from "./CartFundDeleted.module.css";
 import { useNavigate } from 'react-router-dom';
-import { Edit, Trash2, Banknote } from 'lucide-react';
+import {RotateCcw, Trash2, Banknote } from 'lucide-react';
 
-const CartFund = ({ fund,Delete }) => {
+const CartFund = ({ fund,Restore }) => {
     const [isModalVisible, setIsModalVisible] = useState(false);
     const navigate = useNavigate()
     const formatDate = (dateString) => {
@@ -19,14 +19,9 @@ const CartFund = ({ fund,Delete }) => {
     };
     const confirmDelete = (id) => {
         setIsModalVisible(false)
-        Delete(id)
+        Restore(id)
     };
     
-    const handleEdit = (id, e) => {
-        e.stopPropagation();
-        navigate(`/dash/caisses/mettre-à-jour-caisse/${id}`);
-    };
-
     const [isExpanded, setIsExpanded] = useState(false);
     const toggleExpand = (e) => {
         e.stopPropagation();
@@ -47,10 +42,10 @@ const CartFund = ({ fund,Delete }) => {
                         <p className={style.zoneLabel}><span className={style.blacktext}>Description : </span> 
                             {fund.description? (
                                 <>
-                                    {isExpanded || fund.description.length <= 20
+                                    {isExpanded || fund.description.length <= 15
                                         ? fund.description
-                                        : `${fund.description.substring(0, 20 )}...`}
-                                    {fund.description.length > 20  && (
+                                        : `${fund.description.substring(0, 15)}...`}
+                                    {fund.description.length > 15 && (
                                         <button onClick={toggleExpand} className={style.toggleButton}>
                                             {isExpanded ? 'Voir moins' : 'Voir plus'}
                                         </button>
@@ -69,16 +64,10 @@ const CartFund = ({ fund,Delete }) => {
 
                 <div className={`${style.actions}`}>
                     <button
-                        onClick={(e) => handleEdit(fund.id, e)}
+                        onClick={handleDelete}
                         className={`${style.actionButton} ${style.editButton}`}
                     >
-                        <Edit className="mr-2 h-4 w-4" /> Modifier
-                    </button>
-                    <button
-                        onClick={handleDelete}
-                        className={`${style.actionButton} ${style.deleteButton}`}
-                    >
-                        <Trash2 className="mr-2 h-4 w-4" /> Supprimer
+                        <RotateCcw className="mr-2 h-4 w-4" /> Restaurer
                     </button>
                 </div>
             </div>
@@ -86,9 +75,9 @@ const CartFund = ({ fund,Delete }) => {
             {isModalVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+                        <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer la Caisse "{fund?.name}" ?
+                            Êtes-vous sûr de vouloir restaurer la Caisse "{fund?.name}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button
@@ -101,7 +90,7 @@ const CartFund = ({ fund,Delete }) => {
                                 onClick={()=>confirmDelete(fund.id)}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                Supprimer
+                                Restaurer
                             </button>
                         </div>
                     </div>

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import style from './Fund.module.css'
+import style from '../Fund.module.css'
 import { useNavigate } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import PaginationNav from '../UserManagments/User/Components/PaginationNav'
+import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-import {useFetchFunds} from './hooks/useFetchFunds'
-import CartFund from './Components/CartFund'
-import {useDeleteFund} from './hooks/useDeleteFund'
+import {useFetchFundsDeleted } from '../hooks/useFetchFundsDeleted'
+import CartFundDeleted from './CartFundDeleted'
+import {useRestoreFund} from '../hooks/useRestoreFund'
 
 const Funds= () => {
     const  navigate = useNavigate()
 
-    const { funds, totalFunds, loading, error, fetchFunds } = useFetchFunds()
+    const { funds, totalFunds, loading, error, fetchFunds } = useFetchFundsDeleted ()
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
     //pagination
@@ -35,7 +35,7 @@ const Funds= () => {
         fetchFunds({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchFunds]);
 
-    const {deleteFund}= useDeleteFund(fetchFunds)
+    const {RestoreFund}= useRestoreFund(fetchFunds)
 
   return (
     <div className={style.container}>
@@ -44,25 +44,16 @@ const Funds= () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Caisses</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement toutes les caisses de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des caisses, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Caisses Supprimées</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des caisses supprimées de votre plateforme. Vous pouvez visualiser les caisses qui ont été supprimées et les restaurer si nécessaire.</p>
             </div>
         </div>
 
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/caisses/caisse-supprimés')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/> Caisses Supprimées
-            </button> 
-        
-            <button onClick={() => navigate('/dash/caisses/ajouter-caisse')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Caisse
-            </button> 
-        </div>
-
+    
         <div>
             {loading ? (
             <div className={style.spinner}>
-                <Spinner title="Chargement des Caisses..." />
+                <Spinner title="Chargement des Caisses Supprimées..." />
             </div>
             ) : error ? (
             <div className={style.notfound}>
@@ -75,7 +66,7 @@ const Funds= () => {
                     <>
                         <div className={style.userGrid}>
                             {funds.map(fund => (
-                                <CartFund key={fund.id} fund={fund} Delete={deleteFund}/>
+                                <CartFundDeleted key={fund.id} fund={fund} Restore={RestoreFund}/>
                             ))}
                         </div>
 
@@ -92,7 +83,7 @@ const Funds= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Caisses trouvé</h1>
+                        <h1>Aucun Caisses Supprimées trouvé</h1>
                     </div>
                     )}
                 </>
