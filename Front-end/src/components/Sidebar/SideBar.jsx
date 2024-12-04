@@ -25,7 +25,8 @@ import {
   Banknote,
   Wallet,
   DollarSign,
-  Shuffle
+  Shuffle,
+  Clock
 } from "lucide-react"
 
 import {
@@ -183,6 +184,18 @@ const SideBar = () => {
             icon: DollarSign,
             url: "/dash/dépenses",
           },
+        ], 
+      },
+      {
+        title: "Gestion des Quarts",
+        icon: Clock,
+        isActive: true,
+        items: [
+          { 
+            title: "Quarts",
+            icon: Clock,
+            url: "/dash/caisses",
+          }
         ], 
       },
     ],

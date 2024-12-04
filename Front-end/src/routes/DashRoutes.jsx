@@ -720,6 +720,15 @@ const ClientRoutes = () => {
           } 
         />
 
+        <Route 
+          path="/zones1" 
+          element={
+            <MainLayout>
+              <Zones1 />
+            </MainLayout>
+          } 
+        />
+
 
 
       </Routes>

@@ -1,6 +1,6 @@
 import React , {useState} from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
-import { Edit, Trash2 } from 'lucide-react';
+import { Edit, Trash2 , X } from 'lucide-react';
 import style from './TableCarts.module.css';
 import TableShape from './TableShap';
 
@@ -9,6 +9,7 @@ const TableCart = ({ table , Delete}) => {
   const {id} = useParams()
 
   const [isModalVisible, setIsModalVisible] = useState(false);
+  const [isInfoVisible, setIsInfoVisible] = useState(false);
 
   const formatDate = (dateString) => {
     if (!dateString) return "introuvable";
@@ -56,12 +57,15 @@ const TableCart = ({ table , Delete}) => {
   const confirmDelete = (id) => {
     setIsModalVisible(false)
     Delete(id)
-};
+  };
+  const handleShowInfo = () => {
+    setIsInfoVisible(true); 
+  };
 
 
   return (
     <>
-      <div className={style.zoneCart} onClick={() => navigate(`#`)}>
+      <div className={style.zoneCart} onClick={handleShowInfo}>
         <div className={style.header}>
           <div className={style.zoneInfo}>
             <h3 className={style.zoneTitle}>{table.tableName}</h3>
@@ -125,6 +129,44 @@ const TableCart = ({ table , Delete}) => {
                     </button>
                 </div>
             </div>
+        </div>
+      )}
+
+      {isInfoVisible && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="relative bg-white rounded-lg p-6 max-w-md w-full">
+            <div className="flex items-center justify-between mb-7">
+              <h3 className="text-lg font-semibold">Détails de la Table</h3>
+              <button
+                onClick={() => setIsInfoVisible(false)}
+                className="text-gray-700 focus:outline-none"
+              >
+                <X />
+              </button>
+            </div>
+            <div className="space-y-2">
+              <p><strong>Code de Table :</strong> {table.tableCode}</p>
+              <p><strong>Nom de Table :</strong> {table.tableName}</p>
+              <p><strong>Statut : </strong>
+                {table.tableStatus === 'available'
+                  ? 'Disponible'
+                  : table.tableStatus === 'reserved'
+                  ? 'Réservée'
+                  : table.tableStatus === 'occupied'
+                  ? 'Occupée'
+                  : 'Inconnu'}
+              </p>
+              <p><strong>État : </strong> {table.isActive ? 'Active' : 'Inactive'}</p>
+              <p><strong>Créée le : </strong> {formatDate(table.createdAt)}</p>
+              <div className="flex justify-center my-4">
+                <img
+                  src={table.qrcode}
+                  alt="QR Code"
+                   className="w-35 h-35 object-contain"
+                />
+              </div>
+            </div>
+          </div>
         </div>
       )}
   </>

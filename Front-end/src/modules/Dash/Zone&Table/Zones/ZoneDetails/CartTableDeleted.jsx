@@ -1,6 +1,6 @@
 import React , {useState} from 'react';
 import { useNavigate} from 'react-router-dom';
-import { Edit, Trash2 } from 'lucide-react';
+import { RotateCcw, Trash2 } from 'lucide-react';
 import style from './CartTableDeleted.module.css';
 import TableShape from '../Components/TableShap';
 
@@ -88,7 +88,7 @@ const CartTableDeleted= ({ table , Restore}) => {
                 className={`${style.actionButton} ${style.editButton}`}
                 onClick={(e) => handleDelete(e)}
             >
-                <Edit className="mr-2 h-4 w-4" /> Restaurer
+                <RotateCcw className="mr-2 h-4 w-4" /> Restaurer
             </button>
         </div>
       </div>
