@@ -95,8 +95,8 @@ const TableauMouvementsInventaire = ({ data }) => {
             </div>
         </td>
 
-        <td className="p-3 text-sm">
-            {operation.amount} Dh
+        <td className="p-3 text-sm whitespace-nowrap">
+          {operation.amount} Dh
         </td>
 
         <td className="p-3 text-sm">{formatDate(operation.dateOperation)}</td>

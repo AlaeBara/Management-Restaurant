@@ -23,7 +23,9 @@ import {
   Component,
   ClipboardList,
   Banknote,
-  Wallet
+  Wallet,
+  DollarSign,
+  Shuffle
 } from "lucide-react"
 
 import {
@@ -169,8 +171,13 @@ const SideBar = () => {
           },
           { 
             title: "Opérations",
-            icon: Wallet,
+            icon:  Shuffle,
             url: "/dash/opérations",
+          },
+          { 
+            title: "Dépenses",
+            icon: DollarSign,
+            url: "/dash/dépenses",
           },
         ], 
       },

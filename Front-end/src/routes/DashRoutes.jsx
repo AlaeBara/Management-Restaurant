@@ -63,6 +63,10 @@ const DetailsFund =lazy(()=>import('@/modules/Dash/Fund/Details/DetailsFund'))
 const AddOperation =lazy(()=>import('@/modules/Dash/Fund/Details/Components/AddOperation'))
 const Operation =lazy(()=>import('@/modules/Dash/Operation/Operation'))
 const ADDOperation = lazy(()=>import('@/modules/Dash/Operation/Components/AddOperation'))
+const Expense=lazy(()=>import('@/modules/Dash/Expense/Expense'))
+const AddExpense =lazy(()=>import('@/modules/Dash/Expense/Components/AddExpense'))
+
+
 
 
 const ClientRoutes = () => {
@@ -694,15 +698,30 @@ const ClientRoutes = () => {
           } 
         />
 
-        {/* Zones and table mock up */}
         <Route 
-          path="/zones1" 
+          path="/dépenses" 
           element={
-            <MainLayout>
-              <Zones1 />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout>
+                <Expense/>
+              </MainLayout>
+            </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/dépenses/ajouter-dépense" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddExpense/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+
+
       </Routes>
     </Suspense>
   );
