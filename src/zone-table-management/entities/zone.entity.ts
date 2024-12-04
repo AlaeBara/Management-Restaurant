@@ -26,6 +26,9 @@ export class Zone {
   @JoinColumn({ name: 'currentWaiterId' })
   currentWaiter: User
 
+  @RelationId((zone: Zone) => zone.currentWaiter)
+  currentWaiterId: string;
+
   @Column({ type: 'enum', enum: ZoneStatus, default: ZoneStatus.AVAILABLE })
   status: ZoneStatus;
 
