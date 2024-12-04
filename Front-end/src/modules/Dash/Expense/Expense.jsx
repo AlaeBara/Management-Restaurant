@@ -6,34 +6,34 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-// import {useFetchOperation} from './Hooks/useFetchOperation'
-// import TableauOperation from './Components/TableauOperation'
+import {useFetchExpense} from './hooks/useFetchExpense'
+import TableauExpense from './Components/TableauExpense'
 
 const Operation= () => {
     const  navigate = useNavigate()
 
-    // const { operations, totalOperations, Isloading, message, fetchOperation }= useFetchOperation()
-    // const [currentPage, setCurrentPage] = useState(1);
-    // const [limit] = useState(10);
-    // //pagination
-    // const totalPages = Math.ceil(totalOperations / limit);
-    // const handleNextPage = () => {
-    //     if (currentPage < totalPages) {
-    //        setCurrentPage(prev => prev + 1);
-    //     }
-    // };
-    // const handlePreviousPage = () => {
-    //     if (currentPage > 1) {
-    //        setCurrentPage(prev => prev - 1);
-    //     }
-    // };
-    // const startItem = (currentPage - 1) * limit + 1;
-    // const endItem = Math.min(currentPage * limit, totalOperations);
+    const { expenses, totalExpenses, Isloading, message, fetchExpense }= useFetchExpense()
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    //pagination
+    const totalPages = Math.ceil(totalExpenses / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+           setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+           setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalExpenses);
 
     
-    // useEffect(() => {
-    //     fetchOperation({page: currentPage, limit :limit});
-    // }, [currentPage, limit,  fetchOperation]);
+    useEffect(() => {
+        fetchExpense({page: currentPage, limit :limit});
+    }, [currentPage, limit,  fetchExpense]);
 
 
 
@@ -55,7 +55,7 @@ const Operation= () => {
             </button> 
         </div>
 
-        {/* <div>
+        <div>
             {Isloading ? (
                 <div className="mt-5">
                     <Spinner title="Chargement des données..." />
@@ -67,17 +67,17 @@ const Operation= () => {
             </div>
             ) : (
                 <>
-                    {operations.length > 0 ? (
+                    {expenses.length > 0 ? (
                     <>
                         <div>
-                            <TableauOperation data={operations} />
+                            <TableauExpense data={expenses} />
                         </div>
                         <PaginationNav
                             currentPage={currentPage}
                             totalPages={totalPages}
                             startItem={startItem}
                             endItem={endItem}
-                            numberOfData={totalOperations}
+                            numberOfData={totalExpenses}
                             onPreviousPage={handlePreviousPage}
                             onNextPage={handleNextPage}
                         />
@@ -90,7 +90,7 @@ const Operation= () => {
                     )}
                 </>
             )}
-        </div> */}
+        </div>
 
 
 

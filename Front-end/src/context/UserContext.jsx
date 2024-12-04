@@ -23,8 +23,8 @@ export const UserProvider = ({ children }) => {
           }
         );
         setUser(response.data);
+        console.log(response.data)
       } catch (error) {
-        console.error("the token expired");
         setUser(null); // Clear user if there was an error
       }
     }

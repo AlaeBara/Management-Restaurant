@@ -71,6 +71,8 @@ import { useUserContext } from '../../context/UserContext';
 const SideBar = () => {
   const { logout, user } = useUserContext();
 
+
+
   const data = {
     user: {
       name: "shadcn",
@@ -82,11 +84,13 @@ const SideBar = () => {
         title: "Gestion des utilisateurs",
         icon: Users,
         isActive: true,
+        // permissions: ["view_users", "view_roles","access-granted"],
         items: [
           { 
             title: "Utilisateurs",
             icon: User,
             url: "/dash/Create-User",
+            // permission: "access-granted",
           },
           { 
             title: "Rôles",
@@ -185,6 +189,11 @@ const SideBar = () => {
     
   }
 
+  const hasPermission = (permission) => {
+    return user?.permissions?.includes(permission);
+  };
+  
+
   // Function to handle navigation
   const handleNavigation = (url, e) => {
     if (url) {
@@ -197,6 +206,11 @@ const SideBar = () => {
   const renderMenuItem = (item) => {
     const [isOpen, setIsOpen] = useState(false);
     const hasSubMenu = (item.items?.length > 0 || item.subItems?.length > 0);
+
+
+    if (item.permission && !hasPermission(item.permission)) {
+      return null;  // Return nothing if the user does not have permission
+    }
 
     return (
       <Collapsible 
