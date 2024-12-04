@@ -10,7 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
-import {useFetchFund} from '../hooks/useFetchFund'
+import {useFetchFunds} from '../../Fund/hooks/useFetchFunds'
 
 
 
@@ -18,6 +18,12 @@ const operationSchema = z.object({
     operation: z
         .string()
         .nonempty({ message: "L'identifiant de l'operation est obligatoire." }),
+
+
+    fundId:z
+        .string()
+        .nonempty({ message: "La caisse est obligatoire." }),
+
     amount: z.coerce.number({
             required_error: "Le montant est obligatoire.",
             invalid_type_error: "Le montant  est obligatoire.",
@@ -48,12 +54,12 @@ export default function Component() {
     const navigate = useNavigate();
     const {id}=useParams()
 
-    const  {fund, loading, error, fetchFund} = useFetchFund(id)
+    const { funds, totalFunds, loading, error, fetchFunds } = useFetchFunds()
    
 
     useEffect(() => {
-        fetchFund();
-    }, [fetchFund]);
+        fetchFunds ({fetchAll:true});
+    }, [fetchFunds]);
 
     const transactionTypes = [
         { value: 'deposit', label: 'Dépôt' },
@@ -85,7 +91,7 @@ export default function Component() {
     const [formData, setFormData] = useState({
         operation: '',
         amount: null,
-        fundId: id,
+        fundId: '',
         note:null,
         reference : null,
         dateOperation:'',
@@ -120,7 +126,7 @@ export default function Component() {
             setFormData({
                 operation: '',
                 amount: null,
-                fundId: id,
+                fundId: '',
                 note:null,
                 reference: null,
                 dateOperation:'',
@@ -131,7 +137,7 @@ export default function Component() {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
-                onClose: () => navigate(`/dash/caisses/detail/${id}`),
+                onClose: () => navigate(`/dash/opérations`),
             });
         } catch (error) {
         if (error instanceof z.ZodError) {
@@ -157,7 +163,7 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Caisse : {fund.sku} - {fund.name}</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau opération</h1>
             <p className="text-base text-gray-600">
                 Remplissez les informations ci-dessous pour ajouter un nouveau opération au système.
             </p>
@@ -196,6 +202,35 @@ export default function Component() {
                             </Select>
                             {errors.operation && (
                                 <p className="text-xs text-red-500 mt-1">{errors.operation}</p>
+                            )}
+                        </div>
+
+                        <div className="space-y-2">
+                            <Label htmlFor="operation">Nom du fond de caisse  <span className='text-red-500 text-base'>*</span></Label>
+                            <Select
+                                id="fundId"
+                                name="fundId"
+                                value={formData.fundId  || ""}
+                                onValueChange={(value) => handleChange({ target: { name: 'fundId', value } })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionnez nom du fond de caisse" />
+                                </SelectTrigger>
+                                <SelectContent className="max-h-48 overflow-y-auto">
+                                    {funds.length > 0 ? (
+                                        funds
+                                            .map((fund) => (
+                                                <SelectItem key={fund.id} value={fund.id}>
+                                                   {fund.sku} - {fund.name}
+                                                </SelectItem>
+                                            ))
+                                    ) : (
+                                        <p className='text-sm'>Aucune donnée disponible</p>
+                                    )}
+                                </SelectContent>
+                            </Select>
+                            {errors.fundId && (
+                                <p className="text-xs text-red-500 mt-1">{errors.fundId}</p>
                             )}
                         </div>
 
@@ -304,7 +339,7 @@ export default function Component() {
                        
 
                         <div className="flex gap-4">
-                            <Button type="button" onClick={() => navigate(`/dash/caisses/detail/${id}`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
+                            <Button type="button" onClick={() => navigate(`/dash/opérations`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                 Annuler
                             </Button>
                             <Button type="submit" className="w-full">

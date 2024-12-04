@@ -167,6 +167,11 @@ const SideBar = () => {
             icon: Wallet,
             url: "/dash/caisses",
           },
+          { 
+            title: "Opérations",
+            icon: Wallet,
+            url: "/dash/opérations",
+          },
         ], 
       },
     ],

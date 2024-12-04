@@ -10,7 +10,6 @@ import {
 import {formatDate} from '@/components/dateUtils/dateUtils'
 
 
-
 // Liste des types de mouvements en français
 const transactionTypes = [
     { value: 'deposit', label: 'Dépôt' },
@@ -70,26 +69,45 @@ const TableauMouvementsInventaire = ({ data }) => {
     return type ? type.label : valeur;
   };
 
+
+
+
+
+
+
   const LigneDesktop = ({ operation, isLast }) => (
     <tr className={`hidden md:table-row ${!isLast ? 'border-b border-gray-200' : ''}`}>
-      <td className="p-3 text-sm">{obtenirLibelleType(operation.operation)}</td>
-      <td className="p-3 text-sm">
-        <div className="flex items-center">
-            {afficherIconeAction(operation.action)}
-            <span className={operation.action === 'increase' ? 'text-green-500 mr-2' : 'text-red-500 mr-2'}>
-                {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
-            </span>
 
-        </div>
-      </td>
-      <td className="p-3 text-sm">
-        {operation.amount} Dh
-      </td>
-      <td className="p-3 text-sm">{formatDate(operation.dateOperation)}</td>
-      <td className="p-3 text-sm">{obtenirLibellestatus(operation.status)}</td>
-      <td className="p-3 text-sm">{operation.reference || "-"}</td>
-      <td className="p-3 text-sm">{operation.note || "-"}</td>
-      <td className="p-3 text-sm">{formatDate(operation.updatedAt)}</td>
+
+        <td className="p-3 text-sm">{operation?.fund?.sku}</td>
+
+        <td className="p-3 text-sm">{operation?.fund?.name}</td>
+        
+
+        <td className="p-3 text-sm">{obtenirLibelleType(operation.operation)}</td>
+
+        <td className="p-3 text-sm">
+            <div className="flex items-center">
+                {afficherIconeAction(operation.action)}
+                <span className={operation.action === 'increase' ? 'text-green-500 mr-2' : 'text-red-500 mr-2'}>
+                    {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
+                </span>
+            </div>
+        </td>
+
+        <td className="p-3 text-sm">
+            {operation.amount} Dh
+        </td>
+
+        <td className="p-3 text-sm">{formatDate(operation.dateOperation)}</td>
+
+        <td className="p-3 text-sm">{obtenirLibellestatus(operation.status)}</td>
+
+        <td className="p-3 text-sm">{operation.reference || "-"}</td>
+
+        <td className="p-3 text-sm">{operation.note || "-"}</td>
+
+        <td className="p-3 text-sm">{formatDate(operation.updatedAt)}</td>
     </tr>
   );
 
@@ -106,21 +124,26 @@ const TableauMouvementsInventaire = ({ data }) => {
           className={`md:hidden grid grid-cols-1 gap-2 p-2 ${!isLast ? 'border-b' : ''} cursor-pointer`}
           onClick={() => basculerExtensionLigne(operation.id)}
         >
-          <td className="font-bold">
-            {obtenirLibelleType(operation.operation)}
-          </td>
-          <td className="text-right flex justify-end items-center">
-            <div className="flex items-center">
-              {afficherIconeAction(operation.action)}
-              {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
-              {estEtendue ? <ChevronUp/> : <ChevronDown/>}
-            </div>
-          </td>
+            <td className="font-bold">
+                {operation?.fund?.sku} - {operation?.fund?.name}
+            </td>
+            <td className="text-right flex justify-end items-center">
+                <div className="flex items-center">
+                {afficherIconeAction(operation.action)}
+                {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
+                {estEtendue ? <ChevronUp/> : <ChevronDown/>}
+                </div>
+            </td>
         </tr>
         {estEtendue && (
           <tr className="md:hidden">
             <td colSpan="2" className="p-2 bg-gray-50">
               <div className="grid grid-cols-2 gap-2 text-sm">
+
+
+
+                <div className="font-semibold">Nom de la Caisse</div>
+                <div>{operation?.fund?.name}</div>
 
                 <div className="font-semibold">Type:</div>
                 <div>{obtenirLibelleType(operation.operation)}</div>
@@ -166,6 +189,8 @@ const TableauMouvementsInventaire = ({ data }) => {
           <table className="w-full border-collapse">
             <thead className="hidden md:table-header-group">
               <tr className="bg-gray-100">
+                <th className="p-3 text-left text-sm">Sku Caisse</th>
+                <th className="p-3 text-left text-sm">Nom de la Caisse</th>
                 <th className="p-3 text-left text-sm">Type</th>
                 <th className="p-3 text-left text-sm">Action</th>
                 <th className="p-3 text-left text-sm">Montant</th>
