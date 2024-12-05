@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState ,useEffect} from 'react';
 import {
   BadgeCheck,
   Bell,
@@ -28,6 +28,8 @@ import {
   Shuffle,
   Clock
 } from "lucide-react"
+
+
 
 import {
   Avatar,
@@ -217,9 +219,26 @@ const SideBar = () => {
 
   // Recursive function to render menu items
   const renderMenuItem = (item) => {
-    const [isOpen, setIsOpen] = useState(false);
-    const hasSubMenu = (item.items?.length > 0 || item.subItems?.length > 0);
+    // Only persist state for items with "Gestion" in the title
+    const isPersistentMenu = item.title.includes('Gestion');
 
+    // Use localStorage to persist open state for Gestion menus
+    const [isOpen, setIsOpen] = useState(() => {
+      if (isPersistentMenu) {
+        const savedState = localStorage.getItem(`submenu-${item.title}`);
+        return savedState ? JSON.parse(savedState) : false;
+      }
+      return false;
+    });
+
+    // Update localStorage for Gestion menus
+    useEffect(() => {
+      if (isPersistentMenu) {
+        localStorage.setItem(`submenu-${item.title}`, JSON.stringify(isOpen));
+      }
+    }, [isOpen, item.title, isPersistentMenu]);
+
+    const hasSubMenu = (item.items?.length > 0 || item.subItems?.length > 0);
 
     if (item.permission && !hasPermission(item.permission)) {
       return null;  // Return nothing if the user does not have permission
