@@ -4,10 +4,12 @@ import { useNavigate } from 'react-router-dom'
 import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import {useFetchZone} from "../Zone&Table/Zones/Hooks/useFetchZone"
 import ZoneCart from './Components/CartShiftZone';
 import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
+import {useFetchZonesWithWaiters} from "./Hooks/useFetchZonesWithWaiters"
+import {useStartShift} from './Hooks/useStartShift'
+import {useEndShift} from './Hooks/useEndShift'
 
 
 const ShiftZones = () => {
@@ -15,7 +17,7 @@ const ShiftZones = () => {
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
-    const {  zones, totalZones, loading, error, fetchZones} = useFetchZone()
+    const {  zones, totalZones, loading, error, fetchZones} = useFetchZonesWithWaiters()
     //pagination
     const totalPages = Math.ceil(totalZones / limit);
     const handleNextPage = () => {
@@ -36,7 +38,10 @@ const ShiftZones = () => {
         fetchZones({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchZones]);
 
-    
+    const {StartShift}= useStartShift(fetchZones)
+    const {EndShift}= useEndShift(fetchZones)
+
+
 
   return (
     <div className={style.container}>
@@ -68,7 +73,7 @@ const ShiftZones = () => {
 
                         <div className={style.userGrid}>
                         {zones.map(zone => (
-                            <ZoneCart key={zone.id} zone={zone}/>
+                            <ZoneCart key={zone.id} zone={zone}  EndShift={EndShift} StartShift={StartShift}/>
                         ))}
                         </div>
 
