@@ -65,7 +65,7 @@ const Operation =lazy(()=>import('@/modules/Dash/Operation/Operation'))
 const ADDOperation = lazy(()=>import('@/modules/Dash/Operation/Components/AddOperation'))
 const Expense=lazy(()=>import('@/modules/Dash/Expense/Expense'))
 const AddExpense =lazy(()=>import('@/modules/Dash/Expense/Components/AddExpense'))
-
+const ShiftZone =lazy(()=>import('@/modules/Dash/Shift Zone/ShiftZone'))
 
 
 
@@ -719,6 +719,26 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+
+        <Route 
+          path="/quarts" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <ShiftZone/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+
+
+
+
+
+
+
 
         <Route 
           path="/zones1" 

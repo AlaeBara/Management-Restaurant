@@ -1,0 +1,124 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
+.zoneCart {
+    background-color: white;
+    border-radius: 8px;
+    padding: 16px;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: all 0.3s ease;
+    border: 1px solid #eaeaea;
+    margin-bottom: 16px 0;
+    width: 100%;
+    max-width: 400px;
+    max-height: fit-content;
+    cursor: pointer;
+}
+
+.zoneCart:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+    transform: translateY(-2px);
+}
+
+.zone {
+    display: flex;
+    justify-content: center;
+    margin-top: 20px;
+}
+
+.zoneInfo1 {
+    width: 50%;     
+}
+
+.zoneInfo2 {
+    width: 50%;
+    display: flex;                          
+    flex-direction: column; 
+    border-left: 1px solid #dfdfdf;
+    padding: 0 20px;    
+}
+
+
+.zoneLabel {
+    font-size: 14px;
+    color: #666;
+    margin: 0;
+    font-family: "Poppins", sans-serif;
+}
+
+.zoneStatus{
+    margin-top: 10px;
+    font-size: 14px;
+    background-color: rgb(16, 184, 16);
+    width: fit-content;
+    padding: 2px 10px;
+    border-radius: 20px;
+    color: white;
+    font-family: "Poppins", sans-serif;
+}
+
+.nameOfZone{
+    display: flex;
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+}
+
+.zoneItem{
+    font-size: 15px;
+    color: #000;
+    font-family: "Poppins", sans-serif;
+}
+
+
+.actions {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    width: 100%;
+}
+
+.actionButton {
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    border: none;
+    transition: background-color 0.2s ease;
+}
+
+.editButton {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f1f1f1;
+    color: #333;
+}
+
+.editButton:hover {
+    background-color: #e0e0e0;
+    transform: translateY(-2px);
+}
+
+
+
+
+
+
+
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .zoneCart {
+        max-width: 100%;
+    }
+    .actions {
+        flex-direction: row;
+        margin-top: 12px;
+    }
+    
+    .actionButton {
+        flex: 1;
+    }
+}
