@@ -11,6 +11,7 @@ import{Ban,SearchX,Plus}from 'lucide-react'
 import {useGetOperationFund} from './Hooks/useGetOperationFund'
 import TableauOperation from './Components/TableauOpertion'
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
+import {useConfirmOperation} from './hooks/useConfirmOperation'
 
 const FundDetails = () => {
     const navigate = useNavigate()
@@ -60,6 +61,8 @@ const FundDetails = () => {
         const type = TypeFunds.find(t => t.value === valeur);
         return type ? type.label : valeur;
     };
+
+    const {ConfirmOperation}= useConfirmOperation(fetchOperation ,currentPage, limit)
 
 
     return (
@@ -157,7 +160,7 @@ const FundDetails = () => {
                             {operations.length > 0 ? (
                             <>
                                 <div className={styles.userGrid}>
-                                    <TableauOperation data={operations} />
+                                    <TableauOperation data={operations} Confirm={ConfirmOperation} />
                                 </div>
                                 <PaginationNav
                                     currentPage={currentPage}

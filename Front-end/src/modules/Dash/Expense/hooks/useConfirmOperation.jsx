@@ -2,27 +2,26 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 
-export function useEndShift(fetchZones , currentPage, limit) {
-    const EndShift = async (id) => {
+export function useConfirmOperation(fetchExpense , currentPage, limit) {
+    const ConfirmOperation = async (id) => {
         try {
             const token = Cookies.get('access_token');
-            const response = await axios.post(
-                `${import.meta.env.VITE_BACKEND_URL}/api/shift-zone/end-shift-by-waiter`, 
-                {zoneId :id},
+            const response = await axios.patch(
+                `${import.meta.env.VITE_BACKEND_URL}/api/funds-operations/${id}/approve`, {},
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
                     },
                 }
             );
-            toast.success("Fin de service enregistrée avec succès.", {
+            toast.success("Apprové avec succès.", {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 3000,
             });
-            fetchZones({page: currentPage, limit :limit});
+            fetchExpense({page: currentPage, limit :limit});
         } catch (error) {
-            console.error('Error end Shift:', error.response?.data?.message || error.message);
+            console.error('Error Approve operation:', error.response?.data?.message || error.message);
             toast.error(error.response?.data?.message || error.message, {
                 icon: '❌',
                 position: "top-right",
@@ -31,5 +30,5 @@ export function useEndShift(fetchZones , currentPage, limit) {
         }
     };
 
-    return { EndShift };
+    return { ConfirmOperation };
 }

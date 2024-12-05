@@ -8,6 +8,7 @@ import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
 import {useFetchExpense} from './hooks/useFetchExpense'
 import TableauExpense from './Components/TableauExpense'
+import {useConfirmOperation} from './Hooks/useConfirmOperation'
 
 const Operation= () => {
     const  navigate = useNavigate()
@@ -34,6 +35,8 @@ const Operation= () => {
     useEffect(() => {
         fetchExpense({page: currentPage, limit :limit});
     }, [currentPage, limit,  fetchExpense]);
+
+    const {ConfirmOperation}= useConfirmOperation(fetchExpense ,currentPage, limit)
 
 
 
@@ -70,7 +73,7 @@ const Operation= () => {
                     {expenses.length > 0 ? (
                     <>
                         <div>
-                            <TableauExpense data={expenses} />
+                            <TableauExpense data={expenses}  Confirm={ConfirmOperation}/>
                         </div>
                         <PaginationNav
                             currentPage={currentPage}

@@ -38,8 +38,8 @@ const ShiftZones = () => {
         fetchZones({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchZones]);
 
-    const {StartShift}= useStartShift(fetchZones)
-    const {EndShift}= useEndShift(fetchZones)
+    const {StartShift}= useStartShift(fetchZones , currentPage, limit)
+    const {EndShift}= useEndShift(fetchZones , currentPage, limit)
 
 
 

@@ -2,7 +2,7 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 import { toast } from 'react-toastify';
 
-export function useStartShift(fetchZone) {
+export function useStartShift(fetchZones , currentPage, limit) {
     const StartShift = async (id) => {
         try {
             const token = Cookies.get('access_token');
@@ -20,7 +20,7 @@ export function useStartShift(fetchZone) {
                 position: "top-right",
                 autoClose: 3000,
             });
-            fetchZone()
+            fetchZones({page: currentPage, limit :limit})
         } catch (error) {
             console.error('Error Start Shift:', error.response?.data?.message || error.message);
             toast.error(error.response?.data?.message || error.message, {

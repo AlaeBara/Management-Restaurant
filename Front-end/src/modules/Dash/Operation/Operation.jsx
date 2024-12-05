@@ -8,6 +8,9 @@ import PaginationNav from '../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
 import {useFetchOperation} from './Hooks/useFetchOperation'
 import TableauOperation from './Components/TableauOperation'
+import {useConfirmOperation} from './Hooks/useConfirmOperation'
+
+
 
 const Operation= () => {
     const  navigate = useNavigate()
@@ -34,6 +37,8 @@ const Operation= () => {
     useEffect(() => {
         fetchOperation({page: currentPage, limit :limit});
     }, [currentPage, limit,  fetchOperation]);
+
+    const {ConfirmOperation}= useConfirmOperation(fetchOperation ,currentPage, limit)
 
 
 
@@ -72,7 +77,7 @@ const Operation= () => {
                     {operations.length > 0 ? (
                     <>
                         <div>
-                            <TableauOperation data={operations} />
+                            <TableauOperation data={operations} Confirm={ConfirmOperation} />
                         </div>
                         <PaginationNav
                             currentPage={currentPage}

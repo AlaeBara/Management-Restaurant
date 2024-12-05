@@ -10,6 +10,7 @@ import {useFetchFunds} from './hooks/useFetchFunds'
 import CartFund from './Components/CartFund'
 import {useDeleteFund} from './hooks/useDeleteFund'
 
+
 const Funds= () => {
     const  navigate = useNavigate()
 
@@ -36,6 +37,8 @@ const Funds= () => {
     }, [currentPage, limit, fetchFunds]);
 
     const {deleteFund}= useDeleteFund(fetchFunds)
+
+
 
   return (
     <div className={style.container}>

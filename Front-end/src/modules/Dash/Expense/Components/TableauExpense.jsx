@@ -19,7 +19,7 @@ const statuses = [
   { value: 'approved', label: 'Approuvé' },
 ];
 
-const TableauExpense = ({ data }) => {
+const TableauExpense = ({ data , Confirm }) => {
   const [lignesExtendues, setLignesExtendues] = useState({});
 
   const basculerExtensionLigne = (id) => {
@@ -92,6 +92,16 @@ const TableauExpense = ({ data }) => {
         <td className="p-3 text-sm">{operation.note || "-"}</td>
 
         <td className="p-3 text-sm">{formatDate(operation.updatedAt)}</td>
+        <td className="p-3 text-sm">
+
+          {obtenirLibellestatus(operation.status)==="En attente" ? 
+            <button id="approve-btn" className="btn-approve bg-black text-white px-4 py-2 rounded" onClick={()=>Confirm(operation.id)}>
+              Approuver
+            </button>
+            :
+            "Opération approuvée"
+          }
+        </td>
     </tr>
   );
 
@@ -153,6 +163,16 @@ const TableauExpense = ({ data }) => {
                 
                 <div className="font-semibold">Date de création</div>
                 <div>{formatDate(operation.updatedAt)}</div>
+
+                <div className="font-semibold">Approuver l'opération</div>
+                <div>{obtenirLibellestatus(operation.status)==="En attente" ? 
+                    <button id="approve-btn" className="btn-approve bg-black text-white px-4 py-2 rounded" onClick={()=>Confirm(operation.id)}>
+                      Approuver
+                    </button>
+                    :
+                    "Opération approuvée"
+                  }
+                </div>
                 
               </div>
             </td>
@@ -183,6 +203,7 @@ const TableauExpense = ({ data }) => {
                 <th className="p-3 text-left text-sm">Référence</th>
                 <th className="p-3 text-left text-sm">Notes</th>
                 <th className="p-3 text-left text-sm">Date de création</th>
+                <th className="p-3 text-left text-sm">Approuver l'opération</th>
               </tr>
             </thead>
             <tbody>
