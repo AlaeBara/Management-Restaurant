@@ -13,6 +13,16 @@ export class FundOperationController {
 
     constructor(private readonly fundOperationService: FundOperationService) { }
 
+    /**
+     * Permissions for this controlleق
+    private fundOperationPermissions = [
+        { name: 'view-funds-operations', label: 'View all funds operations', resource: 'operation' },
+        { name: 'create-fund-operation', label: 'Create new fund operation', resource: 'operation' },
+        { name: 'create-expense', label: 'Create new expense/depense', resource: 'operation' },
+        { name: 'approve-fund-operation', label: 'Approve fund operation', resource: 'operation' },
+    ];*/
+
+
     @Get()
     @Permissions('view-funds-operations')
     @ApiOperation({ summary: 'Get all funds operations' })

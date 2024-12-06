@@ -16,6 +16,8 @@ import { InventoryPermissionSeeder } from 'src/inventory-managemet/seeders/inven
 import { CategoryPermissionSeeder } from 'src/product-management/seeders/category-permission.seeder';
 import { ProductPermissionSeeder } from 'src/product-management/seeders/product-permission.seeder';
 import { ShiftZonePermissionSeeder } from 'src/shift-zone-management/seeders/shift.permission';
+import { FundPermissionSeeder } from 'src/fund-management/seeders/fund.seeder';
+import { OperationsPermissionSeeder } from 'src/fund-management/seeders/operation.seeder';
 
 @Injectable()
 export class MasterSeeder {
@@ -23,7 +25,7 @@ export class MasterSeeder {
         private readonly accessRolePermissionSeeder: AccessRolePermissionSeeder,
         private readonly rolePermissionSeeder: RolePermissionSeeder,
         private readonly userPermissionSeeder: UserPermissionSeeder,
-        private readonly permissionPermissionsSeeder: PermissionPermissionsSeeder,
+        // private readonly permissionPermissionsSeeder: PermissionPermissionsSeeder,
         private readonly rolesSeeder: RolesSeeder,
         private readonly tablePermissionSeeder: TablePermissionSeeder,
         private readonly zonePermissionSeeder: ZonePermissionSeeder,
@@ -35,7 +37,9 @@ export class MasterSeeder {
         private readonly inventoryMovementPermissionSeeder: InventoryMovementPermissionSeeder,
         private readonly categoryPermissionSeeder: CategoryPermissionSeeder,
         private readonly productPermissionSeeder: ProductPermissionSeeder,
-        private readonly shiftZonePermissionSeeder:ShiftZonePermissionSeeder
+        private readonly shiftZonePermissionSeeder: ShiftZonePermissionSeeder,
+        private readonly fundPermissionSeeder: FundPermissionSeeder,
+        private readonly operationsPermissionSeeder: OperationsPermissionSeeder,
 
     ) { }
 
@@ -43,7 +47,7 @@ export class MasterSeeder {
         await this.rolesSeeder.seed();
         await this.rolePermissionSeeder.seed();
         await this.userPermissionSeeder.seed();
-        await this.permissionPermissionsSeeder.seed();
+        // await this.permissionPermissionsSeeder.seed();
         await this.accessRolePermissionSeeder.seed();
         await this.tablePermissionSeeder.seed();
         await this.zonePermissionSeeder.seed();
@@ -56,6 +60,8 @@ export class MasterSeeder {
         await this.categoryPermissionSeeder.seed();
         await this.productPermissionSeeder.seed();
         await this.shiftZonePermissionSeeder.seed();
+        await this.fundPermissionSeeder.seed();
+        await this.operationsPermissionSeeder.seed();
 
         console.log('All seeders executed');
     }

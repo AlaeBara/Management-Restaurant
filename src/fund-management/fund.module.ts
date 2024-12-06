@@ -7,11 +7,13 @@ import { CommonModule } from 'src/common/common.module';
 import { FundOperationEntity } from './entities/fund-operation.entity';
 import { FundOperationService } from './services/fund-operation.service';
 import { FundOperationController } from './controllers/fund-operation.controller';
+import { OperationsPermissionSeeder } from './seeders/operation.seeder';
+import { FundPermissionSeeder } from './seeders/fund.seeder';
 
 @Module({
     imports: [TypeOrmModule.forFeature([Fund, FundOperationEntity])],
     controllers: [FundController, FundOperationController],
-    providers: [FundService, FundOperationService],
-    exports: [FundService, FundOperationService],
+    providers: [FundService, FundOperationService, OperationsPermissionSeeder, FundPermissionSeeder],
+    exports: [FundService, FundOperationService, OperationsPermissionSeeder, FundPermissionSeeder],
 })
 export class FundModule { }

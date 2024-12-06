@@ -16,10 +16,10 @@ export class ShiftZonePermissionSeeder {
 
 
         const shiftPermissions = [
-            { name: 'start-shift-by-waiter', label: 'Start a shift for a waiter', resource: 'shift-zone' },
-            { name: 'end-shift-by-waiter', label: 'End a shift for a waiter', resource: 'shift-zone' },
-            { name: 'request-shift-reassignment-by-waiter', label: 'Request shift reassignment', resource: 'shift-zone' },
-            { name: 'response-reassignment-shift-request-by-waiter-or-responsable', label: 'Response to shift reassignment request', resource: 'shift-zone' }
+            { name: 'start-shift-by-waiter', label: 'Demarrer un service pour un serveur', resource: 'shift-zone' },
+            { name: 'end-shift-by-waiter', label: 'Terminer un service pour un serveur', resource: 'shift-zone' },
+            { name: 'request-shift-reassignment-by-waiter', label: 'Demander une reaffectation de service', resource: 'shift-zone' },
+            { name: 'response-reassignment-shift-request-by-waiter-or-responsable', label: 'R pondre  la demande de reaffectation de service', resource: 'shift-zone' }
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

@@ -53,8 +53,17 @@ export class InventoryService extends GenericService<Inventory> {
         return this.inventoryRepository.save(inventory);
     }
 
-    async updateInventory(id: string, updateInventoryDto: UpdateInventoryDto): Promise<UpdateResult> {
-        return this.inventoryRepository.update(id, updateInventoryDto);
+    async updateInventory(id: string, updateInventoryDto: UpdateInventoryDto) {
+        await this.validateUniqueExcludingSelf({ sku: updateInventoryDto.sku });
+        const inventory = await this.findOneByIdWithOptions(id);
+        if (updateInventoryDto.storageId) {
+            await this.assignStorage(inventory, updateInventoryDto.storageId);
+        }
+        if (updateInventoryDto.productId) {
+            await this.assignProduct(inventory, updateInventoryDto.productId);
+        }
+        Object.assign(inventory, updateInventoryDto);
+        return this.inventoryRepository.save(inventory);
     }
 
     async deleteInventory(id: string): Promise<DeleteResult> {

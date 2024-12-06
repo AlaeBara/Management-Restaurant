@@ -15,7 +15,7 @@ import {
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entities/permission.entity';
 import { UpdateResult } from 'typeorm';
-import { Permissions } from '../decorators/auth.decorator';
+import { Permissions, Public } from '../decorators/auth.decorator';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('permissions')
@@ -118,7 +118,7 @@ export class PermissionController {
   }
 
   @Get('group-by-resource')
-  @Permissions('view-permissions')
+  @Public()
   @ApiOperation({ summary: 'Get all permissions grouped by resource' })
   async findAllPermissionsGroupByResource(@Req() req: Request) {
     return this.permissionService.findAndGroupPermissionsWithUserAccess(req);
