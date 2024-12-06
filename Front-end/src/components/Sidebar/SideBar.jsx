@@ -1,4 +1,4 @@
-import React, { useState ,useEffect} from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   BadgeCheck,
   Bell,
@@ -18,8 +18,8 @@ import {
   Database,
   Truck,
   FolderOpen,
-  Boxes ,
-  ShoppingBag ,
+  Boxes,
+  ShoppingBag,
   Component,
   ClipboardList,
   Banknote,
@@ -27,21 +27,19 @@ import {
   DollarSign,
   Shuffle,
   Clock
-} from "lucide-react"
-
-
+} from "lucide-react";
 
 import {
   Avatar,
   AvatarFallback,
   AvatarImage,
-} from "@/components/ui/avatar"
+} from "@/components/ui/avatar";
 
 import {
   Collapsible,
   CollapsibleContent,
   CollapsibleTrigger,
-} from "@/components/ui/collapsible"
+} from "@/components/ui/collapsible";
 
 import {
   DropdownMenu,
@@ -51,7 +49,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu"
+} from "@/components/ui/dropdown-menu";
 
 import {
   Sidebar,
@@ -67,162 +65,177 @@ import {
   SidebarMenuSub,
   SidebarMenuSubButton,
   SidebarMenuSubItem,
-} from "@/components/ui/sidebar"
+} from "@/components/ui/sidebar";
 
 import { useUserContext } from '../../context/UserContext';
 
 const SideBar = () => {
   const { logout, user } = useUserContext();
 
-
-
   const data = {
     user: {
-      name: "shadcn",
-      email: "m@example.com",
-      avatar: "/avatars/shadcn.jpg",
+      name: user?.username || "User",
+      email: user?.email || "user@example.com",
+      avatar: user?.avatar || "/default-avatar.jpg",
     },
     navMain: [
       {
         title: "Gestion des utilisateurs",
         icon: Users,
-        isActive: true,
-        // permissions: ["view_users", "view_roles","access-granted"],
+        permissions: ["access-granted"],
         items: [
           { 
             title: "Utilisateurs",
             icon: User,
             url: "/dash/Create-User",
-            // permission: "access-granted",
+            permissions: ["access-granted"],
           },
           { 
             title: "Rôles",
             icon: Shield,
-            url:'/dash/Gestion-des-roles'
+            url: '/dash/Gestion-des-roles',
+            permissions: ["access-granted"],
           }
         ],
       },
       {
         title: "Gestion des Espaces",
         icon: Layers,
-        isActive: true,
+        permissions: ["access-granted"],
         items: [
           { 
             title: "Zones",
             icon: LandPlot,
             url: "/dash/zones",
+            permissions: ["access-granted"],
           },
           { 
             title: "Tables",
             icon: Grid,
-            url:'/dash/Tables'
+            url: '/dash/Tables',
+            permissions: ["access-granted"],
           },
-          
         ],
       },
       {
         title: "Gestion des Stocks",
         icon: Package,
-        isActive: true,
+        permissions: ["access-granted"],
         items: [
           { 
             title: "Stockage",
             icon: Database,
             url: "/dash/Storage",
+            permissions: ["access-granted"],
           },
           { 
             title: "Fournisseurs",
             icon: Truck,
-            url:'/dash/Supliers'
+            url: '/dash/Supliers',
           },
-          
         ],
       },
       {
         title: "Gestion des Unités",
         icon: FolderOpen,
-        isActive: true,
+        permissions: ["access-granted"],
         items: [
           { 
             title: "Unités",
-            icon: Boxes ,
+            icon: Boxes,
             url: "/dash/Units",
+            permissions: ["access-granted"],
           },
           { 
             title: "Produits",
-            icon: ShoppingBag  ,
+            icon: ShoppingBag,
             url: "/dash/Produits",
+            permissions: ["access-granted"],
           },
           { 
             title: "Categories",
-            icon: Component  ,
+            icon: Component,
             url: "/dash/categories-Produits",
+            permissions: ["access-granted"],
           },
           { 
             title: "Inventaires",
-            icon: ClipboardList  ,
+            icon: ClipboardList,
             url: "/dash/inventaires",
+            permissions: ["access-granted"],
           },
         ],
-        
       },
       {
-        title: "Gestion des finanace",
+        title: "Gestion des finances",
         icon: CreditCard,
-        isActive: true,
+        permissions: ["access-granted"],
         items: [
           { 
             title: "Caisses",
             icon: Wallet,
             url: "/dash/caisses",
+            permissions: ["access-granted"],
           },
           { 
             title: "Opérations",
-            icon:  Shuffle,
+            icon: Shuffle,
             url: "/dash/opérations",
+            permissions: ["access-granted"],
           },
           { 
             title: "Dépenses",
             icon: DollarSign,
             url: "/dash/dépenses",
+            permissions: ["access-granted"],
           },
         ], 
       },
       {
         title: "Gestion des Quarts",
         icon: Clock,
-        isActive: true,
+        permissions: ["access-granted"],
         items: [
           { 
             title: "Quarts",
             icon: Clock,
             url: "/dash/quarts",
+            permissions: ["access-granted"],
           }
         ], 
       },
     ],
-    
-  }
+  };
 
   const hasPermission = (permission) => {
     return user?.permissions?.includes(permission);
   };
-  
 
-  // Function to handle navigation
   const handleNavigation = (url, e) => {
     if (url) {
-      e.stopPropagation(); // Prevent collapsible from toggling when clicking a link
+      e.stopPropagation();
       window.location.href = url;
     }
   };
 
-  // Recursive function to render menu items
   const renderMenuItem = (item) => {
-    // Only persist state for items with "Gestion" in the title
-    const isPersistentMenu = item.title.includes('Gestion');
+    // Check main menu item permissions
+    const hasMainPermission = !item.permissions || 
+      item.permissions.some(permission => hasPermission(permission));
 
-    // Use localStorage to persist open state for Gestion menus
+    // Filter sub-items based on permissions
+    const filteredItems = item.items?.filter(subItem => 
+      !subItem.permissions || 
+      subItem.permissions.some(permission => hasPermission(permission))
+    ) || [];
+
+    // Don't render if no permissions or no sub-items
+    if (!hasMainPermission || (item.items && filteredItems.length === 0)) {
+      return null;
+    }
+
+    // Persistent menu state logic
+    const isPersistentMenu = item.title.includes('Gestion');
     const [isOpen, setIsOpen] = useState(() => {
       if (isPersistentMenu) {
         const savedState = localStorage.getItem(`submenu-${item.title}`);
@@ -231,18 +244,13 @@ const SideBar = () => {
       return false;
     });
 
-    // Update localStorage for Gestion menus
     useEffect(() => {
       if (isPersistentMenu) {
         localStorage.setItem(`submenu-${item.title}`, JSON.stringify(isOpen));
       }
     }, [isOpen, item.title, isPersistentMenu]);
 
-    const hasSubMenu = (item.items?.length > 0 || item.subItems?.length > 0);
-
-    if (item.permission && !hasPermission(item.permission)) {
-      return null;  // Return nothing if the user does not have permission
-    }
+    const hasSubMenu = (filteredItems.length > 0);
 
     return (
       <Collapsible 
@@ -294,27 +302,14 @@ const SideBar = () => {
           {hasSubMenu && (
             <CollapsibleContent>
               <SidebarMenuSub>
-                {item.items?.map((subItem) => renderMenuItem(subItem))}
-                {item.subItems?.map((subItem) => (
-                  <SidebarMenuSubItem key={subItem.title}>
-                    <SidebarMenuSubButton 
-                      asChild
-                      onClick={(e) => handleNavigation(subItem.url, e)}
-                    >
-                      <a href={subItem.url}>
-                        {subItem.icon && <subItem.icon className="h-4 w-4" />}
-                        <span>{subItem.title}</span>
-                      </a>
-                    </SidebarMenuSubButton>
-                  </SidebarMenuSubItem>
-                ))}
+                {filteredItems.map((subItem) => renderMenuItem(subItem))}
               </SidebarMenuSub>
             </CollapsibleContent>
           )}
         </SidebarMenuItem>
       </Collapsible>
-    )
-  }
+    );
+  };
 
   return (
     <Sidebar variant="inset">
@@ -354,10 +349,12 @@ const SideBar = () => {
                 >
                   <Avatar className="h-8 w-8 rounded-lg">
                     <AvatarImage src={data.user.avatar} alt={data.user.name} />
-                    <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                    <AvatarFallback className="rounded-lg">
+                      {data.user.name.charAt(0).toUpperCase()}
+                    </AvatarFallback>
                   </Avatar>
                   <div className="grid flex-1 text-left text-sm leading-tight">
-                    <span className="truncate font-semibold">user.username</span>
+                    <span className="truncate font-semibold">{data.user.name}</span>
                     <span className="truncate text-xs">{data.user.email}</span>
                   </div>
                   <ChevronsUpDown className="ml-auto size-4" />
@@ -373,10 +370,12 @@ const SideBar = () => {
                   <div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
                     <Avatar className="h-8 w-8 rounded-lg">
                       <AvatarImage src={data.user.avatar} alt={data.user.name} />
-                      <AvatarFallback className="rounded-lg">CN</AvatarFallback>
+                      <AvatarFallback className="rounded-lg">
+                        {data.user.name.charAt(0).toUpperCase()}
+                      </AvatarFallback>
                     </Avatar>
                     <div className="grid flex-1 text-left text-sm leading-tight">
-                      <span className="truncate font-semibold">user.username</span>
+                      <span className="truncate font-semibold">{data.user.name}</span>
                       <span className="truncate text-xs">{data.user.email}</span>
                     </div>
                   </div>
@@ -414,7 +413,7 @@ const SideBar = () => {
         </SidebarMenu>
       </SidebarFooter>
     </Sidebar>
-  )
-}
+  );
+};
 
-export default SideBar
+export default SideBar;

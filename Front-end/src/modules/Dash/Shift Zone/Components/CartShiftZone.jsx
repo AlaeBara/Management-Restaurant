@@ -1,10 +1,21 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import style from "./CartShiftZone.module.css";
 import { LandPlot } from 'lucide-react';
 import { useUserContext } from '../../../../context/UserContext';
 
 const ZoneCart = ({ zone, StartShift, EndShift }) => {
     const { user } = useUserContext();
+    
+    // Console logs at component render
+    console.log('zone:', zone);
+    console.log('user:', user);
+
+    // Optional: Log when zone or user changes
+    useEffect(() => {
+        console.log('zone updated:', zone);
+        console.log('user updated:', user);
+    }, [zone, user]);
+
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalType, setModalType] = useState('');
     const [selectedZone, setSelectedZone] = useState(null);
@@ -52,14 +63,13 @@ const ZoneCart = ({ zone, StartShift, EndShift }) => {
                     <div className={style.zoneInfo2}>
                         <p className={style.zoneItem}>Serveur actuel :</p>
                         <p className={style.zoneLabel}>
-                            {zone?.currentWaiter?.firstname && zone.currentWaiter.lastname
+                            {zone?.currentWaiter?.firstname && zone?.currentWaiter?.lastname
                                 ? `${zone.currentWaiter.firstname} ${zone.currentWaiter.lastname}`
                                 : '-'}
                         </p>
-
                         {user.permissions.includes("access-granted") ? null : (
                             <div className={`${style.actions}`}>
-                                {zone?.currentWaiter?.currentWaiterId ? (
+                                {zone?.currentWaiter?.id && zone?.currentWaiter?.id !== user.sub && user.permissions.includes("request-shift-reassignment-by-waiter") ? (
                                     <button
                                         className={`${style.actionButton} ${style.editButton} md:whitespace-nowrap`}
                                         onClick={() => handleModal('request', zone)}
