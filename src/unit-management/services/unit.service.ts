@@ -24,15 +24,28 @@ export class UnitService extends GenericService<Unit> {
    * @throws BadRequestException if unit already exists
    */
   async createUnit(createUnitDto: CreateUnitDto) {
-
     const unit = this.unitRepository.create(createUnitDto);
 
-    const existingUnit = await this.unitRepository.findOne({
-      where: {
-        unit: unit.unit,
-        baseUnit: unit.baseUnit
-      }
-    });
+    // Build the search query dynamically
+    /*  const existingUnit = await this.unitRepository.findOne({
+       where: [
+         { unit: unit.unit }, // Search by `unit`
+         { baseUnit: unit.baseUnit || null }, // Search by `baseUnit`
+         { conversionFactorToBaseUnit: unit.conversionFactorToBaseUnit || null }, // Search by `conversionFactorToBaseUnit`
+       ],
+     }); */
+
+    const existingUnit = await this.unitRepository.createQueryBuilder("unit")
+      .where("unit.unit = :unit", { unit: unit.unit })
+      .andWhere("unit.baseUnit IS NULL OR unit.baseUnit = :baseUnit", { baseUnit: unit.baseUnit || null })
+      .andWhere(
+        "unit.conversionFactorToBaseUnit IS NULL OR unit.conversionFactorToBaseUnit = :conversionFactorToBaseUnit",
+        { conversionFactorToBaseUnit: unit.conversionFactorToBaseUnit || null }
+      )
+      .andWhere(
+        "unit.deletedAt IS NULL"
+      )
+      .getOne();
 
     if (existingUnit) {
       throw new BadRequestException('Unit already exists');
@@ -40,6 +53,7 @@ export class UnitService extends GenericService<Unit> {
 
     return this.unitRepository.save(unit);
   }
+
 
   /**
    * Updates an existing unit

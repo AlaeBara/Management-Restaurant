@@ -88,6 +88,7 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         await this.validateBalance(operation.fund, operation.amount, operation.operation);
         await this.adjustFundBalance(operation.fund, operation.amount, operation.operation);
         operation.status = FundOperationStatus.APPROVED;
+        operation.approvedAt = new Date();
         return this.fundOperationRepository.save(operation);
     }
 }

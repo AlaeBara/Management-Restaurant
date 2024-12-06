@@ -20,23 +20,47 @@ export class AccessRolePermissionSeeder {
     private async seedSuperadmin() {
         const roleRepository = this.connection.getRepository(Role);
         const permissionRepository = this.connection.getRepository(Permission);
-        let superadmin: Role;
-        superadmin = await roleRepository.findOne({ where: { name: 'superadmin' }, withDeleted: true });
-        const accessGranted = await permissionRepository.findOne({ where: { name: 'access-granted' } });
-        if (!accessGranted) {
-            permissionRepository.save({ name: 'access-granted', label: 'Accès accordé', resource: 'full-access' });
-        }
-        if (!superadmin) {
-            superadmin = await roleRepository.save({ name: 'superadmin', label: 'Accès et contrôle complet du système' });
-        }
-        superadmin.permissions = [accessGranted];
-        await roleRepository.save(superadmin);
-
         const userRepository = this.connection.getRepository(User);
-        const superadminUser = await userRepository.findOne({ where: [{ email: process.env.SUPERADMIN_EMAIL }, { username: 'superadmin' }], withDeleted: true });
-
+    
+        // Ensure the permission exists
+        let accessGranted = await permissionRepository.findOne({ where: { name: 'access-granted' } });
+        if (!accessGranted) {
+            accessGranted = await permissionRepository.save({
+                name: 'access-granted',
+                label: 'Accès accordé',
+                resource: 'full-access',
+            });
+        }
+    
+        // Ensure the role exists
+        let superadminRole = await roleRepository.findOne({
+            where: { name: 'superadmin' },
+            relations: ['permissions'], // Include relations to avoid overwriting
+        });
+    
+        if (!superadminRole) {
+            superadminRole = roleRepository.create({
+                name: 'superadmin',
+                label: 'Accès et contrôle complet du système',
+                permissions: [accessGranted],
+            });
+            superadminRole = await roleRepository.save(superadminRole);
+        } else if (!superadminRole.permissions.some(p => p.name === 'access-granted')) {
+            superadminRole.permissions.push(accessGranted);
+            await roleRepository.save(superadminRole);
+        }
+    
+        // Ensure the user exists
+        let superadminUser = await userRepository.findOne({
+            where: [
+                { email: process.env.SUPERADMIN_EMAIL },
+                { username: 'superadmin' },
+            ],
+            relations: ['roles', 'roles.permissions'],
+        });
+    
         if (!superadminUser) {
-            const user = [{
+            superadminUser = userRepository.create({
                 firstname: 'Ayoub',
                 lastname: 'Baraoui',
                 email: process.env.SUPERADMIN_EMAIL,
@@ -44,14 +68,14 @@ export class AccessRolePermissionSeeder {
                 status: UserStatus.ACTIVE,
                 username: 'superadmin',
                 password: await hash(process.env.SUPERADMIN_PASSWORD),
-                gender: Gender.MALE
-            }];
-            await userRepository.save(user);
-            const createdSuperAdmin = await userRepository.findOne({ where: [{ email: process.env.SUPERADMIN_EMAIL }, { username: 'superadmin' }], withDeleted: true });
-            createdSuperAdmin.roles = [superadmin];
-            await userRepository.save(createdSuperAdmin);
+                gender: Gender.MALE,
+                roles: [superadminRole],
+            });
+            superadminUser = await userRepository.save(superadminUser);
+        } else if (!superadminUser.roles.some(role => role.name === 'superadmin')) {
+            superadminUser.roles.push(superadminRole);
+            await userRepository.save(superadminUser);
         }
-
-
     }
+    
 }

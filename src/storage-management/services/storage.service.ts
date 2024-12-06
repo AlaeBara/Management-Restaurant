@@ -153,9 +153,9 @@ export class StorageService extends GenericService<Storage> {
     }
 
     async validateDeleteStorage(storage: Storage) {
-        if (storage.parentStorage) {
+       /*  if (storage.parentStorage) {
             throw new BadRequestException('Cannot delete storage with linked sub-storages. Please remove sub-storage links first.');
-        }
+        } */
 
         const hasParentStorage = await this.storageRepository.count({
             where: {

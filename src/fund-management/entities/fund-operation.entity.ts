@@ -24,6 +24,9 @@ export class FundOperationEntity extends BaseEntity {
     @Column({ type: 'timestamp' })
     dateOperation: Date;
 
+    @Column({ type: 'timestamp', nullable:true })
+    approvedAt: Date;
+
     @ManyToOne(() => Fund, { eager: true })
     @JoinColumn({ name: 'fund_id' })
     fund: Fund;
@@ -37,5 +40,10 @@ export class FundOperationEntity extends BaseEntity {
     @BeforeInsert()
     setAction() {
         this.action = getOperationAction(this.operation);
+    }
+
+    @BeforeInsert()
+    setApprovedAt() {
+        if(this.status == FundOperationStatus.APPROVED ) this.approvedAt = new Date();
     }
 }
