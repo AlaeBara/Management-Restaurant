@@ -10,6 +10,7 @@ import {
   LogOut,
   Sparkles,
   Users,
+  Cog,
   Shield,
   Grid,
   User,
@@ -80,129 +81,137 @@ const SideBar = () => {
     },
     navMain: [
       {
-        title: "Gestion des utilisateurs",
+        title: "Les Comptes et Droites",
         icon: Users,
-        permissions: ["access-granted"],
+        permissions: ["access-granted", "view-users", "view-roles"],
         items: [
-          { 
-            title: "Utilisateurs",
+          {
+            title: "Personnels",
             icon: User,
             url: "/dash/Create-User",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-users"],
           },
-          { 
+          {
             title: "Rôles",
             icon: Shield,
             url: '/dash/Gestion-des-roles',
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-roles"],
           }
         ],
       },
       {
         title: "Gestion des Espaces",
         icon: Layers,
-        permissions: ["access-granted"],
+        permissions: ["access-granted", "view-zones", "view-tables", "view-storages"],
         items: [
-          { 
+          {
             title: "Zones",
             icon: LandPlot,
             url: "/dash/zones",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-zones"],
           },
-          { 
-            title: "Tables",
+          {
+            title: "Tableaux",
             icon: Grid,
             url: '/dash/Tables',
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-tables"],
+          },
+          {
+            title: "Places de Stock",
+            icon: Database,
+            url: "/dash/Storage",
+            permissions: ["access-granted", "view-storages"],
           },
         ],
       },
       {
-        title: "Gestion des Stocks",
+        title: "Gestion Fournisseurs",
         icon: Package,
-        permissions: ["access-granted"],
+        permissions: ["access-granted", "view-suppliers"],
         items: [
-          { 
-            title: "Stockage",
-            icon: Database,
-            url: "/dash/Storage",
-            permissions: ["access-granted"],
-          },
-          { 
+          {
             title: "Fournisseurs",
             icon: Truck,
             url: '/dash/Supliers',
+            permissions: ["access-granted", "view-suppliers"],
           },
         ],
       },
       {
-        title: "Gestion des Unités",
+        title: "Gestion des Produits",
         icon: FolderOpen,
-        permissions: ["access-granted"],
+        permissions: ["access-granted", "view-products", "view-categories", "view-inventories"],
         items: [
-          { 
-            title: "Unités",
-            icon: Boxes,
-            url: "/dash/Units",
-            permissions: ["access-granted"],
-          },
-          { 
-            title: "Produits",
-            icon: ShoppingBag,
-            url: "/dash/Produits",
-            permissions: ["access-granted"],
-          },
-          { 
+          {
             title: "Categories",
             icon: Component,
             url: "/dash/categories-Produits",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-categories"],
           },
-          { 
+          {
+            title: "Produits",
+            icon: ShoppingBag,
+            url: "/dash/Produits",
+            permissions: ["access-granted", "view-products"],
+          },
+          {
             title: "Inventaires",
             icon: ClipboardList,
             url: "/dash/inventaires",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-inventories"],
           },
         ],
       },
       {
         title: "Gestion des finances",
         icon: CreditCard,
-        permissions: ["access-granted"],
+        permissions: ["access-granted", "view-finance"],
         items: [
-          { 
+          {
             title: "Caisses",
             icon: Wallet,
             url: "/dash/caisses",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-funds"],
           },
-          { 
+          {
             title: "Opérations",
             icon: Shuffle,
             url: "/dash/opérations",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-funds-operations"],
           },
-          { 
+          {
             title: "Dépenses",
             icon: DollarSign,
             url: "/dash/dépenses",
-            permissions: ["access-granted"],
+            permissions: ["access-granted", "view-funds-operations"],
           },
-        ], 
+        ],
       },
       {
-        title: "Gestion des Quarts",
+        title: "Gestion des sessions",
         icon: Clock,
-        permissions: ["access-granted"],
+        permissions: ["access-granted","start-shift-by-waiter"],
         items: [
-          { 
-            title: "Quarts",
+          {
+            title: "sessions",
             icon: Clock,
             url: "/dash/quarts",
-            permissions: ["access-granted"],
+            permissions: ["access-granted","start-shift-by-waiter"],
           }
-        ], 
+        ],
+      },
+      {
+        title: "Paramètres",
+        icon: Cog,
+        permissions: ["access-granted","view-units"],
+        items: [
+          {
+            title: "Unités",
+            icon: Boxes,
+            url: "/dash/Units",
+            permissions: ["access-granted", "view-units"],
+          },
+        ],
       },
     ],
   };
@@ -220,12 +229,12 @@ const SideBar = () => {
 
   const renderMenuItem = (item) => {
     // Check main menu item permissions
-    const hasMainPermission = !item.permissions || 
+    const hasMainPermission = !item.permissions ||
       item.permissions.some(permission => hasPermission(permission));
 
     // Filter sub-items based on permissions
-    const filteredItems = item.items?.filter(subItem => 
-      !subItem.permissions || 
+    const filteredItems = item.items?.filter(subItem =>
+      !subItem.permissions ||
       subItem.permissions.some(permission => hasPermission(permission))
     ) || [];
 
@@ -253,15 +262,15 @@ const SideBar = () => {
     const hasSubMenu = (filteredItems.length > 0);
 
     return (
-      <Collapsible 
-        key={item.title} 
-        asChild 
+      <Collapsible
+        key={item.title}
+        asChild
         open={isOpen}
         onOpenChange={setIsOpen}
       >
         <SidebarMenuItem>
           <div className="flex w-full items-center">
-            <SidebarMenuButton 
+            <SidebarMenuButton
               asChild={!!item.url}
               tooltip={item.title}
               className="flex-1"
@@ -285,10 +294,10 @@ const SideBar = () => {
                 </div>
               )}
             </SidebarMenuButton>
-            
+
             {hasSubMenu && (
               <CollapsibleTrigger asChild>
-                <SidebarMenuAction 
+                <SidebarMenuAction
                   className={`transform transition-transform duration-200 ${isOpen ? 'rotate-90' : ''}`}
                   onClick={() => setIsOpen(!isOpen)}
                 >
