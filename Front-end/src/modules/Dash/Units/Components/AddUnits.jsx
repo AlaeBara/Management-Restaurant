@@ -43,11 +43,40 @@ export default function Component() {
 
 
     const units = [
-        "kg", "g", "mg", "lb", "oz", "l", "ml", "gal", "qt", "pt", "cup", 
-        "fl oz", "tbsp", "tsp", "pc", "doz", "pack", "box", "case", "in", 
-        "cm", "bunch", "head", "slice", "serving", "portion"
+        { value: "kg", label: "kilogramme" },
+        { value: "g", label: "gramme" },
+        { value: "mg", label: "milligramme" },
+        { value: "lb", label: "livre" },
+        { value: "oz", label: "once" },
+        { value: "l", label: "litre" },
+        { value: "ml", label: "millilitre" },
+        { value: "gal", label: "gallon" },
+        { value: "qt", label: "quart" },
+        { value: "pt", label: "pinte" },
+        { value: "cup", label: "tasse" },
+        { value: "fl oz", label: "once liquide" },
+        { value: "tbsp", label: "cuillère à soupe" },
+        { value: "tsp", label: "cuillère à café" },
+        { value: "pc", label: "pièce" },
+        { value: "doz", label: "douzaine" },
+        { value: "pack", label: "paquet" },
+        { value: "box", label: "boîte" },
+        { value: "case", label: "caisse" },
+        { value: "in", label: "pouce" },
+        { value: "cm", label: "centimètre" },
+        { value: "bunch", label: "botte" },
+        { value: "head", label: "tête" },
+        { value: "slice", label: "tranche" },
+        { value: "serving", label: "portion" },
+        { value: "portion", label: "portion" }
     ];
-    const baseUnits = ["kg", "g", "l", "ml"];
+    
+    const baseUnits = [
+        { value: "kg", label: "kilogramme" },
+        { value: "g", label: "gramme" },
+        { value: "l", label: "litre" },
+        { value: "ml", label: "millilitre" }
+    ];
 
     const handleSubmit = async (e) => {
         e.preventDefault();
@@ -90,7 +119,7 @@ export default function Component() {
                 setErrors(fieldErrors);
             } else {
                 console.error('Error creating Units:', error.response?.data?.message || error.message);
-                toast.error(error.response?.data?.message[0] || error.response?.data?.message, {
+                toast.error(error.response?.data?.message || error.message, {
                     icon: '❌',
                     position: "top-right",
                     autoClose: 3000,
@@ -128,8 +157,8 @@ export default function Component() {
                                     </SelectTrigger>
                                     <SelectContent>
                                     {units.map((unit) => (
-                                        <SelectItem key={unit} value={unit}>
-                                        {unit}
+                                        <SelectItem key={unit.value} value={unit.value}>
+                                        {unit.label}
                                         </SelectItem>
                                     ))}
                                     </SelectContent>
@@ -152,8 +181,8 @@ export default function Component() {
                                     </SelectTrigger>
                                     <SelectContent>
                                     {baseUnits.map((baseUnit) => (
-                                        <SelectItem key={baseUnit} value={baseUnit}>
-                                            {baseUnit}
+                                        <SelectItem key={baseUnit.value} value={baseUnit.value}>
+                                            {baseUnit.label}
                                         </SelectItem>
                                     ))}
                                     </SelectContent>
@@ -174,6 +203,7 @@ export default function Component() {
                                     type='Number'
                                     step="any"
                                     min="0"
+                                    disabled={!formData.baseUnit}
                                   
                                    
                                 />

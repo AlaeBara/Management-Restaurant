@@ -6,14 +6,12 @@ export function useFetchOneInventory(id) {
     const [formData, setFormData] = useState({
         sku: '',
         warningQuantity: null,
-        totalQuantity: null,
         storageId: null,
         productId : null
     });
     const [initialData, setInitialData] = useState({ 
         sku: '',
         warningQuantity: null,
-        totalQuantity: null,
         storageId: null,
         productId : null
     }); 
@@ -34,14 +32,12 @@ export function useFetchOneInventory(id) {
             setFormData({
                 sku: response.data.sku,
                 warningQuantity: response.data.warningQuantity,
-                totalQuantity:response.data.totalQuantity,
                 storageId: response.data.storageId || null,
                 productId : response.data.productId || null
             });
             setInitialData({
                 sku: response.data.sku,
                 warningQuantity: response.data.warningQuantity,
-                totalQuantity:response.data.totalQuantity,
                 storageId: response.data.storageId || null,
                 productId : response.data.productId || null
             });

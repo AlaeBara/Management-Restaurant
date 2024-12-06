@@ -26,6 +26,42 @@ const UnitsCart = ({unit , Delete}) => {
         e.stopPropagation();
         navigate(`/dash/Update-Units/${id}`);
     };
+
+    const units = [
+        { value: "kg", label: "kilogramme" },
+        { value: "g", label: "gramme" },
+        { value: "mg", label: "milligramme" },
+        { value: "lb", label: "livre" },
+        { value: "oz", label: "once" },
+        { value: "l", label: "litre" },
+        { value: "ml", label: "millilitre" },
+        { value: "gal", label: "gallon" },
+        { value: "qt", label: "quart" },
+        { value: "pt", label: "pinte" },
+        { value: "cup", label: "tasse" },
+        { value: "fl oz", label: "once liquide" },
+        { value: "tbsp", label: "cuillère à soupe" },
+        { value: "tsp", label: "cuillère à café" },
+        { value: "pc", label: "pièce" },
+        { value: "doz", label: "douzaine" },
+        { value: "pack", label: "paquet" },
+        { value: "box", label: "boîte" },
+        { value: "case", label: "caisse" },
+        { value: "in", label: "pouce" },
+        { value: "cm", label: "centimètre" },
+        { value: "bunch", label: "botte" },
+        { value: "head", label: "tête" },
+        { value: "slice", label: "tranche" },
+        { value: "serving", label: "portion" },
+        { value: "portion", label: "portion" }
+    ];
+    
+    const baseUnits = [
+        { value: "kg", label: "kilogramme" },
+        { value: "g", label: "gramme" },
+        { value: "l", label: "litre" },
+        { value: "ml", label: "millilitre" }
+    ];
     
     return (
         <>
@@ -34,8 +70,8 @@ const UnitsCart = ({unit , Delete}) => {
                 <div className={style.header}>
 
                     <div className={style.zoneInfo}>
-                        <h3 className={style.zoneTitle}> <Boxes  className="mr-2 " /> {unit.unit} </h3>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Unité de base :</span> {unit.baseUnit || '-'}</p>
+                        <h3 className={style.zoneTitle}> <Boxes  className="mr-2 " />{units.find((unitt) => unitt.value === unit.unit)?.label}</h3>
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Unité de base :</span> {baseUnits.find((baseUnit) => baseUnit.value === unit.baseUnit)?.label || '-'}</p>
                         <p className={style.zoneLabel}><span className={style.blacktext}>Facteur de conversion :</span> {unit.conversionFactorToBaseUnit || '-'}</p> 
                         <div className={style.zoneLabel}>
                             <span><span className={style.blacktext}>Créé le :</span> {formatDate(unit.createdAt)}</span>
@@ -65,7 +101,7 @@ const UnitsCart = ({unit , Delete}) => {
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                         <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer le Unité "{unit?.unit}" ?
+                            Êtes-vous sûr de vouloir supprimer le Unité "{units.find((unitt) => unitt.value === unit.unit)?.label}" ?
                         </p>
                         <div className="flex justify-end gap-3">
                             <button

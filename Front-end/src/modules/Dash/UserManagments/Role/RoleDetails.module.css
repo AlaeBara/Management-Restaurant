@@ -42,6 +42,7 @@
     z-index: 1;
 }
 
+
 .roleInfo {
     display: flex;
     flex-wrap: wrap;
@@ -165,4 +166,17 @@
     background-repeat: no-repeat;
     background-position: center;
 }
+
+
+
+@media (max-width: 600px) {
+    .RoleDetails h1 {
+        font-size: 15px;
+       
+    }
+    .roleInfo{
+        margin-top: 20px;
+    }
+}
+
 

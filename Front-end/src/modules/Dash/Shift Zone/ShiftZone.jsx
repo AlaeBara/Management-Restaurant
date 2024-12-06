@@ -50,8 +50,8 @@ const ShiftZones = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Zones</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement toutes les zones de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des zones, ainsi que gérer leurs paramètres et leurs configurations.</p>
+                <h1 className={`${style.title} !mb-0 `}>Gestion Des Sessions</h1>
+                <p className="text-base text-gray-600 mt-0">Vous pouvez voir l'état des services et les demandes associées à chaque zone.</p>
             </div>
         </div>
 

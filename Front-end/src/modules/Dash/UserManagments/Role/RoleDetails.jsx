@@ -154,7 +154,7 @@ const RoleDetails = () => {
                     : 
                 <>
                     <div className={styles.RoleDetails}>
-                        <h1>Rôle Information :</h1>
+                        <h1>Rôle Information :( {role.name} )</h1>
 
                         <div className={styles.roleCard}>
                             {errors.role && <ErrorMessage message={errors.role} />}
@@ -166,7 +166,7 @@ const RoleDetails = () => {
                                     </div>
                                     <div className={styles.infoItem}>
                                         <span className={styles.label}>Description :</span>
-                                        <p>{role.label}</p>
+                                        <p>{role.label || "-"}</p>
                                     </div>
                                     <div className={styles.infoItem}>
                                         <span className={styles.label}>Date de création :</span>

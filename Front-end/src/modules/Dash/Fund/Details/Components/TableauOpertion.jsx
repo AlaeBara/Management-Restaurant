@@ -70,6 +70,17 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
     return type ? type.label : valeur;
   };
 
+  const getStatusBadgeClass = (status) => {
+    switch (status) {
+      case 'pending':
+        return 'bg-red-500 text-white';
+      case 'approved':
+        return 'bg-green-500 text-white';
+      default:
+        return 'bg-gray-500 text-white';
+    }
+  };
+
   const LigneDesktop = ({ operation, isLast }) => (
     <tr className={`hidden md:table-row ${!isLast ? 'border-b border-gray-200' : ''}`}>
       <td className="p-3 text-sm">{obtenirLibelleType(operation.operation)}</td>
@@ -86,10 +97,14 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
         {operation.amount} Dh
       </td>
       <td className="p-3 text-sm">{formatDate(operation.dateOperation)}</td>
-      <td className="p-3 text-sm">{obtenirLibellestatus(operation.status)}</td>
+      <td className="p-3 text-sm">
+          <span className={`px-3 py-1 rounded-full ${getStatusBadgeClass(operation.status)} whitespace-nowrap`}>
+            {obtenirLibellestatus(operation.status)}
+          </span>
+      </td>
       <td className="p-3 text-sm">{operation.reference || "-"}</td>
       <td className="p-3 text-sm">{operation.note || "-"}</td>
-      <td className="p-3 text-sm">{formatDate(operation.updatedAt)}</td>
+      <td className="p-3 text-sm">{formatDate(operation.createdAt)}</td>
       <td className="p-3 text-sm">
 
           {obtenirLibellestatus(operation.status)==="En attente" ? 
@@ -97,7 +112,9 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
               Approuver
             </button>
             :
-            "Opération approuvée"
+            (
+              <span>{formatDate(operation.approvedAt)}</span>
+            )
           }
       </td>
     </tr>
@@ -144,7 +161,9 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
                 </div>
                 
                 <div className="font-semibold">Status:</div>
-                <div>{obtenirLibellestatus(operation.status)}</div>
+                <div><span className={`px-3 py-1 rounded-full ${getStatusBadgeClass(operation.status)} whitespace-nowrap`}>
+                  {obtenirLibellestatus(operation.status)}
+                </span></div>
                 
                 <div className="font-semibold">Référence:</div>
                 <div>{operation.reference || "-"}</div>
@@ -155,7 +174,7 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
                 
                 
                 <div className="font-semibold">Date de création</div>
-                <div>{formatDate(operation.updatedAt)}</div>
+                <div>{formatDate(operation.createdAt)}</div>
 
                 <div className="font-semibold">Approuver l'opération</div>
                 <div>{obtenirLibellestatus(operation.status)==="En attente" ? 
@@ -163,7 +182,9 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
                       Approuver
                     </button>
                     :
-                    "Opération approuvée"
+                    (
+                      <span>{formatDate(operation.approvedAt)}</span>
+                    )
                   }
                 </div>
                 

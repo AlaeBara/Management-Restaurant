@@ -6,30 +6,22 @@ import Cookies from 'js-cookie';
 
 // Zod schema for form validation
 const InventorySchema = z.object({
-    sku: z.string().min(1, { message: "Le SKU  est obligatoire." }),
+  sku: z.string().min(1, { message: "Le SKU  est obligatoire." }),
     
-    warningQuantity: z.coerce.number({
-        required_error: "La quantité d'alerte est obligatoire.",
-        invalid_type_error: "La quantité d'alerte est obligatoire.",
-    })
-      .positive({ message: "Le facteur de conversion doit être un nombre positif." }),
+  warningQuantity: z.coerce.number({
+      required_error: "La quantité d'alerte est obligatoire.",
+      invalid_type_error: "La quantité d'alerte est obligatoire.",
+  })
+  .nonnegative({ message: "Le facteur de conversion doit être un nombre positif." }),
 
-    
-    totalQuantity: z.coerce.number({
-        required_error: "La quantité totla est obligatoire.",
-        invalid_type_error: "La quantité total est obligatoire.",
-    })
-      .positive({ message: "Le facteur de conversion doit être un nombre positif." }),
+  storageId: z
+      .string()
+      .nonempty({ message: "L'emplacement de stockage est obligatoire." }),
 
-    storageId: z
-        .string()
-        .nullable()
-        .optional(),
-
-    productId: z
-        .string()
-        .nullable()
-        .optional(),
+  productId: z
+      .string()
+      .nonempty({ message: "Le Produit associé est obligatoire." }),
+  
     
 });
 
@@ -41,7 +33,7 @@ export function useUpdateInventory(id, formData, setFormData, initialData, setIn
     e.preventDefault();
 
     formData.warningQuantity = parseFloat(formData.warningQuantity)
-    formData.totalQuantity = parseFloat(formData.totalQuantity)
+
     
     // Check if formData is the same as initialData (meaning no change)
     const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialData);
@@ -56,11 +48,20 @@ export function useUpdateInventory(id, formData, setFormData, initialData, setIn
       return; // Do nothing if no data is updated
     }
 
+    const modifiedData = Object.keys(formData).reduce((acc, key) => {
+      if (formData[key] !== initialData[key]) {
+          acc[key] = formData[key];
+      }
+      return acc;
+    }, {});
+
+
+
     try {
-        InventorySchema .parse(formData);
+        InventorySchema.parse(formData);
         const token = Cookies.get('access_token');
-        console.log("new data" ,formData )
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/inventories/${id}`, formData, {
+        console.log("new data" ,modifiedData )
+        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/inventories/${id}`, modifiedData, {
             headers: {
             Authorization: `Bearer ${token}`,
             },

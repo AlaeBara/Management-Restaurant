@@ -26,13 +26,11 @@ const InventorySchema = z.object({
 
     storageId: z
         .string()
-        .nullable()
-        .optional(),
+        .nonempty({ message: "L'emplacement de stockage est obligatoire." }),
 
     productId: z
         .string()
-        .nullable()
-        .optional(),
+        .nonempty({ message: "Le Produit associé est obligatoire." }),
     
 });
 
@@ -50,8 +48,8 @@ export default function Component() {
     const [formData, setFormData] = useState({
         sku: '',
         warningQuantity: null,
-        storageId: null,
-        productId : null
+        storageId: '',
+        productId : ''
     });
     const [errors, setErrors] = useState({});
 
@@ -151,7 +149,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="unitId">Emplacement de stockage</Label>
+                                <Label htmlFor="unitId">Emplacement de stockage <span className='text-red-500 text-base'>*</span></Label>
                                 <Select
                                     id="storageId"
                                     name="storageId"
@@ -166,7 +164,7 @@ export default function Component() {
                                             Storages
                                                 .map((Storage) => (
                                                     <SelectItem key={Storage.id} value={Storage.id}>
-                                                        {Storage.storageName}
+                                                        {Storage.hierarchyPath}
                                                     </SelectItem>
                                                 ))
                                         ) : (
@@ -183,7 +181,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="unitId">Produit associé</Label>
+                                <Label htmlFor="unitId">Produit associé <span className='text-red-500 text-base'>*</span></Label>
                                 <Select
                                     id="productId"
                                     name="productId"

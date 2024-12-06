@@ -78,22 +78,6 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="label">Quantité Total <span className='text-red-500 text-base'>*</span></Label>
-                                <Input
-                                    id="totalQuantity"
-                                    name="totalQuantity"
-                                    value={formData.totalQuantity || ""}
-                                    onChange={handleChange}
-                                    placeholder="Quantité Total"
-                                    type='Number'
-                                   
-                                />
-                                {errors.totalQuantity && (
-                                    <p className="text-xs text-red-500 mt-1">{errors.totalQuantity}</p>
-                                )}
-                            </div>
-
-                            <div className="space-y-2">
                                 <Label htmlFor="label">Quantité d'alerte <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="warningQuantity"
@@ -109,7 +93,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="unitId">Emplacement de stockage</Label>
+                                <Label htmlFor="unitId">Emplacement de stockage <span className='text-red-500 text-base'>*</span></Label>
                                 <Select
                                     id="storageId"
                                     name="storageId"
@@ -124,7 +108,7 @@ export default function Component() {
                                             Storages
                                                 .map((Storage) => (
                                                     <SelectItem key={Storage.id} value={Storage.id}>
-                                                        {Storage.storageName}
+                                                        {Storage.hierarchyPath}
                                                     </SelectItem>
                                                 ))
                                         ) : (
@@ -141,7 +125,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="unitId">Produit associé</Label>
+                                <Label htmlFor="unitId">Produit associé <span className='text-red-500 text-base'>*</span></Label>
                                 <Select
                                     id="productId"
                                     name="productId"
