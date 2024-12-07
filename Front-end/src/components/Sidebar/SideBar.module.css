@@ -1,0 +1,7 @@
+.addd{
+    /* Webkit browsers (Chrome, Safari) */
+    &::-webkit-scrollbar {
+      width: 1px; /* Set scrollbar width to 1px */
+    }
+    
+}

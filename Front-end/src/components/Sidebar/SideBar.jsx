@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import style from './SideBar.module.css'
 import {
   BadgeCheck,
   Bell,
@@ -339,7 +340,7 @@ const SideBar = () => {
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className={style.addd}>
         <SidebarGroup>
           <SidebarGroupLabel>Platform</SidebarGroupLabel>
           <SidebarMenu>

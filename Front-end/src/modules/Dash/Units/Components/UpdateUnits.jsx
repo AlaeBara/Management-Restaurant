@@ -106,7 +106,7 @@ export default function Component() {
                                     <SelectContent>
                                     {units.map((unit) => (
                                         <SelectItem key={unit.value} value={unit.value}>
-                                        {unit.label}
+                                        {unit.value} - {unit.label}
                                         </SelectItem>
                                     ))}
                                     </SelectContent>
@@ -134,7 +134,7 @@ export default function Component() {
                                     <SelectContent>
                                     {baseUnits.map((baseUnit) => (
                                         <SelectItem key={baseUnit.value} value={baseUnit.value}>
-                                            {baseUnit.label}
+                                           {baseUnit.value} - {baseUnit.label}
                                         </SelectItem>
                                     ))}
                                     </SelectContent>
