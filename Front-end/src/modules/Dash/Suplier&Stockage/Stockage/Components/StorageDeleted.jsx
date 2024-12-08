@@ -66,7 +66,7 @@ const Storage = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Historique Des Stock Supprimés</h1>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Placement De Stock Supprimés</h1>
                 <p className="text-base text-gray-600 mt-0">Consultez l'historique des stocks supprimés de votre plateforme. Vous pouvez visualiser les articles qui ont été retirés du système.</p>
             </div>
         </div>

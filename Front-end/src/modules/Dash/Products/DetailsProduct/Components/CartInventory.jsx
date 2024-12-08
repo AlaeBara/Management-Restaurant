@@ -31,10 +31,6 @@ const CartIventory = ({inventory}) => {
                             <h2>{inventory.totalQuantity} {inventory.productUnit}</h2>
                         </div>
                         <div className={styles.infoItem}>
-                            <span className={styles.label}>L'unité de produit:</span>
-                            <p>{inventory.productUnit}</p>
-                        </div>
-                        <div className={styles.infoItem}>
                             <span className={styles.label}>Date de création :</span>
                             <p>{formatDate(inventory.createdAt)}</p>
                         </div>

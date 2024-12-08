@@ -17,7 +17,6 @@ const useFetchUserData = (id) => {
     status: ''
   });
   const [originalData, setOriginalData] = useState({});
-  const [roles, setRoles] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
   const [messageError , setMessageError]= useState()
@@ -29,13 +28,22 @@ const useFetchUserData = (id) => {
         const [userResponse, rolesResponse] = await Promise.all([
           axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`, {
             headers: { Authorization: `Bearer ${token}` },
-          }),
-          axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/roles`, {
-            headers: { Authorization: `Bearer ${token}` },
-          }),
+          })
         ]);
         
-        setOriginalData(userResponse.data);
+        setOriginalData((prevData) => ({
+          ...prevData,
+          firstname: userResponse.data.firstname,
+          lastname: userResponse.data.lastname,
+          username: userResponse.data.username,
+          address: userResponse.data.address || '',
+          password: userResponse.data.password,
+          phone: userResponse.data.phone || '',
+          gender: userResponse.data.gender,
+          email: userResponse.data.email,
+          roleId: userResponse.data.roleIds?.[0] || null,
+          status: userResponse.data.status
+        }));
         setFormData((prevData) => ({
           ...prevData,
           firstname: userResponse.data.firstname,
@@ -50,7 +58,7 @@ const useFetchUserData = (id) => {
           status: userResponse.data.status
         }));
         
-        setRoles(rolesResponse.data.data);
+        
 
         setIsLoading(false);
       } catch (error) {
@@ -67,7 +75,7 @@ const useFetchUserData = (id) => {
     fetchData();
   }, [id]);
 
-  return { formData, setFormData, originalData, roles, isLoading, setOriginalData , messageError };
+  return { formData, setFormData, originalData,  isLoading, setOriginalData , messageError };
 };
 
 export default useFetchUserData;

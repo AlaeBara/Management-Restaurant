@@ -68,12 +68,8 @@ const ProduitDetails = () => {
                                             <p>{product.productType}</p>
                                         </div>
                                         <div className={styles.infoItem}>
-                                            <span className={styles.label}>L'unité :</span>
-                                            <p>{product.unit}</p>
-                                        </div>
-                                        <div className={styles.infoItem}>
                                             <span className={styles.label}>Produit offert :</span>
-                                            <p>{product.isOffered ? 'Actif' : 'Inactif'}</p>
+                                            <p>{product.isOffered ? 'Oui' : 'Non'}</p>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Date de création :</span>

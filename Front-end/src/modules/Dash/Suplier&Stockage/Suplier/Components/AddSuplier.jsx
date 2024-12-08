@@ -93,7 +93,7 @@ export default function Component() {
             });
             setErrors({});
             
-            toast.success('Zone créé avec succès!', {
+            toast.success('Fournisseur créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,

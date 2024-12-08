@@ -49,7 +49,7 @@ const Storage = () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Stock</h1>
+                <h1 className={`${style.title} !mb-0 `}>Gestion Des Placement De Stock</h1>
                 <p className="text-base text-gray-600 mt-0">Gérez efficacement tous les stocks de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des articles, ainsi que gérer leurs quantités et leurs emplacements.</p>
             </div>
         </div>

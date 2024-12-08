@@ -64,7 +64,7 @@ export default function Component() {
             tableStatus: TABLE_STATUSES.AVAILABLE,
         });
         setErrors({});
-        toast.success('Zone créé avec succès!', {
+        toast.success('Table créé avec succès!', {
             icon: '✅',
             position: "top-right",
             autoClose: 1000,

@@ -196,9 +196,9 @@ const RoleDetails = () => {
                                                             checked={permission.currentUserHasPermission}
                                                             onChange={() => togglePermission(permission)}
                                                         />
-                                                        <span className={styles.permissionName}>{permission.name}</span>
+                                                        <span className={styles.permissionName}>{permission.label}</span>
                                                     </div>
-                                                    <p className={styles.permissionLabel}>{permission.label}</p>
+                                                    <p className={styles.permissionLabel}>{permission.name}</p>
                                                 </li>
                                             ))}
                                         </ul>

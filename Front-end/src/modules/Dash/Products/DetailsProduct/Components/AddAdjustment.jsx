@@ -119,7 +119,7 @@ export default function Component() {
             );
             preparedData.quantity = parseFloat(preparedData.quantity);
             InventoriesMovements.parse(preparedData);
-      
+            
 
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {

@@ -2,8 +2,8 @@ import { z } from 'zod';
 
 export const UserSchema = z.object({
     firstname: z.string()
-        .min(3, { message: 'Prénom trop court: 3 caractères minimum' })
-        .max(20, { message: 'Prénom trop long: 20 caractères maximum' }),
+    .min(3, { message: 'Prénom trop court: 3 caractères minimum' })
+    .max(20, { message: 'Prénom trop long: 20 caractères maximum' }),
 
     lastname: z.string()
         .min(3, { message: 'Nom trop court: 3 caractères minimum' })
@@ -13,8 +13,7 @@ export const UserSchema = z.object({
         .min(5, { message: 'Nom d’utilisateur trop court.' })
         .max(20, { message: 'Nom d’utilisateur trop long.' }),
 
-    password: z.string()
-        .min(5, { message: 'Mot de passe trop court.' }),
+    password: z.string().optional().nullable().or(z.literal("")),
 
     email: z.string()
         .email({ message: 'E-mail invalide.' }),
@@ -31,5 +30,7 @@ export const UserSchema = z.object({
             message: 'Numéro de téléphone invalide.',
         }),
 
-    roleId: z.number().optional(),
+    roleId: z.number().int().nullable().optional(),
+    
+    status : z.string().nullable().optional(),
 });

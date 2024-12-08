@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
 import { Eye, EyeOff } from 'lucide-react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -12,8 +12,17 @@ import { ToastContainer, toast } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 import { z } from 'zod'
 import { useNavigate } from 'react-router-dom'
+import UserStatus from './UserStatus'; 
+import {useRoles} from '../hooks/useFetchRoles'
 
 export default function Component() {
+
+  const { roles, totalRoles, loading, error, fetchRoles } = useRoles();
+
+  useEffect(() => {
+    fetchRoles();
+  }, []);
+
   const navigate = useNavigate()
   const [formData, setFormData] = useState({
     firstname: '',
@@ -23,7 +32,9 @@ export default function Component() {
     email: '',
     gender: '',
     address: null,
-    phone: null
+    phone: null,
+    status: null,
+    roleId: null,
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -37,9 +48,13 @@ export default function Component() {
     e.preventDefault()
     try {
       UserSchema.parse(formData)
-      const token = Cookies.get('access_token')
 
-      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, formData, {
+      const preparedData = Object.fromEntries(
+        Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
+      );
+      console.log(preparedData)
+      const token = Cookies.get('access_token')
+      const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, preparedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -52,7 +67,9 @@ export default function Component() {
         email: '',
         gender: '',
         address: null,
-        phone: null
+        phone: null,
+        status: null,
+        roleId: null,
       })
       setErrors({})
 
@@ -206,6 +223,53 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
                   )}
                 </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="status">Statut</Label>
+                <Select
+                    name="status"
+                    value={formData.status || ""}
+                    onValueChange={(value) => handleChange({ target: { name: 'status', value } })}
+                >
+                    <SelectTrigger id="status">
+                        <SelectValue placeholder="Sélectionner le statut" />
+                    </SelectTrigger>
+                    <SelectContent>
+                        {Object.values(UserStatus)
+                          .filter((statusValue) => statusValue !== 'email-unverified' || formData.status === 'email-unverified')
+                            .map((statusValue) => (
+                                <SelectItem key={statusValue} value={statusValue}>
+                                    {statusValue.charAt(0).toUpperCase() + statusValue.slice(1).replace(/-/g, ' ')}
+                                </SelectItem>
+                            ))}
+                    </SelectContent>
+                </Select>
+                {errors.status && <p className="text-xs text-red-500 mt-1">{errors.status}</p>}
+            </div>
+
+
+
+
+              <div className="space-y-2">
+                  <Label htmlFor="roleId">Rôle</Label>
+                  <Select
+                      value={formData.roleId?.toString() || ''}
+                      onValueChange={(value) => handleChange({ target: { name: 'roleId', value: parseInt(value) } })}
+                  >
+                      <SelectTrigger>
+                        <SelectValue placeholder="Sélectionnez un rôle" />
+                      </SelectTrigger>
+                      <SelectContent>
+                          {roles
+                          .map((role) => (
+                              <SelectItem key={role.id.toString()} value={role.id.toString()}>
+                                {role.name}
+                              </SelectItem>
+                          ))}
+                      </SelectContent>
+                  </Select>
+                  {errors.roleId && <p className="text-xs text-red-500 mt-1">{errors.roleId}</p>}
               </div>
 
               <div className="space-y-2">

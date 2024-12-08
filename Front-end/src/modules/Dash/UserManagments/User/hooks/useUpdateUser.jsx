@@ -30,6 +30,7 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
       }
 
       const token = Cookies.get('access_token');
+      console.log(updatedData)
       await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`,
         updatedData,

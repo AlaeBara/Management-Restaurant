@@ -122,9 +122,9 @@ export default function Component() {
 
             preparedData.quantity = parseFloat(preparedData.quantity);
             InventoriesMovements.parse(preparedData);
-
           
             const token = Cookies.get('access_token');
+
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -249,9 +249,6 @@ export default function Component() {
                                     )}
                                 </SelectContent>
                             </Select>
-                            {/* <p className="text-xs text-gray-600 mt-0">
-                                Veuillez sélectionner l'inventaire de destination pour les transferts entrants ou sortants.
-                            </p> */}
                             {errors.destinationInventoryId && (
                                 <p className="text-xs text-red-500 mt-1">{errors.destinationInventoryId}</p>
                             )}

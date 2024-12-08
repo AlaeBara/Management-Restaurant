@@ -73,6 +73,7 @@ const TableauMouvementsInventaire = ({ data }) => {
         {formatDate(movement.movementDate)}
       </td>
       <td className="p-3 text-sm">{movement.quantity} {movement.inventory.productUnit}</td>
+      <td className="p-3 text-sm">{movement?.destinationInventory?.sku || "-"}</td>
       <td className="p-3 text-sm">{movement.notes || "-"}</td>
       <td className="p-3 text-sm">{movement.reason || "-"}</td>
       <td className="p-3 text-sm">{formatDate(movement.updatedAt)}</td>
@@ -112,6 +113,8 @@ const TableauMouvementsInventaire = ({ data }) => {
                 
                 <div className="font-semibold">Quantité:</div>
                 <div>{movement.quantity} {movement.inventory.productUnit}</div>
+                <div className="font-semibold">Inventaire de destination :</div>
+                <div>{movement?.destinationInventory?.sku || "-"}</div>
                 
                 <div className="font-semibold">Notes:</div>
                 <div>{movement.notes || "-"}</div>
@@ -157,6 +160,7 @@ const TableauMouvementsInventaire = ({ data }) => {
                 <th className="p-3 text-left text-sm">Action</th>
                 <th className="p-3 text-left text-sm">Date Movement</th>
                 <th className="p-3 text-left text-sm">Quantité</th>
+                <th className="p-3 text-left text-sm">Inventaire de destination</th>
                 <th className="p-3 text-left text-sm">Notes</th>
                 <th className="p-3 text-left text-sm">Raison</th>
                 <th className="p-3 text-left text-sm">Date de création</th>

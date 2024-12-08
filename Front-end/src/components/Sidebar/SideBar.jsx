@@ -82,7 +82,7 @@ const SideBar = () => {
     },
     navMain: [
       {
-        title: "Les Comptes et Droites",
+        title: "Comptes et Access",
         icon: Users,
         permissions: ["access-granted", "view-users", "view-roles"],
         items: [

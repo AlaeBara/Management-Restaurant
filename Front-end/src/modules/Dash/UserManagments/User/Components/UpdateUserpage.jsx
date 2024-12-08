@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState , useEffect} from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -12,13 +12,20 @@ import Spinner from '../../../../../components/Spinner/Spinner';
 import useFetchUserData from '../hooks/useFetchUserData';
 import useUpdateUser from '../hooks/useUpdateUser';
 import UserStatus from './UserStatus'; 
+import {useRoles} from '../hooks/useFetchRoles'
 
 
 
 export default function UpdateUser() {
     const navigate = useNavigate();
     const { id } = useParams();
-    const { formData, setFormData, originalData, roles, isLoading, setOriginalData , messageError } = useFetchUserData(id);
+
+    const { roles, fetchRoles } = useRoles();
+
+    useEffect(() => {
+        fetchRoles();
+    }, []);
+    const { formData, setFormData, originalData, isLoading, setOriginalData , messageError } = useFetchUserData(id);
     const { updateSubmit, errors } = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
 
     const [showPassword, setShowPassword] = useState(false);
@@ -174,7 +181,7 @@ export default function UpdateUser() {
                             
 
                             <div className="space-y-2">
-                                <Label htmlFor="status">Changer le statut de l'utilisateur:</Label>
+                                <Label htmlFor="status">Statut</Label>
                                 <Select
                                     name="status"
                                     value={formData.status}

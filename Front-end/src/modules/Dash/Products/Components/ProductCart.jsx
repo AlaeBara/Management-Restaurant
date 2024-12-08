@@ -43,8 +43,7 @@ const ProductCart = ({ product , Delete }) => {
                         <h3 className={style.zoneTitle}> <ShoppingBag  className="mr-2 " /> {product.productName} </h3>
                         <p className={style.zoneLabel}><span className={style.blacktext}>Type de Produit : </span>{product.productType}</p>
                         <p className={style.zoneLabel}><span className={style.blacktext}>SKU du produit :</span> {product.productSKU}</p>
-                        <p className={style.zoneLabel}><span className={style.blacktext}>Produit offert :</span> {product.isOffered ? 'Actif' : 'Inactif'}</p>  
-                        <p className={style.zoneLabel}><span className={style.blacktext}>L'unité :</span> {product.unit || "-"}</p>  
+                        <p className={style.zoneLabel}><span className={style.blacktext}>Produit offert :</span> {product.isOffered ? 'Actif' : 'Inactif'}</p>   
                         <p className={style.zoneLabel}><span className={style.blacktext}>Description : </span> 
                             {product.productDescription ? (
                                 <>
