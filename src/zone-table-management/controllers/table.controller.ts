@@ -20,6 +20,7 @@ import {
 } from 'src/user-management/decorators/auth.decorator';
 import { CreateTableDto } from '../dtos/table/create-table.dto';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';
+import { CreateManyTablesDto } from '../dtos/table/create-many-tables.dto';
 
 @Controller('api/tables')
 @ApiTags('Tables')
@@ -131,5 +132,13 @@ export class TableController {
   async generateQrCode(@Param('id') id: string) {
     const table = await this.tableService.findOne(id);
     return `<img src="${table.qrcode}" alt="QR Code" />`;
+  }
+
+  @Post('generate-tables')
+  @Permissions('create-table')
+  @ApiOperation({ summary: 'Create multiple tables' })
+  async generateTables(@Body() createTablesDto: CreateManyTablesDto) {
+    await this.tableService.createManyTables(createTablesDto);
+    return { message: 'Great! Each table has been created successfully', status: 201 };
   }
 }

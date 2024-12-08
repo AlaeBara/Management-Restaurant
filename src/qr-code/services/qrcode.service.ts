@@ -7,7 +7,6 @@ export default class QrcodeService {
       margin: 2,
       errorCorrectionLevel: 'H',
     });
-    console.log(qrCodeDataURL);
     return qrCodeDataURL;
   }
 }
