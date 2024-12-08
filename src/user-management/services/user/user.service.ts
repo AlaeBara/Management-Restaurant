@@ -25,30 +25,65 @@ export class UserService extends GenericService<User> {
     super(dataSource, User, 'user');
   }
 
+  /**
+   * Create a new user
+   * @param createUserDto The user data to be created
+   * @returns The created user
+   */
   async create(createUserDto: CreateUserDto) {
-
+    /**
+     * Validate if user with same username, email or phone already exists
+     * @param data The data to be validated
+     */
     await this.validateUnique({
       username: createUserDto.username,
       email: createUserDto.email,
       phone: createUserDto.phone,
     });
 
+    /**
+     * Hash the password
+     * @param password The password to be hashed
+     * @returns The hashed password
+     */
     createUserDto.password = await hash(createUserDto.password)
-    const user = this.userRepository.create(createUserDto);
-    user.roles = [];
 
+    /**
+     * Create a new user
+     * @param createUserDto The user data to be created
+     * @returns A new user
+     */
+    const user = this.userRepository.create(createUserDto);
+
+    /**
+     * Handle status
+     * @param user The user to be updated
+     * @param status The status to be updated
+     */
+    const status = createUserDto.status
+    if (status || status !== undefined) {
+      await this.updateStatusByUser(user, status)
+    }
+
+    /**
+     * Handle role
+     * @param user The user to be updated
+     * @param roleId The role id to be updated
+     */
     if (createUserDto.roleId == null) {
       return this.userRepository.save(user);
     }
 
-    const role = await this.roleService.findOneByIdWithOptions(createUserDto.roleId);
-    await this.grantRoleToUser(user, role);
+    user.roles = [];
+    await this.grantRoleToUser(user, createUserDto.roleId);
 
     return user;
   }
 
+
   // TODO : let user can have only one role
-  async grantRoleToUser(user: User, role: Role) {
+  async grantRoleToUser(user: User, roleId: number) {
+    const role = await this.roleService.findOneByIdWithOptions(roleId);
     if (user.roles.length > 0) {
       user.roles[0] = role;
     } else {
@@ -111,25 +146,30 @@ export class UserService extends GenericService<User> {
   }
 
   async updateRoleByUser(user: User, roleId: number) {
-    const role = await this.roleService.findOneByIdWithOptions(roleId);
-    await this.grantRoleToUser(user, role);
+    await this.grantRoleToUser(user, roleId);
   }
+
   async updatePasswordByUser(user: User, password: string) {
     user.password = await hash(password);
   }
 
-  updateStatusByUser(user: User, status: UserStatus) {
+  async updateStatusByUser(user: User, status: UserStatus) {
     if (user.status === status) {
-
       return;
     }
+
+
     if (status === UserStatus.DELETED) {
+      // u cant pass deleted on update status (only done automaticly on delete action)
       throw new BadRequestException('User cannot be deleted');
     }
+
     user.status = status;
+
     if (!user.isBlocked) {
       user.isBlocked = true;
     }
+
     if (status === UserStatus.ACTIVE) {
       user.isBlocked = false;
       user.isEmailVerified = true;
@@ -190,7 +230,7 @@ export class UserService extends GenericService<User> {
 
   async updatePasswordByProfile(@Req() request: Request, updatePasswordDto: UpdatePasswordDto) {
     const reqUser = request['user'];
-    const user = await this.findOneByIdWithOptions(reqUser.sub, { select:'password' } );
+    const user = await this.findOneByIdWithOptions(reqUser.sub, { select: 'password' });
     const oldPassword = updatePasswordDto.oldPassword;
     const newPassword = updatePasswordDto.newPassword;
     const confirmPassword = updatePasswordDto.confirmPassword;

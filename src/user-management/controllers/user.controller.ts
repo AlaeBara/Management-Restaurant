@@ -76,7 +76,7 @@ export class UserController {
   @Permissions('create-user')
   @ApiOperation({ summary: 'Create a new user' })
   async create(@Body() createUserDto: CreateUserDto): Promise<any> {
-    await this.userService.throwIfFoundByAnyAttribute({ username: createUserDto.username, email: createUserDto.email }, [], true);
+    //await this.userService.throwIfFoundByAnyAttribute({ username: createUserDto.username, email: createUserDto.email }, [], true);
     await this.userService.create(createUserDto);
     return { message: 'Great! The user has been successfully created.', status: 200 };
   }
@@ -113,8 +113,7 @@ export class UserController {
     @Param('roleid', ParseIntPipe) roleid: number,
   ) {
     const user = await this.userService.findOrThrow(id, ['roles']);
-    const role = await this.roleService.findOrThrow(roleid);
-    this.userService.grantRoleToUser(user, role);
+    this.userService.grantRoleToUser(user, roleid);
     return { message: 'Great! The role has been successfully granted to the user.', status: 200 };
   }
 }

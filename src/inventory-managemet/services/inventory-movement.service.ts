@@ -91,6 +91,12 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         // Get the destination inventory
         InventoryMovement.destinationInventory = await this.inventoryService.findOneByIdWithOptions(destinationInventoryId);
 
+        // Validate source and destination are not the same
+        console.log(InventoryMovement.inventory.id, destinationInventoryId)
+        if(InventoryMovement.inventory.id === destinationInventoryId) {
+            throw new BadRequestException('Cannot transfer to the same inventory');
+        }
+
         // Validate products match between source and destination
         if (InventoryMovement.inventory.productId != InventoryMovement.destinationInventory.productId) {
             throw new BadRequestException('Source and destination inventory must be for the same product')

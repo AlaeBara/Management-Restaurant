@@ -311,11 +311,13 @@ export class GenericService<T> {
     // Use count with OR conditions
     const count = await this.repository.count({
       where: conditions as any,
+      withDeleted: false,
     });
 
     if (count > 0) {
+      const conditionsNames = conditions.map(condition => Object.keys(condition)[0]);
       throw new ConflictException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with one of these attributes already exists`
+        `Un ${this.name} avec ${conditionsNames.map(name => `${name}`).join(' ou ')} existe deja`
       );
     }
   }

@@ -1,38 +1,39 @@
 import { IsEmail, isEmpty, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, Length } from "class-validator";
 import { Gender } from "../../../common/enums/gender.enum";
 import { ApiProperty } from "@nestjs/swagger";
+import { UserStatus } from "src/user-management/enums/user-status.enum";
 
 export class CreateUserDto {
     @IsNotEmpty()
     @Length(3, 20)
     @IsString()
     @ApiProperty({ description: 'The first name of the user', example: 'John', required: true })
-    firstname:string;
- 
+    firstname: string;
+
     @IsNotEmpty()
     @Length(3, 20)
     @ApiProperty({ description: 'The last name of the user', example: 'Doe', required: true })
-    lastname:string;
-  
+    lastname: string;
+
     @IsNotEmpty()
     @IsString()
     @ApiProperty({ description: 'The username of the user', example: 'john.doe', required: true })
-    username:string;
+    username: string;
 
     @IsNotEmpty()
     @IsString()
     @ApiProperty({ description: 'The password of the user', example: 'password', required: true })
-    password:string;
+    password: string;
 
     @IsNotEmpty()
     @IsEmail()
     @ApiProperty({ description: 'The email of the user', example: 'john.doe@example.com', required: true })
-    email:string;
+    email: string;
 
     @IsNotEmpty()
     @IsEnum(Gender)
     @ApiProperty({ description: 'The gender of the user', example: 'male', required: true })
-    gender:Gender
+    gender: Gender
 
     @IsOptional()
     @IsString()
@@ -48,4 +49,9 @@ export class CreateUserDto {
     @IsNumber()
     @ApiProperty({ description: 'The role id of the user', example: '1', required: false })
     roleId: number;
+
+    @IsOptional()
+    @IsEnum(UserStatus)
+    @ApiProperty({ description: 'The status of the user', example: 'active', required: false })
+    status: UserStatus;
 }
