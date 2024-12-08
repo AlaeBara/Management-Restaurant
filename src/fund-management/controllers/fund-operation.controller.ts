@@ -1,10 +1,11 @@
 import { FundOperationService } from "../services/fund-operation.service";
-import { Body, Controller, Get, Param, Patch, Post, Query } from "@nestjs/common";
+import { Body, Controller, Get, Param, Patch, Post, Query, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { FundOperationEntity } from "../entities/fund-operation.entity";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { CreateFundOperationDto } from "../dtos/fund-operation/create-fund-operation.dto";
 import { CreateExpenseDto } from "../dtos/fund-operation/create-expense.dto";
+import { CreateTransferOperationDto } from "../dtos/fund-operation/create-transfer-operation.dto";
 
 @Controller('api/funds-operations')
 @ApiTags('Fund Management - Operations')
@@ -70,5 +71,21 @@ export class FundOperationController {
     async approveOperation(@Param('id') id: string) {
         await this.fundOperationService.approveOperation(id);
         return { message: 'Your operation has been APPROVED successfully', status: 200 };
+    }
+
+    @Patch('transfer/:id/approve')
+    @Permissions('approve-transfer-fund-operation')
+    @ApiOperation({ summary: 'Approve a transfer fund operation' })
+    async approveTransferOperation(@Param('id') id: string, @Req() req: Request) {
+        await this.fundOperationService.approveTransferOperation(id, req);
+        return { message: 'Your transfer operation has been APPROVED successfully', status: 200 };
+    }
+
+    @Post('transfer/create')
+    @Permissions('create-transfer-fund-operation')
+    @ApiOperation({ summary: 'Create a transfer fund operation' })
+    async createTransferOperation(@Body() operationDto: CreateTransferOperationDto, @Req() req: Request) {
+        await this.fundOperationService.trasfertOperation(operationDto, req);
+        return { message: 'Your transfer operation has been CREATED successfully', status: 200 };
     }
 }

@@ -2,12 +2,14 @@ import { GenericService } from "src/common/services/generic.service";
 import { FundOperationEntity } from "../entities/fund-operation.entity";
 import { DataSource, Repository } from "typeorm";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, Inject, Injectable, NotFoundException } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, NotFoundException, Req } from "@nestjs/common";
 import { CreateFundOperationDto } from "../dtos/fund-operation/create-fund-operation.dto";
 import { FundService } from "./fund.service";
 import { FundOperation, FundOperationStatus, getOperationAction } from "../enums/fund-operation.enum";
 import { Fund } from "../entities/fund.entity";
 import { CreateExpenseDto } from "../dtos/fund-operation/create-expense.dto";
+import { CreateTransferOperationDto } from "../dtos/fund-operation/create-transfer-operation.dto";
+import { UserService } from "src/user-management/services/user/user.service";
 
 @Injectable()
 export class FundOperationService extends GenericService<FundOperationEntity> {
@@ -18,6 +20,8 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         readonly fundOperationRepository: Repository<FundOperationEntity>,
         @Inject(FundService)
         private readonly fundService: FundService,
+        @Inject(UserService)
+        private readonly userService: UserService,
     ) {
         super(dataSource, FundOperationEntity, 'fund_operations');
     }
@@ -89,6 +93,57 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         await this.adjustFundBalance(operation.fund, operation.amount, operation.operation);
         operation.status = FundOperationStatus.APPROVED;
         operation.approvedAt = new Date();
+        return this.fundOperationRepository.save(operation);
+    }
+
+
+
+    async AssignUserOperation(userId: string, operation: FundOperationEntity, assignTo: 'createdBy' | 'approvedBy') {
+        const User = await this.userService.findOneByIdWithOptions(userId);
+        operation[assignTo] = User;
+    }
+
+    async generateTransfer(operationDto: CreateTransferOperationDto) {
+        if (operationDto.fundId === operationDto.transferFundId) throw new BadRequestException('Vous ne pouvez pas effectuer un virement vers le même fonds');
+
+        const fund = await this.fundService.findOneByIdWithOptions(operationDto.fundId)
+        const transferFund = await this.fundService.findOneByIdWithOptions(operationDto.transferFundId)
+        const operation = this.fundOperationRepository.create(operationDto);
+
+        operation.fund = fund;
+        operation.transferToFund = transferFund;
+        operation.operation = FundOperation.TRANSFER;
+        operation.status = operationDto.status ? operationDto.status : FundOperationStatus.PENDING;
+        return operation
+    }
+
+    async finalizeTransfer(operation: FundOperationEntity, @Req() req: Request) {
+        operation.approvedAt = new Date();
+        await this.validateBalance(operation.fund, operation.amount, FundOperation.TRANSFER_DECREASE);
+        await this.adjustFundBalance(operation.fund, operation.amount, FundOperation.TRANSFER_DECREASE);
+        await this.adjustFundBalance(operation.transferToFund, operation.amount, FundOperation.TRANSFER_INCREASE);
+        await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
+    }
+
+    async trasfertOperation(operationDto: CreateTransferOperationDto, @Req() req: Request): Promise<FundOperationEntity> {
+
+        const operation = await this.generateTransfer(operationDto);
+
+        await this.validateAmount(operation.amount);
+
+
+        if (operation.status == FundOperationStatus.APPROVED) {
+            await this.finalizeTransfer(operation, req);
+        }
+        await this.AssignUserOperation(req['user'].sub, operation, 'createdBy');
+        return this.fundOperationRepository.save(operation);
+    }
+
+    async approveTransferOperation(operationId: string, @Req() req: Request): Promise<FundOperationEntity> {
+        const operation = await this.findOrThrowByUUID(operationId);
+        if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Operation already approved');
+        await this.finalizeTransfer(operation, req);
+        operation.status = FundOperationStatus.APPROVED;
         return this.fundOperationRepository.save(operation);
     }
 }

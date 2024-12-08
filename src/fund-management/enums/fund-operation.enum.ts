@@ -16,7 +16,10 @@ export enum FundOperation {
     CHARGE = 'charge',
     CHARGEBACK = 'chargeback',
     CHARGEBACK_REFUND = 'chargeback-refund',
-    CHARGEBACK_CHARGE = 'chargeback-charge'
+    CHARGEBACK_CHARGE = 'chargeback-charge',
+    TRANSFER = 'transfer',
+    TRANSFER_INCREASE = 'transfer-increase', // those should not added to select
+    TRANSFER_DECREASE = 'transfer-decrease' // those should not added to select
 }
 
 export enum FundOperationStatus {
@@ -24,7 +27,7 @@ export enum FundOperationStatus {
     APPROVED = 'approved'
 }
 
-export const getOperationAction = (operation: FundOperation): 'increase' | 'decrease' => {
+export const getOperationAction = (operation: FundOperation): 'increase' | 'decrease' | 'both' => {
     switch (operation) {
         case FundOperation.DEPOSIT:
         case FundOperation.TRANSFER_IN:
@@ -33,6 +36,7 @@ export const getOperationAction = (operation: FundOperation): 'increase' | 'decr
         case FundOperation.ADJUSTMENT_INCREASE:
         case FundOperation.OTHER_INCOME:
         case FundOperation.CHARGE:
+        case FundOperation.TRANSFER_INCREASE:
             return 'increase';
         case FundOperation.WITHDRAW:
         case FundOperation.TRANSFER_OUT:
@@ -45,6 +49,9 @@ export const getOperationAction = (operation: FundOperation): 'increase' | 'decr
         case FundOperation.CHARGEBACK:
         case FundOperation.PURCHASE:
         case FundOperation.TIP:
+        case FundOperation.TRANSFER_DECREASE:
             return 'decrease';
+        case FundOperation.TRANSFER:
+            return 'both';
     }
 }

@@ -2,6 +2,7 @@ import { BeforeInsert, Column, Entity, ManyToOne, JoinColumn, RelationId, AfterL
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { FundOperation, FundOperationStatus, getOperationAction } from '../enums/fund-operation.enum';
 import { Fund } from './fund.entity';
+import { User } from 'src/user-management/entities/user.entity';
 
 @Entity(process.env.DATASET_PREFIX + 'fund_operations')
 export class FundOperationEntity extends BaseEntity {
@@ -10,7 +11,7 @@ export class FundOperationEntity extends BaseEntity {
     operation: FundOperation;
 
     @Column()
-    action: 'increase' | 'decrease';
+    action: 'increase' | 'decrease' | 'both';
 
     @Column({ default: 0, type: "decimal", precision: 10, scale: 2 })
     amount: number;
@@ -24,7 +25,7 @@ export class FundOperationEntity extends BaseEntity {
     @Column({ type: 'timestamp' })
     dateOperation: Date;
 
-    @Column({ type: 'timestamp', nullable:true })
+    @Column({ type: 'timestamp', nullable: true })
     approvedAt: Date;
 
     @ManyToOne(() => Fund, { eager: true })
@@ -33,6 +34,21 @@ export class FundOperationEntity extends BaseEntity {
 
     @RelationId((operation: FundOperationEntity) => operation.fund)
     fundId: string;
+
+    @ManyToOne(() => Fund, { eager: true, nullable: true })
+    @JoinColumn({ name: 'transferFund_id' })
+    transferToFund: Fund;
+
+    @RelationId((operation: FundOperationEntity) => operation.transferToFund)
+    transferToFundId: string;
+
+    @ManyToOne(() => User, { eager: true })
+    @JoinColumn({ name: 'createdBy' })
+    createdBy: User;
+
+    @ManyToOne(() => User, { eager: true })
+    @JoinColumn({ name: 'approvedBy' })
+    approvedBy: User;
 
     @Column({ default: FundOperationStatus.PENDING })
     status: FundOperationStatus;
@@ -44,6 +60,6 @@ export class FundOperationEntity extends BaseEntity {
 
     @BeforeInsert()
     setApprovedAt() {
-        if(this.status == FundOperationStatus.APPROVED ) this.approvedAt = new Date();
+        if (this.status == FundOperationStatus.APPROVED) this.approvedAt = new Date();
     }
 }
