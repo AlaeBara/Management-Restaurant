@@ -25,6 +25,6 @@ export class CreateManyTablesDto {
 
     @IsOptional()
     @IsEnum(TableStatus)
-    @ApiProperty({ description: 'The status of the table', example: 'free', required: false })
+    @ApiProperty({ description: 'The status of the table', example: 'available', required: false })
     tableStatus: TableStatus;
 }
