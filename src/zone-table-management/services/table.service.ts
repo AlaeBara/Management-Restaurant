@@ -176,6 +176,10 @@ export class TableService extends GenericService<Table> {
     const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
     const tableObjects: CreateTableDto[] = [];
 
+    if(object.startNumber > object.endNumber){
+      throw new BadRequestException('Le numérique de début doit être plus petit que le numérique de fin');
+    }
+
     // Loop through the range of numbers and create a table object for each
     for (let i = object.startNumber; i < object.endNumber + 1; i++) {
       const TableDto: CreateTableDto = {

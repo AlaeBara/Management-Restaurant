@@ -6,11 +6,11 @@ import { ApiProperty } from '@nestjs/swagger';
 export class CreateManyTablesDto {
 
     @IsNotEmpty()
-    @ApiProperty({ description: 'The start number of the tables', example: 'Table 1', required: true })
+    @ApiProperty({ description: 'The start number of the tables', example: 4, required: true })
     startNumber: number;
 
     @IsNotEmpty()
-    @ApiProperty({ description: 'The end number of the tables', example: 'Table 1', required: true })
+    @ApiProperty({ description: 'The end number of the tables', example: 10, required: true })
     endNumber: number;
 
     @IsNotEmpty()
