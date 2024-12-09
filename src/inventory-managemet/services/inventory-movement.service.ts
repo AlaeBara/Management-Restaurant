@@ -71,7 +71,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
 
         //If the movement action is not provided, it's automatically set based on the movement type
         inventoryMovementObject.movementAction = InventoryMovementDto.movementAction ? InventoryMovementDto.movementAction : getMovementAction(InventoryMovementDto.movementType);
-        
+
         //The movement action must be either 'increase' or 'decrease'
         if (['increase', 'decrease'].includes(inventoryMovementObject.movementAction) === false) {
             throw new BadRequestException('Invalid movement action');
@@ -108,8 +108,8 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         // Initialize the movement object with basic validation
         await this.validateQuantity(InventoryMovementDto.quantity);
         const inventoryMovement = await this.initializeInventoryMovement(InventoryMovementDto, request);
+        await this.executeAdjustment(inventoryMovement.inventory, inventoryMovement.quantity, inventoryMovement.movementAction);
         await this.inventoryMovementRepository.save(inventoryMovement);
-        await this.executeAdjustment(inventoryMovement.inventory, inventoryMovement.quantity, InventoryMovementDto.movementAction);
     }
 
     /**
@@ -166,13 +166,13 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         // Validate the transfer by checking that the source and destination inventories are for the same product and that the quantity is not greater than the available quantity in the source/destination
         await this.validateTransferInventory(inventoryMovement);
 
-        // Save the new inventory movement object
-        await this.inventoryMovementRepository.save(inventoryMovement);
-
         // Update the source inventory by decreasing the quantity by the transferred quantity
         await this.executeAdjustment(inventoryMovement.inventory, InventoryTransferDto.quantity, 'decrease');
         // Update the destination inventory by increasing the quantity by the transferred quantity
         await this.executeAdjustment(inventoryMovement.transfertToInventory, InventoryTransferDto.quantity, 'increase');
+
+        // Save the new inventory movement object
+        await this.inventoryMovementRepository.save(inventoryMovement);
     }
 
 }
