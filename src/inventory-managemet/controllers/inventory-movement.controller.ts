@@ -69,7 +69,7 @@ export class InvetoryMovementController {
             query,
             [
                 { inventory: { id } },
-                { destinationInventory: { id } }
+                { transfertToInventory: { id } }
             ],
         );
     }
