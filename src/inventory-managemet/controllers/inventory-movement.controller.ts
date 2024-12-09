@@ -4,6 +4,7 @@ import { InventoryMovementService } from "../services/inventory-movement.service
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { InventoryMovement } from "../entities/inventory-movement.entity";
 import { CreateInventoryMovementDto } from "../dtos/inventory-movement/create-inventory-movement.dto";
+import { CreateInvenotryTransfer } from "../dtos/inventory-movement/create-inventory-transfer.dto";
 
 @Controller('api/inventories-movements')
 @ApiTags('Inventory Management - Inventories Movements')
@@ -79,5 +80,13 @@ export class InvetoryMovementController {
     async create(@Body() createInventoryMovementDto: CreateInventoryMovementDto, @Req() request: Request) {
         await this.inventoryMovementService.createInvenotryMovement(createInventoryMovementDto, request);
         return { message: 'Great! new inventory Movement has been created successfully', status: 201 };
+    }
+
+    @Post('transfer')
+    @Permissions('create-transfer-inventory-movement')
+    @ApiOperation({ summary: 'Create Transfer inventory movement' })
+    async createTransfer(@Body() createInvenotryTransfer: CreateInvenotryTransfer, @Req() request: Request) {
+        await this.inventoryMovementService.createTransfer(createInvenotryTransfer, request);
+        return { message: 'Great! new Transfert has been created successfully', status: 201 };
     }
 }

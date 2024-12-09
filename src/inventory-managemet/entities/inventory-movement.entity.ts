@@ -26,39 +26,15 @@ export class InventoryMovement extends BaseEntity {
     @Column()
     quantity: number;
 
-    /* @ManyToOne(() => Storage, { nullable: true })
-    @JoinColumn({ name: 'sourceStorageId' })
-    sourceStorage: Storage;
-
-    @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.sourceStorage)
-    sourceStorageId: string;
-
-    @ManyToOne(() => Storage, { nullable: true })
-    @JoinColumn({ name: 'destinationStorageId' })
-    destinationStorage: Storage;
-
-    @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.destinationStorage)
-    destinationStorageId: string; */
-
-    @ManyToOne(() => Inventory, { nullable: true })
+    @ManyToOne(() => Inventory, { eager: true, nullable: true })
     @JoinColumn({ name: 'destinationInventoryId' })
-    destinationInventory: Inventory;
+    transfertToInventory: Inventory;
 
-    @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.destinationInventory)
-    destinationInventoryId: string;
-
-    @ManyToOne(() => User, { nullable: true })
-    @JoinColumn({ name: 'userId' })
-    movedBy: User
-
-    @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.movedBy)
-    movedByUserId: string;
+    @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.transfertToInventory)
+    transfertToInventoryId: string;
 
     @CreateDateColumn({ type: 'timestamp', nullable: true })
     movementDate: Date
-
-    @Column({ type: 'timestamp', nullable: true })
-    dateExpiration: Date
 
     @Column({ nullable: true })
     notes: string
@@ -66,9 +42,12 @@ export class InventoryMovement extends BaseEntity {
     @Column({ nullable: true })
     reason: string
 
+    @ManyToOne(() => User, { eager: true, nullable: true })
+    @JoinColumn({ name: 'createdBy' })
+    createdBy: User;
+
     @BeforeInsert()
     setMovementAction() {
-        this.movementAction = getMovementAction(this.movementType);
+        this.movementAction =  this.movementAction ? this.movementAction : getMovementAction(this.movementType);
     }
-
 }

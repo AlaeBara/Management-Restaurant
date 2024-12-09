@@ -7,8 +7,8 @@ import { CreateInventoryMovementDto } from "../dtos/inventory-movement/create-in
 import { Inventory } from "../entities/inventory.entity";
 import { getMovementAction, MovementType } from "../enums/movement_type.enum";
 import { InventoryService } from "./inventory.service";
-import { Product } from "src/product-management/entities/product.entity";
-import { log } from "console";
+import { CreateInvenotryTransfer } from "../dtos/inventory-movement/create-inventory-transfer.dto";
+import { UserService } from "src/user-management/services/user/user.service";
 
 @Injectable()
 export class InventoryMovementService extends GenericService<InventoryMovement> {
@@ -20,6 +20,8 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         private readonly inventoryRepository: Repository<Inventory>,
         @Inject()
         private readonly inventoryService: InventoryService,
+        @Inject()
+        private readonly userService: UserService
     ) {
         super(dataSource, InventoryMovement, 'inventory-movement');
     }
@@ -31,7 +33,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
      * @param movementAction - The type of adjustment ('increase' or 'decrease')
      * @throws BadRequestException if the movement action is invalid
      */
-    async adjustInventory(Invenetory: Inventory, quantity: number, movementAction: string) {
+    async executeAdjustment(Invenetory: Inventory, quantity: number, movementAction: string) {
         const totalQuantity = Number(Invenetory.totalQuantity);
         switch (movementAction) {
             case 'increase':
@@ -47,66 +49,13 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         await this.inventoryRepository.save(Invenetory);
     }
 
+    /**
+     * Validates the quantity of an inventory movement
+     * @param quantity - The quantity to validate
+     * @throws BadRequestException if the quantity is not greater than 0
+     */
     async validateQuantity(quantity: number): Promise<void> {
         if (quantity <= 0) throw new BadRequestException('Quantity must be greater than 0');
-    }
-
-    /**
-     * Transfers inventory quantity between two inventory records
-     * @param sourceInventory - The source inventory to transfer from
-     * @param destinationInventory - The destination inventory to transfer to  
-     * @param quantity - The quantity to transfer
-     * @param movementAction - The type of transfer ('increase' transfers from destination to source, 'decrease' transfers from source to destination)
-     * @throws BadRequestException if the movement action is invalid
-     */
-    async TransferInventory(sourceInventory: Inventory, destinationInventory: Inventory, quantity: number, movementAction: string) {
-        const sourceTotalQuantity = Number(sourceInventory.totalQuantity);
-        const destinationTotalQuantity = Number(destinationInventory.totalQuantity);
-        switch (movementAction) {
-            case 'increase':
-                sourceInventory.totalQuantity = sourceTotalQuantity + Number(quantity);
-                destinationInventory.totalQuantity = destinationTotalQuantity - Number(quantity);
-                break;
-            case 'decrease':
-                sourceInventory.totalQuantity = sourceTotalQuantity - Number(quantity);
-                destinationInventory.totalQuantity = destinationTotalQuantity + Number(quantity);
-                break;
-            default:
-                throw new BadRequestException(`Invalid movement action: ${movementAction}`);
-        }
-
-        await this.inventoryRepository.save(sourceInventory);
-        await this.inventoryRepository.save(destinationInventory);
-    }
-
-    /**
-     * Handles validation and setup for inventory transfers between locations
-     * @param InventoryMovement - The inventory movement object containing transfer details
-     * @param destinationInventoryId - ID of the destination inventory location
-     * @throws BadRequestException if:
-     * - Source and destination inventories are for different products
-     * - For transfer in, if destination doesn't have enough quantity
-     */
-    async handleTransferInventory(InventoryMovement: InventoryMovement, destinationInventoryId: string) {
-        // Get the destination inventory
-        InventoryMovement.destinationInventory = await this.inventoryService.findOneByIdWithOptions(destinationInventoryId);
-
-        // Validate source and destination are not the same
-        console.log(InventoryMovement.inventory.id, destinationInventoryId)
-        if(InventoryMovement.inventory.id === destinationInventoryId) {
-            throw new BadRequestException('Cannot transfer to the same inventory');
-        }
-
-        // Validate products match between source and destination
-        if (InventoryMovement.inventory.productId != InventoryMovement.destinationInventory.productId) {
-            throw new BadRequestException('Source and destination inventory must be for the same product')
-        }
-
-        // For transfer in, validate destination has enough quantity
-        if (InventoryMovement.movementType === MovementType.TRANSFER_IN) {
-            if (InventoryMovement.quantity > InventoryMovement.destinationInventory.totalQuantity)
-                throw new BadRequestException('Quantity is greater than the inventory total quantity');
-        }
     }
 
     /**
@@ -120,17 +69,30 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         // Create a new inventory movement object from the DTO
         const inventoryMovementObject = this.inventoryMovementRepository.create(InventoryMovementDto);
 
+        //If the movement action is not provided, it's automatically set based on the movement type
+        inventoryMovementObject.movementAction = InventoryMovementDto.movementAction ? InventoryMovementDto.movementAction : getMovementAction(InventoryMovementDto.movementType);
+        
+        //The movement action must be either 'increase' or 'decrease'
+        if (['increase', 'decrease'].includes(inventoryMovementObject.movementAction) === false) {
+            throw new BadRequestException('Invalid movement action');
+        }
+
         // Fetch the related inventory record with additional options
         const Inventory = await this.inventoryService.findOneByIdWithOptions(InventoryMovementDto.inventoryId);
         inventoryMovementObject.inventory = Inventory;
 
+        // A transfer is not allowed as it's handled by a dedicated endpoint
+        if (inventoryMovementObject.movementType === MovementType.TRANSFER) {
+            throw new BadRequestException('Le transfert n\'est pas autorisé');
+        }
+
         // Validate that we're not trying to decrease more than what's available
-        if (getMovementAction(InventoryMovementDto.movementType) === 'decrease' && InventoryMovementDto.quantity > Inventory.totalQuantity) {
+        if (inventoryMovementObject.movementAction === 'decrease' && inventoryMovementObject.quantity > Inventory.totalQuantity) {
             throw new BadRequestException('Quantity is greater than the inventory total quantity');
         }
 
         // Set the user who initiated this movement
-        inventoryMovementObject.movedBy = request['user'].sub;
+        inventoryMovementObject.createdBy = await this.userService.findOneByIdWithOptions(request['user'].sub);
         return inventoryMovementObject;
     }
 
@@ -144,19 +106,73 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
      */
     async createInvenotryMovement(InventoryMovementDto: CreateInventoryMovementDto, request: Request) {
         // Initialize the movement object with basic validation
-        const inventoryMovementObject = await this.initializeInventoryMovement(InventoryMovementDto, request);
-        await this.validateQuantity(inventoryMovementObject.quantity);
-        // Handle inventory transfers
-        if (InventoryMovementDto.movementType === MovementType.TRANSFER_IN || InventoryMovementDto.movementType === MovementType.TRANSFER_OUT) {
-            // Handle transfer inventory
-            await this.handleTransferInventory(inventoryMovementObject, InventoryMovementDto.destinationInventoryId);
-            // Save movement and update both inventories
-            await this.inventoryMovementRepository.save(inventoryMovementObject);
-            await this.TransferInventory(inventoryMovementObject.inventory, inventoryMovementObject.destinationInventory, inventoryMovementObject.quantity, inventoryMovementObject.movementAction)
-        } else {
-            // For non-transfer movements, save and adjust single inventory
-            await this.inventoryMovementRepository.save(inventoryMovementObject);
-            await this.adjustInventory(inventoryMovementObject.inventory, inventoryMovementObject.quantity, inventoryMovementObject.movementAction);
+        await this.validateQuantity(InventoryMovementDto.quantity);
+        const inventoryMovement = await this.initializeInventoryMovement(InventoryMovementDto, request);
+        await this.inventoryMovementRepository.save(inventoryMovement);
+        await this.executeAdjustment(inventoryMovement.inventory, inventoryMovement.quantity, InventoryMovementDto.movementAction);
+    }
+
+    /**
+     * Validates the transfer of inventory between two inventories.
+     * @param InventoryMovement - The inventory movement object containing the source and destination inventories and the quantity to transfer
+     * @throws BadRequestException if:
+     * - Source and destination inventories are for different products
+     * - Trying to transfer more quantity than available in source/destination
+     */
+    async validateTransferInventory(InventoryMovement: InventoryMovement) {
+        // Validate source and destination are not the same
+        if (InventoryMovement.inventory.id === InventoryMovement.transfertToInventory.id) {
+            throw new BadRequestException('Le transfert ne peut pas être effectué entre le même inventaire source et destination.');
+        }
+
+        // Validate products match between source and destination
+        if (InventoryMovement.inventory.productId !== InventoryMovement.transfertToInventory.productId) {
+            throw new BadRequestException('Les inventaires source et destination doivent correspondre au même produit.');
+        }
+
+        // Validate source inventory has enough quantity
+        if (InventoryMovement.quantity > InventoryMovement.inventory.totalQuantity) {
+            throw new BadRequestException('La quantité demandée dépasse la quantité totale disponible dans l\'inventaire source.');
         }
     }
+
+    /**
+     * Creates a new inventory transfer and updates inventory quantities accordingly
+     * @param InventoryTransferDto - The DTO containing transfer details like quantity, source and destination inventories
+     * @param request - The HTTP request object containing user information
+     * @throws BadRequestException if:
+     * - Source and destination inventories are for different products
+     * - Trying to transfer more quantity than available in source/destination
+     */
+    async createTransfer(InventoryTransferDto: CreateInvenotryTransfer, request: Request) {
+        // Validate the quantity being transferred
+        await this.validateQuantity(InventoryTransferDto.quantity);
+
+        // Fetch the source and destination inventories
+        const sourceInventory = await this.inventoryService.findOneByIdWithOptions(InventoryTransferDto.inventoryId);
+        const destinationInventory = await this.inventoryService.findOneByIdWithOptions(InventoryTransferDto.transfertToInventoryId);
+
+        // Fetch the user who initiated this transfer
+        const createBy = await this.userService.findOneByIdWithOptions(request['user'].sub);
+
+        // Create a new inventory movement object with the transfer details
+        const inventoryMovement = this.inventoryMovementRepository.create({
+            ...InventoryTransferDto,
+            inventory: sourceInventory,
+            transfertToInventory: destinationInventory,
+            createdBy: createBy
+        });
+
+        // Validate the transfer by checking that the source and destination inventories are for the same product and that the quantity is not greater than the available quantity in the source/destination
+        await this.validateTransferInventory(inventoryMovement);
+
+        // Save the new inventory movement object
+        await this.inventoryMovementRepository.save(inventoryMovement);
+
+        // Update the source inventory by decreasing the quantity by the transferred quantity
+        await this.executeAdjustment(inventoryMovement.inventory, InventoryTransferDto.quantity, 'decrease');
+        // Update the destination inventory by increasing the quantity by the transferred quantity
+        await this.executeAdjustment(inventoryMovement.transfertToInventory, InventoryTransferDto.quantity, 'increase');
+    }
+
 }

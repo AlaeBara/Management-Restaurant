@@ -24,12 +24,17 @@ export class CreateInventoryMovementDto {
     @IsNotEmpty()
     @IsEnum(MovementType)
     movementType: MovementType
+    
+    @ApiProperty({ description: 'The Action type of the Movement', required: false , example: 'increase'})
+    @IsOptional()
+    @IsEnum(['increase','decrease'])
+    movementAction: string
 
-    @ApiProperty({ description: 'The Movement Date of the Movement', required: true , example: '2024-11-24 14:00:00'})
+    @ApiProperty({ description: 'The Movement Date of the Movement', required: false , example: '2024-11-24 14:00:00'})
     @IsOptional()
     movementDate: Date
 
-    @ApiProperty({ description: 'The Movement Expiration Date of the Movement', required: true , example: '2025-01-21 14:00:00'})
+    @ApiProperty({ description: 'The Movement Expiration Date of the Movement', required: false , example: '2025-01-21 14:00:00'})
     @IsOptional()
     dateExpiration: Date
 
