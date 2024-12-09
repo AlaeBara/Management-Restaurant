@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 
 import {formatDate} from '@/components/dateUtils/dateUtils'
+import { useParams } from 'react-router-dom';
 
 
 
@@ -15,22 +16,18 @@ import {formatDate} from '@/components/dateUtils/dateUtils'
 
 // Liste des types de mouvements en français
 const typesDeMovements = [
-    { value: 'allocation_product', label: 'Affectation de Produit' },
-    { value: 'wastage', label: 'Perte' },
-    { value: 'customer_return', label: 'Retour Client' },
-    { value: 'supplier_return', label: 'Retour Fournisseur' },
-    { value: 'transfer_in', label: 'Transfert Entrant' },
-    { value: 'transfer_out', label: 'Transfert Sortant' },
-    { value: 'sale', label: 'Vente' },
-    { value: 'adjustment_increase', label: 'Ajustement (Augmentation)' },
-    { value: 'adjustment_decrease', label: 'Ajustement (Diminution)' },
-    { value: 'inventory_count_increase', label: 'Comptage d\'Inventaire (Augmentation)' },
-    { value: 'inventory_count_decrease', label: 'Comptage d\'Inventaire (Diminution)' },
-    { value: 'inventory_initial', label: 'Initialisation de l\'Inventaire' },
+  { value: 'allocation_product', label: 'Allocation de produit' },
+  { value: 'wastage', label: 'Gaspillage' },
+  { value: 'supplier_return', label: 'Retour fournisseur' },
+  { value: 'adjustment', label: 'Ajustement' },
+  { value: 'inventory_count', label: 'Inventaire comptage' },
+  { value: 'inventory_initial', label: 'Inventaire initial' }
 ];
 
 const TableauMouvementsInventaire = ({ data }) => {
   const [lignesExtendues, setLignesExtendues] = useState({});
+
+  const {id_iventory}=useParams()
 
   const basculerExtensionLigne = (id) => {
     setLignesExtendues(precedent => ({
@@ -63,17 +60,48 @@ const TableauMouvementsInventaire = ({ data }) => {
       <td className="p-3 text-sm">{obtenirLibelleTypeMouvement(movement.movementType)}</td>
       <td className="p-3 text-sm">
         <div className="flex items-center">
-          {afficherIconeAction(movement.movementAction)}
+          {/* {afficherIconeAction(movement.movementAction)}
           <span className={movement.movementAction === 'increase' ? 'text-green-500 mr-2' : 'text-red-500 mr-2'}>
             {movement.movementAction === 'increase' ? 'Augmentation' : 'Diminution'}
-          </span>
+          </span> */}
+          <>
+            {movement.movementAction === 'both' &&  id_iventory === movement.inventoryId ? (
+              <>
+                
+                {afficherIconeAction("decrease")}
+                <span className="text-red-500 mr-2">Diminution</span>
+              </>
+            ) : movement.movementAction === 'both' ? (
+              <>
+                {afficherIconeAction("increase")}
+                <span className="text-green-500 mr-2">Augmentation</span>
+              </>
+            ) : (
+              <>
+                {afficherIconeAction(movement.movementAction)}
+                <span
+                  className={
+                    movement.movementAction === 'increase'
+                      ? 'text-green-500 mr-2'
+                      : 'text-red-500 mr-2'
+                  }
+                >
+                  {movement.movementAction === 'increase' ? 'Augmentation' : 'Diminution'}
+                </span>
+              </>
+            )}
+          </>
+
         </div>
       </td>
       <td className="p-3 text-sm">
         {formatDate(movement.movementDate)}
       </td>
       <td className="p-3 text-sm">{movement.quantity} {movement.inventory.productUnit}</td>
-      <td className="p-3 text-sm">{movement?.destinationInventory?.sku || "-"}</td>
+      <td className="p-3 text-sm">
+        {movement?.transfertToInventory?.sku && <>{movement?.inventory.sku} → {movement?.transfertToInventory?.sku}</> || '-'}
+      </td>
+
       <td className="p-3 text-sm">{movement.notes || "-"}</td>
       <td className="p-3 text-sm">{movement.reason || "-"}</td>
       <td className="p-3 text-sm">{formatDate(movement.updatedAt)}</td>
@@ -113,8 +141,8 @@ const TableauMouvementsInventaire = ({ data }) => {
                 
                 <div className="font-semibold">Quantité:</div>
                 <div>{movement.quantity} {movement.inventory.productUnit}</div>
-                <div className="font-semibold">Inventaire de destination :</div>
-                <div>{movement?.destinationInventory?.sku || "-"}</div>
+                <div className="font-semibold">Transfert :</div>
+                <div>{movement?.transfertToInventory?.sku || "-"}</div>
                 
                 <div className="font-semibold">Notes:</div>
                 <div>{movement.notes || "-"}</div>
@@ -160,7 +188,7 @@ const TableauMouvementsInventaire = ({ data }) => {
                 <th className="p-3 text-left text-sm">Action</th>
                 <th className="p-3 text-left text-sm">Date Movement</th>
                 <th className="p-3 text-left text-sm">Quantité</th>
-                <th className="p-3 text-left text-sm">Inventaire de destination</th>
+                <th className="p-3 text-left text-sm">Transfert</th>
                 <th className="p-3 text-left text-sm">Notes</th>
                 <th className="p-3 text-left text-sm">Raison</th>
                 <th className="p-3 text-left text-sm">Date de création</th>

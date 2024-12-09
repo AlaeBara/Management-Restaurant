@@ -66,6 +66,7 @@ const ADDOperation = lazy(()=>import('@/modules/Dash/Operation/Components/AddOpe
 const Expense=lazy(()=>import('@/modules/Dash/Expense/Expense'))
 const AddExpense =lazy(()=>import('@/modules/Dash/Expense/Components/AddExpense'))
 const ShiftZone =lazy(()=>import('@/modules/Dash/Shift Zone/ShiftZone'))
+const Transfert=lazy(()=>import('@/modules/Dash/Transfert/Transfert'))
 
 
 
@@ -732,22 +733,17 @@ const ClientRoutes = () => {
           } 
         />
 
-
-
-
-
-
-
-
-
         <Route 
-          path="/zones1" 
+          path="/transfert" 
           element={
-            <MainLayout>
-              <Zones1 />
-            </MainLayout>
+            <ProtectedRoute>
+              <MainLayout>
+                <Transfert/>
+              </MainLayout>
+            </ProtectedRoute>
           } 
         />
+
 
 
 
