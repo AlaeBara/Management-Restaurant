@@ -26,6 +26,56 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         super(dataSource, FundOperationEntity, 'fund_operations');
     }
 
+    async createOperation(createFundOperationDto: CreateFundOperationDto, @Req() req: Request): Promise<FundOperationEntity> {
+        return this.processOperation(createFundOperationDto, req);
+    }
+
+    async createExpense(createExpenseDto: CreateExpenseDto, @Req() req: Request): Promise<FundOperationEntity> {
+        return this.processOperation(createExpenseDto, req, FundOperation.EXPENSE);
+    }
+
+    async approveOperation(operationId: string, @Req() req: Request): Promise<FundOperationEntity> {
+        const operation = await this.findOrThrowByUUID(operationId);
+        if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Opération déjà approuvée');
+        await this.validateBalance(operation.fund, operation.amount, operation.operation);
+        await this.adjustFundBalance(operation.fund, operation.amount, operation.operation);
+        operation.status = FundOperationStatus.APPROVED;
+        await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
+        operation.approvedAt = new Date();
+        return this.fundOperationRepository.save(operation);
+    }
+
+    async trasfertOperation(operationDto: CreateTransferOperationDto, @Req() req: Request): Promise<FundOperationEntity> {
+        const operation = await this.generateTransfer(operationDto);
+
+        await this.validateAmount(operation.amount);
+
+        if (operation.status == FundOperationStatus.APPROVED) {
+            await this.finalizeTransfer(operation, req);
+        }
+        await this.AssignUserOperation(req['user'].sub, operation, 'createdBy');
+        return this.fundOperationRepository.save(operation);
+    }
+
+    async approveTransferOperation(operationId: string, @Req() req: Request): Promise<FundOperationEntity> {
+        const operation = await this.findOrThrowByUUID(operationId);
+        if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Opération déjà approuvée');
+        await this.finalizeTransfer(operation, req);
+        operation.status = FundOperationStatus.APPROVED;
+        return this.fundOperationRepository.save(operation);
+    }
+
+    async deleteOperation(operationId: string){
+        const operation = await this.findOrThrowByUUID(operationId);
+        if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Opération déjà approuvée');
+        return this.fundOperationRepository.softDelete(operationId);
+    }   
+
+    async AssignUserOperation(userId: string, operation: FundOperationEntity, assignTo: 'createdBy' | 'approvedBy') {
+        const User = await this.userService.findOneByIdWithOptions(userId);
+        operation[assignTo] = User;
+    }
+
     async validateFund(fundId: string, operation: FundOperationEntity): Promise<Fund> {
         const fund = await this.fundService.findOrThrowByUUID(fundId);
         if (!fund.isActive) throw new BadRequestException('Fund is not active');
@@ -64,7 +114,8 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
 
     private async processOperation(
         operationData: CreateFundOperationDto | CreateExpenseDto,
-        operationType?: FundOperation
+        @Req() req: Request,
+        operationType?: FundOperation,
     ): Promise<FundOperationEntity> {
         const fundOperation = this.fundOperationRepository.create(operationData);
         await this.validateOperation(fundOperation);
@@ -75,32 +126,8 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
             await this.validateBalance(fund, fundOperation.amount, fundOperation.operation);
             await this.adjustFundBalance(fund, fundOperation.amount, fundOperation.operation);
         }
+        await this.AssignUserOperation(req['user'].sub, fundOperation, 'createdBy');
         return this.fundOperationRepository.save(fundOperation);
-    }
-
-    async createOperation(createFundOperationDto: CreateFundOperationDto): Promise<FundOperationEntity> {
-        return this.processOperation(createFundOperationDto);
-    }
-
-    async createExpense(createExpenseDto: CreateExpenseDto): Promise<FundOperationEntity> {
-        return this.processOperation(createExpenseDto, FundOperation.EXPENSE);
-    }
-
-    async approveOperation(operationId: string): Promise<FundOperationEntity> {
-        const operation = await this.findOrThrowByUUID(operationId);
-        if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Operation already approved');
-        await this.validateBalance(operation.fund, operation.amount, operation.operation);
-        await this.adjustFundBalance(operation.fund, operation.amount, operation.operation);
-        operation.status = FundOperationStatus.APPROVED;
-        operation.approvedAt = new Date();
-        return this.fundOperationRepository.save(operation);
-    }
-
-
-
-    async AssignUserOperation(userId: string, operation: FundOperationEntity, assignTo: 'createdBy' | 'approvedBy') {
-        const User = await this.userService.findOneByIdWithOptions(userId);
-        operation[assignTo] = User;
     }
 
     async generateTransfer(operationDto: CreateTransferOperationDto) {
@@ -123,27 +150,5 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         await this.adjustFundBalance(operation.fund, operation.amount, FundOperation.TRANSFER_DECREASE);
         await this.adjustFundBalance(operation.transferToFund, operation.amount, FundOperation.TRANSFER_INCREASE);
         await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
-    }
-
-    async trasfertOperation(operationDto: CreateTransferOperationDto, @Req() req: Request): Promise<FundOperationEntity> {
-
-        const operation = await this.generateTransfer(operationDto);
-
-        await this.validateAmount(operation.amount);
-
-
-        if (operation.status == FundOperationStatus.APPROVED) {
-            await this.finalizeTransfer(operation, req);
-        }
-        await this.AssignUserOperation(req['user'].sub, operation, 'createdBy');
-        return this.fundOperationRepository.save(operation);
-    }
-
-    async approveTransferOperation(operationId: string, @Req() req: Request): Promise<FundOperationEntity> {
-        const operation = await this.findOrThrowByUUID(operationId);
-        if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Operation already approved');
-        await this.finalizeTransfer(operation, req);
-        operation.status = FundOperationStatus.APPROVED;
-        return this.fundOperationRepository.save(operation);
     }
 }

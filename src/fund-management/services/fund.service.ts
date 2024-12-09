@@ -1,4 +1,4 @@
-import { Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { GenericService } from "src/common/services/generic.service";
 import { Fund } from "../entities/fund.entity";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
@@ -6,6 +6,8 @@ import { DataSource, Repository } from "typeorm";
 import { CreateFundDto } from "../dtos/fund/create-fund.dto";
 import { UpdateFundDto } from "../dtos/fund/update-fund.dto";
 import { FundOperation } from "../enums/fund-operation.enum";
+import { FundOperationService } from "./fund-operation.service";
+import { FundOperationEntity } from "../entities/fund-operation.entity";
 
 @Injectable()
 export class FundService extends GenericService<Fund> {
@@ -14,6 +16,8 @@ export class FundService extends GenericService<Fund> {
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(Fund)
         readonly fundRepository: Repository<Fund>,
+        @InjectRepository(FundOperationEntity)
+        readonly fundOperationRepository: Repository<FundOperationEntity>,
     ) {
         super(dataSource, Fund, 'funds');
     }
@@ -46,6 +50,13 @@ export class FundService extends GenericService<Fund> {
     }
 
     async deleteFund(id: string) {
+        const operations = await this.fundOperationRepository.count({
+            where: [{ fund: { id } },
+            { transferToFund: { id } },
+            ],
+            withDeleted: false,
+        })
+        if (operations > 0) throw new BadRequestException('Vous ne pouvez pas supprimer un fonds qui a des transactions');
         return await this.fundRepository.softDelete(id);
     }
 }

@@ -15,11 +15,15 @@ export class OperationsPermissionSeeder {
     private async seedOperationPermissions() {
 
         const operationPermissions = [
-            { name: 'view-funds-operations', label: 'Voir toutes les op rations des caisses', resource: 'caisse opration' },
-            { name: 'create-fund-operation', label: 'Cr er une nouvelle op ration de caisse', resource: 'caisse opration' },
-            { name: 'create-expense', label: 'Cr er une nouvelle d pense', resource: 'caisse opration' },
-            { name: 'approve-fund-operation', label: 'Approuver une op ration de caisse', resource: 'caisse opration' },
+            { name: 'view-funds-operations', label: 'Voir toutes les operations des caisses', resource: 'opération financière' },
+            { name: 'create-fund-operation', label: 'Cr er une nouvelle operation de caisse', resource: 'opération financière' },
+            { name: 'create-expense', label: 'Cr er une nouvelle d pense', resource: 'opération financière' },
+            { name: 'approve-fund-operation', label: 'Approuver une operation de caisse', resource: 'opération financière' },
+            { name: 'approve-transfer-fund-operation', label: 'Approuver operation de transfert de fonds', resource: 'opération financière' },
+            { name: 'create-transfer-fund-operation', label: 'Créer une opération de transfert de fonds', resource: 'opération financière' },
         ];
+
+
 
         const permissionRepository = this.connection.getRepository(Permission);
 
