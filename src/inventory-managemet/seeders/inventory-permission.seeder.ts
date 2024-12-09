@@ -15,12 +15,12 @@ export class InventoryPermissionSeeder {
     private async seedInventoryPermissions() {
 
         const inventoryPermissions = [
-            { name: 'view-inventories', label: 'Voir tous les stocks', resource: 'inventory' },
-            { name: 'view-inventory', label: 'Voir un stock spécifique', resource: 'inventory' },
-            { name: 'create-inventory', label: 'Créer un nouveau stock', resource: 'inventory' },
-            { name: 'update-inventory', label: 'Mettre à jour un stock existant', resource: 'inventory' },
-            { name: 'delete-inventory', label: 'Supprimer un stock', resource: 'inventory' },
-            { name: 'restore-inventory', label: 'Restaurer un stock supprimé', resource: 'inventory' }
+            { name: 'view-inventories', label: 'Voir tous les stocks', resource: 'inventaire' },
+            { name: 'view-inventory', label: 'Voir un stock spécifique', resource: 'inventaire' },
+            { name: 'create-inventory', label: 'Créer un nouveau stock', resource: 'inventaire' },
+            { name: 'update-inventory', label: 'Mettre à jour un stock existant', resource: 'inventaire' },
+            { name: 'delete-inventory', label: 'Supprimer un stock', resource: 'inventaire' },
+            { name: 'restore-inventory', label: 'Restaurer un stock supprimé', resource: 'inventaire' }
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

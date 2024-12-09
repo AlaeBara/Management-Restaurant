@@ -14,16 +14,15 @@ export class UserPermissionSeeder {
     }
     private async seedUserPermissions() {
 
-
         const userPermissions = [
-            { name: 'view-users', label: 'Voir tous les utilisateurs', resource: 'user' },
-            { name: 'create-user', label: 'Créer un nouvel utilisateur', resource: 'user' },
-            { name: 'view-user', label: 'Voir un utilisateur spécifique', resource: 'user' },
-            { name: 'update-user', label: 'Mettre à jour un utilisateur existant', resource: 'user' },
-            { name: 'delete-user', label: 'Supprimer un utilisateur', resource: 'user' },
-            { name: 'restore-user', label: 'Restaurer un utilisateur supprimé', resource: 'user' },
-            { name: 'grant-user-role', label: 'Accorder un rôle à un utilisateur', resource: 'user' },
-            { name: 'update-user-status', label: 'Mettre à jour le statut d\'un utilisateur', resource: 'user' }, 
+            { name: 'view-users', label: 'Voir tous les utilisateurs', resource: 'utilisateur / personnel' },
+            { name: 'create-user', label: 'Créer un nouvel utilisateur', resource: 'utilisateur / personnel' },
+            { name: 'view-user', label: 'Voir un utilisateur spécifique', resource: 'utilisateur / personnel' },
+            { name: 'update-user', label: 'Mettre à jour un utilisateur existant', resource: 'utilisateur / personnel' },
+            { name: 'delete-user', label: 'Supprimer un utilisateur', resource: 'utilisateur / personnel' },
+            { name: 'restore-user', label: 'Restaurer un utilisateur supprimé', resource: 'utilisateur / personnel' },
+            { name: 'grant-user-role', label: 'Accorder un rôle à un utilisateur', resource: 'utilisateur / personnel' },
+            { name: 'update-user-status', label: 'Mettre à jour le statut d\'un utilisateur', resource: 'utilisateur / personnel' }, 
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

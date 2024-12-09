@@ -9,19 +9,19 @@ export class FundPermissionSeeder {
 
     async seed() {
         await this.seedFundPermissions();
-        console.log('Fund Permission Seeding completed!');
+        console.log('Fond Permission Seeding completed!');
     }
 
     private async seedFundPermissions() {
 
         const fundPermissions =  [
-            { name: 'view-funds', label: 'Voir tous les fonds', resource: 'caisse / fund' },
-            { name: 'view-fund', label: 'Voir un fonds unique', resource: 'caisse / fund' },
-            { name: 'create-fund', label: 'Cr er un nouveau fonds', resource: 'caisse / fund' },    
-            { name: 'update-fund', label: 'Mettre  jour un fonds', resource: 'caisse / fund' },
-            { name: 'delete-fund', label: 'Supprimer un fonds', resource: 'caisse / fund' },
-            { name: 'restore-fund', label: 'Restaurer un fonds supprim ', resource: 'caisse / fund' },
-            { name: 'view-fund-operations', label: 'Voir les op rations de fonds', resource: 'caisse / fund' }
+            { name: 'view-funds', label: 'Voir tous les fonds', resource: 'fonds' },
+            { name: 'view-fund', label: 'Voir un fonds unique', resource: 'fonds' },
+            { name: 'create-fund', label: 'Créer un nouveau fonds', resource: 'fonds' },    
+            { name: 'update-fund', label: 'Mettre à jour un fonds', resource: 'fonds' },
+            { name: 'delete-fund', label: 'Supprimer un fonds', resource: 'fonds' },
+            { name: 'restore-fund', label: 'Restaurer un fonds supprimé', resource: 'fonds' },
+            { name: 'view-fund-operations', label: 'Voir historique des opérations de fonds', resource: 'fonds' }
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

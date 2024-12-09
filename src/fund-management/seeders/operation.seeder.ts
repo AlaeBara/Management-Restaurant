@@ -9,17 +9,17 @@ export class OperationsPermissionSeeder {
 
     async seed() {
         await this.seedOperationPermissions();
-        console.log('Operation Permission Seeding completed!');
+        console.log('Opération Permission Seeding completed!');
     }
 
     private async seedOperationPermissions() {
 
         const operationPermissions = [
-            { name: 'view-funds-operations', label: 'Voir toutes les operations des caisses', resource: 'opération financière' },
-            { name: 'create-fund-operation', label: 'Cr er une nouvelle operation de caisse', resource: 'opération financière' },
-            { name: 'create-expense', label: 'Cr er une nouvelle d pense', resource: 'opération financière' },
-            { name: 'approve-fund-operation', label: 'Approuver une operation de caisse', resource: 'opération financière' },
-            { name: 'approve-transfer-fund-operation', label: 'Approuver operation de transfert de fonds', resource: 'opération financière' },
+            { name: 'view-funds-operations', label: 'Voir toutes les opérations des caisses', resource: 'opération financière' },
+            { name: 'create-fund-operation', label: 'Créer une nouvelle opération de caisse', resource: 'opération financière' },
+            { name: 'create-expense', label: 'Créer une nouvelle d\'épense', resource: 'opération financière' },
+            { name: 'approve-fund-operation', label: 'Approuver une opération de caisse', resource: 'opération financière' },
+            { name: 'approve-transfer-fund-operation', label: 'Approuver opération de transfert de fonds', resource: 'opération financière' },
             { name: 'create-transfer-fund-operation', label: 'Créer une opération de transfert de fonds', resource: 'opération financière' },
         ];
 

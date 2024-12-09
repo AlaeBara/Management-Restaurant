@@ -14,14 +14,13 @@ export class SupplierPermissionsSeeder {
 
     private async seedSupplierPermissions() {
 
-
         const permissionPermissions = [
-            { name: 'view-suppliers', label: 'Voir tous les fournisseurs', resource: 'supplier' },
-            { name: 'create-supplier', label: 'Créer un nouveau fournisseur', resource: 'supplier' },
-            { name: 'view-supplier', label: 'Voir un fournisseur spécifique', resource: 'supplier' },
-            { name: 'update-supplier', label: 'Mettre à jour un fournisseur existant', resource: 'supplier' },
-            { name: 'delete-supplier', label: 'Supprimer un fournisseur', resource: 'supplier' },
-            { name: 'restore-supplier', label: 'Restaurer un fournisseur supprimé', resource: 'supplier' }
+            { name: 'view-suppliers', label: 'Voir tous les fournisseurs', resource: 'fournisseur' },
+            { name: 'create-supplier', label: 'Créer un nouveau fournisseur', resource: 'fournisseur' },
+            { name: 'view-supplier', label: 'Voir un fournisseur spécifique', resource: 'fournisseur' },
+            { name: 'update-supplier', label: 'Mettre à jour un fournisseur existant', resource: 'fournisseur' },
+            { name: 'delete-supplier', label: 'Supprimer un fournisseur', resource: 'fournisseur' },
+            { name: 'restore-supplier', label: 'Restaurer un fournisseur supprimé', resource: 'fournisseur' }
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

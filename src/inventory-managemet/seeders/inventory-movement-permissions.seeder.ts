@@ -15,8 +15,9 @@ export class InventoryMovementPermissionSeeder {
   private async seedInventoryMovementPermissions() {
 
     const inventoryMovementPermissions = [
-      { name: 'view-inventories-movements', label: 'View all inventory movements', resource: 'inventory-movement' },
-      { name: 'create-inventory-movement', label: 'Create new inventory movement', resource: 'inventory-movement' },
+      { name: 'view-inventories-movements', label: 'Voir tous les mouvements de stock', resource: 'mouvement d\'inventaire' },
+      { name: 'create-inventory-movement', label: 'Créer un nouveau mouvement de stock', resource: 'mouvement d\'inventaire' },
+      { name: 'create-transfer-inventory-movement', label: 'Créer un transfert de stock', resource: 'mouvement d\'inventaire' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

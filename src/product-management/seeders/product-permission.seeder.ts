@@ -15,12 +15,12 @@ export class ProductPermissionSeeder {
   private async seedProductPermissions() {
 
     const productPermissions = [
-        { name: 'view-products', label: 'Voir tous les produits', resource: 'product' },
-        { name: 'view-product', label: 'Voir un produit spécifique', resource: 'product' },
-        { name: 'create-product', label: 'Créer un nouveau produit', resource: 'product' },
-        { name: 'update-product', label: 'Modifier un produit', resource: 'product' },
-        { name: 'delete-product', label: 'Supprimer un produit', resource: 'product' },
-        { name: 'restore-product', label: 'Restaurer un produit supprimé', resource: 'product' }
+        { name: 'view-products', label: 'Voir tous les produits', resource: 'produit' },
+        { name: 'view-product', label: 'Voir un produit spécifique', resource: 'produit' },
+        { name: 'create-product', label: 'Créer un nouveau produit', resource: 'produit' },
+        { name: 'update-product', label: 'Modifier un produit', resource: 'produit' },
+        { name: 'delete-product', label: 'Supprimer un produit', resource: 'produit' },
+        { name: 'restore-product', label: 'Restaurer un produit supprimé', resource: 'produit' }
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);
