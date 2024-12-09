@@ -14,7 +14,7 @@ export const useFetchExpense = (id) => {
       setMessage(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/funds-operations?search.operation=expense`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/funds-operations?search.operationType=expense`;
 
       try {
         if (fetchAll) {

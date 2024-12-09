@@ -11,8 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchInfoInventoryAdjustments } from '../hooks/useFetchInfoInventory'
-import {useFetchIventory} from '../../../Inventory/Inventory/Hooks/useFetchIventory'
-
 
 
 const InventoriesMovements = z.object({
@@ -34,6 +32,10 @@ const InventoriesMovements = z.object({
     movementType:z
         .string()
         .nonempty({ message: "Le type de mouvement est obligatoire." }),
+
+    movementAction:z.string()
+        .nullable()
+        .optional(),
     
     movementDate: z
         .string()
@@ -62,18 +64,17 @@ export default function Component() {
     const {id,id_iventory}=useParams()
 
     const {inventory, iSloading, message, fetchIventoryAdjustments } = useFetchInfoInventoryAdjustments(id_iventory)
-    const { inventorys, loading: inventoryLoading, error: inventoryError, fetchIventory } = useFetchIventory();
+   
 
     useEffect(() => {
         fetchIventoryAdjustments();
-        fetchIventory({fetchAll:true})
     }, []);
 
     const [formData, setFormData] = useState({
         inventoryId: id_iventory,
-        destinationInventoryId: null,
         quantity: null,
         movementType:'',
+        movementAction: null,
         movementDate: null,
         notes:null,
         reason:null,
@@ -87,10 +88,9 @@ export default function Component() {
 
     const validateCategoryForm = (formData) => {
         const errors = {};
-        if (formData.movementType == 'transfer_in' || formData.movementType == 'transfer_out') {
-            // Validate start time
-            if (!formData.destinationInventoryId || formData.destinationInventoryIddestinationInventoryId === null) {
-                errors.destinationInventoryId = "L'inventaire de Destination requise lorsque Type de Mouvement est Transfert Entrant et Transfert Sortrant.";
+        if (formData.movementType == 'inventory_count' || formData.movementType == 'adjustment') {
+            if (!formData.movementAction || formData.movementAction === null) {
+                errors.movementAction = "Le type d'action du mouvement requise lorsque Type de Mouvement est Ajustement et Inventaire comptage.";
             }
         }
     
@@ -103,7 +103,6 @@ export default function Component() {
 
             const timeValidationErrors = validateCategoryForm(formData);
 
-            // If there are any time-related validation errors
             if (Object.keys(timeValidationErrors).length > 0) {
                 setErrors(prevErrors => ({
                     ...prevErrors,
@@ -113,22 +112,21 @@ export default function Component() {
             }
 
             formData.quantity = parseFloat(formData.quantity);
-
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null)
             );
             preparedData.quantity = parseFloat(preparedData.quantity);
             InventoriesMovements.parse(preparedData);
             
-
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
                 inventoryId: id_iventory,
-                destinationInventoryId: null,
                 quantity: null,
+                movementType:'',
+                movementAction:null,
                 movementDate: null,
                 notes:null,
                 reason:null,
@@ -159,18 +157,12 @@ export default function Component() {
         }
     };
     const movementTypes = [
-        { value: 'allocation_product', label: 'Affectation de Produit' },
-        { value: 'wastage', label: 'Perte' },
-        { value: 'customer_return', label: 'Retour Client' },
-        { value: 'supplier_return', label: 'Retour Fournisseur' },
-        { value: 'transfer_in', label: 'Transfert Entrant' },
-        { value: 'transfer_out', label: 'Transfert Sortant' },
-        { value: 'sale', label: 'Vente' },
-        { value: 'adjustment_increase', label: 'Ajustement (Augmentation)' },
-        { value: 'adjustment_decrease', label: 'Ajustement (Diminution)' },
-        { value: 'inventory_count_increase', label: 'Comptage d\'Inventaire (Augmentation)' },
-        { value: 'inventory_count_decrease', label: 'Comptage d\'Inventaire (Diminution)' },
-        { value: 'inventory_initial', label: 'Initialisation de l\'Inventaire' },
+        { value: 'allocation_product', label: 'Allocation de produit' },
+        { value: 'wastage', label: 'Gaspillage' },
+        { value: 'supplier_return', label: 'Retour fournisseur' },
+        { value: 'adjustment', label: 'Ajustement' },
+        { value: 'inventory_count', label: 'Inventaire comptage' },
+        { value: 'inventory_initial', label: 'Inventaire initial' }
     ];
 
   return (
@@ -200,7 +192,7 @@ export default function Component() {
                                 <SelectTrigger>
                                     <SelectValue placeholder="Sélectionnez un type de mouvement" />
                                 </SelectTrigger>
-                                <SelectContent className="max-h-48 overflow-y-auto">
+                                <SelectContent>
                                     {movementTypes.length > 0 ? (
                                         movementTypes
                                             .map((movementType) => (
@@ -218,7 +210,7 @@ export default function Component() {
                             )}
                         </div>
 
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                             <Label htmlFor="destinationInventoryId">Inventaire de Destination</Label>
                             <Select
                                 id="destinationInventoryId"
@@ -246,13 +238,34 @@ export default function Component() {
                                     )}
                                 </SelectContent>
                             </Select>
-                            {/* <p className="text-xs text-gray-600 mt-0">
-                                Veuillez sélectionner l'inventaire de destination pour les transferts entrants ou sortants.
-                            </p> */}
                             {errors.destinationInventoryId && (
                                 <p className="text-xs text-red-500 mt-1">{errors.destinationInventoryId}</p>
                             )}
+                        </div> */}
+
+                        <div className="space-y-2">
+                            <Label htmlFor="movementAction">Le type d'action du mouvement</Label>
+                            <Select value={formData.movementAction || ""}   
+                                onValueChange={(value) => handleChange({ target: { name: 'movementAction', value } })}
+                                disabled={
+                                    formData.movementType  !== 'inventory_count' && 
+                                    formData.movementType  !== 'adjustment'
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionnez type d'action du mouvement">
+                                    </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="increase">Augmenter</SelectItem>
+                                    <SelectItem value="decrease">Diminuer</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.movementAction && (
+                                <p className="text-xs text-red-500 mt-1">{errors.movementAction}</p>
+                            )}
                         </div>
+                    
 
                         <div className="space-y-2">
                             <Label htmlFor="quantity">Quantité {inventory.productUnit ? `(${inventory.productUnit})` : ""} <span className='text-red-500 text-base'>*</span></Label>

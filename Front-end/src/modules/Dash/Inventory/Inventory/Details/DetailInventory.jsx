@@ -98,10 +98,6 @@ const ProduitDetails = () => {
                                             <span className={styles.label}>Date de création :</span>
                                             <p>{formatDate(inventory.createdAt)}</p>
                                         </div>
-                                        <div className={styles.infoItem}>
-                                            <span className={styles.label}>Dernière mise à jour : </span>
-                                            <p>{formatDate(inventory.updatedAt)}</p>
-                                        </div>
                                     </div>
                                 )}
                             </div>

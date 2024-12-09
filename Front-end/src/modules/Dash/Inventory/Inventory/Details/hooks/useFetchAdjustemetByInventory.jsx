@@ -23,7 +23,7 @@ export const useFetchAdjustemetByInventory = (id) => {
 
           while (true) {
             const response = await axios.get(url, {
-              params: { page: currentPage, limit, sort: "createdAt:desc" ,relations: "destinationInventory" },
+              params: { page: currentPage, limit, sort: "createdAt:desc" ,relations: "transfertToInventory" },
               headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -38,7 +38,7 @@ export const useFetchAdjustemetByInventory = (id) => {
           setTotalIventoryMovement(allIventory.length);
         } else {
           const response = await axios.get(url, {
-            params: { page, limit, sort: "createdAt:desc" ,relations: "destinationInventory" },
+            params: { page, limit, sort: "createdAt:desc" ,relations: "transfertToInventory" },
             headers: { Authorization: `Bearer ${token}` },
           });
 
