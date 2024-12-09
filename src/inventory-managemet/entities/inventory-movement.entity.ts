@@ -27,7 +27,7 @@ export class InventoryMovement extends BaseEntity {
     quantity: number;
 
     @ManyToOne(() => Inventory, { eager: true, nullable: true })
-    @JoinColumn({ name: 'destinationInventoryId' })
+    @JoinColumn({ name: 'transfertToInventoryId' })
     transfertToInventory: Inventory;
 
     @RelationId((inventoryMovement: InventoryMovement) => inventoryMovement.transfertToInventory)

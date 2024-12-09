@@ -17,14 +17,14 @@ export class Inventory extends BaseEntity {
     totalQuantity: number;
 
     @ManyToOne(() => Storage, { eager: true })
-    @JoinColumn({ name: 'storageId' })
+    @JoinColumn()
     storage: Storage;
 
     @RelationId((inventory: Inventory) => inventory.storage)
     storageId: string | null;
 
     @ManyToOne(() => Product, { eager: true })
-    @JoinColumn({ name: 'productId' })
+    @JoinColumn()
     product: Product;
 
     @RelationId((inventory: Inventory) => inventory.product)
