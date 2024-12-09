@@ -37,11 +37,10 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
     async approveOperation(operationId: string, @Req() req: Request): Promise<FundOperationEntity> {
         const operation = await this.findOrThrowByUUID(operationId);
         if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Opération déjà approuvée');
-        await this.validateBalance(operation.fund, operation.amount, operation.operation);
-        await this.adjustFundBalance(operation.fund, operation.amount, operation.operation);
+        await this.validateBalance(operation.fund, operation.amount, operation.operationAction);
+        await this.adjustFundBalance(operation.fund, operation.amount, operation.operationAction);
         operation.status = FundOperationStatus.APPROVED;
         await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
-        operation.approvedAt = new Date();
         return this.fundOperationRepository.save(operation);
     }
 
@@ -51,7 +50,8 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         await this.validateAmount(operation.amount);
 
         if (operation.status == FundOperationStatus.APPROVED) {
-            await this.finalizeTransfer(operation, req);
+            await this.executeTransfer(operation, req);
+            await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
         }
         await this.AssignUserOperation(req['user'].sub, operation, 'createdBy');
         return this.fundOperationRepository.save(operation);
@@ -60,20 +60,25 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
     async approveTransferOperation(operationId: string, @Req() req: Request): Promise<FundOperationEntity> {
         const operation = await this.findOrThrowByUUID(operationId);
         if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Opération déjà approuvée');
-        await this.finalizeTransfer(operation, req);
+        await this.executeTransfer(operation, req);
         operation.status = FundOperationStatus.APPROVED;
+        await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
         return this.fundOperationRepository.save(operation);
     }
 
-    async deleteOperation(operationId: string){
+    async deleteOperation(operationId: string) {
         const operation = await this.findOrThrowByUUID(operationId);
         if (operation.status && operation.status === FundOperationStatus.APPROVED) throw new BadRequestException('Opération déjà approuvée');
         return this.fundOperationRepository.softDelete(operationId);
-    }   
+    }
 
     async AssignUserOperation(userId: string, operation: FundOperationEntity, assignTo: 'createdBy' | 'approvedBy') {
         const User = await this.userService.findOneByIdWithOptions(userId);
         operation[assignTo] = User;
+        if (assignTo == 'approvedBy') {
+            operation.status = FundOperationStatus.APPROVED;
+            operation.approvedAt = new Date();
+        }
     }
 
     async validateFund(fundId: string, operation: FundOperationEntity): Promise<Fund> {
@@ -92,15 +97,13 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         if (amount <= 0) throw new BadRequestException('Amount must be greater than 0');
     }
 
-    async validateBalance(fund: Fund, amount: number, operation: FundOperation): Promise<void> {
-        const opeationAction = getOperationAction(operation);
-        if (opeationAction === 'decrease' && fund.balance - amount < 0) throw new BadRequestException('Insufficient balance');
+    async validateBalance(fund: Fund, amount: number, operationAction: string): Promise<void> {
+        if (operationAction === 'decrease' && fund.balance - amount < 0) throw new BadRequestException('Insufficient balance');
     }
 
-    async adjustFundBalance(fund: Fund, amount: number, operation: FundOperation): Promise<void> {
+    async adjustFundBalance(fund: Fund, amount: number, operationAction: string): Promise<void> {
         fund.balance = parseFloat(String(fund.balance));
         amount = parseFloat(String(amount));
-        const operationAction = getOperationAction(operation);
         switch (operationAction) {
             case 'increase':
                 fund.balance += amount;
@@ -109,22 +112,37 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
                 fund.balance -= amount;
                 break;
         }
-        await this.fundService.updateFund(fund.id, fund);
+        await this.fundService.fundRepository.save(fund);
     }
 
-    private async processOperation(
-        operationData: CreateFundOperationDto | CreateExpenseDto,
-        @Req() req: Request,
-        operationType?: FundOperation,
-    ): Promise<FundOperationEntity> {
+    private async processOperation(operationData: CreateFundOperationDto | CreateExpenseDto, @Req() req: Request, operationType?: FundOperation): Promise<FundOperationEntity> {
         const fundOperation = this.fundOperationRepository.create(operationData);
         await this.validateOperation(fundOperation);
         await this.validateAmount(fundOperation.amount);
-        if (operationType) fundOperation.operation = operationType;
+
+        let operationAction: string;
+        if ('operationAction' in operationData) {
+            // If CreateFundOperationDto, use its operationAction
+            operationAction = operationData.operationAction || getOperationAction(fundOperation.operationType);
+        } else {
+            // If CreateExpenseDto, default to getOperationAction
+            operationAction = getOperationAction(fundOperation.operationType);
+        }
+
+        fundOperation.operationAction = operationAction;
+        //The movement action must be either 'increase' or 'decrease'
+        if (['increase', 'decrease'].includes(fundOperation.operationAction) === false) {
+            throw new BadRequestException('Invalid Operation Action');
+        }
+
+        // If operationType is provided, use it by CreateExpenseDto as a default expense
+        if (operationType) fundOperation.operationType = operationType;
+
         const fund = await this.validateFund(operationData.fundId, fundOperation);
         if (fundOperation.status && fundOperation.status === FundOperationStatus.APPROVED) {
-            await this.validateBalance(fund, fundOperation.amount, fundOperation.operation);
-            await this.adjustFundBalance(fund, fundOperation.amount, fundOperation.operation);
+            await this.validateBalance(fund, fundOperation.amount, fundOperation.operationAction);
+            await this.adjustFundBalance(fund, fundOperation.amount, fundOperation.operationAction);
+            await this.AssignUserOperation(req['user'].sub, fundOperation, 'approvedBy');
         }
         await this.AssignUserOperation(req['user'].sub, fundOperation, 'createdBy');
         return this.fundOperationRepository.save(fundOperation);
@@ -139,16 +157,15 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
 
         operation.fund = fund;
         operation.transferToFund = transferFund;
-        operation.operation = FundOperation.TRANSFER;
+        operation.operationType = FundOperation.TRANSFER;
         operation.status = operationDto.status ? operationDto.status : FundOperationStatus.PENDING;
         return operation
     }
 
-    async finalizeTransfer(operation: FundOperationEntity, @Req() req: Request) {
-        operation.approvedAt = new Date();
-        await this.validateBalance(operation.fund, operation.amount, FundOperation.TRANSFER_DECREASE);
-        await this.adjustFundBalance(operation.fund, operation.amount, FundOperation.TRANSFER_DECREASE);
-        await this.adjustFundBalance(operation.transferToFund, operation.amount, FundOperation.TRANSFER_INCREASE);
+    async executeTransfer(operation: FundOperationEntity, @Req() req: Request) {
+        await this.validateBalance(operation.fund, operation.amount, 'decrease');
+        await this.adjustFundBalance(operation.fund, operation.amount, 'decrease');
+        await this.adjustFundBalance(operation.transferToFund, operation.amount, 'increase');
         await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
     }
 }

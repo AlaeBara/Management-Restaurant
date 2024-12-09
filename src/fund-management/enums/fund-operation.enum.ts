@@ -1,25 +1,15 @@
 export enum FundOperation {
-    DEPOSIT = 'deposit',
-    PURCHASE = 'purchase',
-    TIP = 'tip',
-    WITHDRAW = 'withdraw',
-    PAYMENT = 'payment',
-    REFUND = 'refund',
-    EXPENSE = 'expense',
-    INCOME = 'income',
-    ADJUSTMENT_INCREASE = 'adjustment-increase',
-    ADJUSTMENT_DECREASE = 'adjustment-decrease',
-    OTHER_INCOME = 'other-income',
-    OTHER_EXPENSE = 'other-expense',
-    TRANSFER_IN = 'transfer-in',
-    TRANSFER_OUT = 'transfer-out',
-    CHARGE = 'charge',
-    CHARGEBACK = 'chargeback',
-    CHARGEBACK_REFUND = 'chargeback-refund',
-    CHARGEBACK_CHARGE = 'chargeback-charge',
-    TRANSFER = 'transfer',
-    TRANSFER_INCREASE = 'transfer-increase', // those should not added to select
-    TRANSFER_DECREASE = 'transfer-decrease' // those should not added to select
+    DEPOSIT = 'deposit', // Tracks funds added to an account or wallet.
+    TIP = 'tip', // Tracks gratuities given, typically to service staff.
+    WITHDRAW = 'withdraw', // Represents funds being taken out (e.g., cash withdrawal).
+    PAYMENT = 'payment', // General term for sending money, typically for goods or services.
+    REFUND = 'refund', // Tracks money returned to the user.
+    EXPENSE = 'expense', // Represents costs incurred, typically not tied to purchases or tipping.
+    INCOME = 'income', // Tracks revenue or earnings.
+    ADJUSTMENT = 'adjustment', // Represents corrections (e.g., manual updates to balances).
+    PENALTY = 'penalty', // To deter or punish non-compliance.	
+    CHARGE = 'charge', // To compensate for a service or usage.
+    TRANSFER = 'transfer' // Tracks the movement of funds between accounts or entities.
 }
 
 export enum FundOperationStatus {
@@ -30,28 +20,17 @@ export enum FundOperationStatus {
 export const getOperationAction = (operation: FundOperation): 'increase' | 'decrease' | 'both' => {
     switch (operation) {
         case FundOperation.DEPOSIT:
-        case FundOperation.TRANSFER_IN:
         case FundOperation.INCOME:
-        case FundOperation.CHARGEBACK_REFUND:
-        case FundOperation.ADJUSTMENT_INCREASE:
-        case FundOperation.OTHER_INCOME:
         case FundOperation.CHARGE:
-        case FundOperation.TRANSFER_INCREASE:
             return 'increase';
         case FundOperation.WITHDRAW:
-        case FundOperation.TRANSFER_OUT:
         case FundOperation.PAYMENT:
         case FundOperation.EXPENSE:
-        case FundOperation.REFUND:
-        case FundOperation.CHARGEBACK_CHARGE:
-        case FundOperation.ADJUSTMENT_DECREASE:
-        case FundOperation.OTHER_EXPENSE:
-        case FundOperation.CHARGEBACK:
-        case FundOperation.PURCHASE:
         case FundOperation.TIP:
-        case FundOperation.TRANSFER_DECREASE:
             return 'decrease';
         case FundOperation.TRANSFER:
+        case FundOperation.ADJUSTMENT:
+        case FundOperation.REFUND:
             return 'both';
     }
 }

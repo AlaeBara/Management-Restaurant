@@ -8,10 +8,10 @@ import { User } from 'src/user-management/entities/user.entity';
 export class FundOperationEntity extends BaseEntity {
 
     @Column()
-    operation: FundOperation;
+    operationType: FundOperation;
 
     @Column()
-    action: 'increase' | 'decrease' | 'both';
+    operationAction: string;
 
     @Column({ default: 0, type: "decimal", precision: 10, scale: 2 })
     amount: number;
@@ -29,14 +29,14 @@ export class FundOperationEntity extends BaseEntity {
     approvedAt: Date;
 
     @ManyToOne(() => Fund, { eager: true })
-    @JoinColumn({ name: 'fund_id' })
+    @JoinColumn()
     fund: Fund;
 
     @RelationId((operation: FundOperationEntity) => operation.fund)
     fundId: string;
 
     @ManyToOne(() => Fund, { eager: true, nullable: true })
-    @JoinColumn({ name: 'transferFund_id' })
+    @JoinColumn()
     transferToFund: Fund;
 
     @RelationId((operation: FundOperationEntity) => operation.transferToFund)
@@ -55,7 +55,7 @@ export class FundOperationEntity extends BaseEntity {
 
     @BeforeInsert()
     setAction() {
-        this.action = getOperationAction(this.operation);
+        this.operationAction = this.operationAction || getOperationAction(this.operationType);
     }
 
     @BeforeInsert()

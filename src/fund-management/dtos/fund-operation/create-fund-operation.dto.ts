@@ -8,7 +8,12 @@ export class CreateFundOperationDto {
     @ApiProperty({ description: 'The operation to perform', required: true, example: 'deposit' })
     @IsNotEmpty()
     @IsEnum(FundOperation)
-    operation: FundOperation;
+    operationType: FundOperation;
+
+    @ApiProperty({ description: 'The Action type of the Operation', required: false , example: 'increase'})
+    @IsOptional()
+    @IsEnum(['increase','decrease'])
+    operationAction: string
 
     @ApiProperty({ description: 'The amount of the operation', required: true, example: 100 })
     @IsNotEmpty()
