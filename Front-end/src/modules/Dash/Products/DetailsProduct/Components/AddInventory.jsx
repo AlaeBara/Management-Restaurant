@@ -70,7 +70,7 @@ export default function Component() {
             });
         
             const token = Cookies.get('access_token');
-            console.log(formData)
+           
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories`,  validatedData, {
                 headers: {
                     Authorization: `Bearer ${token}`,

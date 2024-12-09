@@ -6,15 +6,7 @@ import { useUserContext } from '../../../../context/UserContext';
 const ZoneCart = ({ zone, StartShift, EndShift }) => {
     const { user } = useUserContext();
     
-    // Console logs at component render
-    console.log('zone:', zone);
-    console.log('user:', user);
-
-    // Optional: Log when zone or user changes
-    useEffect(() => {
-        console.log('zone updated:', zone);
-        console.log('user updated:', user);
-    }, [zone, user]);
+    
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [modalType, setModalType] = useState('');

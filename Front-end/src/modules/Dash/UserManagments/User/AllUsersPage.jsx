@@ -92,7 +92,7 @@ const CreateUsers = () => {
     const deleteUser = async (id) => {
         try {
             const token = Cookies.get('access_token');
-            console.log(id)
+         
             const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/users/${id}/status/delete`, {
                 headers: {
                     Authorization: `Bearer ${token}`,

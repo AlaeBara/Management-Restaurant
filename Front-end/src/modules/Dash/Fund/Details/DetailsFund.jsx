@@ -110,7 +110,7 @@ const FundDetails = () => {
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Description :</span>
-                                            <h2>{fund.description}</h2>
+                                            <h2>{fund.description || '-'}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Actif :</span>
@@ -119,10 +119,6 @@ const FundDetails = () => {
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Date de création :</span>
                                             <p>{formatDate(fund.createdAt)}</p>
-                                        </div>
-                                        <div className={styles.infoItem}>
-                                            <span className={styles.label}>Dernière mise à jour : </span>
-                                            <p>{formatDate(fund.updatedAt)}</p>
                                         </div>
                                     </div>
                                 )}

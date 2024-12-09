@@ -68,8 +68,7 @@ export function useUpdateFund(id, formData, setFormData, initialData, setInitial
                 return;
             }
 
-            // Validate the modified data with Zod schema
-            console.log(modifiedData);
+          
 
             const token = Cookies.get('access_token');
             await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/funds/${id}`, modifiedData, {

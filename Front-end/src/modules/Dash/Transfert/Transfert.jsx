@@ -96,7 +96,7 @@ export default function Component() {
           
             const token = Cookies.get('access_token');
 
-            console.log(preparedData)
+            
 
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements/transfer`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },

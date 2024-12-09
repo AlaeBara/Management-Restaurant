@@ -20,12 +20,6 @@ const InventoriesMovements = z.object({
     inventoryId: z
         .string()
         .nonempty({ message: "L'identifiant de l'inventaire est obligatoire." }),
-
-    destinationInventoryId: z
-        .string()
-        .nullable()
-        .optional(),
-
     quantity: z.coerce.number({
             required_error: "La quantité  est obligatoire.",
             invalid_type_error: "La quantité  est obligatoire.",
@@ -123,7 +117,6 @@ export default function Component() {
             InventoriesMovements.parse(preparedData);
           
             const token = Cookies.get('access_token');
-
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });

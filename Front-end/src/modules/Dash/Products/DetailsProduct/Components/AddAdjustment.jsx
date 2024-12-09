@@ -18,11 +18,6 @@ const InventoriesMovements = z.object({
         .string()
         .nonempty({ message: "L'identifiant de l'inventaire est obligatoire." }),
 
-    destinationInventoryId: z
-        .string()
-        .nullable()
-        .optional(),
-
     quantity: z.coerce.number({
             required_error: "La quantité  est obligatoire.",
             invalid_type_error: "La quantité  est obligatoire.",

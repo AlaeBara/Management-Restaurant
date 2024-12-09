@@ -60,7 +60,7 @@ export function useUpdateInventory(id, formData, setFormData, initialData, setIn
     try {
         InventorySchema.parse(formData);
         const token = Cookies.get('access_token');
-        console.log("new data" ,modifiedData )
+        
         await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/inventories/${id}`, modifiedData, {
             headers: {
             Authorization: `Bearer ${token}`,

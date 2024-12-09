@@ -42,7 +42,7 @@ const AllRoles = () => {
     const Delete = async(id) => {
       try {
           const token = Cookies.get('access_token');
-          console.log(id);
+         
           const response = await axios.delete(`${import.meta.env.VITE_BACKEND_URL}/api/roles/${id}`, {
               headers: {
                   Authorization: `Bearer ${token}`,

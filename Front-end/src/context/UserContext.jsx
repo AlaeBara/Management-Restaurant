@@ -23,7 +23,6 @@ export const UserProvider = ({ children }) => {
           }
         );
         setUser(response.data);
-        console.log(response.data)
       } catch (error) {
         setUser(null); // Clear user if there was an error
       }

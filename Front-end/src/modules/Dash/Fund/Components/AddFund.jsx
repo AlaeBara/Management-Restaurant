@@ -72,7 +72,7 @@ export default function Component() {
 
             fundSchema.parse(formData);
 
-            console.log(cleanedData)
+            c
 
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds`,  cleanedData, {

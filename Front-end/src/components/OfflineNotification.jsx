@@ -6,7 +6,6 @@ const CheckConnection = (props) => {
   return (
     <Detector
       render={({ online }) => {
-        console.log('Online status:', online);
         return (
           <div >
             {online ? (

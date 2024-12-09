@@ -129,7 +129,6 @@ export function useUpdateCategory(id, formData, setFormData, initialData, setIni
             return;
         }
         CategorieAddSchema.parse(formData);
-        console.log(formData)
         const token = Cookies.get('access_token');
         await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/categories/${id}`, formData, {
             headers: {

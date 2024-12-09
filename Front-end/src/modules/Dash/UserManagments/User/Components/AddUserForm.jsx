@@ -52,7 +52,7 @@ export default function Component() {
       const preparedData = Object.fromEntries(
         Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
       );
-      console.log(preparedData)
+    
       const token = Cookies.get('access_token')
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, preparedData, {
         headers: {

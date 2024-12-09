@@ -52,7 +52,7 @@ export function useUpdateProduct(id, formData, setFormData, initialData, setInit
 
     try {
         ProductAddSchema.parse(formData);
-        console.log(formData)
+        
         const token = Cookies.get('access_token');
         await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/products/${id}`, formData, {
             headers: {

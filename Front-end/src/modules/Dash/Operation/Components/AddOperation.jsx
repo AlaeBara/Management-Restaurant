@@ -118,7 +118,7 @@ export default function Component() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
         
-            console.log(preparedData)
+            
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },

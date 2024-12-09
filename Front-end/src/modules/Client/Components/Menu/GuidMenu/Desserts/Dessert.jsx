@@ -48,7 +48,7 @@ const Dessert = ({ previousStep, nextStep }) => {
     // Store the updated cart in local storage
     localStorage.setItem('cart', JSON.stringify(cart));
   
-    console.log(`Added ${quantity} ${item.category}(s) to cart`);
+    
   };
 
   return ( 

@@ -43,7 +43,7 @@ export function useFetchOneCategory(id) {
                 Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data)
+            
             setFormData({
                 categoryName: response.data.categoryName,
                 categoryCode: response.data.categoryCode,

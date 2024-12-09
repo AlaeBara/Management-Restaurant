@@ -32,7 +32,7 @@ export function useFetchOneProduct(id) {
                 Authorization: `Bearer ${token}`,
                 },
             });
-            console.log(response.data)
+           
             setFormData({
                 productSKU: response.data.productSKU,
                 productName: response.data.productName,

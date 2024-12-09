@@ -24,7 +24,7 @@ import {
   ShoppingBag,
   Component,
   ClipboardList,
-  Banknote,
+  ArrowLeftRight,
   Wallet,
   DollarSign,
   Shuffle,
@@ -163,7 +163,7 @@ const SideBar = () => {
           },
           {
             title: "Transfert",
-            icon: ClipboardList,
+            icon: ArrowLeftRight,
             url: "/dash/transfert",
             permissions: ["access-granted", "view-inventories"],
           },

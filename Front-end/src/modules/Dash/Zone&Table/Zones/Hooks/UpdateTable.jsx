@@ -35,7 +35,7 @@ export function useUpdateTable(id, formData, setFormData, initialData, setInitia
         TableSchema.parse(formData);
 
         const token = Cookies.get('access_token');
-        console.log(formData)
+       
         await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/tables/${id}`, formData, {
             headers: {
             Authorization: `Bearer ${token}`,

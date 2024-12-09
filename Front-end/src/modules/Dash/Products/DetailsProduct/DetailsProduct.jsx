@@ -61,7 +61,7 @@ const ProduitDetails = () => {
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Description :</span>
-                                            <p>{product.productDescription}</p>
+                                            <p>{product.productDescription || '-'}</p>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Type de Produit :</span>
@@ -75,10 +75,7 @@ const ProduitDetails = () => {
                                             <span className={styles.label}>Date de création :</span>
                                             <p>{formatDate(product.createdAt)}</p>
                                         </div>
-                                        <div className={styles.infoItem}>
-                                            <span className={styles.label}>Dernière mise à jour : </span>
-                                            <p>{formatDate(product.updatedAt)}</p>
-                                        </div>
+                                    
                                     </div>
                                 )}
                             </div>

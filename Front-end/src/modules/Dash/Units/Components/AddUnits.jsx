@@ -91,7 +91,7 @@ export default function Component() {
                 ...formData,
             });
             
-            console.log('Validated data being sent:', validatedData);
+           
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/units`,  validatedData, {
                 headers: {

@@ -33,8 +33,7 @@ export default function Component() {
         fetchZones();
     }, []);
 
-    console.log("zones", zones)
-
+   
     const navigate = useNavigate()
     const [formData, setFormData] = useState({
         zoneLabel: '',
@@ -51,7 +50,7 @@ export default function Component() {
         e.preventDefault();
         try {
             zoneSchema.parse(formData);
-            console.log('Data being sent:', formData);
+           
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/zones`, formData, {
                 headers: {
