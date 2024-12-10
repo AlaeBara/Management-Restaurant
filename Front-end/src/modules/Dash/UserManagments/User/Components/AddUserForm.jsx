@@ -1,23 +1,22 @@
 import React, { useEffect, useState } from 'react'
-import { Eye, EyeOff } from 'lucide-react'
+import { useNavigate } from 'react-router-dom'
+import Cookies from 'js-cookie'
+import axios from 'axios'
 import { Card, CardContent } from "@/components/ui/card"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { UserSchema } from '../schemas/UserSchema'
-import Cookies from 'js-cookie'
-import axios from 'axios'
-import { ToastContainer, toast } from 'react-toastify'
-import 'react-toastify/dist/ReactToastify.css'
 import { z } from 'zod'
-import { useNavigate } from 'react-router-dom'
-import UserStatus from './UserStatus'; 
+import { Eye, EyeOff } from 'lucide-react'
 import {useRoles} from '../hooks/useFetchRoles'
+import UserStatus from './UserStatus'; 
 
 export default function Component() {
 
-  const { roles, totalRoles, loading, error, fetchRoles } = useRoles();
+  const { roles, fetchRoles } = useRoles();
 
   useEffect(() => {
     fetchRoles();
@@ -39,6 +38,7 @@ export default function Component() {
 
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
+  const [alert, setAlert] = useState({ message: null, type: null });
 
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }))
@@ -59,6 +59,7 @@ export default function Component() {
           Authorization: `Bearer ${token}`,
         },
       })
+
       setFormData({
         firstname: '',
         lastname: '',
@@ -73,14 +74,16 @@ export default function Component() {
       })
       setErrors({})
 
-      toast.success('Utilisateur créé avec succès!', {
-        icon: '✅',
-        position: "top-right",
-        autoClose: 1000,
-        onClose: () => navigate('/dash/Create-User')
-      })
-      
-      
+      setAlert({
+        message: response.data.message,
+        type: "success",
+      });
+
+      setTimeout(() => {
+        setAlert({ message: null, type: null });
+        navigate('/dash/Create-User');
+      }, 1500);
+    
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {}
@@ -90,23 +93,10 @@ export default function Component() {
         setErrors(fieldErrors)
       } else {
         console.error('Error creating user:', error)
-        let errorMessage = 'Erreur lors de la création de l\'utilisateur'
-
-        if (error.response?.data?.message) {
-          if (error.response.data.message.includes('User already exists')) {
-            errorMessage = "L'utilisateur existe déjà"
-          } else if (error.response.data.message.includes('Invalid token')) {
-            errorMessage = "Token invalide"
-          } else {
-            errorMessage = error.response.data.message
-          }
-        }
-
-        toast.error(errorMessage, {
-          icon: '❌',
-          position: "top-right",
-          autoClose: 3000,
-        })
+        setAlert({
+          message: error.response?.data?.message,
+          type: "error",
+        });
       }
     }
   }
@@ -114,21 +104,31 @@ export default function Component() {
   return (
 
     <>
-      <ToastContainer />
+      
       <div className="space-y-2 m-3">
-        <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouvel utilisateur</h1>
+        <h1 className="text-2xl font-bold text-black font-sans">Ajouter un utilisateur</h1>
         <p className="text-base text-gray-600">
             Remplissez les informations ci-dessous pour ajouter un nouvel utilisateur au système.
         </p>
       </div>
 
-      
-
+  
       <div className="container p-0 max-w-2xl">
 
         <Card className="w-full border-none shadow-none">
 
           <CardContent className="pt-6 ">
+
+          {alert?.message && (
+            <Alert
+              variant={alert.type === "error" ? "destructive" : "success"}
+              className={`mt-4 mb-4 text-center ${
+                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+              }`}
+            >
+              <AlertDescription>{alert.message}</AlertDescription>
+            </Alert>
+          )}
 
             <form onSubmit={handleSubmit} className="space-y-4">
 
@@ -165,6 +165,7 @@ export default function Component() {
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                 <div className="space-y-2">
                   <Label htmlFor="username">Nom d'utilisateur <span className='text-red-500 text-base'>*</span></Label>
                   <Input
@@ -178,6 +179,7 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.username}</p>
                   )}
                 </div>
+
                 <div className="space-y-2">
                   <Label htmlFor="gender">Genre <span className='text-red-500 text-base'>*</span></Label>
                   <Select name="gender" value={formData.gender} onValueChange={(value) => handleChange({ target: { name: 'gender', value } })}>
@@ -193,9 +195,11 @@ export default function Component() {
                     <p className="text-xs text-red-500 mt-1">{errors.gender}</p>
                   )}
                 </div>
+
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                 <div className="space-y-2">
                   <Label htmlFor="firstname">Adresse</Label>
                   <Input
@@ -246,11 +250,8 @@ export default function Component() {
                     </SelectContent>
                 </Select>
                 {errors.status && <p className="text-xs text-red-500 mt-1">{errors.status}</p>}
-            </div>
-
-
-
-
+              </div>
+            
               <div className="space-y-2">
                   <Label htmlFor="roleId">Rôle</Label>
                   <Select

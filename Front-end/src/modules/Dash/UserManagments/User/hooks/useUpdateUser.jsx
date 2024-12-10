@@ -8,6 +8,9 @@ import { z } from 'zod';
 const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData) => {
   const [errors, setErrors] = useState({});
 
+
+  const [alert, setAlert] = useState({ message: null, type: null });
+
   const updateSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -31,7 +34,7 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
 
       const token = Cookies.get('access_token');
      
-      await axios.put(
+      const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`,
         updatedData,
         {
@@ -41,11 +44,16 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
 
       setOriginalData({ ...originalData, ...updatedData });
       setErrors({});
-      toast.success('Utilisateur mis à jour avec succès!', {
-        icon: '✅',
-        position: 'top-right',
-        autoClose: 3000,
+
+      setAlert({
+        message: response.data.message,
+        type: "success",
       });
+
+      setTimeout(() => {
+        setAlert({ message: null, type: null });
+      }, 3000);
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
@@ -55,16 +63,15 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
         setErrors(fieldErrors);
       } else {
         console.error('Error updating user:', error);
-        toast.error("Échec de la mise à jour de l'utilisateur.", {
-          icon: '❌',
-          position: 'top-right',
-          autoClose: 3000,
+        setAlert({
+          message: error.response?.data?.message,
+          type: "error",
         });
       }
     }
   };
 
-  return { updateSubmit, errors };
+  return { updateSubmit, errors , alert };
 };
 
 export default useUpdateUser;

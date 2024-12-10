@@ -2,6 +2,7 @@ import React, { useState , useEffect} from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,13 +21,15 @@ export default function UpdateUser() {
     const navigate = useNavigate();
     const { id } = useParams();
 
+    
+
     const { roles, fetchRoles } = useRoles();
 
     useEffect(() => {
         fetchRoles();
     }, []);
     const { formData, setFormData, originalData, isLoading, setOriginalData , messageError } = useFetchUserData(id);
-    const { updateSubmit, errors } = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
+    const { updateSubmit, errors ,alert } = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -58,6 +61,17 @@ export default function UpdateUser() {
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
+
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
                         <form onSubmit={updateSubmit} className="space-y-4">
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">

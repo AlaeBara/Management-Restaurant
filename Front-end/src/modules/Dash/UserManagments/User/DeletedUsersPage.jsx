@@ -55,7 +55,7 @@ const DeletedUsers = () => {
                     Authorization: `Bearer ${token}`,
                 },
             });
-            fetchUsers();
+            fetchUsers(currentPage, limit);
             toast.success("Utilisateur restauré avec succès !", {
                 position: "top-right",
                 autoClose: 3000,

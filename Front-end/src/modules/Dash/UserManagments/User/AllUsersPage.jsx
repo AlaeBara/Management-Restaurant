@@ -13,7 +13,6 @@ import PaginationNav from './Components/PaginationNav'
 //components
 import Spinner from '../../../../components//Spinner/Spinner'
 import UserCarts from './Components/UserCarts'
-
  
 const CreateUsers = () => {
     const { user } = useUserContext()
@@ -103,7 +102,7 @@ const CreateUsers = () => {
                 position: "top-right",
                 autoClose: 3000,
             });
-            fetchUsers();
+            fetchUsers(currentPage, limit);
         } catch (error) {
             let errorMessage = "Une erreur s'est produite. Veuillez réessayer.";
             if (error.response?.data?.message) {
