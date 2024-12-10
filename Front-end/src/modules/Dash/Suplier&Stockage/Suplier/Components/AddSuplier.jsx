@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Zod schema for form validation
 const SuplierSchema = z.object({
@@ -40,6 +41,7 @@ const STATUS = {
 
 export default function Component() {
     const navigate = useNavigate()
+    const [alert, setAlert] = useState({ message: null, type: null });
     const [formData, setFormData] = useState({
         name: '',
         address: '',
@@ -72,8 +74,11 @@ export default function Component() {
         try {
             SuplierSchema.parse(formData);
 
+            const preparedData = Object.fromEntries(
+                Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
+            );
             const token = Cookies.get('access_token');
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`, formData, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`, preparedData, {
                 headers: {
                 Authorization: `Bearer ${token}`,
                 },
@@ -92,15 +97,17 @@ export default function Component() {
                 iceNumber: '',
             });
             setErrors({});
-            
-            toast.success('Fournisseur créé avec succès!', {
+
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Fournisseur créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
                 onClose: () => navigate("/dash/Supliers")
             });
-
-           
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -109,12 +116,12 @@ export default function Component() {
                 }, {});
                 setErrors(fieldErrors);
             } else {
-                const errorMessage = error.response?.data?.message || error.message;
-                console.error('Error creating suplier:', errorMessage);
-                toast.error(errorMessage, {
-                    icon: '❌',
-                    position: "top-right",
-                    autoClose: 3000,
+                console.error('Error creating suplier:', error.response?.data?.message || error.message);
+                setAlert({
+                    message: Array.isArray(error.response?.data?.message) 
+                    ? error.response?.data?.message[0] 
+                    : error.response?.data?.message || 'Erreur lors de la creation du Fournisseur!',
+                    type: "error",
                 });
             }
         }
@@ -125,7 +132,7 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Fournisseurs</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un Nouveau Fournisseurs</h1>
             <p className="text-base text-gray-600">
                 Remplissez les informations ci-dessous pour ajouter un nouveau fournisseur au système.
             </p>
@@ -135,8 +142,18 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
                 <CardContent className="pt-6">
 
-                    <form onSubmit={handleSubmit} className="space-y-4">
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
 
+                    <form onSubmit={handleSubmit} className="space-y-4">
 
                         <div className="space-y-2">
                             <Label htmlFor="name">Nom Complete <span className='text-red-500 text-base'>*</span></Label>

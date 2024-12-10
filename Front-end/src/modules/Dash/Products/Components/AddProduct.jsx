@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchUnits} from '../../Units/Hooks/useFetchUnits'
-
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Zod schema for form validation
 const ProductAddSchema = z.object({
@@ -57,6 +57,7 @@ export default function Component() {
     });
 
     const [errors, setErrors] = useState({});
+    const [alert, setAlert] = useState({ message: null, type: null });
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -71,7 +72,7 @@ export default function Component() {
         try {
             ProductAddSchema.parse(formData);
             const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, formData, {
+            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/products`, formData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
@@ -83,7 +84,11 @@ export default function Component() {
                 unitId: null
             });
             setErrors({});
-            toast.success('Produit créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Produit créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -97,12 +102,12 @@ export default function Component() {
             }, {});
             setErrors(fieldErrors);
         } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating produits:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            console.error('Error creating produits:', error.response?.data?.message || error.message);
+            setAlert({
+                message: Array.isArray(error.response?.data?.message) 
+                ? error.response?.data?.message[0] 
+                : error.response?.data?.message || 'Erreur lors de la creation du Produit!',
+                type: "error",
             });
         }
         }
@@ -123,6 +128,16 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-4">
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

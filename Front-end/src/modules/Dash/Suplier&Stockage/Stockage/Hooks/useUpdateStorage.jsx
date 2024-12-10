@@ -21,6 +21,8 @@ const StorageSchema = z.object({
 export function  useUpdateStorage(id, formData, setFormData, initialData, setInitialData) {
   const [errors, setErrors] = useState({});
 
+  const [alert, setAlert] = useState({ message: null, type: null });
+
   
   const updateStorage = useCallback(async (e) => {
     e.preventDefault();
@@ -39,9 +41,14 @@ export function  useUpdateStorage(id, formData, setFormData, initialData, setIni
 
     try {
         StorageSchema.parse(formData);
-    
+        const modifiedData = Object.keys(formData).reduce((acc, key) => {
+            if (formData[key] !== initialData[key]) {
+                acc[key] = formData[key];
+            }
+            return acc;
+        }, {});
         const token = Cookies.get('access_token');
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/storages/${id}`, formData, {
+        const response =await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/storages/${id}`, modifiedData, {
             headers: {
             Authorization: `Bearer ${token}`,
             },
@@ -49,7 +56,11 @@ export function  useUpdateStorage(id, formData, setFormData, initialData, setIni
 
         setInitialData(formData); 
         setErrors({});
-        toast.success('Stock mis à jour avec succès!', {
+        setAlert({
+            message: null,
+            type: null
+        });
+        toast.success(response.data.message || 'Stock mis à jour avec succès!', {
             icon: '✅',
             position: "top-right",
             autoClose: 3000,
@@ -63,14 +74,16 @@ export function  useUpdateStorage(id, formData, setFormData, initialData, setIni
             setErrors(fieldErrors);
         } else {
             console.error('Error updating Storage:', error.response?.data?.message || error.message);
-            toast.error(error.response?.data?.message, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
-            });
+            setAlert({
+                message:
+                  Array.isArray(error.response?.data?.message)
+                    ? error.response?.data?.message[0]
+                    : error.response?.data?.message || "Erreur lors de la mise à jour du Stock",
+                type: "error",
+              });
         }
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateStorage };
+  return { errors, updateStorage ,alert};
 }

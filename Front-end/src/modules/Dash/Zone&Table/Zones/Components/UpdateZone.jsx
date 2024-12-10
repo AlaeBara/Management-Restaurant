@@ -11,6 +11,7 @@ import { useFetchOneZone } from "../Hooks/useFetchOneZone";
 import { useUpdateZone } from '../Hooks/useUpdateZone';
 import { useFetchZone } from "../Hooks/useFetchZone";
 import Spinner from '@/components/Spinner/Spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 export default function Component() {
@@ -19,7 +20,7 @@ export default function Component() {
 
     // Fetch data of zone
     const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneZone(id);
-    const { errors, updateRole } = useUpdateZone(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateRole,alert } = useUpdateZone(id, formData, setFormData, initialData, setInitialData);
 
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -54,9 +55,19 @@ export default function Component() {
                 <div className="container p-0 max-w-2xl">
                     <Card className="w-full border-none shadow-none">
                         <CardContent className="pt-6">
+                            {alert?.message && (
+                                <Alert
+                                    variant={alert.type === "error" ? "destructive" : "success"}
+                                    className={`mt-4 mb-4 text-center ${
+                                        alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                                    }`}
+                                >
+                                    <AlertDescription>{alert.message}</AlertDescription>
+                                </Alert>
+                            )}
                             <form onSubmit={updateRole} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="name">Label de la Zone</Label>
+                                    <Label htmlFor="name">Label de la Zone <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="zoneLabel"
                                         name="zoneLabel"
@@ -70,7 +81,7 @@ export default function Component() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="label">Code de la Zone</Label>
+                                    <Label htmlFor="label">Code de la Zone <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="zoneCode"
                                         name="zoneCode"

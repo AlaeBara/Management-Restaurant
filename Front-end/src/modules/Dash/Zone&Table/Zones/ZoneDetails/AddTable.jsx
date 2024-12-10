@@ -10,6 +10,7 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 // Table status constants
@@ -39,6 +40,8 @@ export default function Component() {
     });
     const [errors, setErrors] = useState({});
 
+    const [alert, setAlert] = useState({ message: null, type: null });
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -50,26 +53,30 @@ export default function Component() {
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
-        zoneAddSchema.parse(formData);
-        const token = Cookies.get('access_token');
-        await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/tables`, formData, {
-            headers: { Authorization: `Bearer ${token}` },
-        });
+            zoneAddSchema.parse(formData);
+            const token = Cookies.get('access_token');
+            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/tables`, formData, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
 
-        setFormData({
-            zoneUUID: '',
-            tableName: '',
-            tableCode: '',
-            isActive: true,
-            tableStatus: TABLE_STATUSES.AVAILABLE,
-        });
-        setErrors({});
-        toast.success('Table créé avec succès!', {
-            icon: '✅',
-            position: "top-right",
-            autoClose: 1000,
-            onClose: () => navigate(`/dash/Zone/${id}`),
-        });
+            setFormData({
+                zoneUUID: '',
+                tableName: '',
+                tableCode: '',
+                isActive: true,
+                tableStatus: TABLE_STATUSES.AVAILABLE,
+            });
+            setErrors({});
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message ||'Table créé avec succès!', {
+                icon: '✅',
+                position: "top-right",
+                autoClose: 1000,
+                onClose: () => navigate(`/dash/Zone/${id}`),
+            });
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -78,12 +85,12 @@ export default function Component() {
             }, {});
             setErrors(fieldErrors);
         } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating zone:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            console.error('Error creating zone:', error.response?.data?.message || error.message);
+            setAlert({
+                message: Array.isArray(error.response?.data?.message) 
+                ? error.response?.data?.message[0] 
+                : error.response?.data?.message || 'Erreur lors de la creation de la table!',
+                type: "error",
             });
         }
         }
@@ -104,6 +111,16 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={handleSubmit} className="space-y-4">
                     <div className="space-y-2">
                         <Label htmlFor="tableName">Nom de la Table  <span className='text-red-500 text-base'>*</span></Label>

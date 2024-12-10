@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { useFetchZone } from "../Hooks/useFetchZone"
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Zod schema for form validation
 const zoneSchema = z.object({
@@ -28,6 +29,7 @@ export default function Component() {
 
 
     const { zones, fetchZones } = useFetchZone()
+    const [alert, setAlert] = useState({ message: null, type: null });
 
     useEffect(() => {
         fetchZones();
@@ -64,8 +66,11 @@ export default function Component() {
                 parentZoneUUID: null
             });
             setErrors({});
-
-            toast.success('Zone créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Zone créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -83,10 +88,11 @@ export default function Component() {
             } else {
                 const errorMessage = error.response?.data?.message || error.message;
                 console.error('Error creating zone:', errorMessage);
-                toast.error(errorMessage, {
-                    icon: '❌',
-                    position: "top-right",
-                    autoClose: 3000,
+                setAlert({
+                    message: Array.isArray(error.response?.data?.message) 
+                    ? error.response?.data?.message[0] 
+                    : error.response?.data?.message || 'Erreur lors de la creation du zone!',
+                    type: "error",
                 });
             }
         }
@@ -106,6 +112,17 @@ export default function Component() {
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
+
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="name">Label de la Zone <span className='text-red-500 text-base'>*</span></Label>

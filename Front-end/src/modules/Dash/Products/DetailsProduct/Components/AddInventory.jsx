@@ -12,7 +12,7 @@ import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchProduct} from '../../../Products/Hooks/useFetchProduct'
 import {useFetchStorages} from '../../../Suplier&Stockage/Stockage/Hooks/useFetchStorages'
-
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Zod schema for form validation
 const InventorySchema = z.object({
@@ -38,6 +38,7 @@ const InventorySchema = z.object({
 
 export default function Component() {
     const navigate = useNavigate()
+    const [alert, setAlert] = useState({ message: null, type: null });
 
     const {id} = useParams()
 
@@ -83,7 +84,11 @@ export default function Component() {
                 productId : ''
             });
             setErrors({});
-            toast.success('Inventaire créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Inventaire créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -98,10 +103,11 @@ export default function Component() {
                 setErrors(fieldErrors);
             } else {
                 console.error('Error creating inventory:', error.response?.data?.message || error.message);
-                toast.error(error.response?.data?.message[0] || error.response?.data?.message, {
-                    icon: '❌',
-                    position: "top-right",
-                    autoClose: 3000,
+                setAlert({
+                    message: Array.isArray(error.response?.data?.message) 
+                    ? error.response?.data?.message[0] 
+                    : error.response?.data?.message || 'Erreur lors de la creation du inventaire!',
+                    type: "error",
                 });
             }
         }
@@ -121,6 +127,17 @@ export default function Component() {
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
+
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-4">
 
                             <div className="space-y-2">

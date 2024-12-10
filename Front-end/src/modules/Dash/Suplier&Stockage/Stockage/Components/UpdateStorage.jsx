@@ -12,6 +12,7 @@ import {useFetchStorage} from '../Hooks/useFetchStorage'
 import {useFetchStorages} from '../Hooks/useFetchStorages'
 import {useUpdateStorage} from '../Hooks/useUpdateStorage'
 import Spinner from '@/components/Spinner/Spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 export default function Component() {
@@ -27,7 +28,7 @@ export default function Component() {
 
 
     const { formData, setFormData, initialData, setInitialData , message , loading} = useFetchStorage(id);
-    const { errors, updateStorage } = useUpdateStorage(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateStorage,alert } = useUpdateStorage(id, formData, setFormData, initialData, setInitialData);
 
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -60,9 +61,19 @@ export default function Component() {
                 <div className="container p-0 max-w-2xl">
                     <Card className="w-full border-none shadow-none">
                         <CardContent className="pt-6">
+                            {alert?.message && (
+                                <Alert
+                                    variant={alert.type === "error" ? "destructive" : "success"}
+                                    className={`mt-4 mb-4 text-center ${
+                                        alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                                    }`}
+                                >
+                                <AlertDescription>{alert.message}</AlertDescription>
+                                </Alert>
+                            )}
                             <form onSubmit={updateStorage} className="space-y-4">
                                 <div className="space-y-2">
-                                    <Label htmlFor="storageCode">Code de stockage</Label>
+                                    <Label htmlFor="storageCode">Code de stockage <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="storageCode"
                                         name="storageCode"
@@ -76,7 +87,7 @@ export default function Component() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="storageName">Nom du stockage</Label>
+                                    <Label htmlFor="storageName">Nom du stockage <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="storageName"
                                         name="storageName"

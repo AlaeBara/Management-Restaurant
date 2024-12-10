@@ -11,6 +11,7 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import {useFetchStorages} from '../Hooks/useFetchStorages'
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 // Zod schema for form validation
@@ -31,6 +32,7 @@ const StorageSchema = z.object({
 export default function Component() {
 
     const navigate = useNavigate()
+    const [alert, setAlert] = useState({ message: null, type: null });
     const [formData, setFormData] = useState({
         storageCode: '',
         storageName: '',
@@ -66,7 +68,12 @@ export default function Component() {
             });
             setErrors({});
 
-            toast.success('Stock créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+
+            toast.success(response.data.message || 'Stock créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -82,12 +89,12 @@ export default function Component() {
                 }, {});
                 setErrors(fieldErrors);
             } else {
-                const errorMessage = error.response?.data?.message || error.message;
-                console.error('Error creating storage:', errorMessage);
-                toast.error(errorMessage, {
-                    icon: '❌',
-                    position: "top-right",
-                    autoClose: 3000,
+                console.error('Error creating storage:', error.response?.data?.message || error.message);
+                setAlert({
+                    message: Array.isArray(error.response?.data?.message) 
+                    ? error.response?.data?.message[0] 
+                    : error.response?.data?.message || 'Erreur lors de la creation du Stock!',
+                    type: "error",
                 });
             }
         }
@@ -107,6 +114,16 @@ export default function Component() {
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
                         <form onSubmit={handleSubmit} className="space-y-4">
                             <div className="space-y-2">
                                 <Label htmlFor="storageCode">Code de stockage <span className='text-red-500 text-base'>*</span></Label>

@@ -10,12 +10,13 @@ import { useFetchRole } from '../hooks/useFetchRole';
 import { useUpdateRole } from '../hooks/useUpdateRole';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '@/components/Spinner/Spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Component() {
     const navigate = useNavigate()
     const { id } = useParams();
     const { formData, setFormData, initialData, setInitialData , message , loading  } = useFetchRole(id);
-    const { errors, updateRole } = useUpdateRole(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateRole,alert  } = useUpdateRole(id, formData, setFormData, initialData, setInitialData);
   
     // Memoize handleChange function with useCallback
     const handleChange = useCallback((e) => {
@@ -46,9 +47,21 @@ return (
                 <div className="container p-0 max-w-2xl">
                     <Card className="w-full border-none shadow-none">
                         <CardContent className="pt-6">
+                            
+                            {alert?.message && (
+                                <Alert
+                                    variant={alert.type === "error" ? "destructive" : "success"}
+                                    className={`mt-4 mb-4 text-center ${
+                                        alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                                    }`}
+                                >
+                                    <AlertDescription>{alert.message}</AlertDescription>
+                                </Alert>
+                            )}
+
                             <form onSubmit={updateRole} className="space-y-4">
                                 <div className="space-y-2">
-                                <Label htmlFor="name">Nom de Rôle</Label>
+                                <Label htmlFor="name">Nom de Rôle <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="name"
                                     name="name"

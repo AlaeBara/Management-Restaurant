@@ -11,7 +11,7 @@ import {useFetchUnits} from '../../Units/Hooks/useFetchUnits'
 import {useFetchOneProduct} from '../Hooks/useFetchOneProduct'
 import {useUpdateProduct} from '../Hooks/useUpdateProduct'
 import Spinner from '@/components/Spinner/Spinner';
-
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Component() {
 
@@ -20,7 +20,7 @@ export default function Component() {
     const {id} = useParams()
 
     const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneProduct(id);
-    const { errors, updateProduct} = useUpdateProduct(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateProduct,alert} = useUpdateProduct(id, formData, setFormData, initialData, setInitialData);
 
     const { units, fetchUnits  } = useFetchUnits()
 
@@ -66,6 +66,16 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={updateProduct} className="space-y-4">
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -170,7 +180,7 @@ export default function Component() {
                                     units
                                         .map((unit) => (
                                             <SelectItem key={unit.id} value={unit.id}>
-                                                {unit.unit} - {unit.baseUnit}
+                                                {unit.unit} → {unit.baseUnit} {unit.conversionFactorToBaseUnit && `(${unit.conversionFactorToBaseUnit} par ${unit.unit})`}
                                             </SelectItem>
                                         ))
                                 ) : (

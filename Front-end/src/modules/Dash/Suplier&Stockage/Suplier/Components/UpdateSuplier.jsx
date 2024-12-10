@@ -11,6 +11,7 @@ import { useParams } from 'react-router-dom';
 import { useFetchSuplier } from '../Hooks/useFetchSuplier';
 import { useUpdateSupplier } from '../Hooks/useUpdateSuplier';
 import Spinner from '@/components/Spinner/Spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const STATUS = {
     ACTIVE : 'ACTIVE',
@@ -25,7 +26,7 @@ export default function Component() {
     const { id } = useParams();
 
     const { formData, setFormData, initialData, setInitialData , message, loading  } = useFetchSuplier(id);
-    const { errors, updateSupplier } = useUpdateSupplier(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateSupplier,alert } = useUpdateSupplier(id, formData, setFormData, initialData, setInitialData);
 
 
     const handleSelectChange = ({ target: { name, value } }) => {
@@ -63,11 +64,22 @@ export default function Component() {
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
 
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
+
                         <form onSubmit={updateSupplier} className="space-y-4">
 
 
                             <div className="space-y-2">
-                                <Label htmlFor="name">Nom Complete</Label>
+                                <Label htmlFor="name">Nom Complete <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="name"
                                     name="name"
@@ -97,7 +109,7 @@ export default function Component() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="phone">Téléphone</Label>
+                                    <Label htmlFor="phone">Téléphone <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="phone"
                                         name="phone"
@@ -166,7 +178,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="address">Adresse</Label>
+                                <Label htmlFor="address">Adresse <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="address"
                                     name="address"
@@ -180,7 +192,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="email">E-mail</Label>
+                                <Label htmlFor="email">E-mail <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="email"
                                     name="email"
@@ -196,7 +208,7 @@ export default function Component() {
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="iceNumber">Numéro ICE</Label>
+                                    <Label htmlFor="iceNumber">Numéro ICE <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="iceNumber"
                                         name="iceNumber"
@@ -210,7 +222,7 @@ export default function Component() {
                                 </div>
 
                                 <div className="space-y-2">
-                                    <Label htmlFor="rcNumber">Numéro RC</Label>
+                                    <Label htmlFor="rcNumber">Numéro RC <span className='text-red-500 text-base'>*</span></Label>
                                     <Input
                                         id="rcNumber"
                                         name="rcNumber"

@@ -24,6 +24,8 @@ const SuplierSchema = z.object({
 
 export function useUpdateSupplier(id, formData, setFormData, initialData, setInitialData) {
   const [errors, setErrors] = useState({});
+  const [alert, setAlert] = useState({ message: null, type: null });
+
 
   // Memoizing the updateRole function with useCallback
   const updateSupplier = useCallback(async (e) => {
@@ -42,10 +44,16 @@ export function useUpdateSupplier(id, formData, setFormData, initialData, setIni
     }
 
     try {
-        SuplierSchema.parse(formData);
+      SuplierSchema.parse(formData);
 
+      const modifiedData = Object.keys(formData).reduce((acc, key) => {
+        if (formData[key] !== initialData[key]) {
+            acc[key] = formData[key];
+        }
+        return acc;
+      }, {});
       const token = Cookies.get('access_token');
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}`, formData, {
+      const response =await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}`, modifiedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -55,7 +63,12 @@ export function useUpdateSupplier(id, formData, setFormData, initialData, setIni
       setInitialData(formData); // Update the initial data to reflect the changes
 
       setErrors({});
-      toast.success('Fournisseur mis à jour avec succès!', {
+
+      setAlert({
+        message: null,
+        type: null
+      });
+      toast.success(response.data.message || 'Fournisseur mis à jour avec succès!', {
         icon: '✅',
         position: "top-right",
         autoClose: 3000,
@@ -69,14 +82,16 @@ export function useUpdateSupplier(id, formData, setFormData, initialData, setIni
         setErrors(fieldErrors);
       } else {
         console.error('Error updating supplier:', error.response?.data?.message || error.message);
-        toast.error("Erreur lors de la mise à jour du fournisseur", {
-          icon: '❌',
-          position: "top-right",
-          autoClose: 3000,
+        setAlert({
+          message:
+            Array.isArray(error.response?.data?.message)
+              ? error.response?.data?.message[0]
+              : error.response?.data?.message || "Erreur lors de la mise à jour du fournisseur",
+          type: "error",
         });
       }
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateSupplier };
+  return { errors, updateSupplier,alert };
 }

@@ -62,7 +62,7 @@ const CategorieAddSchema = z.object({
 
 export function useUpdateCategory(id, formData, setFormData, initialData, setInitialData) {
   const [errors, setErrors] = useState({});
-
+  const [alert, setAlert] = useState({ message: null, type: null });
 
   const validateCategoryForm = (formData) => {
     const errors = {};
@@ -129,8 +129,15 @@ export function useUpdateCategory(id, formData, setFormData, initialData, setIni
             return;
         }
         CategorieAddSchema.parse(formData);
+
+        const modifiedData = Object.keys(formData).reduce((acc, key) => {
+          if (formData[key] !== initialData[key]) {
+              acc[key] = formData[key];
+          }
+          return acc;
+        }, {});
         const token = Cookies.get('access_token');
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/categories/${id}`, formData, {
+        const response =await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/categories/${id}`, modifiedData , {
             headers: {
             Authorization: `Bearer ${token}`,
             },
@@ -138,13 +145,15 @@ export function useUpdateCategory(id, formData, setFormData, initialData, setIni
 
         // On success, set initialData to the current formData
         setInitialData(formData); // Update the initial data to reflect the changes
-
-
         setErrors({});
-        toast.success('Catégorie miss à jour avec succès!', {
-            icon: '✅',
-            position: "top-right",
-            autoClose: 3000,
+        setAlert({
+          message: null,
+          type: null
+        });
+        toast.success(response.data.message || 'Catégorie miss à jour avec succès!', {
+          icon: '✅',
+          position: "top-right",
+          autoClose: 3000,
         });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -155,14 +164,16 @@ export function useUpdateCategory(id, formData, setFormData, initialData, setIni
         setErrors(fieldErrors);
       } else {
         console.error('Error updating categorie:', error.response?.data?.message || error.message);
-        toast.error(error.response?.data?.message || error.message, {
-          icon: '❌',
-          position: "top-right",
-          autoClose: 3000,
+        setAlert({
+          message:
+            Array.isArray(error.response?.data?.message)
+              ? error.response?.data?.message[0]
+              : error.response?.data?.message || "Erreur lors de la mise à jour du Catégorie",
+          type: "error",
         });
       }
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateCategory };
+  return { errors, updateCategory,alert };
 }

@@ -12,6 +12,7 @@ import {useFetchOneCategory} from '../Hooks/useFetchOneCategory'
 import {useUpdateCategory} from '../Hooks/useUpdateCategory'
 import ReactSelect from 'react-select';
 import Spinner from '@/components/Spinner/Spinner'
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 export default function Component() {
@@ -25,7 +26,7 @@ export default function Component() {
     }, []);
 
     const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneCategory(id);
-    const { errors, updateCategory} = useUpdateCategory(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateCategory, alert} = useUpdateCategory(id, formData, setFormData, initialData, setInitialData);
 
 
     const handleChange = (e) => {
@@ -88,6 +89,16 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={updateCategory} className="space-y-4">
 
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -236,6 +247,7 @@ export default function Component() {
                                 selectedOptions.map((option) => option.value)
                             )
                             }
+                            menuPlacement="top" 
                         />
                         {errors.activeDays && (
                             <p className="text-xs text-red-500 mt-1">{errors.activeDays}</p>

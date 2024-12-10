@@ -9,6 +9,9 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
+
 
 // Zod schema for form validation
 const roleSchema = z.object({
@@ -18,12 +21,12 @@ const roleSchema = z.object({
 
 export default function Component() {
     const navigate = useNavigate()
+    const [alert, setAlert] = useState({ message: null, type: null });
     const [formData, setFormData] = useState({
         name: '',
         label: ''
     });
     const [errors, setErrors] = useState({});
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -39,23 +42,22 @@ export default function Component() {
                 Authorization: `Bearer ${token}`,
                 },
             });
-
-            // Reset form data and errors on success
             setFormData({
                 name: '',
                 label: ''
             });
             setErrors({});
-            
-
-            toast.success('Rôle créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message ||  "Rôle créé avec succès !", {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
-                onClose: () => navigate("/dash/Gestion-des-roles")
+                onClose: () => navigate(`/dash/Gestion-des-roles`),
             });
 
-           
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -65,10 +67,11 @@ export default function Component() {
                 setErrors(fieldErrors);
             } else {
                 console.error('Error creating role:', error.response?.data?.message || error.message);
-                toast.error("Erreur lors de la création de rôle", {
-                icon: '❌',
-                position: "top-right",
-                autoClose: 3000,
+                setAlert({
+                    message: Array.isArray(error.response?.data?.message) 
+                    ? error.response?.data?.message[0] 
+                    : error.response?.data?.message || 'Erreur lors de la creation du rôle!',
+                    type: "error",
                 });
             }
         }
@@ -87,6 +90,18 @@ export default function Component() {
         <div className="container p-0 max-w-2xl">
             <Card className="w-full border-none shadow-none">
                 <CardContent className="pt-6">
+
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
+
                     <form onSubmit={handleSubmit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="name">Nom de Rôle <span className='text-red-500 text-base'>*</span></Label>

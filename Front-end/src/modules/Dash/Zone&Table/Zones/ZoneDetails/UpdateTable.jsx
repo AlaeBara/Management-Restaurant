@@ -10,6 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchOneTable} from '../Hooks/useFetchOneTable'
 import {useUpdateTable} from '../Hooks/UpdateTable'
 import Spinner from '@/components/Spinner/Spinner';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 // Table status constants
@@ -24,7 +25,7 @@ export default function Component() {
     const navigate = useNavigate();
 
     const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneTable(id_table);
-    const { errors, updateTable} = useUpdateTable(id_table, formData, setFormData, initialData, setInitialData);
+    const { errors, updateTable,alert} = useUpdateTable(id_table, formData, setFormData, initialData, setInitialData);
 
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -63,9 +64,20 @@ export default function Component() {
                 <Card className="w-full border-none shadow-none">
 
                     <CardContent className="pt-6">
+
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
                         <form  onSubmit={updateTable} className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="tableName">Nom de la Table</Label>
+                                <Label htmlFor="tableName">Nom de la Table <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="tableName"
                                     name="tableName"
@@ -79,7 +91,7 @@ export default function Component() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="tableCode">Code de la Table</Label>
+                                <Label htmlFor="tableCode">Code de la Table <span className='text-red-500 text-base'>*</span></Label>
                                 <Input
                                     id="tableCode"
                                     name="tableCode"
