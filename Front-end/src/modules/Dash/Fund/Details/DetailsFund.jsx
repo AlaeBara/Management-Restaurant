@@ -12,18 +12,19 @@ import {useGetOperationFund} from './Hooks/useGetOperationFund'
 import TableauOperation from './Components/TableauOpertion'
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import {useConfirmOperation} from './hooks/useConfirmOperation'
+import {useConfirmTansferOperation} from '../../Transfert-Operations/hooks/useConfirmTransferOperation'
 
 const FundDetails = () => {
     const navigate = useNavigate()
     const { id } = useParams();
 
     const  {fund, loading, error, fetchFund} = useFetchFund(id)
+    const { operations, totalOperations, Isloading, message, fetchOperation }= useGetOperationFund(id)
 
     useEffect(() => {
         fetchFund();
-    }, [fetchFund]);
+    }, [fetchFund , operations]);
 
-    const { operations, totalOperations, Isloading, message, fetchOperation }= useGetOperationFund(id)
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
     //pagination
@@ -41,7 +42,6 @@ const FundDetails = () => {
     const startItem = (currentPage - 1) * limit + 1;
     const endItem = Math.min(currentPage * limit, totalOperations);
 
-    
     useEffect(() => {
         fetchOperation({page: currentPage, limit :limit});
     }, [currentPage, limit,  fetchOperation]);
@@ -63,6 +63,7 @@ const FundDetails = () => {
     };
 
     const {ConfirmOperation}= useConfirmOperation(fetchOperation ,currentPage, limit)
+    const {ConfirmOperation: confirmTransferOperation}=useConfirmTansferOperation(fetchOperation ,currentPage, limit)
 
 
     return (
@@ -156,7 +157,7 @@ const FundDetails = () => {
                             {operations.length > 0 ? (
                             <>
                                 <div className={styles.userGrid}>
-                                    <TableauOperation data={operations} Confirm={ConfirmOperation} />
+                                    <TableauOperation data={operations} Confirm={ConfirmOperation} confirmTransferOperation={confirmTransferOperation} />
                                 </div>
                                 <PaginationNav
                                     currentPage={currentPage}
@@ -177,7 +178,6 @@ const FundDetails = () => {
                         </>
                     )}
                 </div>
-
             </div>
 
         </>

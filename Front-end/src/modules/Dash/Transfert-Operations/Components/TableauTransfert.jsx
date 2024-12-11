@@ -102,28 +102,28 @@ const TableauTransfert = ({ data , Confirm }) => {
             <div className="flex items-center">
 
                 <>
-                    {operation.action === 'both' &&  operation.id === operation.transferToFundId ? (
+                    {operation.operationAction === 'both' &&  operation.fundId !== operation.transferToFundId ? (
                         <>
                             
                             {afficherIconeAction("decrease")}
                             <span className="text-red-500 mr-2">Diminution</span>
                         </>
-                        ) : operation.action === 'both' ? (
+                        ) : operation.operationAction === 'both' ? (
                         <>
                             {afficherIconeAction("increase")}
                             <span className="text-green-500 mr-2">Augmentation</span>
                         </>
                         ) : (
                         <>
-                            {afficherIconeAction(operation.action)}
+                            {afficherIconeAction(operation.operationAction)}
                             <span
                             className={
-                                operation.action === 'increase'
+                                operation.operationAction === 'increase'
                                 ? 'text-green-500 mr-2'
                                 : 'text-red-500 mr-2'
                             }
                             >
-                            {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
+                            {operation.operationAction === 'increase' ? 'Augmentation' : 'Diminution'}
                             </span>
                         </>
                     )}
@@ -184,8 +184,33 @@ const TableauTransfert = ({ data , Confirm }) => {
             </td>
             <td className="text-right flex justify-end items-center">
                 <div className="flex items-center">
-                {afficherIconeAction(operation.action)}
-                {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
+                <>
+                    {operation.operationAction === 'both' &&  operation.fundId !== operation.transferToFundId ? (
+                        <>
+                            
+                            {afficherIconeAction("decrease")}
+                            <span className="text-red-500 mr-2">Diminution</span>
+                        </>
+                        ) : operation.operationAction === 'both' ? (
+                        <>
+                            {afficherIconeAction("increase")}
+                            <span className="text-green-500 mr-2">Augmentation</span>
+                        </>
+                        ) : (
+                        <>
+                            {afficherIconeAction(operation.operationAction)}
+                            <span
+                            className={
+                                operation.operationAction === 'increase'
+                                ? 'text-green-500 mr-2'
+                                : 'text-red-500 mr-2'
+                            }
+                            >
+                            {operation.operationAction === 'increase' ? 'Augmentation' : 'Diminution'}
+                            </span>
+                        </>
+                    )}
+                </>
                 {estEtendue ? <ChevronUp/> : <ChevronDown/>}
                 </div>
             </td>

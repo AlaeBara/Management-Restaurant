@@ -39,7 +39,7 @@ const Operation= () => {
     }, [currentPage, limit,  fetchTransfertOperation]);
 
 
-    const {ConfirmOperation}=useConfirmTansferOperation(fetchTransfertOperation)
+    const {ConfirmOperation}=useConfirmTansferOperation(fetchTransfertOperation,currentPage, limit)
 
 
 

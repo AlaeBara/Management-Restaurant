@@ -9,6 +9,7 @@ import Spinner from '@/components/Spinner/Spinner';
 import {useFetchOperation} from './Hooks/useFetchOperation'
 import TableauOperation from './Components/TableauOperation'
 import {useConfirmOperation} from './Hooks/useConfirmOperation'
+import {useConfirmTansferOperation} from '../Transfert-Operations/hooks/useConfirmTransferOperation'
 
 
 
@@ -39,6 +40,7 @@ const Operation= () => {
     }, [currentPage, limit,  fetchOperation]);
 
     const {ConfirmOperation}= useConfirmOperation(fetchOperation ,currentPage, limit)
+    const {ConfirmOperation: confirmTransferOperation}=useConfirmTansferOperation(fetchOperation ,currentPage, limit)
 
 
 
@@ -77,7 +79,7 @@ const Operation= () => {
                     {operations.length > 0 ? (
                     <>
                         <div>
-                            <TableauOperation data={operations} Confirm={ConfirmOperation} />
+                            <TableauOperation data={operations} Confirm={ConfirmOperation} confirmTransferOperation={confirmTransferOperation}  />
                         </div>
                         <PaginationNav
                             currentPage={currentPage}

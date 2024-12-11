@@ -8,6 +8,7 @@ import {
 } from 'lucide-react';
 
 import {formatDate} from '@/components/dateUtils/dateUtils'
+import { useParams } from 'react-router-dom';
 
 
 // Liste des types de mouvements en français
@@ -30,8 +31,11 @@ const statuses = [
   { value: 'approved', label: 'Approuvé' },
 ];
 
-const TableauMouvementsInventaire = ({ data , Confirm }) => {
+const TableauOperation = ({ data , Confirm , confirmTransferOperation }) => {
   const [lignesExtendues, setLignesExtendues] = useState({});
+
+
+
 
   const basculerExtensionLigne = (id) => {
     setLignesExtendues(precedent => ({
@@ -94,13 +98,37 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
 
         <td className="p-3 text-sm">
             <div className="flex items-center">
-                {afficherIconeAction(operation.action)}
-                <span className={operation.action === 'increase' ? 'text-green-500 mr-2' : 'text-red-500 mr-2'}>
-                    {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
-                </span>
+                <>
+                    {operation.operationAction === 'both'  &&  operation.fund.id !== operation.transferToFundId ? (
+                        <>
+                            {afficherIconeAction("decrease")}
+                            <span className="text-red-500 mr-2">Diminution</span>
+                        </>
+                        ) : operation.action === 'both' ? (
+                        <>
+                            {afficherIconeAction("increase")}
+                            <span className="text-green-500 mr-2">Augmentation</span>
+                        </>
+                        ) : (
+                        <>
+                            {afficherIconeAction(operation.operationAction)}
+                            <span
+                            className={
+                                operation.operationAction === 'increase'
+                                ? 'text-green-500 mr-2'
+                                : 'text-red-500 mr-2'
+                            }
+                            >
+                            {operation.operationAction === 'increase' ? 'Augmentation' : 'Diminution'}
+                            </span>
+                        </>
+                    )}
+                </>
             </div>
         </td>
 
+        <td className="p-3 text-sm">{operation?.transferToFund?.sku && <>{operation?.fund.sku} → {operation?.transferToFund?.sku}</> || '-'}</td>
+        
         <td className="p-3 text-sm whitespace-nowrap">
           {operation.amount} Dh
         </td>
@@ -121,7 +149,14 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
         <td className="p-3 text-sm">
 
           {obtenirLibellestatus(operation.status)==="En attente" ? 
-            <button id="approve-btn" className="btn-approve bg-black text-white px-4 py-2 rounded" onClick={()=>Confirm(operation.id)}>
+            <button id="approve-btn" className="btn-approve bg-black text-white px-4 py-2 rounded" onClick={() => {
+                if (operation.operationType === 'transfer') {
+                  confirmTransferOperation(operation.id);
+                } else {
+                  Confirm(operation.id);
+                }
+              }}
+            >
               Approuver
             </button>
             :
@@ -152,8 +187,32 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
             </td>
             <td className="text-right flex justify-end items-center">
                 <div className="flex items-center">
-                {afficherIconeAction(operation.action)}
-                {operation.action === 'increase' ? 'Augmentation' : 'Diminution'}
+                  <>
+                      {operation.operationAction === 'both'  &&  operation.fund.id !== operation.transferToFundId ? (
+                          <>
+                              {afficherIconeAction("decrease")}
+                              <span className="text-red-500 mr-2">Diminution</span>
+                          </>
+                          ) : operation.action === 'both' ? (
+                          <>
+                              {afficherIconeAction("increase")}
+                              <span className="text-green-500 mr-2">Augmentation</span>
+                          </>
+                          ) : (
+                          <>
+                              {afficherIconeAction(operation.operationAction)}
+                              <span
+                              className={
+                                  operation.operationAction === 'increase'
+                                  ? 'text-green-500 mr-2'
+                                  : 'text-red-500 mr-2'
+                              }
+                              >
+                              {operation.operationAction === 'increase' ? 'Augmentation' : 'Diminution'}
+                              </span>
+                          </>
+                      )}
+                  </>
                 {estEtendue ? <ChevronUp/> : <ChevronDown/>}
                 </div>
             </td>
@@ -169,6 +228,9 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
                 <div>{operation?.fund?.name}</div>
 
                 <div className="font-semibold">Type:</div>
+                <div>{operation?.transferToFund?.sku && <>{operation?.fund.sku} → {operation?.transferToFund?.sku}</> || '-'}</div>
+                
+                <div className="font-semibold">Transfert:</div>
                 <div>{obtenirLibelleType(operation.operationType)}</div>
 
                 <div className="font-semibold">Montant:</div>
@@ -197,7 +259,14 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
 
                 <div className="font-semibold">Approuver l'opération</div>
                 <div>{obtenirLibellestatus(operation.status)==="En attente" ? 
-                    <button id="approve-btn" className="btn-approve bg-black text-white px-4 py-2 rounded" onClick={()=>Confirm(operation.id)}>
+                    <button id="approve-btn" className="btn-approve bg-black text-white px-4 py-2 rounded" onClick={() => {
+                        if (operation.operationType === 'transfer') {
+                          confirmTransferOperation(operation.id);
+                        } else {
+                          Confirm(operation.id);
+                        }
+                      }}
+                    >
                       Approuver
                     </button>
                     :
@@ -231,6 +300,7 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
                 <th className="p-3 text-left text-sm">Nom de la Caisse</th>
                 <th className="p-3 text-left text-sm">Type</th>
                 <th className="p-3 text-left text-sm">Action</th>
+                <th className="p-3 text-left text-sm">Transfert</th>
                 <th className="p-3 text-left text-sm">Montant</th>
                 <th className="p-3 text-left text-sm">Date l'Operation</th>
                 <th className="p-3 text-left text-sm">Status</th>
@@ -261,4 +331,4 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
   );
 };
 
-export default TableauMouvementsInventaire;
+export default TableauOperation;
