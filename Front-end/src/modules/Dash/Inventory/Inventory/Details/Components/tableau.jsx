@@ -122,8 +122,33 @@ const TableauMouvementsInventaire = ({ data }) => {
           </td>
           <td className="text-right flex justify-end items-center">
             <div className="flex items-center">
-              {afficherIconeAction(movement.movementAction)}
-              {movement.movementAction === 'increase' ? 'Augmentation' : 'Diminution'}
+              <>
+                {movement.movementAction === 'both' &&  id_iventory === movement.inventoryId ? (
+                  <>
+                    
+                    {afficherIconeAction("decrease")}
+                    <span className="text-red-500 mr-2">Diminution</span>
+                  </>
+                ) : movement.movementAction === 'both' ? (
+                  <>
+                    {afficherIconeAction("increase")}
+                    <span className="text-green-500 mr-2">Augmentation</span>
+                  </>
+                ) : (
+                  <>
+                    {afficherIconeAction(movement.movementAction)}
+                    <span
+                      className={
+                        movement.movementAction === 'increase'
+                          ? 'text-green-500 mr-2'
+                          : 'text-red-500 mr-2'
+                      }
+                    >
+                      {movement.movementAction === 'increase' ? 'Augmentation' : 'Diminution'}
+                    </span>
+                  </>
+                )}
+              </>
               {estEtendue ? <ChevronUp className="ml-2" /> : <ChevronDown className="ml-2" />}
             </div>
           </td>

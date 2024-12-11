@@ -67,8 +67,8 @@ const Expense=lazy(()=>import('@/modules/Dash/Expense/Expense'))
 const AddExpense =lazy(()=>import('@/modules/Dash/Expense/Components/AddExpense'))
 const ShiftZone =lazy(()=>import('@/modules/Dash/Shift Zone/ShiftZone'))
 const Transfert=lazy(()=>import('@/modules/Dash/Transfert/Transfert'))
-
-
+const TransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/TransfertOperations'))
+const AddTransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/Components/AddTransfertOperation'))
 
 const ClientRoutes = () => {
   return (
@@ -721,6 +721,27 @@ const ClientRoutes = () => {
           } 
         />
 
+        <Route 
+          path="/transfert-operations" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <TransfertOperation/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        <Route 
+          path="/transfert-operations/ajouter-transfert" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddTransfertOperation/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
 
         <Route 
           path="/quarts" 
@@ -743,6 +764,9 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+
+
 
 
 

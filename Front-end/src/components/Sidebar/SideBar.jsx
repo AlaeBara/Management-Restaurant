@@ -192,6 +192,12 @@ const SideBar = () => {
             url: "/dash/dépenses",
             permissions: ["access-granted", "view-funds-operations"],
           },
+          {
+            title: "Transfert",
+            icon: ArrowLeftRight,
+            url: "/dash/transfert-operations",
+            permissions: ["access-granted", "view-funds-operations"],
+          },
         ],
       },
       {

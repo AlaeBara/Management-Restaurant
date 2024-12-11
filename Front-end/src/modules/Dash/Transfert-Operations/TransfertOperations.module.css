@@ -1,0 +1,240 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+/* Color Variables */
+:root {
+    --text-color: #666;
+    --border-color: #ddd;
+    --focus-border-color: #4CAF50;
+    --button-bg-color: #4CAF50;
+    --button-add-bg-color: #000;
+    --button-hover-bg-color: #45a049;
+    --error-color: red;
+}
+
+.container {
+    padding: 10px;
+    border-radius: 8px;
+}
+.spinner{
+    margin-top: 100px;
+}
+
+.Headerpage{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.Headerpage2{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.title {
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 10px; 
+    font-family: "Poppins", sans-serif;
+}
+  
+.description {
+    font-size: 18px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.showFormButton{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--button-add-bg-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.showdeleteuser{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    background-color: red;
+}
+
+.userGrid {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.notfound {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+    margin-top: 10%;
+}
+
+.icon {
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 20px;
+    color: #f44336; 
+}
+
+
+@media (max-width: 480px) {
+    .userGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .userCard {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 22px;
+    }
+    
+    .showFormButton,.showdeleteuser{
+        font-size: 10px;
+    }
+}
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+/* Color Variables */
+:root {
+    --text-color: #666;
+    --border-color: #ddd;
+    --focus-border-color: #4CAF50;
+    --button-bg-color: #4CAF50;
+    --button-add-bg-color: #000;
+    --button-hover-bg-color: #45a049;
+    --error-color: red;
+}
+
+.container {
+    padding: 10px;
+    border-radius: 8px;
+}
+.spinner{
+    margin-top: 100px;
+}
+
+.Headerpage{
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 30px;
+}
+
+.Headerpage2{
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: end;
+    align-items: center;
+    margin-bottom: 20px;
+    gap: 15px;
+}
+
+.title {
+    font-size: 25px;
+    font-weight: 600;
+    margin-bottom: 10px; 
+    font-family: "Poppins", sans-serif;
+}
+  
+.description {
+    font-size: 18px;
+    color: var(--text-color);
+    margin-bottom: 20px;
+}
+
+.showFormButton{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    background-color: var(--button-add-bg-color);
+    color: white;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+}
+
+.showdeleteuser{
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border: none;
+    color: white;
+    cursor: pointer;
+    border-radius: 5px;
+    font-size: 14px;
+    transition: background-color 0.3s;
+    background-color: red;
+}
+
+.userGrid {
+    display: grid;
+    justify-content: center;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 20px;
+}
+
+.notfound {
+    display: flex;
+    flex-direction: column; 
+    justify-content: center; 
+    align-items: center; 
+    text-align: center;
+    margin-top: 10%;
+}
+
+.icon {
+    width: 80px; 
+    height: 80px; 
+    margin-bottom: 20px;
+    color: #f44336; 
+}
+
+
+@media (max-width: 480px) {
+    .userGrid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .userCard {
+        padding: 15px;
+    }
+}
+
+@media (max-width: 600px) {
+    .title {
+        font-size: 22px;
+    }
+    
+    .showFormButton,.showdeleteuser{
+        font-size: 10px;
+    }
+}
