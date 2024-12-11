@@ -1,5 +1,6 @@
 export enum MovementType {
     ALLOCATION_PRODUCT = 'allocation_product',
+    PURCHASE = 'purchase',
     WASTAGE = 'wastage',
     SUPPLIER_RETURN = 'supplier_return',
     TRANSFER = 'transfert',
@@ -11,6 +12,7 @@ export enum MovementType {
 export const getMovementAction = (type: MovementType): 'increase' | 'decrease' | 'both' => {
     switch (type) {
         case MovementType.INVENTORY_INITIAL:
+        case MovementType.PURCHASE:
             return 'increase';
         case MovementType.ALLOCATION_PRODUCT:
         case MovementType.WASTAGE:

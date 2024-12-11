@@ -1,9 +1,10 @@
 import { BaseEntity } from "src/common/entities/base.entity";
-import { AfterLoad, Column, Entity, Index, JoinColumn, ManyToOne, RelationId } from "typeorm";
+import { AfterLoad, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, RelationId } from "typeorm";
 import { Category } from "./category.entity";
 import { ProductType } from "../enums/type.enum";
 import { Unit } from "src/unit-management/entities/unit.entity";
 import { Exclude } from "class-transformer";
+import { Inventory } from "src/inventory-managemet/entities/inventory.entity";
 
 
 @Entity(process.env.DATASET_PREFIX + 'products')
@@ -32,10 +33,26 @@ export class Product extends BaseEntity {
     @JoinColumn({ name: 'unitId' })
     private productUnit: Unit;
 
+    @OneToMany(() => Inventory, inventory => inventory.product, { cascade: true })
+    inventories: Inventory[];
+
+    totalQuantity: number;
+
     @RelationId((product: Product) => product.productUnit)
     unitId: string;
 
     unit: string;
+
+    @AfterLoad()
+    computeTotalQuantity(): void {
+        console.log('inventories', this.inventories)
+        if (this.inventories) {
+      
+            this.totalQuantity = this.inventories.reduce((sum, inventory) => sum + (inventory.totalQuantity || 0), 0);
+        } else {
+            this.totalQuantity = 10;
+        }
+    }
 
     @AfterLoad()
     getUnit(): void {

@@ -16,6 +16,7 @@ import { Zone } from '../entities/zone.entity';
 import QrcodeService from 'src/qr-code/services/qrcode.service';
 import { TableStatus } from '../enums/table-status.enum';
 import { CreateManyTablesDto } from '../dtos/table/create-many-tables.dto';
+import { TableObjectDto } from '../dtos/table/table-object.dto';
 
 @Injectable()
 export class TableService extends GenericService<Table> {
@@ -63,32 +64,6 @@ export class TableService extends GenericService<Table> {
 
     // Save the table
     return this.tableRepository.save(table);
-  }
-
-  /**
-   * Validate if a table exists with the given code and zone
-   * @param tableCode string
-   * @param zoneId string
-   * @param throwIfFound boolean
-   * @returns Promise<Table | null>
-   */
-  async validateTable(tableCode: string, zoneId: string, throwIfFound: boolean = false) {
-    // Find the table with the given code and zone
-    const table = await this.tableRepository.findOne({
-      where: {
-        zone: { id: zoneId },
-        tableCode: tableCode
-      },
-      withDeleted: false
-    });
-
-    // If throwIfFound is true and the table exists, throw a BadRequestException
-    if (throwIfFound && table) {
-      throw new BadRequestException('La table existe déjà');
-    }
-
-    // Return the table or null
-    return table;
   }
 
   /**
@@ -167,6 +142,60 @@ export class TableService extends GenericService<Table> {
     }));
   }
 
+
+  /**
+   * Validate if a table exists with the given code and zone
+   * @param tableCode string
+   * @param zoneId string
+   * @param throwIfFound boolean
+   * @returns Promise<Table | null>
+   */
+  async validateTable(tableCode: string, zoneId: string, throwIfFound: boolean = false) {
+    // Find the table with the given code and zone
+    const table = await this.tableRepository.findOne({
+      where: {
+        zone: { id: zoneId },
+        tableCode: tableCode
+      },
+      withDeleted: false
+    });
+
+    // If throwIfFound is true and the table exists, throw a BadRequestException
+    if (throwIfFound && table) {
+      throw new BadRequestException('La table existe déjà');
+    }
+
+    // Return the table or null
+    return table;
+  }
+
+  /**
+   * Validate if a table exists with the given code and zone
+   * @param tableCode string
+   * @param zoneId string
+   * @param throwIfFound boolean
+   * @returns Promise<Table | null>
+   */
+  async validateTableCount(tableCode: string, zoneId: string, throwIfFound: boolean = true) {
+    // Find the table with the given code and zone
+    const table = await this.tableRepository.count({
+      where: {
+        zone: { id: zoneId },
+        tableCode: tableCode
+      },
+      withDeleted: false
+    });
+
+    console.log("counted tb : ", table)
+
+    // If throwIfFound is true and the table exists, throw a BadRequestException
+    if (table > 0) {
+      throw new BadRequestException('La table existe déjà');
+    }
+
+  }
+
+
   /**
    * Create multiple tables for a specific zone with a range of numbers
    * @param object CreateManyTablesDto
@@ -174,40 +203,83 @@ export class TableService extends GenericService<Table> {
    */
   async createManyTables(object: CreateManyTablesDto) {
     const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
-    const tableObjects: CreateTableDto[] = [];
+    console.log("asdasd zone : ", zone)
+    const tableObjects: Table[] = [];
 
-    if(object.startNumber > object.endNumber){
+    if (object.startNumber > object.endNumber) {
       throw new BadRequestException('Le numérique de début doit être plus petit que le numérique de fin');
     }
 
     // Loop through the range of numbers and create a table object for each
     for (let i = object.startNumber; i < object.endNumber + 1; i++) {
-      const TableDto: CreateTableDto = {
+      const TableDto: TableObjectDto = {
         tableCode: `T${i}-Z:${zone.zoneCode}`, // Create the table code based on the zone code and the loop number
         tableName: `Table ${i}`, // Create the table name based on the loop number
-        zoneUUID: object.zoneUUID,
+        zone: zone,
         tableStatus: object.tableStatus ? object.tableStatus : TableStatus.AVAILABLE,
         isActive: object.isActive ? object.isActive : true,
       };
 
-      // Check if a table with the same code already exists in the zone
-      const isTableExist = await this.validateTable(TableDto.tableCode, TableDto.zoneUUID)
+      
+      await this.validateTableCount(TableDto.tableCode, object.zoneUUID)
 
-      if (isTableExist) {
-        throw new BadRequestException(
-          `Une table avec le code ${TableDto.tableCode} existe déjà dans la zone ${zone.zoneLabel}. Veuillez Mettre à jour le code de la table ou supprimer la table existante.`
-        );
-      }
 
       // Add the table object to the array
-      tableObjects.push(TableDto);
+      tableObjects.push(this.tableRepository.create(TableDto));
     }
 
     // Use Promise.all to create all the tables at the same time
-    await Promise.all(
-      tableObjects.map(async (table) => {
-        await this.createTable(table);
-      })
-    );
+     /* await Promise.all(
+       tableObjects.map(async (table) => {
+         await this.createTable(table);
+       })
+     ); */
+    await this.tableRepository.insert(tableObjects);
+
   }
+
+  /* async createManyTables22(object: CreateManyTablesDto) {
+    const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
+
+    if (object.startNumber > object.endNumber) {
+      throw new BadRequestException('Le numérique de début doit être plus petit que le numérique de fin');
+    }
+
+    // Fetch all existing table codes for the zone in one query
+    const existingTableCodes = new Set(
+      (await this.getExistingTableCodesForZone(object.zoneUUID)).map((t) => t.tableCode)
+    );
+
+    const tableObjects: CreateTableDto[] = [];
+
+    for (let i = object.startNumber; i <= object.endNumber; i++) {
+      const tableCode = `T${i}-Z:${zone.zoneCode}`;
+
+      if (existingTableCodes.has(tableCode)) {
+        throw new BadRequestException(
+          `Une table avec le code ${tableCode} existe déjà dans la zone ${zone.zoneLabel}. Veuillez Mettre à jour le code de la table ou supprimer la table existante.`
+        );
+      }
+
+      tableObjects.push({
+        tableCode,
+        tableName: `Table ${i}`,
+        zoneUUID: object.zoneUUID,
+        tableStatus: object.tableStatus || TableStatus.AVAILABLE,
+        isActive: object.isActive !== undefined ? object.isActive : true,
+      });
+    }
+
+    // Perform a bulk insert
+    await this.tableRepository.insert(tableObjects);
+  } */
+
+  async getExistingTableCodesForZone(zoneUUID: string): Promise<{ tableCode: string }[]> {
+    return await this.tableRepository.find({
+      where: { zone: { id: zoneUUID } },
+      select: ['tableCode'], // Only fetch the tableCode column for efficiency
+      withDeleted: false
+    });
+  }
+
 }

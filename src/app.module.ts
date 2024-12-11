@@ -18,6 +18,7 @@ import { ProductManagementModule } from './product-management/product.module';
 import { InventoryModule } from './inventory-managemet/inventory.module';
 import { FundModule } from './fund-management/fund.module';
 import { ShiftZoneModule } from './shift-zone-management/shift-zone.module';
+import { PurchaseManagementModule } from './purchase-management/purchase-management.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -39,6 +40,7 @@ import { ShiftZoneModule } from './shift-zone-management/shift-zone.module';
     InventoryModule,
     FundModule,
     ShiftZoneModule,
+    PurchaseManagementModule,
     CommonModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
@@ -46,7 +48,7 @@ import { ShiftZoneModule } from './shift-zone-management/shift-zone.module';
       port: parseInt(process.env.DB_PORT),
       username: process.env.DB_USERNAME,
       password: process.env.DB_PASSWORD,
-      database: process.env.DB_NAME,
+      database: process.env.DB_NAME_TEST,
       autoLoadEntities: true,
       synchronize: true,
     }),
