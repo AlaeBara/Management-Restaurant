@@ -9,9 +9,9 @@ import axios from 'axios';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
-import { useNavigate} from 'react-router-dom';
 import {useFetchProduct} from './hooks/useFetchProduct'
 import {useFetchInventorysProduct} from './hooks/useFetchInventorysOfProuct'
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 const InventoriesMovements = z.object({
@@ -54,13 +54,14 @@ const InventoriesMovements = z.object({
 
 export default function Component() {
     const {products, totalProduct, loading, error, fetchProduct } = useFetchProduct()
-    const { inventorys, iSloading, message, fetchIventory } =useFetchInventorysProduct()
+    const { inventorys, iSloading, message, fetchAllInventories } =useFetchInventorysProduct()
+    const [alert, setAlert] = useState({ message: null, type: null });
 
     const [formData, setFormData] = useState({
         idProduit: '',
         inventoryId: '',
         quantity: null,
-        movementType:'transfert',
+        movementType:"transfert",
         transfertToInventoryId: '',
         movementDate: null,
         notes:null,
@@ -73,7 +74,9 @@ export default function Component() {
 
     useEffect(() => {
         if (formData.idProduit) {
-            fetchIventory(formData.idProduit);
+            fetchAllInventories(formData.idProduit);
+            formData.inventoryId= ''
+            formData.transfertToInventoryId= ''
         }
     }, [formData.idProduit]);
 
@@ -96,23 +99,26 @@ export default function Component() {
           
             const token = Cookies.get('access_token');
 
-            
-
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements/transfer`, preparedData, {
+            console.log(preparedData)
+            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements/transfer`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
                 idProduit:null,
                 inventoryId: null,
                 quantity: null,
-                movementType:'',
+                  movementType:"transfert",
                 transfertToInventoryId: null,
                 movementDate: null,
                 notes:null,
                 reason:null,
             });
             setErrors({});
-            toast.success('Mouvement Inventaire créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Transfert créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -127,10 +133,11 @@ export default function Component() {
         } else {
             const errorMessage = error.response?.data?.message || error.message;
             console.error('Error creating Inventories Movements:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            setAlert({
+                message: Array.isArray(error.response?.data?.message) 
+                ? error.response?.data?.message[0] 
+                : error.response?.data?.message || 'Erreur lors de la creation du Transfert',
+                type: "error",
             });
         }
         }
@@ -151,6 +158,17 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+
+                    {alert?.message && (
+                        <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={Submit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="idProduit">Produit <span className='text-red-500 text-base'>*</span></Label>
@@ -227,17 +245,22 @@ export default function Component() {
                                     <SelectValue placeholder="Sélectionnez l'inventaire de destination" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    {inventorys.length > 0 ? (
+                                {inventorys.length > 0 ? (
+                                    inventorys.filter(inventory => inventory.id !== formData.inventoryId).length > 0 ? (
                                         inventorys
-                                        .filter(inventory => inventory.id !== formData.inventoryId)
+                                            .filter(inventory => inventory.id !== formData.inventoryId)
                                             .map((inventory) => (
                                                 <SelectItem key={inventory.id} value={inventory.id}>
-                                                    {inventory.sku} 
+                                                    {inventory.sku}
                                                 </SelectItem>
                                             ))
                                     ) : (
-                                        <p className='text-sm'>Aucune donnée disponible</p>
-                                    )}
+                                        <p className="text-sm">Aucune donnée disponible</p>
+                                    )
+                                ) : (
+                                    <p className="text-sm">Aucune donnée disponible</p>
+                                )}
+
                                 </SelectContent>
                             </Select>
                             {errors.transfertToInventoryId && (

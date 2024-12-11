@@ -10,6 +10,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchOneFund} from '../hooks/useFetchOneFunds'
 import Spinner from '@/components/Spinner/Spinner'
 import {useUpdateFund} from '../hooks/useFetchUpdate'
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 export default function Component() {
     const navigate = useNavigate()
@@ -26,7 +27,7 @@ export default function Component() {
     ];
       
     const { formData, setFormData, initialData, setInitialData , message , loading} = useFetchOneFund(id)
-    const { errors, updateFund} = useUpdateFund(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateFund,alert} = useUpdateFund(id, formData, setFormData, initialData, setInitialData);
 
     
     const handleChange = (e) => {
@@ -60,6 +61,17 @@ export default function Component() {
             <div className="container p-0 max-w-2xl">
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
+
+                        {alert?.message && (
+                            <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                            >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
                         <form onSubmit={updateFund}  className="space-y-4">
 
                             <div className="space-y-2">

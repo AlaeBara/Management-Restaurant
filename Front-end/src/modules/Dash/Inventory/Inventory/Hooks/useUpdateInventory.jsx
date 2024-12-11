@@ -27,6 +27,7 @@ const InventorySchema = z.object({
 
 export function useUpdateInventory(id, formData, setFormData, initialData, setInitialData) {
   const [errors, setErrors] = useState({});
+  const [alert, setAlert] = useState({ message: null, type: null });
 
   // Memoizing the updateRole function with useCallback
   const updateInventory = useCallback(async (e) => {
@@ -48,20 +49,16 @@ export function useUpdateInventory(id, formData, setFormData, initialData, setIn
       return; // Do nothing if no data is updated
     }
 
-    const modifiedData = Object.keys(formData).reduce((acc, key) => {
-      if (formData[key] !== initialData[key]) {
-          acc[key] = formData[key];
-      }
-      return acc;
-    }, {});
-
-
-
     try {
         InventorySchema.parse(formData);
+        const modifiedData = Object.keys(formData).reduce((acc, key) => {
+          if (formData[key] !== initialData[key]) {
+              acc[key] = formData[key];
+          }
+          return acc;
+        }, {});
         const token = Cookies.get('access_token');
-        
-        await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/inventories/${id}`, modifiedData, {
+        const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/inventories/${id}`, modifiedData, {
             headers: {
             Authorization: `Bearer ${token}`,
             },
@@ -71,10 +68,14 @@ export function useUpdateInventory(id, formData, setFormData, initialData, setIn
         setInitialData(formData); // Update the initial data to reflect the changes
 
         setErrors({});
-        toast.success('Inventaire mis à jour avec succès!', {
-            icon: '✅',
-            position: "top-right",
-            autoClose: 3000,
+        setAlert({
+          message: null,
+          type: null
+        });
+        toast.success(response.data.message || 'Inventaire mis à jour avec succès!', {
+          icon: '✅',
+          position: "top-right",
+          autoClose: 3000,
         });
     } catch (error) {
       if (error instanceof z.ZodError) {
@@ -85,14 +86,16 @@ export function useUpdateInventory(id, formData, setFormData, initialData, setIn
         setErrors(fieldErrors);
       } else {
         console.error('Error updating inventory:', error.response?.data?.message || error.message);
-        toast.error(error.response?.data?.message || error.message, {
-          icon: '❌',
-          position: "top-right",
-          autoClose: 3000,
+        setAlert({
+          message:
+            Array.isArray(error.response?.data?.message)
+              ? error.response?.data?.message[0]
+              : error.response?.data?.message || "Erreur lors de la mise à jour du inventaire",
+          type: "error",
         });
       }
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateInventory };
+  return { errors, updateInventory ,alert};
 }

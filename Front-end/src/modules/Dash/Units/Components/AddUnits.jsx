@@ -10,7 +10,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { nullable, z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 // Zod schema for form validation
 const UnitsSchema = z.object({
@@ -29,6 +29,8 @@ const UnitsSchema = z.object({
 
 export default function Component() {
     const navigate = useNavigate()
+
+    const [alert, setAlert] = useState({ message: null, type: null });
 
     const [formData, setFormData] = useState({
         unit: '',
@@ -90,10 +92,12 @@ export default function Component() {
             const validatedData = UnitsSchema.parse({
                 ...formData,
             });
-            
-           
+
+            const preparedData = Object.fromEntries(
+                Object.entries(validatedData).filter(([key, value]) => value !== null && value !== "")
+            );
             const token = Cookies.get('access_token');
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/units`,  validatedData, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/units`,  preparedData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -104,7 +108,11 @@ export default function Component() {
                 conversionFactorToBaseUnit: null
             });
             setErrors({});
-            toast.success('Unité créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Unité créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -119,10 +127,11 @@ export default function Component() {
                 setErrors(fieldErrors);
             } else {
                 console.error('Error creating Units:', error.response?.data?.message || error.message);
-                toast.error(error.response?.data?.message || error.message, {
-                    icon: '❌',
-                    position: "top-right",
-                    autoClose: 3000,
+                setAlert({
+                    message: Array.isArray(error.response?.data?.message) 
+                    ? error.response?.data?.message[0] 
+                    : error.response?.data?.message || 'Erreur lors de la creation du Unité!',
+                    type: "error",
                 });
             }
         }
@@ -143,6 +152,17 @@ export default function Component() {
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
                         <form onSubmit={handleSubmit} className="space-y-4">
+
+                            {alert?.message && (
+                                <Alert
+                                variant={alert.type === "error" ? "destructive" : "success"}
+                                className={`mt-4 mb-4 text-center ${
+                                    alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                                }`}
+                                >
+                                <AlertDescription>{alert.message}</AlertDescription>
+                                </Alert>
+                            )}
 
                             <div className="space-y-2">
                                 <Label htmlFor="name">Unité <span className='text-red-500 text-base'>*</span></Label>

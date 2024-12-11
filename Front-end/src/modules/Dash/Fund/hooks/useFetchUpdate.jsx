@@ -27,6 +27,7 @@ const fundSchema = z.object({
 
 export function useUpdateFund(id, formData, setFormData, initialData, setInitialData) {
     const [errors, setErrors] = useState({});
+    const [alert, setAlert] = useState({ message: null, type: null });
 
     // Memoizing the updateFund function with useCallback
     const updateFund = useCallback(async (e) => {
@@ -45,11 +46,9 @@ export function useUpdateFund(id, formData, setFormData, initialData, setInitial
 
         try {
             fundSchema.parse(formData);
-            // Remove fields with null or empty string values
             const cleanedFormData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
-
             // Only send modified data (comparing with initialData)
             const modifiedData = Object.keys(cleanedFormData).reduce((acc, key) => {
                 if (cleanedFormData[key] !== initialData[key]) {
@@ -57,21 +56,8 @@ export function useUpdateFund(id, formData, setFormData, initialData, setInitial
                 }
                 return acc;
             }, {});
-
-            // If no modified fields, return early
-            if (Object.keys(modifiedData).length === 0) {
-                toast.info("Aucune modification détectée", {
-                    icon: 'ℹ️',
-                    position: "top-right",
-                    autoClose: 3000,
-                });
-                return;
-            }
-
-          
-
             const token = Cookies.get('access_token');
-            await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/funds/${id}`, modifiedData, {
+            const response =await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/funds/${id}`, modifiedData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -80,7 +66,11 @@ export function useUpdateFund(id, formData, setFormData, initialData, setInitial
             // On success, set initialData to the current formData
             setInitialData(formData); // Update the initial data to reflect the changes
             setErrors({});
-            toast.success('Caisse mise à jour avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Caisse mise à jour avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 3000,
@@ -94,14 +84,16 @@ export function useUpdateFund(id, formData, setFormData, initialData, setInitial
                 setErrors(fieldErrors);
             } else {
                 console.error('Error updating fund:', error.response?.data?.message || error.message);
-                toast.error(error.response?.data?.message || error.message, {
-                    icon: '❌',
-                    position: "top-right",
-                    autoClose: 3000,
+                setAlert({
+                    message:
+                      Array.isArray(error.response?.data?.message)
+                        ? error.response?.data?.message[0]
+                        : error.response?.data?.message || "Erreur lors de la mise à jour du Caisse",
+                    type: "error",
                 });
             }
         }
     }, [formData, initialData, id, setFormData, setInitialData]);
 
-    return { errors, updateFund };
+    return { errors, updateFund ,alert};
 }

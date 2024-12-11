@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchInfoInventoryAdjustments} from '../../../Products/DetailsProduct/hooks/useFetchInfoInventory'
-
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 
@@ -58,6 +58,8 @@ export default function Component() {
     const navigate = useNavigate();
     const {id}=useParams()
 
+    const [alert, setAlert] = useState({ message: null, type: null });
+
     const {inventory, iSloading, message, fetchIventoryAdjustments } = useFetchInfoInventoryAdjustments(id)
 
     useEffect(() => {
@@ -97,9 +99,11 @@ export default function Component() {
         e.preventDefault();
         try {
 
+            if (formData.movementType !== 'inventory_count' && formData.movementType !== 'adjustment') {
+                formData.movementAction = null;
+            }
+            
             const timeValidationErrors = validateCategoryForm(formData);
-
-            // If there are any time-related validation errors
             if (Object.keys(timeValidationErrors).length > 0) {
                 setErrors(prevErrors => ({
                     ...prevErrors,
@@ -108,16 +112,17 @@ export default function Component() {
                 return;
             }
             formData.quantity = parseFloat(formData.quantity);
-             // Prepare a copy of formData and remove properties with null values
+
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null)
             );
 
             preparedData.quantity = parseFloat(preparedData.quantity);
             InventoriesMovements.parse(preparedData);
-          
+
+            console.log(preparedData)
             const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {
+            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
@@ -130,7 +135,11 @@ export default function Component() {
                 reason:null,
             });
             setErrors({});
-            toast.success('Mouvement Inventaire créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message || 'Mouvement Inventaire créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -144,12 +153,12 @@ export default function Component() {
             }, {});
             setErrors(fieldErrors);
         } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating Inventories Movements:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            console.error('Error creating Inventories Movements:', error.response?.data?.message || error.message);
+            setAlert({
+                message: Array.isArray(error.response?.data?.message) 
+                ? error.response?.data?.message[0] 
+                : error.response?.data?.message || 'Erreur lors de la creation du inventaire mouvement',
+                type: "error",
             });
         }
         }
@@ -178,7 +187,17 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
-                <form onSubmit={Submit} className="space-y-4">
+                    {alert?.message && (
+                        <Alert
+                        variant={alert.type === "error" ? "destructive" : "success"}
+                        className={`mt-4 mb-4 text-center ${
+                            alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                        }`}
+                        >
+                        <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
+                    <form onSubmit={Submit} className="space-y-4">
                         <div className="space-y-2">
                             <Label htmlFor="movementType">Type de Mouvement <span className='text-red-500 text-base'>*</span></Label>
                             <Select

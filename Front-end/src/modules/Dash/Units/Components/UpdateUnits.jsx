@@ -10,7 +10,7 @@ import {useFetchOneUnits} from '../Hooks/useFetchOneUnit'
 import {useUpdateUnit} from "../Hooks/useUpdateUnit"
 import Spinner from '@/components/Spinner/Spinner'
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 
 export default function Component() {
@@ -18,7 +18,7 @@ export default function Component() {
     const {id} = useParams()
 
     const { formData, setFormData, initialData, setInitialData, message, loading } =useFetchOneUnits(id);
-    const { errors, updateUnit  } = useUpdateUnit(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateUnit ,alert } = useUpdateUnit(id, formData, setFormData, initialData, setInitialData);
 
     const handleChange = useCallback((e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -87,6 +87,17 @@ export default function Component() {
                 <Card className="w-full border-none shadow-none">
                     <CardContent className="pt-6">
                         <form onSubmit={updateUnit} className="space-y-4">
+
+                        {alert?.message && (
+                            <Alert
+                                variant={alert.type === "error" ? "destructive" : "success"}
+                                className={`mt-4 mb-4 text-center ${
+                                    alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                                }`}
+                            >
+                                <AlertDescription>{alert.message}</AlertDescription>
+                            </Alert>
+                        )}
 
                         <div className="space-y-2">
                                 <Label htmlFor="name">Unité <span className='text-red-500 text-base'>*</span></Label>

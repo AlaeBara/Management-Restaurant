@@ -57,22 +57,16 @@ export default function Component() {
 
     const transactionTypes = [
         { value: 'deposit', label: 'Dépôt' },
-        { value: 'purchase', label: 'Achat' },
         { value: 'tip', label: 'Pourboire' },
         { value: 'withdraw', label: 'Retrait' },
         { value: 'payment', label: 'Paiement' },
         { value: 'refund', label: 'Remboursement' },
+        { value: 'expense', label: 'Dépense' },
         { value: 'income', label: 'Revenu' },
-        { value: 'adjustment-increase', label: 'Ajustement - Augmentation' },
-        { value: 'adjustment-decrease', label: 'Ajustement - Diminution' },
-        { value: 'other-income', label: 'Autre revenu' },
-        { value: 'other-expense', label: 'Autre dépense' },
-        { value: 'transfer-in', label: 'Transfert entrant' },
-        { value: 'transfer-out', label: 'Transfert sortant' },
+        { value: 'adjustment', label: 'Ajustement' },
+        { value: 'penalty', label: 'Pénalité' },
         { value: 'charge', label: 'Frais' },
-        { value: 'chargeback', label: 'Rétrofacturation' },
-        { value: 'chargeback-refund', label: 'Remboursement de rétrofacturation' },
-        { value: 'chargeback-charge', label: 'Frais de rétrofacturation' }
+        { value: 'transfer', label: 'Transfert' }
     ];
 
     const statuses = [
@@ -112,7 +106,6 @@ export default function Component() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
         
-            
             const token = Cookies.get('access_token');
             await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
