@@ -12,23 +12,17 @@ import {formatDate} from '@/components/dateUtils/dateUtils'
 
 // Liste des types de mouvements en français
 const transactionTypes = [
-    { value: 'deposit', label: 'Dépôt' },
-    { value: 'purchase', label: 'Achat' },
-    { value: 'tip', label: 'Pourboire' },
-    { value: 'withdraw', label: 'Retrait' },
-    { value: 'payment', label: 'Paiement' },
-    { value: 'refund', label: 'Remboursement' },
-    { value: 'income', label: 'Revenu' },
-    { value: 'adjustment-increase', label: 'Ajustement - Augmentation' },
-    { value: 'adjustment-decrease', label: 'Ajustement - Diminution' },
-    { value: 'other-income', label: 'Autre revenu' },
-    { value: 'other-expense', label: 'Autre dépense' },
-    { value: 'transfer-in', label: 'Transfert entrant' },
-    { value: 'transfer-out', label: 'Transfert sortant' },
-    { value: 'charge', label: 'Frais' },
-    { value: 'chargeback', label: 'Rétrofacturation' },
-    { value: 'chargeback-refund', label: 'Remboursement de rétrofacturation' },
-    { value: 'chargeback-charge', label: 'Frais de rétrofacturation' }
+  { value: 'deposit', label: 'Dépôt' },
+  { value: 'tip', label: 'Pourboire' },
+  { value: 'withdraw', label: 'Retrait' },
+  { value: 'payment', label: 'Paiement' },
+  { value: 'refund', label: 'Remboursement' },
+  { value: 'expense', label: 'Dépense' },
+  { value: 'income', label: 'Revenu' },
+  { value: 'adjustment', label: 'Ajustement' },
+  { value: 'penalty', label: 'Pénalité' },
+  { value: 'charge', label: 'Frais' },
+  { value: 'transfer', label: 'Transfert' }
 ];
 
 const statuses = [
@@ -96,7 +90,7 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
         <td className="p-3 text-sm">{operation?.fund?.name}</td>
         
 
-        <td className="p-3 text-sm">{obtenirLibelleType(operation.operation)}</td>
+        <td className="p-3 text-sm">{obtenirLibelleType(operation.operationType)}</td>
 
         <td className="p-3 text-sm">
             <div className="flex items-center">
@@ -175,7 +169,7 @@ const TableauMouvementsInventaire = ({ data , Confirm }) => {
                 <div>{operation?.fund?.name}</div>
 
                 <div className="font-semibold">Type:</div>
-                <div>{obtenirLibelleType(operation.operation)}</div>
+                <div>{obtenirLibelleType(operation.operationType)}</div>
 
                 <div className="font-semibold">Montant:</div>
                 <div>{operation.amount} Dh</div>

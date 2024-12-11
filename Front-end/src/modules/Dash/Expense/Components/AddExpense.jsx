@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import {useFetchFunds} from '../../Fund/hooks/useFetchFunds'
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
 const operationSchema = z.object({
    
@@ -47,6 +48,9 @@ export default function Component() {
 
     const navigate = useNavigate();
     const { funds, totalFunds, loading, error, fetchFunds } = useFetchFunds()
+
+    
+    const [alert, setAlert] = useState({ message: null, type: null });
    
 
     useEffect(() => {
@@ -89,9 +93,9 @@ export default function Component() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
         
-            
+            console.log(preparedData)
             const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations/expense`, preparedData, {
+            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations/expense`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
@@ -103,7 +107,11 @@ export default function Component() {
                 status:null,
             });
             setErrors({});
-            toast.success('Dépense créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message  ||  'Dépense créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
@@ -117,12 +125,12 @@ export default function Component() {
             }, {});
             setErrors(fieldErrors);
         } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating operation - expense:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            console.error('Error creating operation - expense :',error.response?.data?.message || error.message);
+            setAlert({
+                message: Array.isArray(error.response?.data?.message) 
+                ? error.response?.data?.message[0] 
+                : error.response?.data?.message || 'Erreur lors de la creation du dépense',
+                type: "error",
             });
         }
         }
@@ -143,6 +151,17 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+
+                    {alert?.message && (
+                        <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                        >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={Submit} className="space-y-4">
 
                         <div className="space-y-2">

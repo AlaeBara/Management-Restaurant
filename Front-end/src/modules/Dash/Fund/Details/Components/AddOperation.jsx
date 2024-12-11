@@ -11,11 +11,13 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchFund} from '../hooks/useFetchFund'
+import { Alert, AlertDescription } from '@/components/ui/alert';
+
 
 
 
 const operationSchema = z.object({
-    operation: z
+    operationType: z
         .string()
         .nonempty({ message: "L'identifiant de l'operation est obligatoire." }),
     amount: z.coerce.number({
@@ -49,8 +51,9 @@ export default function Component() {
     const {id}=useParams()
 
     const  {fund, loading, error, fetchFund} = useFetchFund(id)
-   
 
+    const [alert, setAlert] = useState({ message: null, type: null });
+   
     useEffect(() => {
         fetchFund();
     }, [fetchFund]);
@@ -61,12 +64,12 @@ export default function Component() {
         { value: 'withdraw', label: 'Retrait' },
         { value: 'payment', label: 'Paiement' },
         { value: 'refund', label: 'Remboursement' },
-        { value: 'expense', label: 'Dépense' },
+        // { value: 'expense', label: 'Dépense' },
         { value: 'income', label: 'Revenu' },
         { value: 'adjustment', label: 'Ajustement' },
         { value: 'penalty', label: 'Pénalité' },
         { value: 'charge', label: 'Frais' },
-        { value: 'transfer', label: 'Transfert' }
+        //{ value: 'transfer', label: 'Transfert' }
     ];
 
     const statuses = [
@@ -74,11 +77,11 @@ export default function Component() {
         { value: 'approved', label: 'Approuvé' },
     ];
       
-      
 
     const [formData, setFormData] = useState({
-        operation: '',
+        operationType: '',
         amount: null,
+        operationAction: null,
         fundId: id,
         note:null,
         reference : null,
@@ -87,16 +90,38 @@ export default function Component() {
     });
 
     
-
     const [errors, setErrors] = useState({});
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
+    const validateOperationForm = (formData) => {
+        const errors = {};
+        if (formData.operationType == 'refund' || formData.operationType == 'adjustment') {
+            if (!formData.operationAction || formData.operationAction === null) {
+                errors.operationAction = "Le type d'action du operation requise lorsque type de operation est Ajustement et Remboursement.";
+            }
+        }
+        return errors;
+    };
+
     const Submit = async (e) => {
         e.preventDefault();
         try {
+            
+            if (formData.operationType !== 'refund'  &&  formData.operationType !== 'adjustment') {
+                formData.operationAction = null;
+            }
+
+            const timeValidationErrors = validateOperationForm(formData);
+            if (Object.keys(timeValidationErrors).length > 0) {
+                setErrors(prevErrors => ({
+                    ...prevErrors,
+                    ...timeValidationErrors
+                }));
+                return;
+            }
 
             formData.amount = parseFloat(formData.amount);
 
@@ -105,27 +130,34 @@ export default function Component() {
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
-        
+
             const token = Cookies.get('access_token');
-            await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations`, preparedData, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+
             setFormData({
-                operation: '',
+                operationType: '',
                 amount: null,
+                operationAction: null,
                 fundId: id,
                 note:null,
-                reference: null,
+                reference : null,
                 dateOperation:'',
                 status:null,
             });
             setErrors({});
-            toast.success('Operation créé avec succès!', {
+            setAlert({
+                message: null,
+                type: null
+            });
+            toast.success(response.data.message  || 'Operation créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
                 onClose: () => navigate(`/dash/caisses/detail/${id}`),
             });
+
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -134,12 +166,12 @@ export default function Component() {
             }, {});
             setErrors(fieldErrors);
         } else {
-            const errorMessage = error.response?.data?.message || error.message;
-            console.error('Error creating operation:', errorMessage);
-            toast.error(errorMessage, {
-            icon: '❌',
-            position: "top-right",
-            autoClose: 3000,
+            console.error('Error creating operation:', error.response?.data?.message || error.message);
+            setAlert({
+                message: Array.isArray(error.response?.data?.message) 
+                ? error.response?.data?.message[0] 
+                : error.response?.data?.message || 'Erreur lors de la creation du Opération ',
+                type: "error",
             });
         }
         }
@@ -160,16 +192,27 @@ export default function Component() {
             <Card className="w-full border-none shadow-none">
 
                 <CardContent className="pt-6">
+
+                    {alert?.message && (
+                        <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                        >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
                     <form onSubmit={Submit} className="space-y-4">
 
 
                         <div className="space-y-2">
-                            <Label htmlFor="operation">Type de Operation <span className='text-red-500 text-base'>*</span></Label>
+                            <Label htmlFor="operationType">Type de Operation <span className='text-red-500 text-base'>*</span></Label>
                             <Select
-                                id="operation"
-                                name="operation"
-                                value={formData.operation  || ""}
-                                onValueChange={(value) => handleChange({ target: { name: 'operation', value } })}
+                                id="operationType"
+                                name="operationType"
+                                value={formData.operationType || ""}
+                                onValueChange={(value) => handleChange({ target: { name: 'operationType', value } })}
                             >
                                 <SelectTrigger>
                                     <SelectValue placeholder="Sélectionnez un type de operation" />
@@ -187,8 +230,32 @@ export default function Component() {
                                     )}
                                 </SelectContent>
                             </Select>
-                            {errors.operation && (
-                                <p className="text-xs text-red-500 mt-1">{errors.operation}</p>
+                            {errors.operationType && (
+                                <p className="text-xs text-red-500 mt-1">{errors.operationType}</p>
+                            )}
+                        </div>
+
+
+                        <div className="space-y-2">
+                            <Label htmlFor="operationAction">Le type d'operation</Label>
+                            <Select value={formData.operationAction || ""}   
+                                onValueChange={(value) => handleChange({ target: { name: 'operationAction', value } })}
+                                disabled={
+                                    formData.operationType   !== 'refund' && 
+                                    formData.operationType   !== 'adjustment'
+                                }
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionnez type d'action du operation">
+                                    </SelectValue>
+                                </SelectTrigger>
+                                <SelectContent>
+                                    <SelectItem value="increase">Augmenter</SelectItem>
+                                    <SelectItem value="decrease">Diminuer</SelectItem>
+                                </SelectContent>
+                            </Select>
+                            {errors.operationAction && (
+                                <p className="text-xs text-red-500 mt-1">{errors.operationAction}</p>
                             )}
                         </div>
 
