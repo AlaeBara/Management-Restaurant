@@ -148,35 +148,9 @@ export class TableService extends GenericService<Table> {
    * @param tableCode string
    * @param zoneId string
    * @param throwIfFound boolean
-   * @returns Promise<Table | null>
+   * @returns Promise<number>
    */
   async validateTable(tableCode: string, zoneId: string, throwIfFound: boolean = false) {
-    // Find the table with the given code and zone
-    const table = await this.tableRepository.findOne({
-      where: {
-        zone: { id: zoneId },
-        tableCode: tableCode
-      },
-      withDeleted: false
-    });
-
-    // If throwIfFound is true and the table exists, throw a BadRequestException
-    if (throwIfFound && table) {
-      throw new BadRequestException('La table existe déjà');
-    }
-
-    // Return the table or null
-    return table;
-  }
-
-  /**
-   * Validate if a table exists with the given code and zone
-   * @param tableCode string
-   * @param zoneId string
-   * @param throwIfFound boolean
-   * @returns Promise<Table | null>
-   */
-  async validateTableCount(tableCode: string, zoneId: string, throwIfFound: boolean = true) {
     // Find the table with the given code and zone
     const table = await this.tableRepository.count({
       where: {
@@ -186,70 +160,12 @@ export class TableService extends GenericService<Table> {
       withDeleted: false
     });
 
-    console.log("counted tb : ", table)
-
     // If throwIfFound is true and the table exists, throw a BadRequestException
-    if (table > 0) {
+    if (throwIfFound && table > 0) {
       throw new BadRequestException('La table existe déjà');
     }
-
   }
-
-  async createTableWithQrCode(tableDto: TableObjectDto) {
-    // Validate if the table exists with the given code and zone
-    await this.validateTable(tableDto.tableCode, tableDto.zone.id, true);
-
-    // Create the table object
-    const tableObject = this.tableRepository.create(tableDto);
-
-    // Generate a QR code for the table
-    await this.generateQrCode(tableObject);
-  }
-
-
-  /**
-   * Create multiple tables for a specific zone with a range of numbers
-   * @param object CreateManyTablesDto
-   * @returns Promise<void>
-   */
-  async createManyTables2(object: CreateManyTablesDto) {
-    const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
-    console.log("asdasd zone : ", zone)
-    const tableObjects: Table[] = [];
-
-    if (object.startNumber > object.endNumber) {
-      throw new BadRequestException('Le numérique de début doit être plus petit que le numérique de fin');
-    }
-
-    // Loop through the range of numbers and create a table object for each
-    for (let i = object.startNumber; i < object.endNumber + 1; i++) {
-      const TableDto: TableObjectDto = {
-        tableCode: `T${i}-Z:${zone.zoneCode}`, // Create the table code based on the zone code and the loop number
-        tableName: `Table ${i}`, // Create the table name based on the loop number
-        zone: zone,
-        qrcode: await this.qrcodeService.generateQrCode(
-          process.env.MENU_WITH_QRCODE_URL + `T${i}-Z:${zone.zoneCode}`,
-        ),
-        tableStatus: object.tableStatus ? object.tableStatus : TableStatus.AVAILABLE,
-        isActive: object.isActive ? object.isActive : true,
-      };
-
-      await this.validateTableCount(TableDto.tableCode, object.zoneUUID)
-
-
-      // Add the table object to the array
-      tableObjects.push(this.tableRepository.create(TableDto));
-    }
-
-    // Use Promise.all to create all the tables at the same time
-    /* await Promise.all(
-      tableObjects.map(async (table) => {
-        await this.createTableWithQrCode(table);
-      })
-    ); */
-    await this.tableRepository.insert(tableObjects);
-  }
-
+ 
   async createManyTables(object: CreateManyTablesDto) {
     const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
 
