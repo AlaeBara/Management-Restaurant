@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { Zone } from './entities/zone.entity';
 import { Table } from './entities/table.entity';
@@ -12,7 +12,7 @@ import { qrCodeModule } from 'src/qr-code/qr-code.module';
 import { User } from 'src/user-management/entities/user.entity';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Zone, Table]), qrCodeModule, User],
+  imports: [TypeOrmModule.forFeature([Zone, Table]), forwardRef(() => qrCodeModule), User],
   controllers: [ZoneController, TableController],
   providers: [ZoneService, TableService, TablePermissionSeeder, ZonePermissionSeeder],
   exports: [TablePermissionSeeder, ZonePermissionSeeder, ZoneService],

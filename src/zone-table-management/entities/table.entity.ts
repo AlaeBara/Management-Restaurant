@@ -19,14 +19,6 @@ import QrcodeService from 'src/qr-code/services/qrcode.service';
 @Entity(process.env.DATASET_PREFIX + 'tables')
 @Index(['id', 'tableCode', 'zone'])
 export class Table {
-
-  constructor(
-
-    @Inject(forwardRef(() => QrcodeService))
-    private readonly qrcodeService: QrcodeService,
-  ) {
-  }
-
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
@@ -60,11 +52,4 @@ export class Table {
 
   @DeleteDateColumn()
   deletedAt: Date;
-
-  @AfterInsert()
-  async generateQrCode() {
-    const qrcode = await this.qrcodeService.generateQrCode(
-      process.env.MENU_WITH_QRCODE_URL + this.id,
-    );
-  }
 }

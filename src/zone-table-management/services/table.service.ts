@@ -195,13 +195,24 @@ export class TableService extends GenericService<Table> {
 
   }
 
+  async createTableWithQrCode(tableDto: TableObjectDto) {
+    // Validate if the table exists with the given code and zone
+    await this.validateTable(tableDto.tableCode, tableDto.zone.id, true);
+
+    // Create the table object
+    const tableObject = this.tableRepository.create(tableDto);
+
+    // Generate a QR code for the table
+    await this.generateQrCode(tableObject);
+  }
+
 
   /**
    * Create multiple tables for a specific zone with a range of numbers
    * @param object CreateManyTablesDto
    * @returns Promise<void>
    */
-  async createManyTables(object: CreateManyTablesDto) {
+  async createManyTables2(object: CreateManyTablesDto) {
     const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
     console.log("asdasd zone : ", zone)
     const tableObjects: Table[] = [];
@@ -216,11 +227,13 @@ export class TableService extends GenericService<Table> {
         tableCode: `T${i}-Z:${zone.zoneCode}`, // Create the table code based on the zone code and the loop number
         tableName: `Table ${i}`, // Create the table name based on the loop number
         zone: zone,
+        qrcode: await this.qrcodeService.generateQrCode(
+          process.env.MENU_WITH_QRCODE_URL + `T${i}-Z:${zone.zoneCode}`,
+        ),
         tableStatus: object.tableStatus ? object.tableStatus : TableStatus.AVAILABLE,
         isActive: object.isActive ? object.isActive : true,
       };
 
-      
       await this.validateTableCount(TableDto.tableCode, object.zoneUUID)
 
 
@@ -229,16 +242,15 @@ export class TableService extends GenericService<Table> {
     }
 
     // Use Promise.all to create all the tables at the same time
-     /* await Promise.all(
-       tableObjects.map(async (table) => {
-         await this.createTable(table);
-       })
-     ); */
+    /* await Promise.all(
+      tableObjects.map(async (table) => {
+        await this.createTableWithQrCode(table);
+      })
+    ); */
     await this.tableRepository.insert(tableObjects);
-
   }
 
-  /* async createManyTables22(object: CreateManyTablesDto) {
+  async createManyTables(object: CreateManyTablesDto) {
     const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
 
     if (object.startNumber > object.endNumber) {
@@ -250,7 +262,7 @@ export class TableService extends GenericService<Table> {
       (await this.getExistingTableCodesForZone(object.zoneUUID)).map((t) => t.tableCode)
     );
 
-    const tableObjects: CreateTableDto[] = [];
+    const tableObjects: TableObjectDto[] = [];
 
     for (let i = object.startNumber; i <= object.endNumber; i++) {
       const tableCode = `T${i}-Z:${zone.zoneCode}`;
@@ -264,7 +276,10 @@ export class TableService extends GenericService<Table> {
       tableObjects.push({
         tableCode,
         tableName: `Table ${i}`,
-        zoneUUID: object.zoneUUID,
+        zone: zone,
+        qrcode: await this.qrcodeService.generateQrCode(
+          process.env.MENU_WITH_QRCODE_URL + tableCode,
+        ),
         tableStatus: object.tableStatus || TableStatus.AVAILABLE,
         isActive: object.isActive !== undefined ? object.isActive : true,
       });
@@ -272,7 +287,7 @@ export class TableService extends GenericService<Table> {
 
     // Perform a bulk insert
     await this.tableRepository.insert(tableObjects);
-  } */
+  }
 
   async getExistingTableCodesForZone(zoneUUID: string): Promise<{ tableCode: string }[]> {
     return await this.tableRepository.find({

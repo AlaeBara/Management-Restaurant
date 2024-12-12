@@ -8,11 +8,13 @@ export class TableObjectDto {
 
   tableName: string;
 
-    tableCode: string;
+  tableCode: string;
 
-    isActive: boolean;
+  isActive: boolean;
 
-    tableStatus: TableStatus; 
-  
-    zone: Zone; 
+  tableStatus: TableStatus;
+
+  zone: Zone;
+
+  qrcode: string | null;
 }
