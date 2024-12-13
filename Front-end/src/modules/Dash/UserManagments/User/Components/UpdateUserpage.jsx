@@ -14,7 +14,7 @@ import useFetchUserData from '../hooks/useFetchUserData';
 import useUpdateUser from '../hooks/useUpdateUser';
 import UserStatus from './UserStatus'; 
 import {useRoles} from '../hooks/useFetchRoles'
-
+import {Loader} from 'lucide-react'
 
 
 export default function UpdateUser() {
@@ -29,7 +29,7 @@ export default function UpdateUser() {
         fetchRoles();
     }, []);
     const { formData, setFormData, originalData, isLoading, setOriginalData , messageError } = useFetchUserData(id);
-    const { updateSubmit, errors ,alert } = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
+    const { updateSubmit, errors ,alert , issLoading} = useUpdateUser(id, formData, setFormData, originalData, setOriginalData);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -251,9 +251,16 @@ export default function UpdateUser() {
                                 <Button type="submit" onClick={()=>navigate('/dash/Create-User')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                     Retour
                                 </Button>
-
-                                <Button type="submit" className="w-full">
-                                    Mettre à jour
+ 
+                                <Button type="submit" className="w-full" disabled={issLoading}>
+                                    {issLoading ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader className="h-4 w-4 animate-spin"/>
+                                            <span>Mettre à jour en cours...</span>
+                                        </div>
+                                        ) : (
+                                        "Mettre à jour"
+                                    )}
                                 </Button>
                             </div>
                         </form>

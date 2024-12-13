@@ -7,6 +7,7 @@ import { z } from 'zod';
 
 const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData) => {
   const [errors, setErrors] = useState({});
+  const [issLoading, setIssLoading] = useState(false);
 
 
   const [alert, setAlert] = useState({ message: null, type: null });
@@ -32,7 +33,10 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
         return;
       }
 
+
+      setIssLoading(true)
       const token = Cookies.get('access_token');
+
      
       const response = await axios.put(
         `${import.meta.env.VITE_BACKEND_URL}/api/users/${id}`,
@@ -54,6 +58,8 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
         setAlert({ message: null, type: null });
       }, 3000);
 
+      setIssLoading(false)
+
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {};
@@ -67,11 +73,12 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
           message: error.response?.data?.message,
           type: "error",
         });
+        setIssLoading(false)
       }
     }
   };
 
-  return { updateSubmit, errors , alert };
+  return { updateSubmit, errors , alert ,issLoading};
 };
 
 export default useUpdateUser;

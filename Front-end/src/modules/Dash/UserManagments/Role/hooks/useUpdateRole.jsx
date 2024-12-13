@@ -13,6 +13,7 @@ const roleSchema = z.object({
 export function useUpdateRole(id, formData, setFormData, initialData, setInitialData) {
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState({ message: null, type: null });
+  const [issLoading, setIssLoading] = useState(false);
 
   // Memoizing the updateRole function with useCallback
   const updateRole = useCallback(async (e) => {
@@ -32,10 +33,9 @@ export function useUpdateRole(id, formData, setFormData, initialData, setInitial
 
     try {
       roleSchema.parse(formData);
-      
-
+      setIssLoading(true)
       const token = Cookies.get('access_token');
-      await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/roles/${id}`, formData, {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/roles/${id}`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
@@ -44,12 +44,12 @@ export function useUpdateRole(id, formData, setFormData, initialData, setInitial
       setInitialData(formData);
 
       setErrors({});
-      toast.success('Rôle mis à jour avec succès!', {
+      toast.success(response.data.message || 'Rôle mis à jour avec succès!', {
         icon: '✅',
         position: "top-right",
         autoClose: 3000,
       });
-
+      setIssLoading(false)
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -66,9 +66,10 @@ export function useUpdateRole(id, formData, setFormData, initialData, setInitial
               : error.response?.data?.message || "Erreur lors de la mise à jour du rôle!",
           type: "error",
         });
+        setIssLoading(false)
       }
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateRole };
+  return { errors, updateRole,issLoading };
 }

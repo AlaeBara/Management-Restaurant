@@ -13,6 +13,9 @@ import { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
 import {useRoles} from '../hooks/useFetchRoles'
 import UserStatus from './UserStatus'; 
+import {Loader} from 'lucide-react'
+
+
 
 export default function Component() {
 
@@ -39,6 +42,7 @@ export default function Component() {
   const [showPassword, setShowPassword] = useState(false)
   const [errors, setErrors] = useState({})
   const [alert, setAlert] = useState({ message: null, type: null });
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleChange = ({ target: { name, value } }) => {
     setFormData((prevData) => ({ ...prevData, [name]: value }))
@@ -52,13 +56,14 @@ export default function Component() {
       const preparedData = Object.fromEntries(
         Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
       );
-    
+      setIsLoading(true);
       const token = Cookies.get('access_token')
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, preparedData, {
         headers: {
           Authorization: `Bearer ${token}`,
         },
       })
+
 
       setFormData({
         firstname: '',
@@ -83,7 +88,8 @@ export default function Component() {
         setAlert({ message: null, type: null });
         navigate('/dash/Create-User');
       }, 1500);
-    
+
+      setIsLoading(false);
     } catch (error) {
       if (error instanceof z.ZodError) {
         const fieldErrors = {}
@@ -97,6 +103,8 @@ export default function Component() {
           message: error.response?.data?.message,
           type: "error",
         });
+
+        setIsLoading(false);
       }
     }
   }
@@ -234,12 +242,15 @@ export default function Component() {
                 <Select
                     name="status"
                     value={formData.status || ""}
-                    onValueChange={(value) => handleChange({ target: { name: 'status', value } })}
+                    onValueChange={(value) =>  handleChange({ target: { name: "status", value: value || null } })}
                 >
                     <SelectTrigger id="status">
                         <SelectValue placeholder="Sélectionner le statut" />
                     </SelectTrigger>
                     <SelectContent>
+                        <SelectItem value={null}>
+                          Annuler (Par défaut)
+                        </SelectItem>
                         {Object.values(UserStatus)
                           .filter((statusValue) => statusValue !== 'email-unverified' || formData.status === 'email-unverified')
                             .map((statusValue) => (
@@ -256,12 +267,15 @@ export default function Component() {
                   <Label htmlFor="roleId">Rôle</Label>
                   <Select
                       value={formData.roleId?.toString() || ''}
-                      onValueChange={(value) => handleChange({ target: { name: 'roleId', value: parseInt(value) } })}
+                      onValueChange={(value) => handleChange({ target: { name: 'roleId', value: parseInt(value) || null } })}
                   >
                       <SelectTrigger>
                         <SelectValue placeholder="Sélectionnez un rôle" />
                       </SelectTrigger>
                       <SelectContent>
+                        <SelectItem value={null}>
+                          Annuler (Par défaut)
+                        </SelectItem>
                           {roles
                           .map((role) => (
                               <SelectItem key={role.id.toString()} value={role.id.toString()}>
@@ -316,8 +330,15 @@ export default function Component() {
                 <Button type="submit" onClick={()=>navigate('/dash/Create-User')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                   Annuler
                 </Button>
-                <Button type="submit" className="w-full">
-                  Ajouter
+                <Button type="submit" className="w-full" disabled={isLoading}>
+                  {isLoading ? (
+                      <div className="flex items-center gap-2">
+                          <Loader className="h-4 w-4 animate-spin" />
+                          <span>Création en cours...</span>
+                      </div>
+                      ) : (
+                      "Ajouter"
+                  )}
                 </Button>
               </div>
 

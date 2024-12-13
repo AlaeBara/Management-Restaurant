@@ -11,12 +11,15 @@ import { useUpdateRole } from '../hooks/useUpdateRole';
 import { useNavigate } from 'react-router-dom';
 import Spinner from '@/components/Spinner/Spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {Loader} from 'lucide-react'
+
+
 
 export default function Component() {
     const navigate = useNavigate()
     const { id } = useParams();
     const { formData, setFormData, initialData, setInitialData , message , loading  } = useFetchRole(id);
-    const { errors, updateRole,alert  } = useUpdateRole(id, formData, setFormData, initialData, setInitialData);
+    const { errors, updateRole,alert ,issLoading } = useUpdateRole(id, formData, setFormData, initialData, setInitialData);
   
     // Memoize handleChange function with useCallback
     const handleChange = useCallback((e) => {
@@ -95,8 +98,15 @@ return (
                                         Retour
                                     </Button>
 
-                                    <Button type="submit" className="w-full">
-                                        Mettre à jour
+                                    <Button type="submit" className="w-full" disabled={issLoading}>
+                                    {issLoading ? (
+                                        <div className="flex items-center gap-2">
+                                            <Loader className="h-4 w-4 animate-spin"/>
+                                            <span>Mettre à jour en cours...</span>
+                                        </div>
+                                        ) : (
+                                        "Mettre à jour"
+                                    )}
                                     </Button>
                                 </div>
                 

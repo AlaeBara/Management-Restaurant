@@ -226,7 +226,7 @@ export default function Component() {
                             {isLoading ? (
                                 <div className="flex items-center gap-2">
                                     <Loader className="h-4 w-4 animate-spin" />
-                                    <span>Creation en cours...</span>
+                                    <span>Création en cours...</span>
                                 </div>
                                 ) : (
                                 "Ajouter"
