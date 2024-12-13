@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import style from './ZoneDetails.module.css'
 import { useNavigate, useParams } from 'react-router-dom'
-import {Plus, Ban, SearchX , ExternalLink} from "lucide-react"
+import {Plus, Ban, SearchX , ExternalLink,CopyPlus} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import TableCarts from '../Components/TableCarts'
@@ -74,6 +74,10 @@ return(
                     </button>
                     <button onClick={() => navigate(`/dash/Zone/${id}/Add-table`)} className={style.showFormButton}>
                         <Plus className="mr-3 h-4 w-4 " /> Ajouter Table
+                    </button> 
+
+                    <button onClick={() => navigate(`/dash/Zone/${id}/ajouter-tables-multiples`)} className={style.showFormButton}>
+                        <CopyPlus className="mr-3 h-4 w-4 " /> Ajouter Tables Multiples
                     </button> 
                 </div>
 

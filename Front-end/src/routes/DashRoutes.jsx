@@ -69,6 +69,10 @@ const ShiftZone =lazy(()=>import('@/modules/Dash/Shift Zone/ShiftZone'))
 const Transfert=lazy(()=>import('@/modules/Dash/Transfert/Transfert'))
 const TransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/TransfertOperations'))
 const AddTransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/Components/AddTransfertOperation'))
+const AddMultiTable =  lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/AddMultiTable'))
+
+
+
 
 const ClientRoutes = () => {
   return (
@@ -206,6 +210,7 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         /> 
+
         <Route 
           path="/Update-Zone/:id" 
           element={
@@ -243,6 +248,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <AddTable/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/Zone/:id/ajouter-tables-multiples" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddMultiTable/>
               </MainLayout>
             </ProtectedRoute>
           } 
