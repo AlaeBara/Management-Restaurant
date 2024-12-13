@@ -77,7 +77,7 @@ return(
                     </button> 
 
                     <button onClick={() => navigate(`/dash/Zone/${id}/ajouter-tables-multiples`)} className={style.showFormButton}>
-                        <CopyPlus className="mr-3 h-4 w-4 " /> Ajouter Tables Multiples
+                        <CopyPlus className="mr-3 h-4 w-4 " /> Ajouter Plusieurs Tables
                     </button> 
                 </div>
 

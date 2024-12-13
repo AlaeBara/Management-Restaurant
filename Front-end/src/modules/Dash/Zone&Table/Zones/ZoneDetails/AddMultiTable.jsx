@@ -152,7 +152,7 @@ export default function Component() {
                             name="startNumber"
                             value={formData.startNumber}
                             onChange={handleChange}
-                            placeholder="Label de la Zone"
+                            placeholder="Numéro de Départ"
                         />
                         {errors.startNumber && (
                             <p className="text-xs text-red-500 mt-1">{errors.startNumber}</p>
@@ -167,7 +167,7 @@ export default function Component() {
                             name="endNumber"
                             value={formData.endNumber}
                             onChange={handleChange}
-                            placeholder="Code de la Zone"
+                            placeholder="Numéro de Fin"
                         />
                         {errors.endNumber && (
                         <p className="text-xs text-red-500 mt-1">{errors.endNumber}</p>
