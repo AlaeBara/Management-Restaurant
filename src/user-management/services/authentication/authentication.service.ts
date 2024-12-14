@@ -27,14 +27,14 @@ export class AuthenticationService {
 
     if (!(await this.canUserLogin(user))) {
       throw new UnauthorizedException(
-        'Your account is currently restricted. Please contact support for assistance.',
+        'Votre compte est actuellement restreint. Veuillez contacter le support pour obtenir de l\'aide.',
       );
     }
 
     if (!(await this.isUserVerifiedEmail(user))) {
       await this.emailVerificationService.sendVerificationEmail(user.email);
       throw new UnauthorizedException(
-        'Your email is not verified, a verification email has been sent',
+        'Votre email n\'est pas vérifié, un email de vérification a été envoyé',
       );
     }
 
@@ -56,7 +56,7 @@ export class AuthenticationService {
     if (user && (await verify(user.password, password))) {
       return user;
     }
-    throw new UnauthorizedException('credentials are invalid');
+    throw new UnauthorizedException('Les informations d\'identification sont invalides');
   }
 
   async initializePayload(user: User) {
@@ -77,26 +77,26 @@ export class AuthenticationService {
     try {
       const token = request.headers['authorization']?.split(' ')[1];
       if (!token) {
-        throw new UnauthorizedException('No token provided');
+        throw new UnauthorizedException('Aucun token fourni');
       }
 
       const decoded = await this.jwtService.verifyAsync(token);
       // Check if the token is expired or invalid
       if (!decoded) {
-        throw new UnauthorizedException('Invalid token');
+        throw new UnauthorizedException('Token invalide');
       }
       // Optionally verify if the user still exists and is active
       const user = await this.userRepository.findOne({
         where: { id: decoded.sub },
       });
       if (!user || !(await this.canUserLogin(user))) {
-        throw new UnauthorizedException('Invalid token');
+        throw new UnauthorizedException('Token invalide');
       }
       return decoded;
     } catch (error) {
       // Token is invalid or expired
       throw new UnauthorizedException(
-        'a problem occurred while validating the token',
+        'Un problème est survenu lors de la validation du token',
       );
     }
   }
@@ -120,7 +120,7 @@ export class AuthenticationService {
     });
 
     if (!user) {
-      throw new NotFoundException('credentials are invalid');
+      throw new NotFoundException('Les informations d\'identification sont invalides');
     }
     return user;
   }
@@ -129,7 +129,7 @@ export class AuthenticationService {
     const isPasswordValid = await verify(user.password, password);
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('credentials are invalid');
+      throw new UnauthorizedException('Les informations d\'identification sont invalides');
     }
   }
 
@@ -165,6 +165,6 @@ export class AuthenticationService {
     if (user.isEmailVerified === true) {
       return true;
     }
-    throw new UnauthorizedException('Your email is not verified');
+    throw new UnauthorizedException('Votre email n\'est pas vérifié');
   }
 }

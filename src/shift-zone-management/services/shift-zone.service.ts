@@ -76,7 +76,7 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
     async resolveReassignmentRequest(status: RequestShiftStatus, requestReassignment: ShiftReassignmentRequest, rejectionReason?: string) {
         requestReassignment.status = status;
         requestReassignment.resolvedAt = new Date();
-        if (status == RequestShiftStatus.REJECTED && !rejectionReason) throw new BadRequestException('Rejection reason is required.')
+        if (status == RequestShiftStatus.REJECTED && !rejectionReason) throw new BadRequestException('Le motif de rejet est requis.')
         requestReassignment.rejectionReason = rejectionReason ? rejectionReason : null;
         await this.shiftReassignmentRequestRepository.save(requestReassignment);
     }
@@ -106,7 +106,7 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
         });
 
         if (lastShift && [ShiftZoneActionType.START, ShiftZoneActionType.REASSIGN].includes(lastShift.actionType)) {
-            throw new BadRequestException('Zone already has an active shift. Please end current shift before starting a new one.')
+            throw new BadRequestException('La zone a déjà un début de service actif. Veuillez terminer le service actuel avant de commencer un nouveau.')
         }
 
         //  const waiter = await this.userService.findOneByIdWithOptions(createStartShift.waiterId);
@@ -132,12 +132,12 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
         });
 
         if (!lastShift || ![ShiftZoneActionType.START, ShiftZoneActionType.REASSIGN].includes(lastShift.actionType)) {
-            throw new BadRequestException('Waiter does not have an active shift to end.')
+            throw new BadRequestException('Le serveur n\'a pas de début de service actif à terminer.')
         }
 
         const waiterId = request['user'].sub;
         if (lastShift.waiter.id != waiterId) {
-            throw new BadRequestException('You are not authorized to end this shift.');
+            throw new BadRequestException('Vous n\'êtes pas autorisé à terminer ce service.');
         }
 
         await this.initializeShift(lastShift.waiter, lastShift.zone, ShiftZoneActionType.END, lastShift.auditingUser, null);
@@ -154,7 +154,7 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
         const zone = await this.zoneService.findOneByIdWithOptions(reassignment.zoneId)
 
         if (zone.status == ZoneStatus.AVAILABLE) {
-            throw new BadRequestException('Cannot request reassignment for an available zone. Zone must be assigned to a waiter.')
+            throw new BadRequestException('Ne peut demander une reaffectation pour une zone disponible. La zone doit être assignée à un serveur.')
         }
 
         const shift = await this.shiftZoneRepository.findOne({
@@ -174,17 +174,17 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
         )
 
         if (countOpenRequest > 0) {
-            throw new BadRequestException('There is already a pending reassignment request for this zone.')
+            throw new BadRequestException('Il existe déjà une demande de reaffectation en attente pour cette zone.')
         }
 
         if (![ShiftZoneActionType.REASSIGN, ShiftZoneActionType.START].includes(shift.actionType)) {
-            throw new BadRequestException('Cannot reassign an already ended shift.')
+            throw new BadRequestException('Ne peut reaffecter un service déjà terminé.')
         }
 
         const requestedWaiter = await this.userService.findOneByIdWithOptions(request['user'].sub);
 
         if (requestedWaiter.id == shift.waiter.id) {
-            throw new BadRequestException('Cannot request reassignment to yourself.')
+            throw new BadRequestException('Ne peut demander une reaffectation à vous-même.')
         }
 
         await this.initializeReassignmentShiftRequest(shift, requestedWaiter);
@@ -206,11 +206,11 @@ export class ShiftZoneService extends GenericService<ShiftZone> {
             }
         )
         if (!requestReassignment) {
-            throw new BadRequestException('Reassignment request not found.')
+            throw new BadRequestException('Demande de reaffectation non trouvée.')
         }
 
         if ([RequestShiftStatus.ACCEPTED, RequestShiftStatus.REJECTED].includes(requestReassignment.status)) {
-            throw new BadRequestException('This reassignment request has already been processed.')
+            throw new BadRequestException('Cette demande de reaffectation a déjà été traitée.')
         }
 
         const auditingUser = await this.userService.findOneByIdWithOptions(request['user'].sub)

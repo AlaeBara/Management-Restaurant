@@ -81,7 +81,7 @@ export class RoleController {
     }
     await this.roleService.throwIfFoundByName(role.name);
     await this.roleService.create(role);
-    return { message: 'Rôle créé avec succès', status: 201 };
+    return { message: 'Super! Le rôle a été créé avec succès', status: 201 };
   }
 
   @Get(':id')
@@ -103,7 +103,7 @@ export class RoleController {
     @Body() role: UpdateRoleDto,
   ) {
     await this.roleService.updateRole(id, role);
-    return { message: 'Rôle modifié avec succès', status: 200 };
+    return { message: 'Super! Le rôle a été modifié avec succès', status: 200 };
   }
 
   @Delete(':id')
@@ -116,7 +116,7 @@ export class RoleController {
     }
     await this.roleService.validateRoleIsNotInUse(id);
     await this.roleService.softDelete(id);
-    return { message: 'Rôle supprimé avec succès', status: 200 };
+    return { message: 'Super! Le rôle a été supprimé avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
@@ -126,7 +126,7 @@ export class RoleController {
     const role = await this.roleService.findOrThrow(id, [], true);
     if (role.deletedAt) {
       await this.roleService.restore(id);
-      return { message: 'Rôle restauré avec succès', status: 200 };
+      return { message: 'Super! Le rôle a été restauré avec succès', status: 200 };
     }
     throw new ConflictException('Le rôle n\'est pas supprimé');
   }
@@ -152,7 +152,7 @@ export class RoleController {
     const role = await this.roleService.findOrThrow(id, ['permissions']);
     const permission = await this.PermissionService.findOrThrow(permissionId);
     await this.roleService.grantPermissionToRole(role, permission);
-    return { message: 'Permission attribuée au rôle avec succès', status: 200 };
+    return { message: 'Super! La permission a été attribuée au rôle avec succès', status: 200 };
   }
 
   @Delete(':id/permissions/:permissionId')
@@ -166,7 +166,7 @@ export class RoleController {
     const role = await this.roleService.findOrThrow(id, ['permissions']);
     const permission = await this.PermissionService.findOrThrow(permissionId);
     await this.roleService.revokePermissionFromRole(role, permission);
-    return { message: 'Permission révoquée du rôle avec succès', status: 200 };
+    return { message: 'Super! La permission a été révoquée du rôle avec succès', status: 200 };
   }
 
   @Get(':id/permissions/group-by-resource')
@@ -175,6 +175,6 @@ export class RoleController {
   async findAndGroupPermissionsWithRoleAccess(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const role = await this.roleService.findOrThrow(id, ['permissions']);
     await this.roleService.findAndGroupPermissionsWithRoleAccess(role);
-    return { message: 'Permissions récupérées avec succès', status: 200 };
+    return { message: 'Super! Les permissions ont été récupérées avec succès', status: 200 };
   }
 }

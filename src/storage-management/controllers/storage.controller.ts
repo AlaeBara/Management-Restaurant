@@ -75,7 +75,7 @@ export class StorageController {
     @ApiOperation({ summary: 'Create a storage' })
     async create(@Body() createStorageDto: CreateStorageDto) {
         await this.storageService.createStorage(createStorageDto);
-        return { message: 'Great! Your new storage location has been created successfully', status: 201 };
+        return { message: 'Super! Votre nouvelle localisation de stockage a été créée avec succès', status: 201 };
     }
 
     @Put(':id')
@@ -86,14 +86,15 @@ export class StorageController {
         @Body() updateStorageDto: UpdateStorageDto,
     ) {
         await this.storageService.updateStorage(id, updateStorageDto);
-        return { message: 'Great! Your storage location has been updated successfully', status: 200 };
+        return { message: 'Super! Votre localisation de stockage a été mise à jour avec succès', status: 200 };
     }
 
     @Delete(':id')
     @Permissions('delete-storage')
     @ApiOperation({ summary: 'Delete a storage' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.storageService.deleteStorage(id);
+        await this.storageService.deleteStorage(id);
+        return { message: 'Super! Votre localisation de stockage a été supprimée avec succès', status: 200 };
     }
 
     @Patch(':id/restore')
@@ -101,13 +102,15 @@ export class StorageController {
     @ApiOperation({ summary: 'Restore a storage' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.storageService.findOneByIdWithOptions(id, { onlyDeleted: true });
-        return this.storageService.restoreByUUID(id, true, ['storageCode']);
+        await this.storageService.restoreByUUID(id, true, ['storageCode']);
+        return { message: 'Super! Votre localisation de stockage a été restaurée avec succès', status: 200 };
     }
 
     @Patch(':id/assign-sub-storage')
     @Permissions('assign-sub-storage')
     @ApiOperation({ summary: 'Assign a sub-storage to a storage' })
     async assignParentStorage(@Param('id', ParseUUIDPipe) id: string, @Body() assignParentStorageDto: AssignParentStorageDto) {
-        return this.storageService.assignParentStorage(id, assignParentStorageDto);
+        await this.storageService.assignParentStorage(id, assignParentStorageDto);
+        return { message: 'Super! Votre localisation de stockage a été assignée avec succès', status: 200 };
     }
 }

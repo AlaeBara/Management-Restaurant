@@ -78,7 +78,7 @@ export class UserController {
   async create(@Body() createUserDto: CreateUserDto): Promise<any> {
     //await this.userService.throwIfFoundByAnyAttribute({ username: createUserDto.username, email: createUserDto.email }, [], true);
     await this.userService.create(createUserDto);
-    return { message: 'Great! The user has been successfully created.', status: 200 };
+    return { message: 'Super! Le compte utilisateur a été créé avec succès', status: 200 };
   }
 
   @Get(':id')
@@ -102,7 +102,7 @@ export class UserController {
   ) {
     // return await this.userService.update(+id, updateUserDto);
     await this.userService.updateUser(id, updateUserDto, request);
-    return { message: 'Great! The user has been successfully updated.', status: 200 };
+    return { message: 'Super! Le compte utilisateur a été modifié avec succès', status: 200 };
   }
 
   @Post(':id/roles/:roleid')
@@ -114,6 +114,6 @@ export class UserController {
   ) {
     const user = await this.userService.findOrThrow(id, ['roles']);
     this.userService.grantRoleToUser(user, roleid);
-    return { message: 'Great! The role has been successfully granted to the user.', status: 200 };
+    return { message: 'Super! Le rôle a été attribué avec succès à l\'utilisateur', status: 200 };
   }
 }

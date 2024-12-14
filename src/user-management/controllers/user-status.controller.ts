@@ -29,7 +29,7 @@ export default class UserStatusController {
   ) {
     const user = await this.userStatusService.findOneByIdWithOptions(id, {relations:['roles']});
     await this.userStatusService.markAsDeleted(user, request);
-    return { message: 'user deleted successfully', statusCode: 200 };
+    return { message: 'Le compte utilisateur a été supprimé avec succès', statusCode: 200 };
   }
 
   @Patch(':id/status/restore')
@@ -37,7 +37,7 @@ export default class UserStatusController {
   @ApiOperation({ summary: 'Restore a deleted user' })
   async markAsRestored(@Param('id', ParseIntPipe) id: number) {
     await this.userStatusService.markAsRestored(id);
-    return { message: 'user restored successfully', statusCode: 200 };
+    return { message: 'Le compte utilisateur a été restauré avec succès', statusCode: 200 };
   }
 
   @Patch(':id/status')
@@ -50,6 +50,6 @@ export default class UserStatusController {
   ) {
     const user = await this.userStatusService.findOrThrow(id);
     await this.userStatusService.markAs(user, updateStatusDto.status, request);
-    return { message: 'User status updated successfully', statusCode: 200 };
+    return { message: 'Le statut du compte utilisateur a été mis à jour avec succès', statusCode: 200 };
   }
 }

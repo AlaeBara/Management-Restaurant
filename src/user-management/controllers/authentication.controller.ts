@@ -22,7 +22,7 @@ export class AuthenticationController {
   constructor(
     private jwtService: JwtService,
     private authenticationService: AuthenticationService,
-  ) {}
+  ) { }
 
   @Public()
   @Post('login')

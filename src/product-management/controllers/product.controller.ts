@@ -71,7 +71,7 @@ export class ProductController {
     @ApiOperation({ summary: 'Create a product' })
     async create(@Body() createProductDto: CreateProductDto) {
         await this.productService.createProduct(createProductDto);
-        return { message: 'Great! Product has been CREATED successfully', status: 201 };
+        return { message: 'Super! Votre produit a été créé avec succès', status: 201 };
     }
 
     @Put(':id')
@@ -79,7 +79,7 @@ export class ProductController {
     @ApiOperation({ summary: 'Update a product' })
     async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateProductDto: UpdateProductDto) {
         await this.productService.updateProduct(id, updateProductDto);
-        return { message: 'Cool! Product has been UPDATED successfully', status: 200 };
+        return { message: 'Super! Votre produit a été modifié avec succès', status: 200 };
     }
 
     @Delete(':id')
@@ -88,7 +88,7 @@ export class ProductController {
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.productService.findOneByIdWithOptions(id);
         await this.productService.softDelete(id);
-        return { message: 'Product has been DELETED successfully', status: 200 };
+        return { message: 'Super! Votre produit a été supprimé avec succès', status: 200 };
     }
 
     @Patch(':id/restore')
@@ -96,7 +96,7 @@ export class ProductController {
     @ApiOperation({ summary: 'Restore a product' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.productService.restoreByUUID(id, true, ['productSKU']);
-        return { message: 'Product has been RESTORED successfully', status: 200 };
+        return { message: 'Super! Votre produit a été restauré avec succès', status: 200 };
     }
 
     @Get(':id/inventories')

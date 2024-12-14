@@ -40,7 +40,7 @@ export class ClientService extends GenericService<Client> {
 
     if (!client) {
       throw new UnauthorizedException(
-        'Account not found. Please sign up to create an account.',
+        'Le compte n\'existe pas. Veuillez vous inscrire pour créer un compte.',
       );
     }
 
@@ -50,7 +50,7 @@ export class ClientService extends GenericService<Client> {
     );
 
     if (!isPasswordValid) {
-      throw new UnauthorizedException('Credentials are incorrect');
+      throw new UnauthorizedException('Les informations de connexion sont incorrectes');
     }
 
     const token = await this.generateToken(client);
@@ -79,7 +79,7 @@ export class ClientService extends GenericService<Client> {
       );
 
       if (!client) {
-        throw new Error('Client not found after creation');
+        throw new Error('Le client n\'a pas été trouvé après la création');
       }
 
       const token = await this.generateToken(client);
@@ -118,7 +118,7 @@ export class ClientService extends GenericService<Client> {
     });
 
     if (!client) {
-      throw new NotFoundException('credentials are invalid');
+      throw new NotFoundException('Les informations de connexion sont incorrectes');
     }
     return client;
   }
@@ -134,7 +134,7 @@ export class ClientService extends GenericService<Client> {
     });
 
     if (!client) {
-      throw new NotFoundException('Client not found');
+      throw new NotFoundException('Le client n\'a pas été trouvé');
     }
 
     return client;
@@ -196,18 +196,18 @@ export class ClientService extends GenericService<Client> {
     const originalStatus = client.status;
     const originalIsBlocked = client.isBlocked;
     if (await this.checkSelf(client, request)) {
-      throw new BadRequestException('You cannot do this action to self-account');
+      throw new BadRequestException('Vous ne pouvez pas effectuer cette action sur votre propre compte');
     }
     try {
       client.status = statusClient.DELETED;
       const updateResult = await this.update(id, { status: statusClient.DELETED, isBlocked: true });
       if (!updateResult.affected) {
-        throw new ConflictException('Failed to update client status');
+        throw new ConflictException('Impossible de mettre à jour le statut du client');
       }
       return await this.softDelete(id);
     } catch (error) {
       await this.update(id, { status: originalStatus, isBlocked: originalIsBlocked });
-      throw new ConflictException('Failed to soft delete client:' + error.message);
+      throw new ConflictException('Impossible de supprimer le client:' + error.message);
     }
   }
 
@@ -219,12 +219,12 @@ export class ClientService extends GenericService<Client> {
       client.status = statusClient.ACTIVE;
       const updateResult = await this.update(id, { status: statusClient.ACTIVE, isBlocked: false });
       if (!updateResult.affected) {
-        throw new ConflictException('Failed to update client Status');
+        throw new ConflictException('Impossible de mettre à jour le statut du client');
       }
       return await this.restoreByUUID(id, true, ['username', 'email']);
     } catch (error) {
       await this.update(id, { status: originalStatus, isBlocked: originalIsBlocked });
-      throw new ConflictException('Failed to restore client:' + error.message);
+      throw new ConflictException('Impossible de restaurer le client:' + error.message);
     }
   }
 }

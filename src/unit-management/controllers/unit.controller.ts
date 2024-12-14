@@ -62,7 +62,7 @@ export class UnitController {
   @ApiOperation({ summary: 'Create a unit' })
   async createUnits(@Body() createUnitDto: CreateUnitDto) {
     await this.unitService.createUnit(createUnitDto);
-    return { message: 'Great! The unit has been created successfully', status: 200 };
+    return { message: 'Super! L\'unité a été créée avec succès', status: 200 };
   }
 
   @Get(':id')
@@ -87,7 +87,7 @@ export class UnitController {
     @Body() unitdto: UpdateUnitDto,
   ) {
     await this.unitService.updateUnit(id, unitdto);
-    return { message: 'Great! The unit has been updated successfully', status: 200 };
+    return { message: 'Super! L\'unité a été mise à jour avec succès', status: 200 };
   }
 
   @Delete(':id')
@@ -95,13 +95,15 @@ export class UnitController {
   @ApiOperation({ summary: 'Delete a unit' })
   async deleteUnits(@Param('id', ParseUUIDPipe) id: string) {
     await this.unitService.findOneByIdWithOptions(id, { findOrThrow: true });
-    return this.unitService.softDelete(id);
+    await this.unitService.softDelete(id);
+    return { message: 'La table a été supprimée avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
   @Permissions('restore-unit')
   @ApiOperation({ summary: 'Restore a unit' })
   async restoreUnits(@Param('id', ParseUUIDPipe) id: string) {
-    return this.unitService.restoreByUUID(id, true);
+    await this.unitService.restoreByUUID(id, true);
+    return { message: 'Super! L\'unité a été restaurée avec succès', status: 200 };
   }
 }

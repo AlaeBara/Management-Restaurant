@@ -94,7 +94,7 @@ export class TableController {
   @ApiOperation({ summary: 'Create a table' })
   async create(@Body() createTableDto: CreateTableDto) {
     await this.tableService.createTable(createTableDto);
-    return { message: 'Great! Your new table has been created successfully', status: 201 };
+    return { message: 'Super! Votre nouvelle table a été créée avec succès', status: 201 };
   }
 
   @Put(':id')
@@ -105,7 +105,7 @@ export class TableController {
     @Body() updateTableDto: UpdateTableDto,
   ) {
     await this.tableService.updateTable(id, updateTableDto);
-    return { message: 'Done! Your table has been updated successfully', status: 200 };
+    return { message: 'Super! Votre table a été mise à jour avec succès', status: 200 };
   }
 
   @Delete(':id')
@@ -114,7 +114,7 @@ export class TableController {
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOrThrowByUUID(id);
     await this.tableService.softDelete(id);
-    return { message: 'Table has been DELETED successfully', status: 200 };
+    return { message: 'La table a été supprimée avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
@@ -123,7 +123,7 @@ export class TableController {
   async restore(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOneByIdWithOptions(id, { onlyDeleted: true });
     await this.tableService.restoreByUUID(id, true, ['tableCode']);
-    return { message: 'COOL! Table has been RESTORED successfully', status: 200 };
+    return { message: 'Super! La table a été restaurée avec succès', status: 200 };
   }
 
   @Get('qrcode/:id')
@@ -139,6 +139,6 @@ export class TableController {
   @ApiOperation({ summary: 'Create multiple tables' })
   async generateTables(@Body() createTablesDto: CreateManyTablesDto) {
     await this.tableService.createManyTables(createTablesDto);
-    return { message: 'Great! Each table has been created successfully', status: 201 };
+    return { message: 'Super! Chaque table a été créée avec succès', status: 201 };
   }
 }

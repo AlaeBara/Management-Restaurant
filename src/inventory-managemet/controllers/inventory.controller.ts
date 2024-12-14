@@ -75,7 +75,7 @@ export class InventoryController {
     @ApiOperation({ summary: 'Create a inventory' })
     async create(@Body() createInventoryDto: CreateInventoryDto) {
         await this.inventoryService.createInventory(createInventoryDto);
-        return { message: 'Great! Your new inventory has been created successfully', status: 201 };
+        return { message: 'Super! Votre nouveau stock a été créé avec succès', status: 201 };
     }
 
     @Put(':id')
@@ -86,14 +86,15 @@ export class InventoryController {
         @Body() updateInventoryDto: UpdateInventoryDto,
     ) {
         await this.inventoryService.updateInventory(id, updateInventoryDto);
-        return { message: 'Great! Your inventory has been updated successfully', status: 200 };
+        return { message: 'Super! Votre stock a été modifié avec succès', status: 200 };
     }
 
     @Delete(':id')
     @Permissions('delete-inventory')
     @ApiOperation({ summary: 'Delete a inventory' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
-        return await this.inventoryService.deleteInventory(id);
+        await this.inventoryService.deleteInventory(id);
+        return { message: 'Super! Votre stock a été supprimé avec succès', status: 200 };
     }
 
     @Patch(':id/restore')
@@ -101,6 +102,7 @@ export class InventoryController {
     @ApiOperation({ summary: 'Restore a inventory' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.inventoryService.findOneByIdWithOptions(id, { onlyDeleted: true });
-        return this.inventoryService.restoreByUUID(id, true, ['sku']);
+        await this.inventoryService.restoreByUUID(id, true, ['sku']);
+        return { message: 'Super! Votre stock a été restauré avec succès', status: 200 };
     }
 }

@@ -68,8 +68,9 @@ export class PermissionController {
   @ApiOperation({ summary: 'Create a new permission' })
   async create(
     @Body() permission: Permission,
-  ): Promise<Partial<Permission>> {
-    return this.permissionService.create(permission);
+  ) {
+    await this.permissionService.create(permission);
+    return { message: 'Permission créée avec succès', status: 201 };
   }
 
   @Get(':id')
@@ -88,8 +89,9 @@ export class PermissionController {
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() permission: Permission,
-  ): Promise<UpdateResult> {
-    return this.permissionService.update(id, permission);
+  ) {
+    await this.permissionService.update(id, permission);
+    return { message: 'Permission modifiée avec succès', status: 200 };
   }
 
   @Delete(':id')
@@ -103,16 +105,18 @@ export class PermissionController {
         'Cannot delete permission as it is assigned to roles',
       );
     }
-    this.permissionService.softDelete(id);
+    await this.permissionService.softDelete(id);
+    return { message: 'Permission supprimée avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
   @Permissions('restore-permission')
   @ApiOperation({ summary: 'Restore a deleted permission' })
-  async restore(@Param('id', ParseIntPipe) id: number): Promise<UpdateResult> {
+  async restore(@Param('id', ParseIntPipe) id: number) {
     const permission = await this.permissionService.findOrThrow(id, [], true);
     if (permission.deletedAt) {
-      return this.permissionService.restore(id);
+      await this.permissionService.restore(id);
+      return { message: 'Permission restaurée avec succès', status: 200 };
     }
     throw new ConflictException('Permission is not deleted');
   }

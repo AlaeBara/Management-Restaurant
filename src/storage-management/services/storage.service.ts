@@ -61,7 +61,7 @@ export class StorageService extends GenericService<Storage> {
         if (createStorageDto.parentStorageId) {
             const parentStorage = await this.findById(createStorageDto.parentStorageId);
             if (!parentStorage) {
-                throw new NotFoundException('Sub storage not found');
+                throw new NotFoundException('Localisation de stockage parent non trouvée');
             }
             storage.parentStorage = parentStorage;
         }
@@ -69,7 +69,7 @@ export class StorageService extends GenericService<Storage> {
         try {
             return await this.storageRepository.save(storage);
         } catch (error) {
-            throw new BadRequestException(`Failed to create storage: ${error.message}`);
+            throw new BadRequestException(`Problème lors de la création de la localisation de stockage: ${error.message}`);
         }
     }
 
@@ -121,26 +121,26 @@ export class StorageService extends GenericService<Storage> {
     async validateAssignParentStorage(storage: Storage, assignParentStorage: Storage) {
         // Null checks should come first
         if (!storage) {
-            throw new NotFoundException('Storage not found');
+            throw new NotFoundException('Localisation de stockage non trouvée');
         }
         if (!assignParentStorage) {
-            throw new NotFoundException('Sub storage not found');
+            throw new NotFoundException('Localisation de stockage parent non trouvée');
         }
 
         // Check for self-assignment
         if (storage.id === assignParentStorage.id) {
-            throw new BadRequestException('Storage cannot be its own sub-storage');
+            throw new BadRequestException('La localisation de stockage ne peut être sa propre sous-localisation');
         }
 
         // Check if the same sub-storage is already assigned
         if (storage.parentStorageId === assignParentStorage.id) {
-            throw new BadRequestException('Sub storage is already assigned to this storage');
+            throw new BadRequestException('La localisation de stockage parent est déjà assignée à cette localisation de stockage');
         }
 
         // Additional check for circular reference (if needed)
         // This would prevent A -> B -> A scenarios
         if (assignParentStorage.parentStorageId === storage.id) {
-            throw new BadRequestException('Circular reference detected - cannot create storage loop');
+            throw new BadRequestException('Référence circulaire détectée - ne peut créer une boucle de localisation de stockage');
         }
     }
 
@@ -164,7 +164,7 @@ export class StorageService extends GenericService<Storage> {
         });
 
         if (hasParentStorage && hasParentStorage > 0) {
-            throw new BadRequestException('Cannot delete storage as it is linked as a sub-storage to another storage. Please remove the link first.');
+            throw new BadRequestException('Ne peut supprimer la localisation de stockage car elle est liée comme une sous-localisation à une autre localisation de stockage. Veuillez d\'abord supprimer le lien.');
         }
 
         const hasInventory = await this.inventoryRepository.count({
@@ -174,7 +174,7 @@ export class StorageService extends GenericService<Storage> {
         });
 
         if (hasInventory && hasInventory > 0) {
-            throw new BadRequestException('Cannot delete storage as it is linked to an inventory. Please remove the link first.');
+            throw new BadRequestException('Ne peut supprimer la localisation de stockage car elle est liée à un inventaire. Veuillez d\'abord supprimer le lien.');
         }
     }
 

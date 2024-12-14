@@ -44,7 +44,7 @@ export class ZoneService extends GenericService<Zone> {
     // Validate existing zone
     const existingZone = await this.findOne(id);
     if (!existingZone) {
-      throw new BadRequestException('Zone not found');
+      throw new BadRequestException('Zone non trouvée');
     }
 
     // Check if new zone code already exists (if being updated)
@@ -97,12 +97,12 @@ export class ZoneService extends GenericService<Zone> {
 
     if (zoneCount > 0 || tableCount > 0) {
       throw new BadRequestException(
-        `Cannot delete zone: it has ${[
-          zoneCount && `${zoneCount} child zone${zoneCount > 1 ? 's' : ''}`,
+        `Impossible de supprimer la zone: elle a ${[
+          zoneCount && `${zoneCount} enfant zone${zoneCount > 1 ? 's' : ''}`,
           tableCount && `${tableCount} table${tableCount > 1 ? 's' : ''}`,
         ]
           .filter(Boolean)
-          .join(' and ')} linked to it.`,
+          .join(' et ')} liée à elle.`,
       );
     }
 
@@ -115,18 +115,18 @@ export class ZoneService extends GenericService<Zone> {
   ): Promise<Zone | null> {
     const zoneExists = await this.findOne(id);
     if (!zoneExists) {
-      throw new BadRequestException('Zone not found');
+      throw new BadRequestException('Zone non trouvée');
     }
 
     if (!uuid) return null;
 
     const parentZone = await this.findOne(uuid);
     if (!parentZone) {
-      throw new BadRequestException('Parent zone not found');
+      throw new BadRequestException('Parent zone non trouvée');
     }
 
     if (parentZone.id === id) {
-      throw new BadRequestException('Cannot assign zone to itself');
+      throw new BadRequestException('Impossible d\'assigner la zone à elle-même');
     }
 
     return parentZone;

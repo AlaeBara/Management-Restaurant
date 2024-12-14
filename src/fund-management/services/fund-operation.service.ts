@@ -94,7 +94,7 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
     }
 
     async validateAmount(amount: number): Promise<void> {
-        if (amount <= 0) throw new BadRequestException('Amount must be greater than 0');
+        if (amount <= 0) throw new BadRequestException('Le montant doit être supérieur à 0');
     }
 
     async validateBalance(fund: Fund, amount: number, operationAction: string): Promise<void> {
@@ -132,7 +132,7 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         fundOperation.operationAction = operationAction;
         //The movement action must be either 'increase' or 'decrease'
         if (['increase', 'decrease'].includes(fundOperation.operationAction) === false) {
-            throw new BadRequestException('Invalid Operation Action');
+            throw new BadRequestException('Action de l\'opération invalide');
         }
 
         // If operationType is provided, use it by CreateExpenseDto as a default expense

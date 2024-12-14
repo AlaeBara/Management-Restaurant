@@ -25,7 +25,7 @@ export class SupplierService extends GenericService<Supplier> {
       rcNumber: createSupplierDto.rcNumber,
       iceNumber: createSupplierDto.iceNumber,
     });
-    return this.supplierRepository.save(createSupplierDto);
+    await this.supplierRepository.save(createSupplierDto);
   }
 
   async deleteSupplier(id: string) {
@@ -33,12 +33,12 @@ export class SupplierService extends GenericService<Supplier> {
     try {
       const statusUpdate = await this.update(id, { status: SupplierStatus.DELETED });
       if (!statusUpdate.affected) {
-        throw new ConflictException('Failed to update supplier status');
+        throw new ConflictException('Problème lors de la mise à jour du statut du fournisseur');
       }
       return await this.softDelete(id);
     } catch (error) {
       await this.update(id, { status: supplier.status });
-      throw new ConflictException('Failed to soft delete supplier:' + error.message);
+      throw new ConflictException('Problème lors de la suppression du fournisseur:' + error.message);
 
     }
   }
@@ -48,12 +48,12 @@ export class SupplierService extends GenericService<Supplier> {
     try {
       const statusUpdate = await this.update(supplier.id, { status: SupplierStatus.ACTIVE });
       if (statusUpdate.affected === 0) {
-        throw new ConflictException('Failed to update supplier status');
+        throw new ConflictException('Problème lors de la mise à jour du statut du fournisseur');
       }
       return await this.restoreByUUID(id, true, ['name', 'phone', 'email', 'rcNumber', 'iceNumber']);
     } catch (error) {
       await this.update(supplier.id, { status: SupplierStatus.DELETED });
-      throw new ConflictException('Problem while restoring supplier:' + error.message);
+      throw new ConflictException('Problème lors de la restauration du fournisseur:' + error.message);
     }
   }
 }

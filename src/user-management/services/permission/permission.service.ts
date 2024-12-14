@@ -41,32 +41,6 @@ export class PermissionService extends GenericService<Permission> {
     });
   }
 
-  /* async findAllPermissionsGroupByResource() {
-    return this.permissionRepository.createQueryBuilder('permission')
-      .select('permission.resource', 'resource')
-      .addSelect('permission.id', 'id')
-      .addSelect('permission.name', 'name')
-      .addSelect('permission.label', 'label')
-      .orderBy('permission.resource', 'ASC')
-      .orderBy('permission.name', 'ASC')
-      .getRawMany()
-      .then(permissions => {
-        // Group permissions by resource
-        return permissions.reduce((groups, permission) => {
-          const resource = permission.resource;
-          if (!groups[resource]) {
-            groups[resource] = [];
-          }
-          groups[resource].push({
-            id: permission.id,
-            name: permission.name,
-            label: permission.label
-          });
-          return groups;
-        }, {});
-      });
-  } */
-
   async findAndGroupPermissionsWithUserAccess(@Req() req: Request) {
     const user = await this.authenetication.findUserByEmailOrUsername(
       req['user'].email,

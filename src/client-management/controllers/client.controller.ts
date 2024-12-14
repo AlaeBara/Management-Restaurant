@@ -66,21 +66,24 @@ export class ClientController {
   @Public()
   @ApiOperation({ summary: 'Login a client' })
   async loginClient(@Body() loginClientDto: LoginClientDto) {
-    return await this.clientService.signin(loginClientDto);
+    const token = await this.clientService.signin(loginClientDto);
+    return { message: 'Connexion réussie', status: 200, token };
   }
 
   @Post('register')
   @Public()
   @ApiOperation({ summary: 'Register a client' })
   async registerClient(@Body() createClientDto: createClientDto) {
-    return await this.clientService.registerAndSignin(createClientDto);
+    await this.clientService.registerAndSignin(createClientDto);
+    return { message: 'Super! Le compte client a été créé avec succès', status: 201 };
   }
 
   @Post()
   @Permissions('create-client')
   @ApiOperation({ summary: 'Create a client' })
   async createClient(@Body() createClientDto: createClientDto) {
-    return await this.clientService.createClientByAccess(createClientDto);
+    await this.clientService.createClientByAccess(createClientDto);
+    return { message: 'Super! Le compte client a été créé avec succès', status: 201 };
   }
 
   @Get(':id')
@@ -101,7 +104,8 @@ export class ClientController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() clientdto: UpdateClientDto,
   ) {
-    return this.clientService.update(id, clientdto);
+    await this.clientService.update(id, clientdto);
+    return { message: 'Super! Votre client a été modifié avec succès', status: 200 };
   }
 
   @Delete(':id')
@@ -109,12 +113,14 @@ export class ClientController {
   @ApiOperation({ summary: 'Delete a client' })
   async deleteClient(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
     await this.clientService.deleteClient(id, request);
+    return { message: 'Super! Votre client a été supprimé avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
   @Permissions('restore-client')
   @ApiOperation({ summary: 'Restore a client' })
   async restoreClient(@Param('id', ParseUUIDPipe) id: string) {
-    return this.clientService.restoreClient(id);
+    await this.clientService.restoreClient(id);
+    return { message: 'Super! Votre client a été restauré avec succès', status: 200 };
   }
 }

@@ -79,7 +79,8 @@ export class ZoneController {
   @Permissions('create-zone')
   @ApiOperation({ summary: 'Create a zone' })
   async create(@Body() zoneDto: CreateZoneDto) {
-    return this.zoneService.createZone(zoneDto);
+    await this.zoneService.createZone(zoneDto);
+    return { message: 'Super! La zone a été créée avec succès', status: 201 };
   }
 
   @Put(':id')
@@ -89,21 +90,24 @@ export class ZoneController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() zoneDto: UpdateZoneDto,
   ) {
-    return this.zoneService.updateZoneByUUID(id, zoneDto);
+    await this.zoneService.updateZoneByUUID(id, zoneDto);
+    return { message: 'Super! La zone a été mise à jour avec succès', status: 200 };
   }
 
   @Delete(':id')
   @Permissions('delete-zone')
   @ApiOperation({ summary: 'Delete a zone' })
   async delete(@Param('id', ParseUUIDPipe) id: string) {
-    return this.zoneService.deleteZoneByUUID(id);
+    await this.zoneService.deleteZoneByUUID(id);
+    return { message: 'La zone a été supprimée avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
   @Permissions('restore-zone')
   @ApiOperation({ summary: 'Restore a zone' })
   async restore(@Param('id', ParseUUIDPipe) id: string) {
-    return this.zoneService.restoreByUUID(id, true, ['zoneCode']);
+    await this.zoneService.restoreByUUID(id, true, ['zoneCode']);
+    return { message: 'Super! La zone a été restaurée avec succès', status: 200 };
   }
 
   @Patch(':id/reassign')
@@ -113,7 +117,8 @@ export class ZoneController {
     @Param('id', ParseUUIDPipe) id: string,
     @Body() reassignZoneDto: ReassignZoneDto,
   ) {
-    return this.zoneService.reassignChildZones(id, reassignZoneDto.uuid);
+    await this.zoneService.reassignChildZones(id, reassignZoneDto.uuid);
+    return { message: 'Super! La zone a été réassignée avec succès', status: 200 };
   }
 
   @Get(':id/tables')

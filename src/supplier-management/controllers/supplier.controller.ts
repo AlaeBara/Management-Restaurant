@@ -50,8 +50,9 @@ export class SupplierController {
   @Post()
   @Permissions('create-supplier')
   @ApiOperation({ summary: 'Create a new supplier' })
-  createSupplier(@Body() createSupplierDto: CreateSupplierDto) {
-    return this.supplierService.createSupplier(createSupplierDto);
+  async createSupplier(@Body() createSupplierDto: CreateSupplierDto) {
+    await this.supplierService.createSupplier(createSupplierDto);
+    return { message: 'Super! Le fournisseur a été créé avec succès', status: 200 };
   }
 
   @Get(':id')
@@ -77,21 +78,24 @@ export class SupplierController {
   @Put(':id')
   @Permissions('update-supplier')
   @ApiOperation({ summary: 'Update a supplier' })
-  updateSupplier(@Param('id', ParseUUIDPipe) id: string, @Body() updateSupplierDto: UpdateSupplierDto) {
-    return this.supplierService.update(id, updateSupplierDto);
+  async updateSupplier(@Param('id', ParseUUIDPipe) id: string, @Body() updateSupplierDto: UpdateSupplierDto) {
+    await this.supplierService.update(id, updateSupplierDto);
+    return { message: 'Super! Le fournisseur a été mis à jour avec succès', status: 200 };
   }
 
   @Delete(':id')
   @Permissions('delete-supplier')
   @ApiOperation({ summary: 'Delete a supplier' })
   async deleteSupplier(@Param('id', ParseUUIDPipe) id: string) {
-    return this.supplierService.deleteSupplier(id);
+    await this.supplierService.deleteSupplier(id);
+    return { message: 'Super! Le fournisseur a été supprimé avec succès', status: 200 };
   }
 
   @Patch(':id/restore')
   @Permissions('delete-supplier')
   @ApiOperation({ summary: 'Restore a supplier' })
   async restoreSupplier(@Param('id', ParseUUIDPipe) id: string) {
-    return this.supplierService.restoreSupplier(id);
+    await this.supplierService.restoreSupplier(id);
+    return { message: 'Super! Le fournisseur a été restauré avec succès', status: 200 };
   }     
 }

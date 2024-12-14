@@ -102,7 +102,7 @@ export class UserService extends GenericService<User> {
     // Check if the new username is the same as the current one
     if (user.username === updateUsernameDto.username.toLowerCase()) {
       throw new BadRequestException(
-        'New username is the same as the current username',
+        'Le nouveau nom d\'utilisateur est le même que le nom d\'utilisateur actuel',
       );
     }
 
@@ -110,7 +110,7 @@ export class UserService extends GenericService<User> {
       username: updateUsernameDto.username.toLowerCase(),
     });
     if (userByUsername && userByUsername.id !== user.id) {
-      throw new BadRequestException('Username already exists');
+      throw new BadRequestException('Le nom d\'utilisateur existe déjà');
     }
 
     user.username = updateUsernameDto.username.toLowerCase();
@@ -161,7 +161,7 @@ export class UserService extends GenericService<User> {
 
     if (status === UserStatus.DELETED) {
       // u cant pass deleted on update status (only done automaticly on delete action)
-      throw new BadRequestException('User cannot be deleted');
+      throw new BadRequestException('L\'utilisateur ne peut pas être supprimé');
     }
 
     user.status = status;
@@ -186,7 +186,7 @@ export class UserService extends GenericService<User> {
    */
   async updateUser(id: number, userToUpdate: UpdateUserDto, @Req() request: Request) {
     if (Object.keys(userToUpdate).length === 0) {
-      throw new BadRequestException('No update fields provided');
+      throw new BadRequestException('Aucun champ à mettre à jour');
     }
     // Find user by ID with roles relation
     const user = await this.findOneByIdWithOptions(id, { relations: ['roles'] });
@@ -238,15 +238,15 @@ export class UserService extends GenericService<User> {
     console.log(user)
 
     if (oldPassword === newPassword) {
-      throw new BadRequestException('New password is the same as the old password');
+      throw new BadRequestException('Le nouveau mot de passe est le même que l\'ancien mot de passe');
     }
 
     if (newPassword !== confirmPassword) {
-      throw new BadRequestException('New password and confirm password do not match');
+      throw new BadRequestException('Le nouveau mot de passe et le mot de passe de confirmation ne correspondent pas');
     }
 
     if (!(await verify(user.password, oldPassword))) {
-      throw new BadRequestException('Old password is incorrect');
+      throw new BadRequestException('L\'ancien mot de passe est incorrect');
     }
 
     user.password = await hash(newPassword);

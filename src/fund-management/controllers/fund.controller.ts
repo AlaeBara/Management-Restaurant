@@ -74,7 +74,7 @@ export class FundController {
     @ApiOperation({ summary: 'Create a fund' })
     async create(@Body() createFundDto: CreateFundDto) {
         await this.fundService.createFund(createFundDto);
-        return { message: 'Your fund has been CREATED successfully', status: 201 };
+        return { message: 'Super! Votre caisse a été créée avec succès', status: 201 };
     }
 
     @Put(':id')
@@ -85,7 +85,7 @@ export class FundController {
         @Body() updateFundDto: UpdateFundDto,
     ) {
         await this.fundService.updateFund(id, updateFundDto);
-        return { message: 'Great! Your fund has been UPDATED successfully', status: 200 };
+        return { message: 'Super! Votre caisse a été modifiée avec succès', status: 200 };
     }
 
     @Delete(':id')
@@ -93,7 +93,7 @@ export class FundController {
     @ApiOperation({ summary: 'Delete a fund' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.fundService.deleteFund(id);
-        return { message: 'Your fund has been DELETED successfully', status: 200 };
+        return { message: 'Super! Votre caisse a été supprimée avec succès', status: 200 };
     }
 
     @Patch(':id/restore')
@@ -102,7 +102,7 @@ export class FundController {
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.fundService.findOneByIdWithOptions(id, { onlyDeleted: true });
         await this.fundService.restoreByUUID(id, true, ['sku']);
-        return { message: 'Your fund has been RESTORED successfully', status: 200 };
+        return { message: 'Super! Votre caisse a été restaurée avec succès', status: 200 };
     }
 
     @Get(':id/operations')

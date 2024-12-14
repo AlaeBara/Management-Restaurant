@@ -36,7 +36,7 @@ export default class UserProfileController {
     @Body() updateUsernameDto: UpdateUsernameDto,
   ) {
     await this.userService.updateUsername(id, updateUsernameDto);
-    return { message: 'Username updated successfully', status: 200 };
+    return { message: 'Le nom d\'utilisateur a été mis à jour avec succès', status: 200 };
   }
 
   @Patch('username')
@@ -49,7 +49,7 @@ export default class UserProfileController {
     const reqUser = request['user'];
     // Update the username for the authenticated user
     await this.userService.updateUsername(reqUser.sub, updateUsernameDto);
-    return { message: 'Username updated successfully', status: 200 };
+    return { message: 'Le nom d\'utilisateur a été mis à jour avec succès', status: 200 };
   }
 
   @Get()

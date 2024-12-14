@@ -28,14 +28,16 @@ export class ShiftZoneController {
     @Permissions('start-shift-by-waiter')
     @ApiOperation({ summary: 'Start a shift for a waiter' })
     async startShiftByWaiter(@Body() startShiftDTO: StartShiftDTO, @Req() request: Request) {
-        return this.shiftZoneService.startShiftByWaiter(startShiftDTO, request);
+        await this.shiftZoneService.startShiftByWaiter(startShiftDTO, request);
+        return { message: 'Super! Votre début de service a été enregistré avec succès', status: 200 };
     }
 
     @Post('end-shift-by-waiter')
     @Permissions('end-shift-by-waiter')
     @ApiOperation({ summary: 'End a shift for a waiter' })
     async endShiftByWaiter(@Body() endShiftDTO: EndShiftDTO, @Req() request: Request) {
-        return this.shiftZoneService.endShiftByWaiter(endShiftDTO, request);
+        await this.shiftZoneService.endShiftByWaiter(endShiftDTO, request);
+        return { message: 'Super! Votre fin de service a été enregistrée avec succès', status: 200 };
     }
 
     @Post('reassignment-shift-request-by-waiter')
@@ -45,7 +47,8 @@ export class ShiftZoneController {
         @Body() reassignmentShiftDTO: ReassignmentShiftDTO,
         @Req() request: Request
     ) {
-        return this.shiftZoneService.requestReassignmentShift(reassignmentShiftDTO, request);
+        await this.shiftZoneService.requestReassignmentShift(reassignmentShiftDTO, request);
+        return { message: 'Super! Votre demande de reaffectation de service a été enregistrée avec succès', status: 200 };
     }
 
     @Post('response-reassignment-shift-request-by-waiter-or-responsable')
@@ -55,7 +58,8 @@ export class ShiftZoneController {
         @Body() responseReassignmentRequestDTO: ResponseReassignmentRequestDTO,
         @Req() request: Request
     ) {
-        return this.shiftZoneService.repondReassignmentRequest(responseReassignmentRequestDTO, request);
+        await this.shiftZoneService.repondReassignmentRequest(responseReassignmentRequestDTO, request);
+        return { message: 'Super! Votre réponse à la demande de reaffectation de service a été enregistrée avec succès', status: 200 };
     }
 
 }

@@ -56,7 +56,7 @@ export class FundOperationController {
     @ApiOperation({ summary: 'Create a fund operation' })
     async create(@Body() createFundOperationDto: CreateFundOperationDto, @Req() req: Request) {
         await this.fundOperationService.createOperation(createFundOperationDto, req);
-        return { message: 'Your fund operation has been CREATED successfully', status: 201 };
+        return { message: 'Super! Votre opération de caisse a été créée avec succès', status: 201 };
     }
 
     @Post('expense')
@@ -64,7 +64,7 @@ export class FundOperationController {
     @ApiOperation({ summary: 'Create a expense' })
     async createExpense(@Body() createExpenseDto: CreateExpenseDto, @Req() req: Request) {
         await this.fundOperationService.createExpense(createExpenseDto, req);
-        return { message: 'Your expense has been CREATED successfully', status: 201 };
+        return { message: 'Super! Votre dépense a été créée avec succès', status: 201 };
     }
 
     @Patch(':id/approve')
@@ -72,7 +72,7 @@ export class FundOperationController {
     @ApiOperation({ summary: 'Approve a fund operation' })
     async approveOperation(@Param('id') id: string, @Req() req: Request) {
         await this.fundOperationService.approveOperation(id, req);
-        return { message: 'Your operation has been APPROVED successfully', status: 200 };
+        return { message: 'Super! Votre opération de caisse a été approuvée avec succès', status: 200 };
     }
 
     @Patch('transfer/:id/approve')
@@ -80,7 +80,7 @@ export class FundOperationController {
     @ApiOperation({ summary: 'Approve a transfer fund operation' })
     async approveTransferOperation(@Param('id') id: string, @Req() req: Request) {
         await this.fundOperationService.approveTransferOperation(id, req);
-        return { message: 'Your transfer operation has been APPROVED successfully', status: 200 };
+        return { message: 'Super! Votre opération de transfert de caisse a été approuvée avec succès', status: 200 };
     }
 
     @Post('transfer/create')
@@ -88,7 +88,7 @@ export class FundOperationController {
     @ApiOperation({ summary: 'Create a transfer fund operation' })
     async createTransferOperation(@Body() operationDto: CreateTransferOperationDto, @Req() req: Request) {
         await this.fundOperationService.trasfertOperation(operationDto, req);
-        return { message: 'Your transfer operation has been CREATED successfully', status: 200 };
+        return { message: 'Super! Votre opération de transfert de caisse a été créée avec succès', status: 200 };
     }
 
     @Delete(':id')
@@ -96,6 +96,6 @@ export class FundOperationController {
     @ApiOperation({ summary: 'Delete a fund operation' })
     async deleteOperation(@Param('id') id: string) {
         await this.fundOperationService.deleteOperation(id);
-        return { message: 'Your operation has been DELETED successfully', status: 200 };
+        return { message: 'Super! Votre opération de caisse a été supprimée avec succès', status: 200 };
     }
 }

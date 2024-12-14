@@ -79,7 +79,7 @@ export class InvetoryMovementController {
     @ApiOperation({ summary: 'Create a inventory movement' })
     async create(@Body() createInventoryMovementDto: CreateInventoryMovementDto, @Req() request: Request) {
         await this.inventoryMovementService.createInvenotryMovement(createInventoryMovementDto, request);
-        return { message: 'Great! new inventory Movement has been created successfully', status: 201 };
+        return { message: 'Super! Votre déplacement de stock a été créé avec succès', status: 201 };
     }
 
     @Post('transfer')
@@ -87,6 +87,6 @@ export class InvetoryMovementController {
     @ApiOperation({ summary: 'Create Transfer inventory movement' })
     async createTransfer(@Body() createInvenotryTransfer: CreateInvenotryTransfer, @Req() request: Request) {
         await this.inventoryMovementService.createTransfer(createInvenotryTransfer, request);
-        return { message: 'Great! new Transfert has been created successfully', status: 201 };
+        return { message: 'Super! Votre transfert de stock a été créé avec succès', status: 201 };
     }
 }

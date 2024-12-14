@@ -63,7 +63,7 @@ export class PurchaseController {
     @ApiOperation({ summary: 'Create a new purchase' })
     async create(@Body() createPurchaseDto: CreatePurchaseDto, @Req() request: Request) {
         await this.purchaseService.createPurchase(createPurchaseDto, request);
-        return { message: 'Commande d\'achat créée avec succès', status: 201 };
+        return { message: 'Super! Votre commande d\'achat a été créée avec succès', status: 201 };
     }
 
     @Delete('/items/:id')
@@ -71,7 +71,7 @@ export class PurchaseController {
     @ApiOperation({ summary: 'Delete a purchase item' })
     async deleteItem(@Param('id', ParseUUIDPipe) id: string) {
         await this.purchaseService.deleteItem(id);
-        return { message: 'Ligne de commande d\'achat supprimée avec succès', status: 200 };
+        return { message: 'Super! Votre ligne de commande d\'achat a été supprimée avec succès', status: 200 };
     }
 
     @Post('/items/:id/execute-movement')
@@ -79,7 +79,7 @@ export class PurchaseController {
     @ApiOperation({ summary: 'Execute a purchase movement' })
     async executeMovement(@Param('id', ParseUUIDPipe) id: string, @Body() executePurchaseMovementDto: ExecutePurchaseMovementDto, @Req() request: Request) {
         await this.purchaseService.executePurchaseMovement(executePurchaseMovementDto, request);
-        return { message: 'Déplacement de la ligne de commande d\'achat effectué avec succès', status: 200 };
+        return { message: 'Super! Votre déplacement de ligne de commande d\'achat a été effectué avec succès', status: 200 };
     }
 
     @Post('/items/:id')
@@ -87,6 +87,6 @@ export class PurchaseController {
     @ApiOperation({ summary: 'Create a new purchase item' })
     async createItem(@Param('id', ParseUUIDPipe) id: string, @Body() createPurchaseItemDto: CreatePurchaseItemDto) {
         await this.purchaseService.addItem(createPurchaseItemDto, id);
-        return { message: 'Ligne de commande d\'achat créée avec succès', status: 201 };
+        return { message: 'Super! Votre ligne de commande d\'achat a été créée avec succès', status: 201 };
     }
 }

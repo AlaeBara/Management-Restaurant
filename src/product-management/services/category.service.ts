@@ -49,18 +49,18 @@ export class CategoryService extends GenericService<Category> {
     async validateAssignParentCategory(category: Category, parentCategory: Category) {
 
         if (!category) {
-            throw new NotFoundException('Category not found');
+            throw new NotFoundException('Catégorie non trouvée');
         }
         if (!parentCategory) {
-            throw new NotFoundException('Parent category not found');
+            throw new NotFoundException('Catégorie parente non trouvée');
         }
 
         if (parentCategory.id === category.id) {
-            throw new BadRequestException('A category cannot be its own parent');
+            throw new BadRequestException('Une catégorie ne peut être sa propre catégorie parente');
         }
 
         if (category.id === parentCategory.parentCategoryId) {
-            throw new BadRequestException('Circular reference detected - cannot create category loop');
+            throw new BadRequestException('Référence circulaire détectée - ne peut créer une boucle de catégorie');
         }
     }
 
@@ -122,7 +122,7 @@ export class CategoryService extends GenericService<Category> {
     async deleteCategory(id: string) {
         const category = await this.findOneByIdWithOptions(id);
         if (await this.countByAttribute({ parentCategoryId: id })) {
-            throw new BadRequestException('Category has subcategories and cannot be deleted');
+            throw new BadRequestException('La catégorie a des sous-catégories et ne peut être supprimée');
         }
         return await this.categoryRepository.softDelete(id);
     }

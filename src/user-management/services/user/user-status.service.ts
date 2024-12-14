@@ -33,13 +33,13 @@ export class UserStatusService extends GenericService<User> {
     const originalIsBlocked = user.isBlocked;
     try {
       if (user.status === UserStatus.DELETED) {
-        throw new BadRequestException('User is already deleted');
+        throw new BadRequestException('L\'utilisateur est déjà supprimé');
       }
       if (user.roles.some((role) => role.name === 'superadmin')) {
-        throw new BadRequestException('Super admin cannot be deleted');
+        throw new BadRequestException('Le super administrateur ne peut pas être supprimé');
       }
       if (await this.checkSelf(user, request)) {
-        throw new BadRequestException('You cannot do this action to self-account');
+        throw new BadRequestException('Vous ne pouvez pas effectuer cette action sur votre propre compte');
       }
       const updateResult = await this.userRepository.update(user.id, {
         status: UserStatus.DELETED,
@@ -47,19 +47,19 @@ export class UserStatusService extends GenericService<User> {
       });
 
       if (!updateResult.affected) {
-        throw new BadRequestException('Update failed');
+        throw new BadRequestException('La mise à jour a échoué');
       }
 
       return await this.softDelete(user.id);
     } catch (error) {
-      if (error.message !== 'User is already deleted' &&
-        error.message !== 'Super admin cannot be deleted') {
+      if (error.message !== 'L\'utilisateur est déjà supprimé' &&
+        error.message !== 'Le super administrateur ne peut pas être supprimé') {
         await this.userRepository.update(user.id, {
           status: originalStatus,
           isBlocked: originalIsBlocked
         });
       }
-      throw new ConflictException('Problem while deleting user:' + error.message);
+      throw new ConflictException('Problème lors de la suppression de l\'utilisateur:' + error.message);
     }
   }
 
@@ -69,25 +69,25 @@ export class UserStatusService extends GenericService<User> {
 
       let updateResult = await this.update(id, { status: UserStatus.ACTIVE, isBlocked: false });
       if (!updateResult.affected) {
-        throw new ConflictException('Problem while restoring user');
+        throw new ConflictException('Problème lors de la restauration de l\'utilisateur');
       }
 
       return await this.restoreByUUID(id, true, ['username', 'email', 'phone']);
     } catch (error) {
       await this.update(id, { status: UserStatus.DELETED, isBlocked: true });
-      throw new ConflictException('Problem while restoring user: ' + error.message);
+      throw new ConflictException('Problème lors de la restauration de l\'utilisateur: ' + error.message);
     }
   }
 
   async markAs(user: User, status: UserStatus, @Req() request: Request) {
     if (user.status === status) {
-      throw new BadRequestException('User is already ' + status.valueOf());
+      throw new BadRequestException('L\'utilisateur est déjà ' + status.valueOf());
     }
     if (status === UserStatus.DELETED) {
-      throw new BadRequestException('User cannot be deleted');
+      throw new BadRequestException('L\'utilisateur ne peut pas être supprimé');
     }
     if (await this.checkSelf(user, request)) {
-      throw new BadRequestException('You cannot do this action to self-account');
+      throw new BadRequestException('Vous ne pouvez pas effectuer cette action sur votre propre compte');
     }
     user.status = status;
     if (!this.isBlocked(user)) {

@@ -61,7 +61,7 @@ export class EmailVerificationService {
 
     if (existingToken && existingToken.expiresAt > new Date()) {
       throw new ConflictException(
-        'A verification token has already been sent recently. Please check your email.',
+        'Un token de vérification a déjà été envoyé récemment. Veuillez vérifier votre email.',
       );
     }
 
@@ -71,18 +71,18 @@ export class EmailVerificationService {
   async sendVerificationEmail(email: string, forceResend?: boolean) {
     const user = await this.userService.findOrThrowByAttribute({ email });
     if (user.isEmailVerified) {
-      throw new ConflictException('Email is already verified.');
+      throw new ConflictException('Email déjà vérifié.');
     }
     const { token } = await this.generateVerificationToken(user.id);
 
     const verificationLink = `${process.env.VERIFICATION_EMAIL_URL}?token=${token}`;
-    const message = `Please click the following link to verify your email: ${verificationLink}`;
-    const tokenDuration = 900000; // 15 minutes in milliseconds
+    const message = `Veuillez cliquer sur le lien suivant pour vérifier votre email: ${verificationLink}`;
+    const tokenDuration = 900000; // 15 minutes en millisecondes
     await this.validateAndSendToken(token, user.id, tokenDuration, forceResend);
     await this.mailService.sendEmail(
       process.env.BASE_EMAIL,
       user.email,
-      'Restaurant Management System - Verify your email',
+      'Restaurant Management System - Vérifiez votre email',
       message,
     );
   }
@@ -93,10 +93,10 @@ export class EmailVerificationService {
       relations: ['user'],
     });
     if (!userActionToken) {
-      throw new NotFoundException('Token not found');
+      throw new NotFoundException('Token non trouvé');
     }
     if (userActionToken.expiresAt < new Date()) {
-      throw new ConflictException('Token expired');
+      throw new ConflictException('Token expiré');
     }
     return userActionToken;
   }

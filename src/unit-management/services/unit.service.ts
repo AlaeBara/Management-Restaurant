@@ -48,7 +48,7 @@ export class UnitService extends GenericService<Unit> {
       .getOne();
 
     if (existingUnit) {
-      throw new BadRequestException('Unit already exists');
+      throw new BadRequestException('L\'unité existe déjà');
     }
 
     return this.unitRepository.save(unit);
@@ -68,7 +68,7 @@ export class UnitService extends GenericService<Unit> {
     const isExistingUnit = await this.unitRepository.count({ where: { id } });
 
     if (isExistingUnit === 0) {
-      throw new NotFoundException('Unit not found');
+      throw new NotFoundException('L\'unité n\'existe pas');
     }
 
     const unit = this.unitRepository.create(updateUnitDto);
@@ -88,7 +88,7 @@ export class UnitService extends GenericService<Unit> {
     });
 
     if (existingUnit) {
-      throw new BadRequestException('Unit already exists');
+      throw new BadRequestException('L\'unité existe déjà');
     }
 
     return this.unitRepository.update(id, unit);

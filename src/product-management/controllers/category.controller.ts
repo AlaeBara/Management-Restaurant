@@ -72,7 +72,7 @@ export class CategoryController {
     @ApiOperation({ summary: 'Create a category' })
     async create(@Body() createCategoryDto: CreateCategoryDto) {
         await this.categoryService.createCategory(createCategoryDto);
-        return { message: 'Great! Category has been CREATED successfully', status: 201 };
+        return { message: 'Super! Votre catégorie a été créée avec succès', status: 201 };
     }
 
     @Put(':id')
@@ -80,7 +80,7 @@ export class CategoryController {
     @ApiOperation({ summary: 'Update a category' })
     async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
         await this.categoryService.updateCategory(id, updateCategoryDto);
-        return { message: 'Cool! Category has been UPDATED successfully', status: 200 };
+        return { message: 'Super! Votre catégorie a été modifiée avec succès', status: 200 };
     }
 
     @Delete(':id')
@@ -88,14 +88,14 @@ export class CategoryController {
     @ApiOperation({ summary: 'Delete a category' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.categoryService.deleteCategory(id);
-        return { message: 'Category has been DELETED successfully', status: 200 };
+        return { message: 'Super! Votre catégorie a été supprimée avec succès', status: 200 };
     }
     @Patch(':id/restore')
     @Permissions('restore-category')
     @ApiOperation({ summary: 'Restore a category' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.categoryService.restoreByUUID(id, true, ['categoryCode']);
-        return { message: 'Category has been RESTORED successfully', status: 200 };
+        return { message: 'Super! Votre catégorie a été restaurée avec succès', status: 200 };
     }
 
 }
