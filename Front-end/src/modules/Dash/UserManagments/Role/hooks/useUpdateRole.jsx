@@ -71,5 +71,5 @@ export function useUpdateRole(id, formData, setFormData, initialData, setInitial
     }
   }, [formData, initialData, id, setFormData, setInitialData]);
 
-  return { errors, updateRole,issLoading };
+  return { errors, updateRole, issLoading ,alert};
 }
