@@ -131,6 +131,7 @@ export class FundController {
             query,
             [
                 { fund: { id } },
+                { transferToFund: { id } }
             ],
         );
     }
