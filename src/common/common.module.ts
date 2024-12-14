@@ -1,4 +1,4 @@
-import { Global, Module } from '@nestjs/common';
+import { forwardRef, Global, Module } from '@nestjs/common';
 import { MailService } from './services/mail.service';
 import { MasterSeeder } from './seeders/master.seeder';
 import { UserManagementModule } from 'src/user-management/user-management.module';
@@ -11,11 +11,22 @@ import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { ProductManagementModule } from 'src/product-management/product.module';
 import { ShiftZoneModule } from 'src/shift-zone-management/shift-zone.module';
 import { FundModule } from 'src/fund-management/fund.module';
+import { PurchaseManagementModule } from 'src/purchase-management/purchase-management.module';
 
 @Global()
 @Module({
-  imports: [UserManagementModule, ZoneTableModule, ClientManagementModule,
-    UnitModule, SupplierModule, StorageModule, InventoryModule, ProductManagementModule, ShiftZoneModule, FundModule],
+  imports: [
+    forwardRef(() => UserManagementModule),
+    forwardRef(() => ZoneTableModule),
+    forwardRef(() => ClientManagementModule),
+    forwardRef(() => UnitModule),
+    forwardRef(() => SupplierModule),
+    forwardRef(() => StorageModule),
+    forwardRef(() => InventoryModule),
+    forwardRef(() => ProductManagementModule),
+    forwardRef(() => ShiftZoneModule),
+    forwardRef(() => FundModule),
+    forwardRef(() => PurchaseManagementModule)],
   controllers: [],
   providers: [MailService, MasterSeeder],
   exports: [MailService],

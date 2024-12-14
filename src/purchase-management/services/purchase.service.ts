@@ -147,6 +147,12 @@ export class PurchaseService extends GenericService<Purchase> {
             return this.purchaseRepository.save(purchase);
         }
     }
+
+    async deletePurchase(purchaseId: string) {
+        const purchase = await this.findOrThrowByUUID(purchaseId);
+        if (purchase.status !== PurchaseStatus.CREATED) throw new BadRequestException('La commande n\'est est deja en traitement');
+        await this.purchaseRepository.remove(purchase);
+    }
 }
 
 

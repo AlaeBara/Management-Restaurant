@@ -54,6 +54,9 @@ export class Purchase extends BaseEntity {
     })
     purchaseItems: PurchaseItem[];
 
+    @Column({ nullable: true })
+    note: string;
+
     @ManyToOne(() => User)
     @JoinColumn()
     createdBy: User;

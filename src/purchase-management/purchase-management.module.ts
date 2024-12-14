@@ -10,6 +10,7 @@ import { UserManagementModule } from 'src/user-management/user-management.module
 import { ProductManagementModule } from 'src/product-management/product.module';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { PurchaseItemService } from './services/purchase-item.service';
+import { PurchasePermissionSeeder } from './seeders/purchase.seeder';
 
 
 @Module({
@@ -20,7 +21,8 @@ import { PurchaseItemService } from './services/purchase-item.service';
   forwardRef(() => ProductManagementModule),
   forwardRef(() => InventoryModule)],
   controllers: [PurchaseController],
-  providers: [PurchaseService, PurchaseItemService],
-  exports: [PurchaseService, PurchaseItemService],
+  providers: [PurchaseService, PurchaseItemService, PurchasePermissionSeeder],
+  exports: [PurchaseService, PurchaseItemService, PurchasePermissionSeeder],
 })
 export class PurchaseManagementModule { }
+

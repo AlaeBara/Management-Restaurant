@@ -47,4 +47,9 @@ export class CreatePurchaseDto {
     @IsNotEmpty()
     @ApiProperty({ description: 'The items of the purchase', example: '100', required: true })
     items: CreatePurchaseItemDto[];
+
+    @IsString()
+    @IsOptional()
+    @ApiProperty({ description: 'The note of the purchase', example: '100', required: false })
+    note: string;
 }

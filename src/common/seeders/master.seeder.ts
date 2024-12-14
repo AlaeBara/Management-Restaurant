@@ -18,6 +18,7 @@ import { ProductPermissionSeeder } from 'src/product-management/seeders/product-
 import { ShiftZonePermissionSeeder } from 'src/shift-zone-management/seeders/shift.permission';
 import { FundPermissionSeeder } from 'src/fund-management/seeders/fund.seeder';
 import { OperationsPermissionSeeder } from 'src/fund-management/seeders/operation.seeder';
+import { PurchasePermissionSeeder } from 'src/purchase-management/seeders/purchase.seeder';
 
 @Injectable()
 export class MasterSeeder {
@@ -40,6 +41,7 @@ export class MasterSeeder {
         private readonly shiftZonePermissionSeeder: ShiftZonePermissionSeeder,
         private readonly fundPermissionSeeder: FundPermissionSeeder,
         private readonly operationsPermissionSeeder: OperationsPermissionSeeder,
+        private readonly purchasePermissionSeeder: PurchasePermissionSeeder,
 
     ) { }
 
@@ -62,6 +64,7 @@ export class MasterSeeder {
         await this.shiftZonePermissionSeeder.seed();
         await this.fundPermissionSeeder.seed();
         await this.operationsPermissionSeeder.seed();
+        await this.purchasePermissionSeeder.seed();
 
         console.log('All seeders executed');
     }

@@ -13,6 +13,16 @@ import { CreatePurchaseItemDto } from "../dtos/create-purchase-item.dto";
 export class PurchaseController {
     constructor(private readonly purchaseService: PurchaseService) { }
 
+    /* private readonly purchasePermissions = [
+        { name: 'view-purchases', label: 'Voir toutes les commandes d\'achat', resource: 'Achat' },
+        { name: 'view-purchase', label: 'Voir une commande d\'achat spécifique', resource: 'Achat' },
+        { name: 'create-purchase', label: 'Créer une nouvelle commande d\'achat', resource: 'Achat' },
+        { name: 'delete-purchase', label: 'Supprimer une commande d\'achat', resource: 'Achat' },
+        { name: 'create-purchase-item', label: 'Créer une ligne de commande d\'achat', resource: 'Achat' },
+        { name: 'delete-purchase-item', label: 'Supprimer une ligne de commande d\'achat', resource: 'Achat' },
+        { name: 'execute-purchase-movement', label: 'Exécuter un déplacement de ligne de commande d\'achat', resource: 'Achat' }
+    ]; */
+
     @Get()
     @Permissions('view-purchases')
     @ApiOperation({ summary: 'Get all purchases' })
@@ -88,5 +98,13 @@ export class PurchaseController {
     async createItem(@Param('id', ParseUUIDPipe) id: string, @Body() createPurchaseItemDto: CreatePurchaseItemDto) {
         await this.purchaseService.addItem(createPurchaseItemDto, id);
         return { message: 'Super! Votre ligne de commande d\'achat a été créée avec succès', status: 201 };
+    }
+
+    @Delete(':id')
+    @Permissions('delete-purchase')
+    @ApiOperation({ summary: 'Delete a purchase' })
+    async delete(@Param('id', ParseUUIDPipe) id: string) {
+        await this.purchaseService.deletePurchase(id);
+        return { message: 'Super! Votre commande d\'achat a été supprimée avec succès', status: 200 };
     }
 }
