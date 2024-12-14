@@ -1,5 +1,5 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
-import { BeforeInsert, BeforeUpdate, Index, JoinColumn, ManyToOne } from 'typeorm';
+import { AfterUpdate, BeforeInsert, BeforeUpdate, Index, JoinColumn, ManyToOne, RelationId } from 'typeorm';
 import { Column, Entity } from 'typeorm';
 import { Purchase } from './purchase.entity';
 import { Product } from 'src/product-management/entities/product.entity';
@@ -14,9 +14,11 @@ export class PurchaseItem extends BaseEntity {
     @JoinColumn()
     product: Product;
 
-    @ManyToOne(() => Purchase, { eager: true })
-    @JoinColumn()
+    @ManyToOne(() => Purchase, purchase => purchase.purchaseItems, { onDelete: 'CASCADE' })
     purchase: Purchase;
+
+    @RelationId((purchaseItem: PurchaseItem) => purchaseItem.purchase)
+    purchaseId: string;
 
     @ManyToOne(() => Inventory, { eager: true })
     @JoinColumn()
@@ -24,6 +26,9 @@ export class PurchaseItem extends BaseEntity {
 
     @Column({ type: "decimal", precision: 10, scale: 2 })
     quantity: number;
+
+    @Column({ type: "decimal", precision: 10, scale: 2 })
+    unitPrice: number;
 
     @Column({ type: "decimal", precision: 10, scale: 2 })
     totalAmount: number;
@@ -46,14 +51,14 @@ export class PurchaseItem extends BaseEntity {
     }
 
     @BeforeUpdate()
-    performeStatus() {
-        if (this.quantityMoved + this.quantityReturned == this.quantity) {
+    updateStatus() {
+        const processedQuantity = Number(this.quantityMoved) + Number(this.quantityReturned);
+        if (processedQuantity === Number(this.quantity)) {
             this.status = PurchaseItemStatus.COMPLETED;
-        }
-
-        if (this.quantity > (this.quantityMoved + this.quantityReturned) && (this.quantityMoved + this.quantityReturned) > 0) {
+        } else if (processedQuantity > 0 && processedQuantity < Number(this.quantity)) {
             this.status = PurchaseItemStatus.PARTIAL;
+        } else {
+            this.status = PurchaseItemStatus.PENDING;
         }
-
     }
 }

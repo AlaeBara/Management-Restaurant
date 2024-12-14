@@ -5,6 +5,8 @@ import { CreateDateColumn, Index, JoinColumn, ManyToOne, OneToMany, RelationId }
 import { Column, Entity } from 'typeorm';
 import { PurchaseItem } from './purchase-item.entity';
 import { PurchaseStatusHistory } from './purchase-status-history';
+import { PurchaseStatus } from '../enums/purchase-status.enum';
+import { Fund } from 'src/fund-management/entities/fund.entity';
 
 @Entity(process.env.DATASET_PREFIX + 'purchases')
 @Index(['id', 'supplier', 'ownerReferenece', 'supplierReference'])
@@ -13,11 +15,24 @@ export class Purchase extends BaseEntity {
     @JoinColumn()
     supplier: Supplier;
 
-    @Column()
-    movementAction: string;
+    @RelationId((Purchase: Purchase) => Purchase.supplier)
+    supplierId: string;
+
+    /* @Column()
+    movementAction: string; */
+
+    @Column({ enum: PurchaseStatus, default: PurchaseStatus.CREATED })
+    status: PurchaseStatus;
 
     @CreateDateColumn({ type: 'timestamp', default: new Date() })
     purchaseDate: Date;
+
+    @ManyToOne(() => Fund, { eager: true })
+    @JoinColumn()
+    sourcePayment: Fund;
+
+    @RelationId((Purchase: Purchase) => Purchase.sourcePayment)
+    sourcePaymentId: string;
 
     @Column({ nullable: true })
     ownerReferenece: string
@@ -27,6 +42,9 @@ export class Purchase extends BaseEntity {
 
     @Column({ type: "decimal", precision: 10, scale: 2 })
     totalAmountHT: number
+  
+    @Column({ type: "decimal", precision: 10, scale: 2 })
+    taxPercentage: number
 
     @Column({ type: "decimal", precision: 10, scale: 2 })
     totalAmountTTC: number
@@ -34,13 +52,16 @@ export class Purchase extends BaseEntity {
     @OneToMany(() => PurchaseStatusHistory, (purchaseStatusHistory) => purchaseStatusHistory.purchase)
     purchaseStatusHistory: PurchaseStatusHistory[];
 
-    @OneToMany(() => PurchaseItem, (purchaseItem) => purchaseItem.purchase)
-    purchaseItem: PurchaseItem[];
+    @OneToMany(() => PurchaseItem, purchaseItem => purchaseItem.purchase, {
+        cascade: true,
+        eager: true
+    })
+    purchaseItems: PurchaseItem[];
 
     @ManyToOne(() => User)
     @JoinColumn()
     createdBy: User;
 
-    /* @RelationId((createdBy: User) => createdBy.id)
-    createdById: string; */
+    @RelationId((Purchase: Purchase) => Purchase.createdBy)
+    createdById: string;
 }

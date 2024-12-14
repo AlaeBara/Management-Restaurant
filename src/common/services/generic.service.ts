@@ -191,7 +191,7 @@ export class GenericService<T> {
     if (findOrThrow) {
       if (!entity) {
         throw new NotFoundException(
-          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
         );
       }
     }
@@ -247,7 +247,7 @@ export class GenericService<T> {
     if (findOrThrow) {
       if (!entity) {
         throw new NotFoundException(
-          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
         );
       }
     }
@@ -281,20 +281,20 @@ export class GenericService<T> {
     // Handle deleted records filtering
     if (entity && !withDeleted && !onlyDeleted && entity['deletedAt']) {
       throw new NotFoundException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
       );
     }
 
     if (entity && onlyDeleted && !entity['deletedAt']) {
       throw new NotFoundException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
       );
     }
 
     if (findOrThrow) {
       if (!entity) {
         throw new NotFoundException(
-          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
         );
       }
     }
@@ -339,7 +339,7 @@ export class GenericService<T> {
 
       if (entity > 0) {
         throw new ConflictException(
-          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} with ${key} "${value}" already exists`
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} avec ${key} "${value}" existe deja`
         );
       }
     }
@@ -358,7 +358,7 @@ export class GenericService<T> {
     });
     if (!entity) {
       throw new NotFoundException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
       );
     }
     return entity;
@@ -379,7 +379,7 @@ export class GenericService<T> {
 
     if (!entity) {
       throw new NotFoundException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
       );
     }
     return entity;
@@ -458,7 +458,7 @@ export class GenericService<T> {
 
     if (entity && entity.deletedAt === null) {
       throw new ConflictException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} is not deleted`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} n'est pas supprimé`,
       );
     }
 
@@ -488,15 +488,13 @@ export class GenericService<T> {
           withDeleted: false,
         })) as any;
 
-        console.log('existingEntity', existingEntity);
-
         if (existingEntity && existingEntity.id === entity.id) {
           throw new ConflictException(
-            `This ${this.name} is not deleted and cannot be restored`,
+            `Ce ${this.name} n'est pas supprimé et ne peut etre restauré`,
           );
         } else if (existingEntity) {
           throw new ConflictException(
-            `Active ${this.name} with the same unique attributes already exists`,
+            `Un ${this.name} avec les mêmes attributs uniques existe deja`,
           );
         }
       }
@@ -541,7 +539,7 @@ export class GenericService<T> {
     });
     if (!entity) {
       throw new NotFoundException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
       );
     }
     return entity;
@@ -559,7 +557,7 @@ export class GenericService<T> {
     });
     if (!entity) {
       throw new NotFoundException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} not found`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} introuvable`,
       );
     }
     return entity;
@@ -577,7 +575,7 @@ export class GenericService<T> {
     });
     if (entity) {
       throw new ConflictException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} already exists`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} existe deja`,
       );
     }
   }
@@ -594,7 +592,7 @@ export class GenericService<T> {
     });
     if (entity) {
       throw new ConflictException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} already exists`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} existe deja`,
       );
     }
   }
@@ -614,7 +612,7 @@ export class GenericService<T> {
     });
     if (entity) {
       throw new ConflictException(
-        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} already exists`,
+        `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} existe deja`,
       );
     }
   }

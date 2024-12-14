@@ -9,6 +9,6 @@ import { SupplierPermissionsSeeder } from './seeders/supplier-permissions.seeder
   imports: [TypeOrmModule.forFeature([Supplier])],
   controllers: [SupplierController],
   providers: [SupplierService, SupplierPermissionsSeeder],
-  exports: [SupplierPermissionsSeeder],
+  exports: [SupplierService, SupplierPermissionsSeeder],
 })
-export class SupplierModule {}
+export class SupplierModule { }
