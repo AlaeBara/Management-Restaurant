@@ -5,6 +5,7 @@ import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { CreatePurchaseDto } from "../dtos/create-purchase.dto";
 import { ExecutePurchaseMovementDto } from "../dtos/execute-purchase-movement.dto";
 import { Purchase } from "../entities/purchase.entity";
+import { CreatePurchaseItemDto } from "../dtos/create-purchase-item.dto";
 
 @Controller('api/purchases')
 @ApiTags('Purchase Management - Purchases')
@@ -79,5 +80,13 @@ export class PurchaseController {
     async executeMovement(@Param('id', ParseUUIDPipe) id: string, @Body() executePurchaseMovementDto: ExecutePurchaseMovementDto, @Req() request: Request) {
         await this.purchaseService.executePurchaseMovement(executePurchaseMovementDto, request);
         return { message: 'Déplacement de la ligne de commande d\'achat effectué avec succès', status: 200 };
+    }
+
+    @Post('/items/:id')
+    @Permissions('create-purchase-item')
+    @ApiOperation({ summary: 'Create a new purchase item' })
+    async createItem(@Param('id', ParseUUIDPipe) id: string, @Body() createPurchaseItemDto: CreatePurchaseItemDto) {
+        await this.purchaseService.addItem(createPurchaseItemDto, id);
+        return { message: 'Ligne de commande d\'achat créée avec succès', status: 201 };
     }
 }

@@ -2,6 +2,7 @@ import { ConflictException, Injectable, NotFoundException, UnauthorizedException
 import { InjectDataSource, InjectRepository } from '@nestjs/typeorm';
 import { GenericService } from 'src/common/services/generic.service';
 import { CreateRoleDto } from 'src/user-management/dto/role/create.dto';
+import { UpdateRoleDto } from 'src/user-management/dto/role/update.dto';
 import { Permission } from 'src/user-management/entities/permission.entity';
 import { Role } from 'src/user-management/entities/role.entity';
 import { User } from 'src/user-management/entities/user.entity';
@@ -27,7 +28,7 @@ export class RoleService extends GenericService<Role> {
       relations: ['permissions'],
     });
     if (!role) {
-      throw new NotFoundException('Role not found');
+      throw new NotFoundException('Rôle non trouvé');
     }
 
     const permissions = role.permissions.map((permission) => permission.name);
@@ -37,7 +38,7 @@ export class RoleService extends GenericService<Role> {
   async grantPermissionToRole(role: Role, permission: Permission) {
 
     if (permission.name === 'access-granted') {
-      throw new UnauthorizedException('Permission access-granted cannot be granted to a role');
+      throw new UnauthorizedException('La permission access-granted ne peut pas être attribuée à un rôle');
     }
 
     role.permissions.push(permission);
@@ -97,7 +98,17 @@ export class RoleService extends GenericService<Role> {
       .getCount();
   
     if (usersWithRole > 0) {
-      throw new ConflictException('Cannot delete role as it is assigned to active users');
+      throw new ConflictException('Le rôle ne peut pas être supprimé car il est attribué à des utilisateurs actifs');
     }
+  }
+
+  async updateRole(roleId: number, role: UpdateRoleDto) {
+    await this.toLowerCase(role);
+    if (role.name === 'superadmin') {
+      throw new UnauthorizedException('Le rôle superadmin ne peut pas être modifié');
+    }
+    await this.validateUniqueExcludingSelf({name: role.name}, roleId);
+    await this.findOrThrow(roleId);
+    return this.update(roleId, role);
   }
 }

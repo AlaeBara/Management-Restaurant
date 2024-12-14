@@ -17,6 +17,7 @@ import { InventoryMovementService } from "src/inventory-managemet/services/inven
 import { CreateInventoryMovementDto } from "src/inventory-managemet/dtos/inventory-movement/create-inventory-movement.dto";
 import { MovementType } from "src/inventory-managemet/enums/movement_type.enum";
 import { PurchaseStatus } from "../enums/purchase-status.enum";
+import { CreatePurchaseItemDto } from "../dtos/create-purchase-item.dto";
 
 export class PurchaseService extends GenericService<Purchase> {
 
@@ -45,7 +46,6 @@ export class PurchaseService extends GenericService<Purchase> {
     }
 
     async createPurchase(createPurchaseDto: CreatePurchaseDto, request: Request) {
-
         await this.validateUnique({
             supplierReference: createPurchaseDto.supplierReference,
             ownerReferenece: createPurchaseDto.ownerReferenece
@@ -74,9 +74,24 @@ export class PurchaseService extends GenericService<Purchase> {
 
     async deleteItem(purchaseItemId: string) {
         const purchaseItem = await this.purchaseItemService.findOrThrowByUUID(purchaseItemId);
+        const purchase = await this.findOrThrowByUUID(purchaseItem.purchaseId);
         if (purchaseItem.status !== PurchaseItemStatus.PENDING) throw new BadRequestException('La ligne de commande est déjà en traitement');
         await this.purchaseItemRepository.remove(purchaseItem);
         await this.recalculatePurchase(purchaseItem.purchaseId);
+        await this.updatePurchaseStatus(purchaseItem.purchaseId);
+    }
+
+    async addItem(createPurchaseItemDto: CreatePurchaseItemDto, purchaseId: string) {
+        const purchase = await this.findOrThrowByUUID(purchaseId);
+        purchase.purchaseItems.push(this.purchaseItemRepository.create({
+            ...createPurchaseItemDto,
+            purchase: purchase,
+            product: await this.productService.findOrThrowByUUID(createPurchaseItemDto.productId),
+            inventory: await this.inventoryService.findOrThrowByUUID(createPurchaseItemDto.inventoryId)
+        }));
+        await this.purchaseRepository.save(purchase);
+        await this.recalculatePurchase(purchaseId);
+        await this.updatePurchaseStatus(purchaseId);
     }
 
     async recalculatePurchase(purchaseId: string) {
@@ -113,17 +128,20 @@ export class PurchaseService extends GenericService<Purchase> {
         purchaseItem.quantityReturned = Number(purchaseItem.quantityReturned) + Number(executePurchaseMovementDto.quantityToReturn);
 
         await this.purchaseItemRepository.save(purchaseItem);
-        await this.updatePurchaseStatus(purchase);
+        await this.updatePurchaseStatus(purchase.id);
     }
 
-    async updatePurchaseStatus(purchase: Purchase) {
+    async updatePurchaseStatus(purchaseId: string) {
+        const purchase = await this.findOrThrowByUUID(purchaseId);
         const allCompleted = purchase.purchaseItems.every(item => item.status === PurchaseItemStatus.COMPLETED);
+        console.log('allCompleted', allCompleted);
         if (allCompleted) {
             purchase.status = PurchaseStatus.COMPLETED;
             return this.purchaseRepository.save(purchase);
         }
 
-        const hasPartial = purchase.purchaseItems.some(item => item.status === PurchaseItemStatus.PARTIAL);
+        const hasPartial = purchase.purchaseItems.some(item => [PurchaseItemStatus.PARTIAL, PurchaseItemStatus.PENDING].includes(item.status));
+        console.log('hasPartial', hasPartial);
         if (hasPartial) {
             purchase.status = PurchaseStatus.DELIVERING;
             return this.purchaseRepository.save(purchase);
