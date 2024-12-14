@@ -4,10 +4,8 @@ import { User } from 'src/user-management/entities/user.entity';
 import { BeforeUpdate, CreateDateColumn, Index, JoinColumn, ManyToOne, OneToMany, RelationId } from 'typeorm';
 import { Column, Entity } from 'typeorm';
 import { PurchaseItem } from './purchase-item.entity';
-import { PurchaseStatusHistory } from './purchase-status-history';
 import { PurchaseStatus } from '../enums/purchase-status.enum';
 import { Fund } from 'src/fund-management/entities/fund.entity';
-import { PurchaseItemStatus } from '../enums/purchase-product-inventory-action-status.enum';
 
 @Entity(process.env.DATASET_PREFIX + 'purchases')
 @Index(['id', 'supplier', 'ownerReferenece', 'supplierReference'])
@@ -49,9 +47,6 @@ export class Purchase extends BaseEntity {
 
     @Column({ type: "decimal", precision: 10, scale: 2 })
     totalAmountTTC: number
-
-    @OneToMany(() => PurchaseStatusHistory, (purchaseStatusHistory) => purchaseStatusHistory.purchase)
-    purchaseStatusHistory: PurchaseStatusHistory[];
 
     @OneToMany(() => PurchaseItem, purchaseItem => purchaseItem.purchase, {
         cascade: true,
