@@ -79,7 +79,7 @@ export class SupplierController {
   @Permissions('update-supplier')
   @ApiOperation({ summary: 'Update a supplier' })
   async updateSupplier(@Param('id', ParseUUIDPipe) id: string, @Body() updateSupplierDto: UpdateSupplierDto) {
-    await this.supplierService.update(id, updateSupplierDto);
+    await this.supplierService.updateSupplier(id, updateSupplierDto);
     return { message: 'Super! Le fournisseur a été mis à jour avec succès', status: 200 };
   }
 

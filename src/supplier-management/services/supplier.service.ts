@@ -8,6 +8,7 @@ import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierStatus } from '../enums/status-supplier.enum';
 import { ConflictException } from '@nestjs/common';
 import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { UpdateSupplierDto } from '../dto/update-supplier.dto';
 export class SupplierService extends GenericService<Supplier> {
   constructor(
     @InjectDataSource() dataSource: DataSource,
@@ -26,6 +27,17 @@ export class SupplierService extends GenericService<Supplier> {
       iceNumber: createSupplierDto.iceNumber,
     });
     await this.supplierRepository.save(createSupplierDto);
+  }
+
+  async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto) {
+    await this.validateUniqueExcludingSelf({
+      name: updateSupplierDto.name,
+      phone: updateSupplierDto.phone,
+      email: updateSupplierDto.email,
+      rcNumber: updateSupplierDto.rcNumber,
+      iceNumber: updateSupplierDto.iceNumber,
+    }, id);
+    await this.supplierRepository.update(id, updateSupplierDto);
   }
 
   async deleteSupplier(id: string) {

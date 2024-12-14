@@ -303,22 +303,18 @@ export class GenericService<T> {
   }
 
   async validateUnique(attributes: Partial<T>) {
-    // Create an array of conditions for each attribute
-    const conditions = Object.entries(attributes).map(([key, value]) => ({
-      [key]: value,
-    }));
-
-    // Use count with OR conditions
-    const count = await this.repository.count({
-      where: conditions as any,
-      withDeleted: false,
-    });
-
-    if (count > 0) {
-      const conditionsNames = conditions.map(condition => Object.keys(condition)[0]);
-      throw new ConflictException(
-        `Un ${this.name} avec ${conditionsNames.map(name => `${name}`).join(' ou ')} existe deja`
-      );
+    // Check each attribute individually
+    for (const [key, value] of Object.entries(attributes)) {
+      const count = await this.repository.count({
+        where: { [key]: value } as any,
+        withDeleted: false,
+      });
+  
+      if (count > 0) {
+        throw new ConflictException(
+          `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} avec ${key} "${value}" existe deja`
+        );
+      }
     }
   }
 
