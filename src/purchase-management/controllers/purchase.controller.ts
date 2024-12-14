@@ -4,12 +4,58 @@ import { PurchaseService } from "../services/purchase.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { CreatePurchaseDto } from "../dtos/create-purchase.dto";
 import { ExecutePurchaseMovementDto } from "../dtos/execute-purchase-movement.dto";
+import { Purchase } from "../entities/purchase.entity";
 
 @Controller('api/purchases')
 @ApiTags('Purchase Management - Purchases')
 @ApiBearerAuth()
 export class PurchaseController {
     constructor(private readonly purchaseService: PurchaseService) { }
+
+    @Get()
+    @Permissions('view-purchases')
+    @ApiOperation({ summary: 'Get all purchases' })
+    async findAll(
+        @Query('page') page?: number,
+        @Query('limit') limit?: number,
+        @Query('relations') relations?: string[],
+        @Query('sort') sort?: string,
+        @Query('withDeleted') withDeleted?: boolean,
+        @Query('onlyDeleted') onlyDeleted?: boolean,
+        @Query('select') select?: string[],
+        @Query() query?: any,
+    ): Promise<{ data: Purchase[]; total: number; page: number; limit: number }> {
+        return this.purchaseService.findAll(
+            page,
+            limit,
+            relations,
+            sort,
+            withDeleted,
+            onlyDeleted,
+            select,
+            query,
+        );
+    }
+
+    @Get(':id')
+    @Permissions('view-purchase')
+    @ApiOperation({ summary: 'Get a purchase by id' })
+    async findOne(
+        @Param('id', ParseUUIDPipe) id: string,
+        @Query('withDeleted') withDeleted?: boolean,
+        @Query('relations') relations?: string[],
+        @Query('onlyDeleted') onlyDeleted?: boolean,
+        @Query('select') select?: string[],
+        @Query('findOrThrow') findOrThrow?: boolean,
+    ): Promise<Purchase> {
+        return this.purchaseService.findOneWithoutBuilder(id, {
+            relations,
+            select,
+            withDeleted,
+            onlyDeleted,
+            findOrThrow,
+        });
+    }
 
     @Post()
     @Permissions('create-purchase')
@@ -34,5 +80,4 @@ export class PurchaseController {
         await this.purchaseService.executePurchaseMovement(executePurchaseMovementDto, request);
         return { message: 'Déplacement de la ligne de commande d\'achat effectué avec succès', status: 200 };
     }
-
 }

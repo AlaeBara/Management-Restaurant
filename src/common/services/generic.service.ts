@@ -18,8 +18,8 @@ export class GenericService<T> {
   private repository: Repository<T>;
   private name: string;
   constructor(
-    @InjectDataSource() private dataSource: DataSource,
-    private entity: EntityTarget<T>,
+    @InjectDataSource() protected readonly dataSource: DataSource,
+    private readonly entity: EntityTarget<T>,
     modelName: string,
   ) {
     this.repository = this.dataSource.getRepository(this.entity);

@@ -5,6 +5,7 @@ import { Purchase } from './purchase.entity';
 import { Product } from 'src/product-management/entities/product.entity';
 import { Inventory } from 'src/inventory-managemet/entities/inventory.entity';
 import { PurchaseItemStatus } from '../enums/purchase-product-inventory-action-status.enum';
+import { PurchaseStatus } from '../enums/purchase-status.enum';
 
 
 @Entity(process.env.DATASET_PREFIX + 'purchase_items')

@@ -16,6 +16,7 @@ import { ExecutePurchaseMovementDto } from "../dtos/execute-purchase-movement.dt
 import { InventoryMovementService } from "src/inventory-managemet/services/inventory-movement.service";
 import { CreateInventoryMovementDto } from "src/inventory-managemet/dtos/inventory-movement/create-inventory-movement.dto";
 import { MovementType } from "src/inventory-managemet/enums/movement_type.enum";
+import { PurchaseStatus } from "../enums/purchase-status.enum";
 
 export class PurchaseService extends GenericService<Purchase> {
 
@@ -111,9 +112,23 @@ export class PurchaseService extends GenericService<Purchase> {
         purchaseItem.quantityInProgress = Number(purchaseItem.quantityInProgress) - Number(executePurchaseMovementDto.quantityToReturn);
         purchaseItem.quantityReturned = Number(purchaseItem.quantityReturned) + Number(executePurchaseMovementDto.quantityToReturn);
 
-        return this.purchaseItemRepository.save(purchaseItem);
+        await this.purchaseItemRepository.save(purchaseItem);
+        await this.updatePurchaseStatus(purchase);
     }
 
+    async updatePurchaseStatus(purchase: Purchase) {
+        const allCompleted = purchase.purchaseItems.every(item => item.status === PurchaseItemStatus.COMPLETED);
+        if (allCompleted) {
+            purchase.status = PurchaseStatus.COMPLETED;
+            return this.purchaseRepository.save(purchase);
+        }
+
+        const hasPartial = purchase.purchaseItems.some(item => item.status === PurchaseItemStatus.PARTIAL);
+        if (hasPartial) {
+            purchase.status = PurchaseStatus.DELIVERING;
+            return this.purchaseRepository.save(purchase);
+        }
+    }
 }
 
 
