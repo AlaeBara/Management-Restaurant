@@ -2,7 +2,7 @@ import { GenericService } from "src/common/services/generic.service";
 import { FundOperationEntity } from "../entities/fund-operation.entity";
 import { DataSource, Repository } from "typeorm";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, Inject, Injectable, NotFoundException, Req } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, Req } from "@nestjs/common";
 import { CreateFundOperationDto } from "../dtos/fund-operation/create-fund-operation.dto";
 import { FundService } from "./fund.service";
 import { FundOperation, FundOperationStatus, getOperationAction } from "../enums/fund-operation.enum";
@@ -98,7 +98,13 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
     }
 
     async validateBalance(fund: Fund, amount: number, operationAction: string): Promise<void> {
-        if (operationAction === 'decrease' && fund.balance - amount < 0) throw new BadRequestException('Insufficient balance');
+        // Convert values to numbers to ensure proper comparison
+        const balance = Number(fund.balance);
+        const operationAmount = Number(amount);
+
+        if (operationAction === 'decrease' && balance - operationAmount < 0) {
+            throw new BadRequestException('Solde insuffisant');
+        }
     }
 
     async adjustFundBalance(fund: Fund, amount: number, operationAction: string): Promise<void> {
@@ -115,7 +121,7 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         await this.fundService.fundRepository.save(fund);
     }
 
-    private async processOperation(operationData: CreateFundOperationDto | CreateExpenseDto, @Req() req: Request, operationType?: FundOperation): Promise<FundOperationEntity> {
+    async processOperation(operationData: CreateFundOperationDto | CreateExpenseDto, @Req() req: Request, operationType?: FundOperation): Promise<FundOperationEntity> {
         const fundOperation = this.fundOperationRepository.create(operationData);
         await this.validateOperation(fundOperation);
         await this.validateAmount(fundOperation.amount);

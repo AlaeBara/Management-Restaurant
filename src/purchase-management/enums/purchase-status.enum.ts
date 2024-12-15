@@ -1,7 +1,7 @@
 export enum PurchaseStatus {
-    CREATED = 'CREATED',
-    CONFIRMED = 'CONFIRMED',
-    DELIVERING = 'DELIVERING',
-    CANCELLED = 'CANCELLED',
-    COMPLETED = 'COMPLETED',
+    CREATED = 'created',
+    CONFIRMED = 'confirmed',
+    DELIVERING = 'delivering',
+    CANCELLED = 'cancelled',
+    COMPLETED = 'completed',
 }

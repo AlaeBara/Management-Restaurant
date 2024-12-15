@@ -32,6 +32,16 @@ export class CreatePurchaseDto {
     @ApiProperty({ description: 'The total amount HT of the purchase', example: '100', required: true })
     totalAmountHT: number;
 
+    @IsString()
+    @IsOptional()
+    @ApiProperty({ description: 'The discount type of the purchase', example: 'percentage', required: false })
+    discountType: "percentage" | "amount";
+
+    @IsNumber()
+    @IsOptional()
+    @ApiProperty({ description: 'The discount value of the purchase', example: '10', required: false })
+    discountValue: number;
+
     @IsNumber()
     @Min(0)
     @Max(100)

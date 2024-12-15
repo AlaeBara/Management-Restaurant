@@ -4,7 +4,7 @@ import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { PurchaseItem } from "../entities/purchase-item.entity";
 import { DataSource, Repository } from "typeorm";
 import { CreatePurchaseDto } from "../dtos/create-purchase.dto";
-import { BadRequestException, forwardRef, Inject, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable, NotFoundException } from "@nestjs/common";
 import { FundService } from "src/fund-management/services/fund.service";
 import { SupplierService } from "src/supplier-management/services/supplier.service";
 import { UserService } from "src/user-management/services/user/user.service";
@@ -18,7 +18,15 @@ import { CreateInventoryMovementDto } from "src/inventory-managemet/dtos/invento
 import { MovementType } from "src/inventory-managemet/enums/movement_type.enum";
 import { PurchaseStatus } from "../enums/purchase-status.enum";
 import { CreatePurchaseItemDto } from "../dtos/create-purchase-item.dto";
+import { PurchasePaiementService } from "./purchase-paiement.service";
+import { PurchaseLinePaiementStatus, PurchasePaiementStatus } from "../enums/purchase-paiement-status.enum";
+import { CreatePurchasePaiementDto } from "../dtos/create-purchase-paiement.dto";
+import { FundOperationService } from "src/fund-management/services/fund-operation.service";
+import { FundOperation, FundOperationStatus } from "src/fund-management/enums/fund-operation.enum";
+import { CreateFundOperationDto } from "src/fund-management/dtos/fund-operation/create-fund-operation.dto";
+import { PurchasePaiement } from "../entities/purchase-paiement.entity";
 
+@Injectable()
 export class PurchaseService extends GenericService<Purchase> {
 
     constructor(
@@ -29,6 +37,8 @@ export class PurchaseService extends GenericService<Purchase> {
         private readonly purchaseItemRepository: Repository<PurchaseItem>,
         @Inject(FundService)
         private readonly fundService: FundService,
+        @Inject(FundOperationService)
+        private readonly fundOperationService: FundOperationService,
         @Inject(SupplierService)
         private readonly supplierService: SupplierService,
         @Inject(UserService)
@@ -41,6 +51,8 @@ export class PurchaseService extends GenericService<Purchase> {
         private readonly purchaseItemService: PurchaseItemService,
         @Inject(InventoryMovementService)
         private readonly inventoryMovementService: InventoryMovementService,
+        @Inject(PurchasePaiementService)
+        private readonly purchasePaiementService: PurchasePaiementService,
     ) {
         super(dataSource, Purchase, 'Commande d\'achat');
     }
@@ -66,15 +78,26 @@ export class PurchaseService extends GenericService<Purchase> {
             sourcePayment: await this.fundService.findOrThrowByUUID(createPurchaseDto.sourcePaymentId),
             createdBy: await this.userService.findOrThrowByUUID(request['user'].sub),
             purchaseDate: new Date(createPurchaseDto.purchaseDate),
-            purchaseItems: purchaseItems
+            purchaseItems: purchaseItems,
+            totalRemainingAmount: createPurchaseDto.totalAmountTTC
         });
 
         return this.purchaseRepository.save(purchase);
     }
 
+    private async validatePurchasePaymentStatus(purchase: Purchase) {
+        if (purchase.paiementStatus === PurchasePaiementStatus.PAID) {
+            throw new BadRequestException('La commande est déjà payée');
+        }
+        if (purchase.paiementStatus === PurchasePaiementStatus.PARTIALLY_PAID) {
+            throw new BadRequestException('La commande est déjà partiellement payée');
+        }
+    }
+
     async deleteItem(purchaseItemId: string) {
         const purchaseItem = await this.purchaseItemService.findOrThrowByUUID(purchaseItemId);
         const purchase = await this.findOrThrowByUUID(purchaseItem.purchaseId);
+        await this.validatePurchasePaymentStatus(purchase);
         if (purchaseItem.status !== PurchaseItemStatus.PENDING) throw new BadRequestException('La ligne de commande est déjà en traitement');
         await this.purchaseItemRepository.remove(purchaseItem);
         await this.recalculatePurchase(purchaseItem.purchaseId);
@@ -83,6 +106,7 @@ export class PurchaseService extends GenericService<Purchase> {
 
     async addItem(createPurchaseItemDto: CreatePurchaseItemDto, purchaseId: string) {
         const purchase = await this.findOrThrowByUUID(purchaseId);
+        await this.validatePurchasePaymentStatus(purchase);
         purchase.purchaseItems.push(this.purchaseItemRepository.create({
             ...createPurchaseItemDto,
             purchase: purchase,
@@ -98,7 +122,16 @@ export class PurchaseService extends GenericService<Purchase> {
         const purchase = await this.findOrThrowByUUID(purchaseId);
         purchase.totalAmountHT = purchase.purchaseItems.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
         purchase.totalAmountTTC = purchase.totalAmountHT * (1 + purchase.taxPercentage / 100);
+        await this.applyDiscount(purchase);
         return this.purchaseRepository.save(purchase);
+    }
+
+    async applyDiscount(purchase: Purchase) {
+        if (purchase.discountType === 'percentage') {
+            purchase.totalAmountTTC = purchase.totalAmountTTC * (1 - purchase.discountValue / 100);
+        } else {
+            purchase.totalAmountTTC = purchase.totalAmountTTC - purchase.discountValue;
+        }
     }
 
     async executePurchaseMovement(executePurchaseMovementDto: ExecutePurchaseMovementDto, request: Request) {
@@ -129,6 +162,7 @@ export class PurchaseService extends GenericService<Purchase> {
 
         await this.purchaseItemRepository.save(purchaseItem);
         await this.updatePurchaseStatus(purchase.id);
+        await this.updatePurchasePaiementStatus(purchase.id);
     }
 
     async updatePurchaseStatus(purchaseId: string) {
@@ -145,6 +179,17 @@ export class PurchaseService extends GenericService<Purchase> {
         if (hasPartial) {
             purchase.status = PurchaseStatus.DELIVERING;
             return this.purchaseRepository.save(purchase);
+        }        
+    }
+
+    async updatePurchasePaiementStatus(purchaseId: string) {
+        const purchase = await this.findOrThrowByUUID(purchaseId);
+        console.log('purchase paiement', purchase.purchasePaiements);
+        const allPaid = purchase.purchasePaiements.every(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
+        console.log('allPaid', allPaid);
+        if (allPaid) {
+            purchase.paiementStatus = PurchasePaiementStatus.PAID;
+            return this.purchaseRepository.save(purchase);
         }
     }
 
@@ -153,6 +198,55 @@ export class PurchaseService extends GenericService<Purchase> {
         if (purchase.status !== PurchaseStatus.CREATED) throw new BadRequestException('La commande n\'est est deja en traitement');
         await this.purchaseRepository.remove(purchase);
     }
-}
 
+    async generatePaiement(createPurchasePaiementDto: CreatePurchasePaiementDto, purchaseId: string, request: Request) {
+        const purchase = await this.findOrThrowByUUID(purchaseId);
+        const purchasePaiement = await this.purchasePaiementService.purchasePaiementRepository.create({
+            purchase: purchase,
+            amount: createPurchasePaiementDto.amount,
+            status: createPurchasePaiementDto.status
+        });
+        if (createPurchasePaiementDto.status && createPurchasePaiementDto.status === PurchaseLinePaiementStatus.PAID) {
+            console.log('Purchase payment amount:', createPurchasePaiementDto.amount);
+            console.log('Purchase ', purchase);
+            console.log('Purchase remaining amount:', purchase.totalRemainingAmount);
+            
+            if(Number(createPurchasePaiementDto.amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
+
+            await this.executePaiement(purchasePaiement, request, createPurchasePaiementDto.amount, createPurchasePaiementDto.reference);
+            await this.updatePurchasePaiementStatus(purchaseId);
+        }
+        await this.purchasePaiementService.purchasePaiementRepository.save(purchasePaiement);
+    }
+
+    async confirmPaiement(purchasePaiementId: string, request: Request) {
+        const purchasePaiement = await this.purchasePaiementService.findOrThrowByUUID(purchasePaiementId);
+        const purchase = await this.findOrThrowByUUID(purchasePaiement.purchaseId);
+        if (purchasePaiement.status && purchasePaiement.status === PurchaseLinePaiementStatus.PAID) throw new BadRequestException('Le paiement est déjà effectué');
+        if(Number(purchasePaiement.amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
+        await this.executePaiement(purchasePaiement, request, purchasePaiement.amount, purchasePaiement.reference);
+        await this.updatePurchasePaiementStatus(purchase.id);
+    }
+
+    async executePaiement(purchasePaiement: PurchasePaiement, request: Request, amount: number, reference: string) {
+        const purchase = await this.findOrThrowByUUID(purchasePaiement.purchaseId);
+        const motif = 'Paiement de la commande d\'achat de référence ' + purchase.supplierReference + ' - notre référence :' + purchase.ownerReferenece;
+        const fundOperation: CreateFundOperationDto = {
+            fundId: purchase.sourcePayment.id,
+            amount: amount,
+            operationAction: 'decrease',
+            operationType: FundOperation.PAYMENT,
+            status: FundOperationStatus.APPROVED,
+            reference: reference || motif,
+            dateOperation: new Date(),
+            note: motif
+        }
+        await this.fundOperationService.createOperation(fundOperation, request);
+        purchase.totalPaidAmount = Number(purchase.totalPaidAmount) + Number(amount);
+        purchase.totalRemainingAmount = Number(purchase.totalAmountTTC) - Number(purchase.totalPaidAmount);
+        await this.purchaseRepository.save(purchase);
+        await this.updatePurchasePaiementStatus(purchase.id);
+    }
+
+}
 

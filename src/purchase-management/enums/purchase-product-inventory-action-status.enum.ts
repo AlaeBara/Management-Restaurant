@@ -1,13 +1,13 @@
 
 export enum PurchaseItemStatus {
     // Initial state when product is purchased but not yet in inventory
-    PENDING = 'PENDING',
+    PENDING = 'pending',
     // Product successfully added to inventory
-    COMPLETED = 'COMPLETED',
+    COMPLETED = 'completed',
     // Product could not be added to inventory due to issues
-    FAILED = 'FAILED',
+    FAILED = 'failed',
     // Product partially added to inventory
-    PARTIAL = 'PARTIAL',
+    PARTIAL = 'partial',
     // Product was returned or removed from inventory
-    CANCELLED = 'CANCELLED'
+    CANCELLED = 'cancelled'
 }

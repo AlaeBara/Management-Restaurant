@@ -6,6 +6,7 @@ import { CreatePurchaseDto } from "../dtos/create-purchase.dto";
 import { ExecutePurchaseMovementDto } from "../dtos/execute-purchase-movement.dto";
 import { Purchase } from "../entities/purchase.entity";
 import { CreatePurchaseItemDto } from "../dtos/create-purchase-item.dto";
+import { CreatePurchasePaiementDto } from "../dtos/create-purchase-paiement.dto";
 
 @Controller('api/purchases')
 @ApiTags('Purchase Management - Purchases')
@@ -106,5 +107,21 @@ export class PurchaseController {
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.purchaseService.deletePurchase(id);
         return { message: 'Super! Votre commande d\'achat a été supprimée avec succès', status: 200 };
+    }
+
+    @Post('/:id/paiements')
+    @Permissions('create-purchase-paiement')
+    @ApiOperation({ summary: 'Create a new purchase paiement' })
+    async generatePaiement(@Param('id', ParseUUIDPipe) id: string, @Body() createPurchasePaiementDto: CreatePurchasePaiementDto, @Req() request: Request) {
+        await this.purchaseService.generatePaiement(createPurchasePaiementDto, id, request);
+        return { message: 'Super! Votre paiement de commande d\'achat a été créé avec succès', status: 201 };
+    }
+
+    @Post('/paiements/:id/confirm')
+    @Permissions('confirm-purchase-paiement')
+    @ApiOperation({ summary: 'Confirm a purchase paiement' })
+    async confirmPaiement(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
+        await this.purchaseService.confirmPaiement(id, request);
+        return { message: 'Super! Votre paiement de commande d\'achat a été confirmé avec succès', status: 200 };
     }
 }

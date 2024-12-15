@@ -11,18 +11,20 @@ import { ProductManagementModule } from 'src/product-management/product.module';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { PurchaseItemService } from './services/purchase-item.service';
 import { PurchasePermissionSeeder } from './seeders/purchase.seeder';
+import { PurchasePaiement } from './entities/purchase-paiement.entity';
+import { PurchasePaiementService } from './services/purchase-paiement.service';
 
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Purchase, PurchaseItem]),
+  imports: [TypeOrmModule.forFeature([Purchase, PurchaseItem, PurchasePaiement]),
   forwardRef(() => SupplierModule),
   forwardRef(() => FundModule),
   forwardRef(() => UserManagementModule),
   forwardRef(() => ProductManagementModule),
   forwardRef(() => InventoryModule)],
   controllers: [PurchaseController],
-  providers: [PurchaseService, PurchaseItemService, PurchasePermissionSeeder],
-  exports: [PurchaseService, PurchaseItemService, PurchasePermissionSeeder],
+  providers: [PurchaseService, PurchaseItemService, PurchasePaiementService, PurchasePermissionSeeder],
+  exports: [PurchaseService, PurchaseItemService, PurchasePaiementService, PurchasePermissionSeeder],
 })
 export class PurchaseManagementModule { }
 
