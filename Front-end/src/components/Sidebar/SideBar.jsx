@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import style from './SideBar.module.css'
 import {
+  ShoppingCart,
   BadgeCheck,
   Bell,
   LandPlot,
@@ -222,6 +223,19 @@ const SideBar = () => {
             title: "Unités",
             icon: Boxes,
             url: "/dash/Units",
+            permissions: ["access-granted", "view-units"],
+          },
+        ],
+      },
+      {
+        title: "Achats",
+        icon:  ShoppingCart,
+        permissions: ["access-granted","view-units"],
+        items: [
+          {
+            title: "Achats",
+            icon:  ShoppingCart,
+            url: "/dash/ajoute-achat",
             permissions: ["access-granted", "view-units"],
           },
         ],
