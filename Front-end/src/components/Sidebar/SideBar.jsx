@@ -235,7 +235,7 @@ const SideBar = () => {
           {
             title: "Achats",
             icon:  ShoppingCart,
-            url: "/dash/ajoute-achat",
+            url: "/dash/achats",
             permissions: ["access-granted", "view-units"],
           },
         ],

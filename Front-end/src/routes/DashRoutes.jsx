@@ -71,7 +71,7 @@ const TransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/T
 const AddTransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/Components/AddTransfertOperation'))
 const AddMultiTable =  lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/AddMultiTable'))
 const AddAchat = lazy(()=> import('@/modules/Dash/Achats/Components/AddAchats'))
-
+const Achats = lazy(()=> import('@/modules/Dash/Achats/Achats'))
 
 
 const ClientRoutes = () => {
@@ -781,7 +781,19 @@ const ClientRoutes = () => {
           } 
         />
 
+
         <Route 
+          path="/achats" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Achats/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route
           path="/ajoute-achat" 
           element={
             <ProtectedRoute>
