@@ -49,7 +49,7 @@ const ProductItemSchema = z.object({
         required_error: "Le prix unitaire est obligatoire",
         invalid_type_error: "Le prix unitaire est obligatoire",
     })
-    .positive({ message: "Le prix unitaire doit être un nombre positif ou zéro" }),
+    .positive({ message: "Le prix unitaire doit être un nombre positif" }),
 
 
     
@@ -390,10 +390,9 @@ export default function AchatCreationForm() {
                     </Alert>
                 )}
                 <form onSubmit={handleSubmit} className="space-y-6">
-                    
                     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div className="space-y-2">
-                            <Label>Fournisseur</Label>
+                            <Label>Fournisseur <span className='text-red-500 text-base'>*</span></Label>
                             <Select
                                 name="supplierId"
                                 value={formData.supplierId}
@@ -421,7 +420,7 @@ export default function AchatCreationForm() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Source de paiement</Label>
+                            <Label>Source de paiement <span className='text-red-500 text-base'>*</span></Label>
                             <Select
                                 name="sourcePaymentId"
                                 value={formData.sourcePaymentId}
@@ -449,12 +448,20 @@ export default function AchatCreationForm() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Date d'achat</Label>
-                            <Input
+                            <Label>Date d'achat <span className='text-red-500 text-base'>*</span></Label>
+                            {/* <Input
                                 type="date"
                                 name="purchaseDate"
                                 value={formData.purchaseDate}
                                 onChange={handleChange}
+                            /> */}
+                            <input
+                                type="datetime-local"
+                                id="movementDate"
+                                name="purchaseDate"
+                                value={formData.purchaseDate}
+                                onChange={handleChange}
+                                className="w-full p-1  border border-gray-200 rounded-md"
                             />
                             {errors.purchaseDate && (
                                 <p className="text-xs text-red-500 mt-1">{errors.purchaseDate}</p>
@@ -475,7 +482,7 @@ export default function AchatCreationForm() {
                         </div>
 
                         <div className="space-y-2">
-                            <Label>Référence fournisseur</Label>
+                            <Label>Référence fournisseur <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 name="supplierReference"
                                 value={formData.supplierReference}
@@ -534,10 +541,10 @@ export default function AchatCreationForm() {
                             {formData.items.map((product, index) => (
                                 <div 
                                     key={index} 
-                                    className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 items-center border p-4 rounded-lg"
+                                    className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 border p-4 rounded-lg"
                                 >
                                     <div className="space-y-2">
-                                        <Label>Produit</Label>
+                                        <Label>Produit <span className='text-red-500 text-base'>*</span></Label>
                                         <Select
                                             name="productID"
                                             value={product.productID}
@@ -567,7 +574,7 @@ export default function AchatCreationForm() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>Inventaire</Label>
+                                        <Label>Inventaire <span className='text-red-500 text-base'>*</span></Label>
                                         <Select
                                             name="inventoryId"
                                             value={product.inventoryId}
@@ -599,7 +606,7 @@ export default function AchatCreationForm() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>Quantité</Label>
+                                        <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
                                         <Input
                                             type="number"
                                             name="quantity"
@@ -616,15 +623,15 @@ export default function AchatCreationForm() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>Prix Unitaire HT</Label>
+                                        <Label>Prix Unitaire HT <span className='text-red-500 text-base'>*</span></Label>
                                         <Input
                                             type="number"
                                             name="unitPrice"
                                             value={product.unitPrice || ''}
                                             onChange={(e) => handleChangee(e.target.value, index, 'unitPrice')}
                                             placeholder="Prix HT"
+                                            step="any"
                                             min="0"
-                                            step="0.01"
                                         />
                                         {errors.items && errors.items[index] && errors.items[index].unitPrice && (
                                             <p className="text-xs text-red-500 mt-1">
@@ -634,15 +641,15 @@ export default function AchatCreationForm() {
                                     </div>
 
                                     <div className="space-y-2">
-                                        <Label>Montant total</Label>
+                                        <Label>Montant total <span className='text-red-500 text-base'>*</span></Label>
                                         <Input
                                             type="number"
                                             name="totalAmount"
                                             value={product.totalAmount  || ''}
                                             onChange={(e) => handleChangee(e.target.value, index, 'totalAmount')}
                                             placeholder="Montant total"
+                                            step="any"
                                             min="0"
-                                            step='any'
                                             disabled={true}
                                         />
                                         {errors.items && errors.items[index] && errors.items[index].totalAmount && (
