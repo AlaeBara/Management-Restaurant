@@ -28,36 +28,18 @@ const ProductItemSchema = z.object({
         required_error: "L'inventaire est obligatoire" 
     }).min(1, { message: "Veuillez sélectionner un inventaire" }),
     
-    // quantity: z.string({ 
-    //     required_error: "La quantité est obligatoire" 
-    // }).refine(val => !isNaN(parseFloat(val)) && parseFloat(val) > 0, { 
-    //     message: "La quantité doit être un nombre positif" 
-    // }),
     quantity: z.coerce.number({
         required_error: "La quantité est obligatoire",
         invalid_type_error: "La quantité est obligatoire",
     })
     .positive({ message: "La quantité doit être un nombre positif" }),
     
-    
-    // unitPrice: z.string({ 
-    //     required_error: "Le prix unitaire est obligatoire" 
-    // }).refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { 
-    //     message: "Le prix unitaire doit être un nombre positif ou zéro" 
-    // }),
     unitPrice: z.coerce.number({
         required_error: "Le prix unitaire est obligatoire",
         invalid_type_error: "Le prix unitaire est obligatoire",
     })
     .positive({ message: "Le prix unitaire doit être un nombre positif" }),
-
-
     
-    // totalAmount: z.string({ 
-    //     required_error: "Le montant total est obligatoire" 
-    // }).refine(val => !isNaN(parseFloat(val)) && parseFloat(val) >= 0, { 
-    //     message: "Le montant total doit être un nombre positif ou zéro" 
-    // }),
     totalAmount: z.coerce.number({
         required_error: "Le montant total est obligatoire",
         invalid_type_error: "Le montant total est obligatoire",
@@ -256,7 +238,6 @@ export default function AchatCreationForm() {
 
     useEffect(() => {
         // Convert tax percentage to decimal
-        
         const tvaRate = parseFloat(formData.taxPercentage) / 100;
         const calculatedTotals = formData.items.reduce((acc, item) => {
             const quantity = parseFloat(item.quantity) || 0;
@@ -330,7 +311,7 @@ export default function AchatCreationForm() {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
-                // onClose: () => navigate(`/dash/inventaires`),
+                onClose: () => navigate(`/dash/achats`),
             });
         } catch (error) {
         if (error instanceof z.ZodError) {
@@ -339,7 +320,6 @@ export default function AchatCreationForm() {
                 if (path[0] === 'items') {
                     const itemIndex = path[1];
                     const fieldName = path[2];
-                    
                     // Initialize nested structures if they don't exist
                     if (!acc.items) acc.items = [];
                     if (!acc.items[itemIndex]) acc.items[itemIndex] = {};
@@ -500,8 +480,22 @@ export default function AchatCreationForm() {
                                 type="number"
                                 name="taxPercentage"
                                 value={formData.taxPercentage || ""}
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    let value = e.target.value;
+                                    if (value === "") {
+                                        value = 0;
+                                    } else if (value < 0) {
+                                        value = 0;
+                                    } else if (value > 100) {
+                                        value = 100;
+                                    }
+                        
+                                    handleChange({ target: { name: "taxPercentage", value } });
+                                }}
                                 placeholder='Pourcentage de taxe'
+                                min="0"
+                                max="100"
+                                
                             />
                             {errors.taxPercentage && (
                                 <p className="text-xs text-red-500 mt-1">{errors.taxPercentage}</p>
@@ -678,7 +672,7 @@ export default function AchatCreationForm() {
 
                     {/* Totals and note Section */}
                     <div className="grid md:grid-cols-2 grid-cols-1 gap-4">
-                        {/* Totals Section */}
+
                         <div className="border p-6 rounded-lg bg-gray-50">
                             <h2 className="text-2xl font-semibold mb-4">Résumé</h2>
                             <div className="space-y-2">
@@ -705,15 +699,14 @@ export default function AchatCreationForm() {
                             </div>
                         </div>
 
-                        {/* note Section */}
                         <div className="border p-6 rounded-lg bg-gray-50">
-                            <Label>notes</Label>
+                            <Label>Notes</Label>
                             <Textarea
                                 name="note"
                                 value={formData.note}
                                 onChange={handleChange}
-                                placeholder="Entrez des notes supplémentaires sur l'achat (optionnel)"
-                                className="min-h-[200px] mt-4"
+                                placeholder="Entrez des notes supplémentaires sur l'achat"
+                                className="min-h-[200px] mt-4 bg-white"
                             />
                         </div>
                     </div>

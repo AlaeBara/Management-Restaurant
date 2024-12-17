@@ -71,8 +71,10 @@ const Operation= () => {
                 <>
                     {purchases.length > 0 ? (
                     <>
-                        <div className='flex flex-col items-center justify-center w-full'>
-                            <Tableau/>
+                        <div className="flex justify-center" >
+                            <div className='overflow-x-auto max-w-[90vw] lg:max-w-[95vw]'>
+                                <Tableau data={purchases} />
+                            </div>
                         </div>
                         <PaginationNav
                             currentPage={currentPage}
@@ -87,14 +89,12 @@ const Operation= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Transfert Opération trouvé</h1>
+                        <h1>Aucun Achats trouvé</h1>
                     </div>
                     )}
                 </>
             )}
         </div>
-
-
 
     </div>
   )
