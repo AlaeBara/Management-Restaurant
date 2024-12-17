@@ -94,6 +94,12 @@ export class PurchaseService extends GenericService<Purchase> {
         }
     }
 
+    private async validatePurchaseStatus(purchase: Purchase) {
+        if (purchase.status !== PurchaseStatus.CREATED) {
+            throw new BadRequestException('La commande doit être en statut créé pour modifier les produits')
+        }
+    }
+
     async deleteItem(purchaseItemId: string) {
         const purchaseItem = await this.purchaseItemService.findOrThrowByUUID(purchaseItemId);
         const purchase = await this.findOrThrowByUUID(purchaseItem.purchaseId);
@@ -123,6 +129,7 @@ export class PurchaseService extends GenericService<Purchase> {
         purchase.totalAmountHT = purchase.purchaseItems.reduce((acc, item) => acc + item.quantity * item.unitPrice, 0);
         purchase.totalAmountTTC = purchase.totalAmountHT * (1 + purchase.taxPercentage / 100);
         await this.applyDiscount(purchase);
+        purchase.totalRemainingAmount = purchase.totalAmountTTC;
         return this.purchaseRepository.save(purchase);
     }
 
@@ -134,10 +141,12 @@ export class PurchaseService extends GenericService<Purchase> {
         }
     }
 
-    async executePurchaseMovement(executePurchaseMovementDto: ExecutePurchaseMovementDto, request: Request) {
-        const purchase = await this.findOrThrowByUUID(executePurchaseMovementDto.purchaseId);
-        const purchaseItem = purchase.purchaseItems.find(item => item.id === executePurchaseMovementDto.purchaseItemId);
-        if (!purchaseItem) throw new NotFoundException('La ligne de commande n\'existe pas');
+    async executePurchaseMovement(executePurchaseMovementDto: ExecutePurchaseMovementDto, purchaseItemId: string, request: Request) {
+        const purchaseItem = await this.purchaseItemService.findOrThrowByUUID(purchaseItemId);
+        const purchase = await this.findOneByIdWithOptions(purchaseItem.purchaseId, {
+            select: ['supplierReference', 'ownerReferenece']
+        })
+        console.log("asdadsasd", purchase)
         const inventoryMovementDto: CreateInventoryMovementDto = {
             inventoryId: purchaseItem.inventory.id,
             destinationInventoryId: null,
@@ -161,34 +170,46 @@ export class PurchaseService extends GenericService<Purchase> {
         purchaseItem.quantityReturned = Number(purchaseItem.quantityReturned) + Number(executePurchaseMovementDto.quantityToReturn);
 
         await this.purchaseItemRepository.save(purchaseItem);
-        await this.updatePurchaseStatus(purchase.id);
-        await this.updatePurchasePaiementStatus(purchase.id);
+        await this.updatePurchaseStatus(purchaseItem.purchaseId);
+        await this.updatePurchasePaiementStatus(purchaseItem.purchaseId);
     }
 
     async updatePurchaseStatus(purchaseId: string) {
         const purchase = await this.findOrThrowByUUID(purchaseId);
+
         const allCompleted = purchase.purchaseItems.every(item => item.status === PurchaseItemStatus.COMPLETED);
-        console.log('allCompleted', allCompleted);
         if (allCompleted) {
             purchase.status = PurchaseStatus.COMPLETED;
             return this.purchaseRepository.save(purchase);
         }
 
+        const allPENDING = purchase.purchaseItems.every(item => item.status === PurchaseItemStatus.PENDING);
+        if (allPENDING) {
+            purchase.status = PurchaseStatus.CREATED;
+            return this.purchaseRepository.save(purchase);
+        }
+
         const hasPartial = purchase.purchaseItems.some(item => [PurchaseItemStatus.PARTIAL, PurchaseItemStatus.PENDING].includes(item.status));
-        console.log('hasPartial', hasPartial);
         if (hasPartial) {
             purchase.status = PurchaseStatus.DELIVERING;
             return this.purchaseRepository.save(purchase);
-        }        
+        }
     }
 
     async updatePurchasePaiementStatus(purchaseId: string) {
         const purchase = await this.findOrThrowByUUID(purchaseId);
-        console.log('purchase paiement', purchase.purchasePaiements);
+
         const allPaid = purchase.purchasePaiements.every(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
-        console.log('allPaid', allPaid);
-        if (allPaid) {
+        console.log("allPaid", allPaid)
+        console.log("purchase.totalRemainingAmount", purchase.totalRemainingAmount)
+        if (allPaid && purchase.totalRemainingAmount === 0) {
             purchase.paiementStatus = PurchasePaiementStatus.PAID;
+            return this.purchaseRepository.save(purchase);
+        }
+        console.log("purchase.totalRemainingAmount", purchase.totalRemainingAmount)
+        const hasPartial = purchase.purchasePaiements.some(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
+        if (hasPartial && purchase.totalRemainingAmount > 0) {
+            purchase.paiementStatus = PurchasePaiementStatus.PARTIALLY_PAID;
             return this.purchaseRepository.save(purchase);
         }
     }
@@ -206,26 +227,42 @@ export class PurchaseService extends GenericService<Purchase> {
             amount: createPurchasePaiementDto.amount,
             status: createPurchasePaiementDto.status
         });
+        if(await this.isPurchasePaid(purchase)) throw new BadRequestException('La commande est déjà payée');
+        await this.isAmountValid(Number(createPurchasePaiementDto.amount), purchase);
         if (createPurchasePaiementDto.status && createPurchasePaiementDto.status === PurchaseLinePaiementStatus.PAID) {
-            console.log('Purchase payment amount:', createPurchasePaiementDto.amount);
-            console.log('Purchase ', purchase);
-            console.log('Purchase remaining amount:', purchase.totalRemainingAmount);
-            
-            if(Number(createPurchasePaiementDto.amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
-
             await this.executePaiement(purchasePaiement, request, createPurchasePaiementDto.amount, createPurchasePaiementDto.reference);
             await this.updatePurchasePaiementStatus(purchaseId);
         }
         await this.purchasePaiementService.purchasePaiementRepository.save(purchasePaiement);
     }
 
+    async isAmountValid(amount: number, purchase: Purchase) {
+        const TotalCreatedPaiements = purchase.purchasePaiements.reduce((acc, paiement) => acc + Number(paiement.amount), 0);
+        if (Number(amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
+        if(TotalCreatedPaiements+amount > purchase.totalAmountTTC) throw new BadRequestException('Le montant du paiement en total est supérieur au montant total de la commande');
+        if(amount > purchase.totalAmountTTC) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
+        if(amount < 0) throw new BadRequestException('Le montant du paiement ne peut pas être négatif');
+        if(amount === 0) throw new BadRequestException('Le montant du paiement ne peut pas être égal à 0');
+    }
+
+    async isPurchasePaid(purchase: Purchase) {
+        if(purchase.totalRemainingAmount === 0 || purchase.paiementStatus === PurchasePaiementStatus.PAID) return true;
+        return false;
+    }
+
     async confirmPaiement(purchasePaiementId: string, request: Request) {
         const purchasePaiement = await this.purchasePaiementService.findOrThrowByUUID(purchasePaiementId);
         const purchase = await this.findOrThrowByUUID(purchasePaiement.purchaseId);
         if (purchasePaiement.status && purchasePaiement.status === PurchaseLinePaiementStatus.PAID) throw new BadRequestException('Le paiement est déjà effectué');
-        if(Number(purchasePaiement.amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
+        if (Number(purchasePaiement.amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
         await this.executePaiement(purchasePaiement, request, purchasePaiement.amount, purchasePaiement.reference);
+        await this.markedPaiementAsPaid(purchasePaiement);
         await this.updatePurchasePaiementStatus(purchase.id);
+    }
+
+    async markedPaiementAsPaid(purchasePaiement: PurchasePaiement) {
+        purchasePaiement.status = PurchaseLinePaiementStatus.PAID;
+        await this.purchasePaiementService.purchasePaiementRepository.save(purchasePaiement);
     }
 
     async executePaiement(purchasePaiement: PurchasePaiement, request: Request, amount: number, reference: string) {

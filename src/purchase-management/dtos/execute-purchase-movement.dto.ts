@@ -2,13 +2,13 @@
 import { IsNotEmpty, IsNumber, IsOptional, IsUUID } from "class-validator";
 import { DefaultValuePipe } from '@nestjs/common';
 export class ExecutePurchaseMovementDto {
-    @IsUUID()
+   /*  @IsUUID()
     @IsNotEmpty()
     purchaseItemId: string;
 
     @IsUUID()
     @IsNotEmpty()
-    purchaseId: string;
+    purchaseId: string; */
 
     @IsNumber()
     @IsNotEmpty()

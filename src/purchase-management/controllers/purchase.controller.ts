@@ -89,7 +89,7 @@ export class PurchaseController {
     @Permissions('execute-purchase-movement')
     @ApiOperation({ summary: 'Execute a purchase movement' })
     async executeMovement(@Param('id', ParseUUIDPipe) id: string, @Body() executePurchaseMovementDto: ExecutePurchaseMovementDto, @Req() request: Request) {
-        await this.purchaseService.executePurchaseMovement(executePurchaseMovementDto, request);
+        await this.purchaseService.executePurchaseMovement(executePurchaseMovementDto, id, request);
         return { message: 'Super! Votre déplacement de ligne de commande d\'achat a été effectué avec succès', status: 200 };
     }
 
