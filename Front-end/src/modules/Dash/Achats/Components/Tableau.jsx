@@ -3,11 +3,14 @@ import { Card, CardContent } from "@/components/ui/card";
 import { ChevronDown, ChevronUp, Printer, ExternalLink } from 'lucide-react';
 import { formatDate } from '@/components/dateUtils/dateUtils';
 import generatePDF from "./Genreratepdf/PDFPurchase";
+import { useNavigate } from 'react-router-dom';
 
 
 
 const TableauTransfert = ({ data }) => {
   const [lignesExtendues, setLignesExtendues] = useState({});
+
+  const navigate = useNavigate()
 
   const basculerExtensionLigne = (id) => {
     setLignesExtendues((precedent) => ({
@@ -68,7 +71,7 @@ const TableauTransfert = ({ data }) => {
           <button onClick={() => handleGeneratePDF(purchase)}>
             <Printer className='w-5 h-5' />
           </button>
-          <button>
+          <button onClick={()=>navigate(`/dash/achats/detail/${purchase.id}`)}>
             <ExternalLink className='w-5 h-5' />
           </button>
         </div>
@@ -124,7 +127,7 @@ const TableauTransfert = ({ data }) => {
                     <button onClick={() => handleGeneratePDF(purchase)}>
                       <Printer className='w-5 h-5' />
                     </button>
-                    <button>
+                    <button  onClick={()=>navigate(`/dash/achats/detail/${purchase.id}`)}>
                       <ExternalLink className='w-5 h-5' />
                     </button>
                   </div>
