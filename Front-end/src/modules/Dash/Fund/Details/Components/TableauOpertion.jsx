@@ -99,15 +99,15 @@ const TableauOperation = ({ data , Confirm , confirmTransferOperation }) => {
         <td className="p-3 text-sm">
             <div className="flex items-center">
                 <>
-                    {operation.operationAction === 'both'  &&  id !== operation.transferToFundId ? (
+                    {operation.operationAction === 'both'  &&  id === operation.transferToFundId ? (
                         <>
-                            {afficherIconeAction("decrease")}
-                            <span className="text-red-500 mr-2">Diminution</span>
+                          {afficherIconeAction("increase")}
+                          <span className="text-green-500 mr-2">Augmentation</span>
                         </>
                         ) : operation.action === 'both' ? (
                         <>
-                            {afficherIconeAction("increase")}
-                            <span className="text-green-500 mr-2">Augmentation</span>
+                          {afficherIconeAction("decrease")}
+                          <span className="text-red-500 mr-2">Diminution</span>
                         </>
                         ) : (
                         <>

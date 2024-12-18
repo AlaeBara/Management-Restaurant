@@ -29,15 +29,38 @@ const TableauTransfert = ({ data }) => {
 
   //for Status Eng => French
   function StatusToFrench(status) {
+  
+    const normalizedStatus = status ? status.toUpperCase().trim() : '';
+  
     const statusTranslations = {
-      'CREATED': 'Créé',
-      'CONFIRMED': 'Confirmé',
-      'DELIVERING': 'En livraison',
-      'CANCELLED': 'Annulé',
-      'COMPLETED': 'Terminé',
+      'CREATED': { 
+        label: 'Créé', 
+        style: 'bg-gray-200 text-gray-800 rounded px-2 py-1 text-sm font-medium' 
+      },
+      'CONFIRMED': { 
+        label: 'Confirmé', 
+        style: 'bg-blue-200 text-blue-800 rounded px-2 py-1 text-sm font-medium' 
+      },
+      'DELIVERING': { 
+        label: 'En livraison', 
+        style: 'bg-yellow-200 text-yellow-800 rounded px-2 py-1 text-sm font-medium' 
+      },
+      'CANCELLED': { 
+        label: 'Annulé', 
+        style: 'bg-red-200 text-red-800 rounded px-2 py-1 text-sm font-medium' 
+      },
+      'COMPLETED': { 
+        label: 'Terminé', 
+        style: 'bg-green-200 text-green-800 rounded px-2 py-1 text-sm font-medium' 
+      }
     };
   
-    return statusTranslations[status.toUpperCase()] || status; 
+    const statusInfo = statusTranslations[normalizedStatus] || { 
+      label: status || 'Statut inconnu', 
+      style: 'bg-gray-200 text-gray-800 rounded px-2 py-1 text-sm font-medium' 
+    };
+  
+    return statusInfo;
   }
 
   //for PaymentStatus Eng => French
@@ -57,13 +80,16 @@ const TableauTransfert = ({ data }) => {
   const LigneDesktop = ({ purchase, isLast }) => (
     <tr className={`hidden md:table-row ${!isLast ? 'border-b border-gray-200' : ''}`}>
       <td className="p-3 text-sm">{purchase.ownerReferenece}</td>
+      <td className="p-3 text-sm">{purchase.supplierReference}</td>
       <td className="p-3 text-sm">{purchase.supplier.name}</td>
-      <td className="p-3 text-sm">{StatusToFrench(purchase.status)}</td>
-      <td className="p-3 text-sm whitespace-nowrap">{purchase.totalAmountHT} Dh</td>
-      <td className="p-3 text-sm ">{purchase.taxPercentage}%</td>
+      <td className="p-3 text-sm whitespace-nowrap">
+        <span className={`px-3 py-1 rounded-full text-sm ${StatusToFrench(purchase.status).style}`}>
+          {StatusToFrench(purchase.status).label}
+        </span>
+      </td>
       <td className="p-3 text-sm  whitespace-nowrap">{purchase.totalAmountTTC} Dh</td>
+      <td className="p-3 text-sm whitespace-nowrap">{purchase.totalRemainingAmount} Dh</td>
       <td className="p-3 text-sm">{PaymentStatusToFrench(purchase.paiementStatus)}</td>
-      <td className="p-3 text-sm">{purchase.sourcePayment.name}</td>
       <td className="p-3 text-sm">{formatDate(purchase.purchaseDate)}</td>
       <td className="p-3 text-sm">{formatDate(purchase.createdAt)}</td>
       <td className="p-3 text-sm">
@@ -103,20 +129,22 @@ const TableauTransfert = ({ data }) => {
               <div className="grid grid-cols-2 gap-2 text-sm">
                 <div className="font-semibold">Référence Achat:</div>
                 <div>{purchase.ownerReferenece}</div>
+                <div className="font-semibold">Référence Fournisseur:</div>
+                <div>{purchase.supplierReference}</div>
                 <div className="font-semibold">Nom du Fournisseur:</div>
                 <div>{purchase.supplier.name}</div>
-                <div className="font-semibold">Status:</div>
-                <div>{StatusToFrench(purchase.status)}</div>
-                <div className="font-semibold">Montant Total (HT):</div>
-                <div>{purchase.totalAmountHT} Dh</div>
-                <div className="font-semibold">Taxe (%)</div>
-                <div>{purchase.taxPercentage}</div>
+                <div className="font-semibold whitespace-nowrap">Status d'achat:</div>
+                <div>
+                  <span className={`px-3 py-1 rounded-full text-sm ${StatusToFrench(purchase.status).style}`}>
+                    {StatusToFrench(purchase.status).label}
+                  </span>
+                </div>
                 <div className="font-semibold">Montant Total (TTC):</div>
                 <div>{purchase.totalAmountTTC} Dh</div>
+                <div className="font-semibold">Montant Total Restant:</div>
+                <div>{purchase.totalRemainingAmount} Dh</div>
                 <div className="font-semibold">Statut de Paiement:</div>
                 <div>{PaymentStatusToFrench(purchase.paiementStatus)}</div>
-                <div className="font-semibold">Source Paiement:</div>
-                <div>{purchase.sourcePayment.name}</div>
                 <div className="font-semibold">Date d'achat:</div>
                 <div>{formatDate(purchase.purchaseDate)}</div>
                 <div className="font-semibold">Date de création:</div>
@@ -148,13 +176,12 @@ const TableauTransfert = ({ data }) => {
             <thead className="hidden md:table-header-group">
               <tr className="bg-gray-100">
                 <th className="p-3 text-left text-sm">Référence Achat</th>
+                <th className="p-3 text-left text-sm">Référence Fournisseur</th>
                 <th className="p-3 text-left text-sm">Nom du Fournisseur</th>
-                <th className="p-3 text-left text-sm">Status</th>
-                <th className="p-3 text-left text-sm">Montant Total (HT)</th>
-                <th className="p-3 text-left text-sm">Pourcentage Taxe</th>
+                <th className="p-3 text-left text-sm">Status d'achat</th>
                 <th className="p-3 text-left text-sm">Montant Total (TTC)</th>
+                <th className="p-3 text-left text-sm">Montant Total Restant</th>
                 <th className="p-3 text-left text-sm">Statut de Paiement</th>
-                <th className="p-3 text-left text-sm">Source Paiement</th>
                 <th className="p-3 text-left text-sm">Date d'achat</th>
                 <th className="p-3 text-left text-sm">Date de création</th>
                 <th className="p-3 text-left text-sm">Action</th>
