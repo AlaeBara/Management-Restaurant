@@ -19,6 +19,7 @@ import { InventoryModule } from './inventory-managemet/inventory.module';
 import { FundModule } from './fund-management/fund.module';
 import { ShiftZoneModule } from './shift-zone-management/shift-zone.module';
 import { PurchaseManagementModule } from './purchase-management/purchase-management.module';
+import { LanguageModule } from './language-management/language.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -42,6 +43,7 @@ import { PurchaseManagementModule } from './purchase-management/purchase-managem
     ShiftZoneModule,
     PurchaseManagementModule,
     CommonModule,
+    LanguageModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

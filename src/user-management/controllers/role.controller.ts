@@ -174,7 +174,6 @@ export class RoleController {
   @ApiOperation({ summary: 'Get permissions for a specific role grouped by resource' })
   async findAndGroupPermissionsWithRoleAccess(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const role = await this.roleService.findOrThrow(id, ['permissions']);
-    await this.roleService.findAndGroupPermissionsWithRoleAccess(role);
-    return { message: 'Super! Les permissions ont été récupérées avec succès', status: 200 };
+    return await this.roleService.findAndGroupPermissionsWithRoleAccess(role);
   }
 }

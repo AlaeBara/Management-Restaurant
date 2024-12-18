@@ -12,6 +12,7 @@ import { ProductManagementModule } from 'src/product-management/product.module';
 import { ShiftZoneModule } from 'src/shift-zone-management/shift-zone.module';
 import { FundModule } from 'src/fund-management/fund.module';
 import { PurchaseManagementModule } from 'src/purchase-management/purchase-management.module';
+import { LanguageModule } from 'src/language-management/language.module';
 
 @Global()
 @Module({
@@ -26,7 +27,8 @@ import { PurchaseManagementModule } from 'src/purchase-management/purchase-manag
     forwardRef(() => ProductManagementModule),
     forwardRef(() => ShiftZoneModule),
     forwardRef(() => FundModule),
-    forwardRef(() => PurchaseManagementModule)],
+    forwardRef(() => PurchaseManagementModule),
+    forwardRef(() => LanguageModule)],
   controllers: [],
   providers: [MailService, MasterSeeder],
   exports: [MailService],
