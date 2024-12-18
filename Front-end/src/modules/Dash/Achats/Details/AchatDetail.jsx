@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react'
 import { Avatar, AvatarFallback } from "@/components/ui/avatar"
-import { Phone, MapPin, Printer, Mail,Dot ,CreditCard,ArrowLeftRight,ChevronRight ,Ban,ArrowLeft} from 'lucide-react'
+import { Phone, MapPin, Printer, Mail,Dot ,CreditCard,ArrowLeftRight,ChevronRight ,Ban,ArrowLeft ,Loader} from 'lucide-react'
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/components/ui/table"
+import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button"
@@ -10,6 +13,7 @@ import {usePurchase} from './hooks/useFetchPurchase'
 import { useNavigate, useParams } from 'react-router-dom'
 import Spinner from '@/components/Spinner/Spinner'
 import {formatDate}  from '@/components/dateUtils/dateUtils'
+import {useMovements} from './hooks/useMovements'
 
 
 const AchatDetail = () => {
@@ -54,13 +58,36 @@ const AchatDetail = () => {
     ];
     const totalPaid = payments.reduce((acc, payment) => acc + payment.amount, 0);
 
-    const showModel =()=>{
+    const [formData, setFormData] = useState({
+        quantityToMove: '',
+        quantityToReturn: '',
+    });
+
+    const [idSelected, setIdSelected] = useState(null);
+
+    const showModel =(id)=>{
         setIsModalVisible(true);
+        setIdSelected(id)
     }
+    const CloseModel =()=>{
+        setIsModalVisible(false);
+        setFormData({
+            quantityToMove: '',
+            quantityToReturn: '',
+        })  
+    }
+    const handleChange = (e) => {
+        setFormData({ ...formData, [e.target.name]: e.target.value });
+    };
+
+    const { issLoading , alert, errors, fetchMovements } = useMovements(idSelected , formData ,CloseModel)
+    
 
   return (
 
     <>
+
+        <ToastContainer />
         <div className="sm:pl-0 md:pl-5 lg:pl-5 " onClick={()=>navigate('/dash/achats')}>
             <Button  variant="outline" size="ms" className='border-0 shadow-none hover:bg-transparent'>
                 <ArrowLeft className="mr-2 h-4 w-4" />
@@ -127,7 +154,11 @@ const AchatDetail = () => {
                                     <TableCell className="text-center  p-4">{item.quantity}</TableCell>
                                     <TableCell className="text-center  p-4">{formatCurrency(item.unitPrice)}</TableCell>
                                     <TableCell className="text-center  p-4">{formatCurrency(item.totalAmount)}</TableCell>
-                                    <TableCell className="text-center"><button onClick={showModel}><ArrowLeftRight/></button></TableCell>
+                                    <TableCell className="text-center">
+                                    <button onClick={() => showModel(item?.id)}>
+                                        <ArrowLeftRight />
+                                    </button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                             <TableRow  className='hover:bg-transparent border-none'>
@@ -237,47 +268,79 @@ const AchatDetail = () => {
                         </p>
                     </div>
 
+                    {alert?.message && (
+                        <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                        >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
+
+                   
                     <div className="space-y-4">
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Remise 1</Label>
+                            <Label className="text-sm font-medium text-gray-700">Quantité à déplacer <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 type="number"
-                                name="Remise1"
-                                placeholder="Entrez la remise"
+                                name="quantityToMove"
+                                placeholder="Quantité à déplacer"
                                 className="w-full"
+                                onChange={handleChange}
                                 min={0}
-                                value={0}
+                                value={formData.quantityToMove}
                             />
+                            {errors.quantityToMove && (
+                                <p className="text-xs text-red-500 mt-1">{errors.quantityToMove}</p>
+                            )} 
                         </div>
 
                         <div className="space-y-2">
-                            <Label className="text-sm font-medium text-gray-700">Remise 2</Label>
+                            <Label className="text-sm font-medium text-gray-700">Quantité à retourner</Label>
                             <Input
                                 type="number"
-                                name="Remise2"
-                                placeholder="Entrez la remise"
+                                name="quantityToReturn"
+                                placeholder="Quantité à retourner"
                                 className="w-full"
+                                onChange={handleChange}
                                 min={0}
-                                value={0}
+                                value={formData.quantityToReturn}
                             />
+                            {errors.quantityToReturn && (
+                                <p className="text-xs text-red-500 mt-1">{errors.quantityToReturn}</p>
+                            )} 
                         </div>
                     </div>
 
                     <div className="mt-6 flex justify-end space-x-3">
                         <button
                             type="button"
-                            onClick={() => setIsModalVisible(false)}
+                            onClick={() => CloseModel()}
                             className="rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
                         >
                             Annuler
                         </button>
-                        <button
-                            type="button"
-                            onClick={() => confirmDelete(unit.id)}
+                        <Button
+                            type="submit"
                             className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                fetchMovements();
+                            }}
+                            disabled={issLoading}
                         >
-                            Valider
-                        </button>
+                            {issLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <Loader className="h-4 w-4 animate-spin" />
+                                    <span>Valider en cours...</span>
+                                </div>
+                                ) : (
+                                "Valider"
+                            )}
+                        </Button>
+
                     </div>
                 </div>
             </div>
