@@ -25,7 +25,6 @@ const TableauTransfert = ({ data }) => {
   };
 
   //for Status Eng => French
-
   function StatusToFrench(status) {
     const statusTranslations = {
       'CREATED': 'Créé',
@@ -38,6 +37,7 @@ const TableauTransfert = ({ data }) => {
     return statusTranslations[status.toUpperCase()] || status; 
   }
 
+  //for PaymentStatus Eng => French
   function PaymentStatusToFrench(status) {
     switch (status.toUpperCase()) {
       case 'PAID':
@@ -50,10 +50,6 @@ const TableauTransfert = ({ data }) => {
         return status; 
     }
   }
-
-
-
-  
 
   const LigneDesktop = ({ purchase, isLast }) => (
     <tr className={`hidden md:table-row ${!isLast ? 'border-b border-gray-200' : ''}`}>
