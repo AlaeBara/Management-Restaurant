@@ -232,8 +232,8 @@ export class PurchaseService extends GenericService<Purchase> {
         if(await this.isPurchasePaid(purchase)) throw new BadRequestException('La commande est déjà payée');
         await this.isAmountValid(Number(createPurchasePaiementDto.amount), purchase);
         if (createPurchasePaiementDto.status && createPurchasePaiementDto.status === PurchaseLinePaiementStatus.PAID) {
-            await this.executePaiement(purchasePaiement, request, createPurchasePaiementDto.amount, createPurchasePaiementDto.reference);
-            await this.updatePurchasePaiementStatus(purchaseId);
+            await this.executePaiement(purchase.id, request, createPurchasePaiementDto.amount, createPurchasePaiementDto.reference);
+            await this.updatePurchasePaiementStatus(purchase.id);
         }
         await this.purchasePaiementService.purchasePaiementRepository.save(purchasePaiement);
     }
@@ -257,7 +257,7 @@ export class PurchaseService extends GenericService<Purchase> {
         const purchase = await this.findOrThrowByUUID(purchasePaiement.purchaseId);
         if (purchasePaiement.status && purchasePaiement.status === PurchaseLinePaiementStatus.PAID) throw new BadRequestException('Le paiement est déjà effectué');
         if (Number(purchasePaiement.amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
-        await this.executePaiement(purchasePaiement, request, purchasePaiement.amount, purchasePaiement.reference);
+        await this.executePaiement(purchase.id, request, purchasePaiement.amount, purchasePaiement.reference);
         await this.markedPaiementAsPaid(purchasePaiement);
         await this.updatePurchasePaiementStatus(purchase.id);
     }
@@ -267,8 +267,8 @@ export class PurchaseService extends GenericService<Purchase> {
         await this.purchasePaiementService.purchasePaiementRepository.save(purchasePaiement);
     }
 
-    async executePaiement(purchasePaiement: PurchasePaiement, request: Request, amount: number, reference: string) {
-        const purchase = await this.findOrThrowByUUID(purchasePaiement.purchaseId);
+    async executePaiement(purchaseId: string, request: Request, amount: number, reference: string) {
+        const purchase = await this.findOrThrowByUUID(purchaseId);
         const motif = 'Paiement de la commande d\'achat de référence ' + purchase.supplierReference + ' - notre référence :' + purchase.ownerReferenece;
         const fundOperation: CreateFundOperationDto = {
             fundId: purchase.sourcePayment.id,
