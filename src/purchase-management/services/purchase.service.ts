@@ -225,7 +225,9 @@ export class PurchaseService extends GenericService<Purchase> {
         const purchasePaiement = await this.purchasePaiementService.purchasePaiementRepository.create({
             purchase: purchase,
             amount: createPurchasePaiementDto.amount,
-            status: createPurchasePaiementDto.status
+            status: createPurchasePaiementDto.status,
+            reference: createPurchasePaiementDto.reference,
+            datePaiement: createPurchasePaiementDto.datePaiement
         });
         if(await this.isPurchasePaid(purchase)) throw new BadRequestException('La commande est déjà payée');
         await this.isAmountValid(Number(createPurchasePaiementDto.amount), purchase);
