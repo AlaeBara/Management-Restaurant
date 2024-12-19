@@ -59,7 +59,7 @@ export const useMovements = (id, formData, CloseModel) => {
             }, {});
             setErrors(fieldErrors);
         } else {
-            console.error("Failed to execute a purchase movement:", err.response?.data?.message);
+            console.error("Failed to execute a purchase movement:", err);
             setAlert({
                 message: err.response?.data?.message || "Erreur lors du mouvement.",
                 type: 'error',
