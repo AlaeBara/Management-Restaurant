@@ -54,13 +54,14 @@ const purchase = ({purchase}) => {
             quantityToMove: '',
             quantityToReturn: '',
         })  
+        resetErrors()
     }
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const { issLoading , alert, errors, fetchMovements } = useMovements(idSelected , formData ,CloseModel)
+    const { issLoading , alert, errors, fetchMovements ,resetErrors  } = useMovements(idSelected , formData ,CloseModel)
 
   return (
     <>
@@ -135,8 +136,8 @@ const purchase = ({purchase}) => {
 
 
         {isModalVisible && (
-            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
-                <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4">
+            <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50"  onClick={CloseModel}>
+                <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4" onClick={(e) => e.stopPropagation()}>
                     <div className="mb-4">
                         <h3 className="text-lg font-semibold text-gray-800">Confirmer l’action pour "{produitselected}"</h3>
                         <p className="mt-2 text-sm text-gray-600">

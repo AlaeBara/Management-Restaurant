@@ -4,47 +4,47 @@ import Cookies from "js-cookie";
 import { toast } from 'react-toastify';
 import { z } from 'zod';
 
-const MoveSchema = z.object({
-    quantityToMove: z.string().nonempty({ message: 'La quantité à déplacer est requise.' }),
-    quantityToReturn: z.string().nullable().optional(),
+const PaymentSchema = z.object({
+    amount: z.coerce.number({
+        required_error: "Le montant est obligatoire",
+        invalid_type_error: "Le montant doit être un nombre valide",
+    })
+    .positive({ message: "Le montant doit être un nombre positif" }),
+    status: z.string().nullable().optional(),
+    reference: z.string().nullable().optional(),
+    atePaiement: z.string().nullable().optional(),
 });
 
-export const useMovements = (id, formData, CloseModel) => {
+export const useCreatePayment = (id,formData, CloseModel) => {
   const [issLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ message: null, type: null });
   const [errors, setErrors] = useState({});
 
-  const fetchMovements = useCallback(async () => {
+  const fetchCreatePayment = useCallback(async () => {
     setIsLoading(true);
     setErrors({});
     setAlert({ message: null, type: null });
 
     const token = Cookies.get("access_token");
-    const url = `${import.meta.env.VITE_BACKEND_URL}/api/purchases/items/${id}/execute-movement`;
+    const url = `${import.meta.env.VITE_BACKEND_URL}/api/purchases/${id}/paiements`;
 
     try {
      
-        MoveSchema.parse(formData);
+        PaymentSchema.parse(formData);
 
         const preparedData = Object.fromEntries(
             Object.entries(formData).filter(([_, value]) => value !== null && value !== '')
         );
       
-         
-        preparedData.quantityToMove = parseFloat(preparedData.quantityToMove);
-        if (preparedData.quantityToReturn) {
-            const parsedQuantity = parseFloat(preparedData.quantityToReturn);
-            if (!isNaN(parsedQuantity)) {
-                preparedData.quantityToReturn = parsedQuantity;
-            }
-        }
-        
+        preparedData.amount = parseFloat(preparedData.amount);
 
+        console.log(preparedData)
+       
         const response = await axios.post(url, preparedData, {
             headers: { Authorization: `Bearer ${token}` },
         });
 
-        toast.success(response.data.message || 'Mouvement effectué avec succès!', {
+        toast.success(response.data.message || 'Paiement crèe avec succès!', {
             icon: '✅',
             position: "top-right",
             autoClose: 3000,
@@ -59,9 +59,9 @@ export const useMovements = (id, formData, CloseModel) => {
             }, {});
             setErrors(fieldErrors);
         } else {
-            console.error("Failed to execute a purchase movement:", err);
+            console.error("Failed to create payment:", err.response?.data?.message );
             setAlert({
-                message: err.response?.data?.message || "Erreur lors du mouvement.",
+                message: err.response?.data?.message || "Erreur lors creation de paiement.",
                 type: 'error',
             });
         }
@@ -70,5 +70,8 @@ export const useMovements = (id, formData, CloseModel) => {
     }
   }, [id, formData]);
 
-  return { issLoading, alert, errors, fetchMovements};
+
+  const resetErrors = () => {setAlert({})};
+
+  return { issLoading, alert, errors,  fetchCreatePayment , resetErrors};
 };
