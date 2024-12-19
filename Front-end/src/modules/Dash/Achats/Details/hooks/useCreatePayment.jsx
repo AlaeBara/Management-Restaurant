@@ -15,7 +15,7 @@ const PaymentSchema = z.object({
     atePaiement: z.string().nullable().optional(),
 });
 
-export const useCreatePayment = (id,formData, CloseModel) => {
+export const useCreatePayment = (id,formData, CloseModel,fetchPurchase) => {
   const [issLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ message: null, type: null });
   const [errors, setErrors] = useState({});
@@ -51,6 +51,7 @@ export const useCreatePayment = (id,formData, CloseModel) => {
         });
         CloseModel()
         setErrors({})
+        fetchPurchase(id)
     } catch (err) {
         if (err instanceof z.ZodError) {
             const fieldErrors = err.errors.reduce((acc, { path, message }) => {

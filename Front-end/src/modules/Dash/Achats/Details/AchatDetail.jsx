@@ -16,7 +16,7 @@ const AchatDetail = () => {
 
     const { id } = useParams();
 
-    const { purchase, isLoading, error, fetchPurchase } = usePurchase();
+    const { purchase, isLoading, error, fetchPurchase} = usePurchase();
 
     useEffect(() => {
         fetchPurchase(id);
@@ -50,7 +50,7 @@ const AchatDetail = () => {
 
             <div className='space-y-6 h-fit'>
                 <Suplier purchase={purchase}/>
-                <Payment/>
+                <Payment purchase={purchase} fetchPurchase={fetchPurchase}/>
             </div>
         </div>
 

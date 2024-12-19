@@ -1,7 +1,8 @@
 import React ,{useState} from 'react'
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/components/ui/table"
-import {CreditCard,ChevronRight,Plus ,Loader } from 'lucide-react'
+import {ChevronRight,Plus ,Loader } from 'lucide-react'
+import {formatDate}  from '@/components/dateUtils/dateUtils'
 import { Button } from "@/components/ui/button"
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
@@ -11,8 +12,7 @@ import {useCreatePayment} from '../hooks/useCreatePayment'
 import { useParams } from 'react-router-dom'
 
 
-
-const Payment = () => {
+const Payment = ({purchase , fetchPurchase}) => {
     
     const {id} = useParams()
     const formatCurrency = (value) => {
@@ -57,8 +57,31 @@ const Payment = () => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const { issLoading, alert, errors,  fetchCreatePayment , resetErrors} = useCreatePayment(id , formData ,CloseModel)
+    const { issLoading, alert, errors,  fetchCreatePayment , resetErrors} = useCreatePayment(id , formData ,CloseModel ,fetchPurchase)
 
+    const getStatusStyle = (status) => {
+        const normalizedStatus = status ? status.toUpperCase().trim() : '';
+        
+        switch (normalizedStatus) {
+            case 'PAID':
+                return {
+                    label: 'Payé',
+                    className: ' px-3 py-1 rounded-full bg-green-200 text-green-800 rounded px-2 py-1 text-sm font-medium'
+                };
+            case 'UNPAID':
+                return {
+                    label: 'Non payé',
+                    className: 'px-3 py-1 rounded-full bg-red-200 text-red-800 rounded px-2 py-1 text-sm font-medium'
+                };
+            default:
+                return {
+                    label: '-',
+                    className: 'text-sm font-medium'
+                };
+        }
+    };
+      
+      
 
 return (
     <>
@@ -86,25 +109,42 @@ return (
                 <Table>
                     <TableHeader>
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead className="text-center">Date</TableHead>
-                            <TableHead className="text-center">Méthode</TableHead>
+                            <TableHead className="text-center">Référence</TableHead>
+                            <TableHead className="text-center">Status</TableHead>
                             <TableHead className="text-center">Montant</TableHead>
+                            <TableHead className="text-center">Date</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
-                        {payments.map((payment) => (
-                            <TableRow key={payment.id} className="font-sans font-medium">
-                                <TableCell className="text-center  p-4 text-nowrap">{payment.date}</TableCell>
-                                <TableCell className="flex items-center justify-center p-4 text-nowrap">
-                                    <CreditCard className="h-4 w-4 mr-2 text-muted-foreground" />
-                                    {payment.method}
-                                </TableCell>
-                                <TableCell className="text-center p-4">{formatCurrency(payment.amount)}</TableCell>
-                            </TableRow>
-                        ))}
-                        <TableRow className='hover:bg-transparent'>
-                            <TableCell colSpan={2} className="font-bold p-4  text-lg">Total payé</TableCell>
-                            <TableCell className="font-bold text-center  text-lg">{formatCurrency(totalPaid)}</TableCell>
+                        {
+                            purchase?.purchasePaiements && purchase.purchasePaiements.length > 0 ? (
+                                purchase.purchasePaiements.map((payment) => (
+                                <TableRow key={payment.id} className="font-sans font-medium">
+                                    <TableCell className="text-center p-4">{payment.reference || "-"}</TableCell>
+                                    <TableCell className="flex items-center justify-center p-4 text-nowrap">
+                                    <span className={getStatusStyle(payment.status).className}>
+                                        {getStatusStyle(payment.status).label}
+                                    </span>
+                                    </TableCell>
+                                    <TableCell className="text-center p-4">{formatCurrency(payment.amount)}</TableCell>
+                                    <TableCell className="text-center  p-4 text-nowrap">{payment.datePaiement ? formatDate(payment.datePaiement) : "-"}</TableCell>
+                                </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan="4" className="text-center p-4">
+                                        Aucun paiement trouvé.
+                                    </TableCell>
+                                </TableRow>
+                            )
+                        }
+                        <TableRow  className='hover:bg-transparent border-none'>
+                            <TableCell colSpan={2} className="font-medium text-gray-800 text-base">Total payé</TableCell>
+                            <TableCell className="font-medium text-center text-base text-primary">{formatCurrency(purchase?.totalPaidAmount)}</TableCell>   
+                        </TableRow>
+                        <TableRow  className='hover:bg-transparent'>
+                            <TableCell colSpan={2} className="font-bold text-gray-800 text-lg">Total Restant</TableCell>
+                            <TableCell className="font-bold text-center text-lg text-primary">{formatCurrency(purchase?.totalRemainingAmount)}</TableCell> 
                         </TableRow>
                     </TableBody>
                 </Table>
