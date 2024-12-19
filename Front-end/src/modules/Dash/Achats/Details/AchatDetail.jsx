@@ -63,12 +63,16 @@ const AchatDetail = () => {
         quantityToReturn: '',
     });
 
+    const [produitselected, setProduitselected] = useState(null)
+
     const [idSelected, setIdSelected] = useState(null);
 
-    const showModel =(id)=>{
+    const showModel =(id,name)=>{
         setIsModalVisible(true);
         setIdSelected(id)
+        setProduitselected(name)
     }
+
     const CloseModel =()=>{
         setIsModalVisible(false);
         setFormData({
@@ -76,10 +80,10 @@ const AchatDetail = () => {
             quantityToReturn: '',
         })  
     }
+
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
-
     const { issLoading , alert, errors, fetchMovements } = useMovements(idSelected , formData ,CloseModel)
     
 
@@ -155,7 +159,7 @@ const AchatDetail = () => {
                                     <TableCell className="text-center  p-4">{formatCurrency(item.unitPrice)}</TableCell>
                                     <TableCell className="text-center  p-4">{formatCurrency(item.totalAmount)}</TableCell>
                                     <TableCell className="text-center">
-                                    <button onClick={() => showModel(item?.id)}>
+                                    <button onClick={() => showModel(item?.id,item.product.productName)}>
                                         <ArrowLeftRight />
                                     </button>
                                     </TableCell>
@@ -262,9 +266,10 @@ const AchatDetail = () => {
             <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50">
                 <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4">
                     <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Confirmer la suppression</h3>
+                        <h3 className="text-lg font-semibold text-gray-800">Confirmer l’action pour "{produitselected}"</h3>
                         <p className="mt-2 text-sm text-gray-600">
-                            Êtes-vous sûr de vouloir supprimer cette Unité ?
+                        Veuillez confirmer les quantités à déplacer et retourner pour le produit{" "}
+                        <span className="font-medium text-gray-900">{produitselected}</span>. Cette action est irréversible.
                         </p>
                     </div>
 
@@ -334,7 +339,7 @@ const AchatDetail = () => {
                             {issLoading ? (
                                 <div className="flex items-center gap-2">
                                     <Loader className="h-4 w-4 animate-spin" />
-                                    <span>Valider en cours...</span>
+                                    <span>En traitement...</span>
                                 </div>
                                 ) : (
                                 "Valider"

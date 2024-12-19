@@ -13,7 +13,6 @@ import {useFetchPurchases} from './Hooks/useFetchPurchases'
 const Operation= () => {
     const  navigate = useNavigate()
 
-
     const {purchases, totalPurchases, Isloading, message, fetchPurchases}=useFetchPurchases()
 
     const [currentPage, setCurrentPage] = useState(1);
