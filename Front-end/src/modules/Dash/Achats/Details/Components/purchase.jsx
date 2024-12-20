@@ -71,8 +71,8 @@ const purchase = ({purchase}) => {
                 <CardTitle className='text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
                     <ChevronRight className='mr-2 text-primary' />
                     Détails de l'achat 
-                    <span className="ml-2 p-2 border border-gray-200 rounded hover:bg-gray-400 transition-colors cursor-pointer">
-                        <Download  className="w-5 h-5" />
+                    <span className="ml-2 p-2 border border-black bg-black rounded  cursor-pointer">
+                        <Download className="w-4 h-4" stroke="white" />
                     </span>
                 </CardTitle>
             </CardHeader>

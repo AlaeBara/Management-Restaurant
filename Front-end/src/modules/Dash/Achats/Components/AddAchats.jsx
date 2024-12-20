@@ -82,7 +82,11 @@ const AchatFormSchema = z.object({
         message: "Au moins un produit est requis" 
     }),
     
-    note: z.string().optional()
+    note: z.string().nullable().optional(),
+
+    discountType: z.string().nullable().optional(),
+
+    discountValue:  z.number().nullable().optional(),
 });
 
 
@@ -94,19 +98,12 @@ export default function AchatCreationForm() {
 
     //api for get All Fournisseur
     const {Supliers , fetchSupliers} = useFetchSupliers()
-
-
     //api for get all Caisses
     const {funds  , fetchFunds} = useFetchFunds()
-
-
     //api for get All Produit 
     const {products , fetchProduct} = useFetchProduct()
-
-
     //api for get All inventaire of product
     const {inventorys, totalIventory, loading, error, fetchIventory}=useFetchIventory()
-
 
     useEffect(()=>{
         fetchSupliers({fetchAll:true})
@@ -121,6 +118,8 @@ export default function AchatCreationForm() {
         purchaseDate: '',
         ownerReferenece: '',
         supplierReference: '',
+        discountType: '',
+        discountValue: null,
         totalAmountHT: 0,
         taxPercentage: "20",
         totalAmountTTC: 0,
@@ -135,16 +134,6 @@ export default function AchatCreationForm() {
         ]
     });
     
-
-    const [totals, setTotals] = useState({
-        totalHT: 0,
-        remiseTotal: 0,
-        baseHT: 0,
-        tvaRate: parseFloat(formData.taxPercentage) /100,
-        tva: 0,
-        totalTTC: 0
-    });
-
     // Handle input changes
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -165,7 +154,6 @@ export default function AchatCreationForm() {
         }
         
         if (field === 'quantity' || field === 'unitPrice') {
-            // Parse the value of quantity and unitPrice as float (number)
             const parsedQuantity = field === 'quantity' ? parseFloat(value) : updatedItems[index].quantity;
             const parsedUnitPrice = field === 'unitPrice' ? parseFloat(value) : updatedItems[index].unitPrice;
     
@@ -212,61 +200,91 @@ export default function AchatCreationForm() {
         setFormData({ ...formData, items: newitems });
     };
 
-    // Calculate totals
-    // useEffect(() => {
-    //     const calculatedTotals = formData.items.reduce((acc, item) => {
-    //         const quantity = parseFloat(item.quantity) || 0;
-    //         const unitPrice = parseFloat(item.unitPrice) || 0;
-
-    //         const lineTotal = quantity * unitPrice;
-    //         return {
-    //             totalHT: acc.totalHT + lineTotal,
-    //             baseHT: acc.baseHT + lineTotal
-    //         };
-    //     }, { totalHT: 0, baseHT: 0 });
-
-    //     const tva = calculatedTotals.baseHT * totals.tvaRate;
-    //     const totalTTC = calculatedTotals.baseHT + tva;
-
-    //     setTotals({
-    //         ...calculatedTotals,
-    //         tva,
-    //         totalTTC,
-    //         tvaRate: totals.tvaRate
-    //     });
-    // }, [formData.items, formData.taxPercentage]);
+    const [totals, setTotals] = useState({
+        totalHT: 0,
+        remiseTotal: 0,
+        baseHT: 0,
+        tvaRate: parseFloat(formData.taxPercentage) /100,
+        tva: 0,
+        totalTTC: 0
+    });
 
     useEffect(() => {
         // Convert tax percentage to decimal
         const tvaRate = parseFloat(formData.taxPercentage) / 100;
+    
+        // First calculate TTC for each item and total
         const calculatedTotals = formData.items.reduce((acc, item) => {
             const quantity = parseFloat(item.quantity) || 0;
             const unitPrice = parseFloat(item.unitPrice) || 0;
-
-            const lineTotal = quantity * unitPrice;
+            
+            const lineHT = quantity * unitPrice;
+            const lineTVA = lineHT * tvaRate;
+            const lineTTC = lineHT + lineTVA;
+            
             return {
-                totalHT: acc.totalHT + lineTotal,
-                baseHT: acc.baseHT + lineTotal
+                totalHT: acc.totalHT + lineHT,
+                totalTVA: acc.totalTVA + lineTVA,
+                totalTTC: acc.totalTTC + lineTTC
             };
-        }, { totalHT: 0, baseHT: 0 });
-
-        const tva = calculatedTotals.baseHT * tvaRate;
-        const totalTTC = calculatedTotals.baseHT + tva;
-
-        setTotals({
-            ...calculatedTotals,
-            tva,
-            totalTTC,
-            tvaRate
+        }, { totalHT: 0, totalTVA: 0, totalTTC: 0 });
+    
+        // Calculate discount based on type
+        let remiseTotal = 0;
+        let discountPercentage = 0;
+        let remise=0
+    
+        if (formData.discountType && formData.discountValue) {
+            if (formData.discountType === 'percentage') {
+                discountPercentage = parseFloat(formData.discountValue) / 100;
+                remise=parseFloat(formData.discountValue);
+                remiseTotal = calculatedTotals.totalTTC * discountPercentage;
+            } else if (formData.discountType === 'amount') {
+                remiseTotal = parseFloat(formData.discountValue) || 0;
+                remise=parseFloat(formData.discountValue) || 0;
+                discountPercentage = remiseTotal / calculatedTotals.totalTTC;
+                remiseTotal = Math.min(remiseTotal, calculatedTotals.totalTTC);
+            }
+        }
+    
+        // Apply discount to each item's TTC price
+        const itemsWithDiscount = formData.items.map(item => {
+            const quantity = parseFloat(item.quantity) || 0;
+            const unitPrice = parseFloat(item.unitPrice) || 0;
+            // Calculate TTC price for item
+            const itemTTC = unitPrice * (1 + tvaRate);
+            // Apply discount to TTC price
+            const discountedTTC = itemTTC * (1 - discountPercentage);
+            // Calculate back to get discounted HT price
+            const discountedHT = discountedTTC / (1 + tvaRate);
+            
+            return {
+                ...item,
+                discountedPriceTTC: discountedTTC,
+                discountedPriceHT: discountedHT
+            };
         });
-
-        // Update formData with calculated totals
+    
+        const totalTTC = calculatedTotals.totalTTC - remiseTotal;
+        const baseHT = totalTTC / (1 + tvaRate);
+        const tva = totalTTC - baseHT;
+    
+        setTotals({
+            totalHT: calculatedTotals.totalHT,
+            remiseTotal:remise,
+            baseHT,
+            tvaRate,
+            tva,
+            totalTTC
+        });
+    
         setFormData(prevFormData => ({
             ...prevFormData,
-            totalAmountHT: calculatedTotals.baseHT,
+            items: itemsWithDiscount,
+            totalAmountHT: baseHT,
             totalAmountTTC: totalTTC
         }));
-    }, [formData.items, formData.taxPercentage]);
+    }, [formData.items, formData.taxPercentage, formData.discountType, formData.discountValue]);
 
 
     // Submit handler
@@ -275,12 +293,22 @@ export default function AchatCreationForm() {
     const handleSubmit = async(e) => {
         e.preventDefault();
         try {
-            formData.taxPercentage=parseFloat(formData.taxPercentage)
+            formData.taxPercentage= parseFloat(formData.taxPercentage)
+            if (formData.discountType === ''){
+                formData.discountValue = null
+            }
+            if (formData.discountValue !== null){
+                formData.discountValue= parseFloat(formData.discountValue)
+            }
             AchatFormSchema.parse(formData);
 
-            console.log(formData)
+            const preparedData = Object.fromEntries(
+                Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
+            );
+
+            console.log(preparedData)
             const token = Cookies.get('access_token');
-            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/purchases`, formData, {
+            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/purchases`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             setFormData({
@@ -501,18 +529,47 @@ export default function AchatCreationForm() {
                                 <p className="text-xs text-red-500 mt-1">{errors.taxPercentage}</p>
                             )}
                         </div>
+
+
+                        <div className="space-y-2">
+                            <Label>Type de remise</Label>
+                            <Select
+                                name="discountType"
+                                value={formData.discountType}
+                                onValueChange={(value) => handleChange({ target: { name: 'discountType', value } })}
+                            >
+                                <SelectTrigger>
+                                    <SelectValue placeholder="Sélectionner un Type de remise" />
+                                </SelectTrigger>
+                                <SelectContent>
+                                <SelectContent>
+                                    {formData.discountType ==='' || <SelectItem value={null}>Aucun</SelectItem>}
+                                    <SelectItem value="percentage">Pourcentage</SelectItem>
+                                    <SelectItem value="amount">Montant</SelectItem>
+                                </SelectContent>
+                                </SelectContent>
+                            </Select>
+                            {errors.discountType && (
+                                <p className="text-xs text-red-500 mt-1">{errors.discountType}</p>
+                            )}
+                        </div>
                         
                         <div className="space-y-2">
                             <Label>Remise</Label>
                             <Input
                                 type="number"
-                                name="Remise"
-                                value={0}
-                                disabled={true}
+                                name="discountValue"
+                                onChange={handleChange}
+                                value={formData.discountValue || ''}
+                                disabled={!formData.discountType}
+                                placeholder='Remise'
+                                min='0'
+                                step='any'
+                                max={formData.discountType === 'percentage' ? '100' : undefined}
                             />
-                            {/* {errors.remise && (
-                                <p className="text-xs text-red-500 mt-1">{errors.remise}</p>
-                            )} */}
+                            {errors.discountValue && (
+                                <p className="text-xs text-red-500 mt-1">{errors.discountValue}</p>
+                            )}
                         </div>
                     </div>
 
@@ -677,12 +734,12 @@ export default function AchatCreationForm() {
                             <h2 className="text-2xl font-semibold mb-4">Résumé</h2>
                             <div className="space-y-2">
                                 <div className="flex justify-between">
-                                    <span>Total HT</span>
-                                    <strong>{totals.totalHT.toFixed(2)} €</strong>
+                                    <span>Remise</span>
+                                    <strong>{totals.remiseTotal} {formData.discountType === 'percentage' ? '%' : '$' }</strong>
                                 </div>
                                 <div className="flex justify-between">
-                                    <span>Remise Totale</span>
-                                    {/* <strong>{totals.remiseTotal} €</strong> */}
+                                    <span>Total HT</span>
+                                    <strong>{totals.totalHT.toFixed(2)} €</strong>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Base HT</span>
