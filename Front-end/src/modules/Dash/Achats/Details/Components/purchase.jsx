@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import {Dot ,ArrowLeftRight,ChevronRight ,Ban,ArrowLeft ,Loader} from 'lucide-react'
+import {Dot ,ArrowLeftRight,ChevronRight ,Download  ,Loader} from 'lucide-react'
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/components/ui/table"
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card"
@@ -70,11 +70,14 @@ const purchase = ({purchase}) => {
             <CardHeader className='border-b border-gray-100 bg-gray-50 mb-5 rounded-tl-2xl rounded-tr-2xl'>
                 <CardTitle className='text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
                     <ChevronRight className='mr-2 text-primary' />
-                    Détails de l'achat
+                    Détails de l'achat 
+                    <span className="ml-2 p-2 border border-gray-200 rounded hover:bg-gray-400 transition-colors cursor-pointer">
+                        <Download  className="w-5 h-5" />
+                    </span>
                 </CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="flex  flex-col space-y-2 mb-5">
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-5">
                     <div className="flex text-base">
                         <Dot />
                         <span className='text-black text-base mr-2 font-medium text-nowrap'> Référence achat :</span>
@@ -97,22 +100,22 @@ const purchase = ({purchase}) => {
                     </div>
                 </div>
                 <Table>
-                    <TableHeader>
-                        <TableRow  className='hover:bg-transparent'>
+                    <TableHeader  className="border border-gray-200">
+                        <TableRow  className='hover:bg-transparent '>
                             <TableHead>Produit</TableHead>
-                            <TableHead className="text-center">Qté</TableHead>
-                            <TableHead className="text-center">Prix</TableHead>
-                            <TableHead className="text-center">Sous-total</TableHead>
-                            <TableHead className="text-center">Actions</TableHead>
+                            <TableHead className="text-center border">Qté</TableHead>
+                            <TableHead className="text-center border">Prix</TableHead>
+                            <TableHead className="text-center border">Sous-total</TableHead>
+                            <TableHead className="text-center border">Actions</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
                         {purchase?.purchaseItems.map((item) => (
-                            <TableRow key={item.id} className="font-sans font-medium">
+                            <TableRow key={item.id} className="font-sans font-medium border border-gray-200">
                                 <TableCell>{item.product.productName}</TableCell>
-                                <TableCell className="text-center  p-4">{item.quantity}</TableCell>
-                                <TableCell className="text-center  p-4">{formatCurrency(item.unitPrice)}</TableCell>
-                                <TableCell className="text-center  p-4">{formatCurrency(item.totalAmount)}</TableCell>
+                                <TableCell className="text-center  p-4 border">{item.quantity}</TableCell>
+                                <TableCell className="text-center  p-4 border">{formatCurrency(item.unitPrice)}</TableCell>
+                                <TableCell className="text-center  p-4 border">{formatCurrency(item.totalAmount)}</TableCell>
                                 <TableCell className="text-center">
                                 <button onClick={() => showModel(item?.id,item.product.productName)}>
                                     <ArrowLeftRight />

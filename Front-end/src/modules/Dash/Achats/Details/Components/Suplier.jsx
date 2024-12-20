@@ -7,12 +7,14 @@ const Suplier = ({purchase}) => {
   return (
     <>
         <Card className='shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl'>
+
             <CardHeader className='border-b border-gray-100 bg-gray-50 mb-5 rounded-tl-2xl rounded-tr-2xl'>
                 <CardTitle className='text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
                     <ChevronRight className='mr-2 text-primary' />
                     Informations Fournisseur
                 </CardTitle>
             </CardHeader>
+
             <CardContent className="space-y-4">
                 <div className="flex items-center space-x-4">
                     <Avatar>
@@ -23,7 +25,8 @@ const Suplier = ({purchase}) => {
                         <p className="text-sm text-muted-foreground">Fournisseur</p>
                     </div>
                 </div>
-                <div className="space-y-2">
+
+                <div className="grid md:grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 gap-4">
                     <div className="flex items-center space-x-4 text-base  font-normal">
                         <Phone className="h-4 w-4 text-muted-foreground" />
                         <span>{purchase?.supplier?.phone}</span>

@@ -153,154 +153,148 @@ return (
 
 
         {isModalVisible && (
+            <div 
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                role="dialog"
+                aria-modal="true"
+            >
                 <div 
-                    className="fixed inset-0 z-50 flex items-center justify-center"
-                    role="dialog"
-                    aria-modal="true"
+                    className="fixed inset-0 bg-black/50 transition-opacity"
+                    onClick={CloseModel}
+                />
+                
+                <div 
+                    className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
+                    onClick={(e) => e.stopPropagation()}
                 >
-                    <div 
-                        className="fixed inset-0 bg-black/50 transition-opacity"
-                        onClick={CloseModel}
-                    />
+                    <div className="mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">Ajouter un nouveau paiement</h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                            Veuillez entrer les détails du paiement ci-dessous. Cette action est irréversible.
+                        </p>
+                    </div>
+
                     
-                    <div 
-                        className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
-                        onClick={(e) => e.stopPropagation()}
-                    >
-                        <div className="mb-4">
-                            <h3 className="text-lg font-semibold text-gray-800">Ajouter un nouveau paiement</h3>
-                            <p className="mt-2 text-sm text-gray-600">
-                                Veuillez entrer les détails du paiement ci-dessous. Cette action est irréversible.
-                            </p>
+                    {alert?.message && (
+                        <Alert
+                            variant={alert.type === "error" ? "destructive" : "success"}
+                            className={`mt-4 mb-4 text-center ${
+                                alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
+                            }`}
+                        >
+                            <AlertDescription>{alert.message}</AlertDescription>
+                        </Alert>
+                    )}
+
+                    <form onSubmit={(e) => e.preventDefault()}>
+                        <div className="space-y-4">
+                            <div className="space-y-2">
+                                <Label htmlFor="amount" className="text-sm font-medium text-gray-700">
+                                    Montant <span className='text-red-500 text-base'>*</span>
+                                </Label>
+                                <Input
+                                    id="amount"
+                                    type="number"
+                                    name="amount"
+                                    placeholder="Montant"
+                                    className="w-full"
+                                    onChange={handleChange}
+                                    min={0}
+                                    value={formData.amount}
+                                />
+                                {errors.amount && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
+                                )} 
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="status" className="text-sm font-medium text-gray-700">
+                                    Statut
+                                </Label>
+                                <Select
+                                    name="status"
+                                    value={formData.status}
+                                    onValueChange={(value) => handleChange({ target: { name: 'status', value } })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner un  status" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {formData.status ==='' || <SelectItem value={null}>Aucun</SelectItem>}
+                                        <SelectItem value="paid">Payé</SelectItem>
+                                        <SelectItem value="unpaid">Non payé</SelectItem>
+                                    </SelectContent>
+                                </Select>
+                                {errors.status && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.status}</p>
+                                )} 
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="reference" className="text-sm font-medium text-gray-700">
+                                    Référence
+                                </Label>
+                                <Input
+                                    id="reference"
+                                    name="reference"
+                                    placeholder="Référence"
+                                    className="w-full"
+                                    onChange={handleChange}
+                                    value={formData.reference}
+                                />
+                                {errors.reference && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.reference}</p>
+                                )} 
+                            </div>
+                            <div className="space-y-2">
+                                <Label htmlFor="datePaiement" className="text-sm font-medium text-gray-700">
+                                    Date de paiement
+                                </Label>
+                                <input
+                                    type="datetime-local"
+                                    id="datePaiement"
+                                    name="datePaiement"
+                                    value={formData.datePaiement}
+                                    onChange={handleChange}
+                                    className="w-full p-1  border border-gray-200 rounded-md"
+                                />
+                                {errors.datePaiement && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.datePaiement}</p>
+                                )} 
+                            </div>
                         </div>
 
-                        
-                        {alert?.message && (
-                            <Alert
-                                variant={alert.type === "error" ? "destructive" : "success"}
-                                className={`mt-4 mb-4 text-center ${
-                                    alert.type === "error" ? "bg-red-100 text-red-800" : "bg-green-100 text-green-800"
-                                }`}
+
+                        <div className="mt-6 flex justify-end space-x-3">
+                            <button
+                                type="button"
+                                onClick={CloseModel}
+                                className="rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
                             >
-                                <AlertDescription>{alert.message}</AlertDescription>
-                            </Alert>
-                        )}
-
-                        <form onSubmit={(e) => e.preventDefault()}>
-                            <div className="space-y-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="amount" className="text-sm font-medium text-gray-700">
-                                        Montant <span className='text-red-500 text-base'>*</span>
-                                    </Label>
-                                    <Input
-                                        id="amount"
-                                        type="number"
-                                        name="amount"
-                                        placeholder="Montant"
-                                        className="w-full"
-                                        onChange={handleChange}
-                                        min={0}
-                                        value={formData.amount}
-                                    />
-                                    {errors.amount && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.amount}</p>
-                                    )} 
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="status" className="text-sm font-medium text-gray-700">
-                                        Statut
-                                    </Label>
-                                    <Select
-                                        name="status"
-                                        value={formData.status}
-                                        onValueChange={(value) => handleChange({ target: { name: 'status', value } })}
-                                    >
-                                        <SelectTrigger>
-                                            <SelectValue placeholder="Sélectionner un  status" />
-                                        </SelectTrigger>
-                                        <SelectContent>
-                                            {formData.status ==='' || <SelectItem value={null}>Aucun</SelectItem>}
-                                            <SelectItem value="paid">Payé</SelectItem>
-                                            <SelectItem value="unpaid">Non payé</SelectItem>
-                                        </SelectContent>
-                                    </Select>
-                                    {errors.status && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.status}</p>
-                                    )} 
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="reference" className="text-sm font-medium text-gray-700">
-                                        Référence
-                                    </Label>
-                                    <Input
-                                        id="reference"
-                                        name="reference"
-                                        placeholder="Référence"
-                                        className="w-full"
-                                        onChange={handleChange}
-                                        value={formData.reference}
-                                    />
-                                    {errors.reference && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.reference}</p>
-                                    )} 
-                                </div>
-                                <div className="space-y-2">
-                                    <Label htmlFor="datePaiement" className="text-sm font-medium text-gray-700">
-                                        Date de paiement
-                                    </Label>
-                                    <input
-                                        type="datetime-local"
-                                        id="datePaiement"
-                                        name="datePaiement"
-                                        value={formData.datePaiement}
-                                        onChange={handleChange}
-                                        className="w-full p-1  border border-gray-200 rounded-md"
-                                    />
-                                    {errors.datePaiement && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.datePaiement}</p>
-                                    )} 
-                                </div>
-                            </div>
-
-
-                            <div className="mt-6 flex justify-end space-x-3">
-                                <button
-                                    type="button"
-                                    onClick={CloseModel}
-                                    className="rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
-                                >
-                                    Annuler
-                                </button>
-                                <Button
-                                    type="submit"
-                                    className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
-                                    onClick={(e) => {
-                                        e.preventDefault();
-                                        fetchCreatePayment();
-                                    }}
-                                    disabled={issLoading}
-                                >
-                                    {issLoading ? (
-                                        <div className="flex items-center gap-2">
-                                            <Loader className="h-4 w-4 animate-spin" />
-                                            <span>En traitement...</span>
-                                        </div>
-                                        ) : (
-                                        "Ajouter"
-                                    )}
-                                </Button>
-                            </div>
-                        </form>
-                    </div>
+                                Annuler
+                            </button>
+                            <Button
+                                type="submit"
+                                className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    fetchCreatePayment();
+                                }}
+                                disabled={issLoading}
+                            >
+                                {issLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                        <span>En traitement...</span>
+                                    </div>
+                                    ) : (
+                                    "Ajouter"
+                                )}
+                            </Button>
+                        </div>
+                    </form>
                 </div>
-            )}
-
-
-
-
-
-
+            </div>
+        )}
     </>
   )
 }

@@ -45,13 +45,10 @@ const AchatDetail = () => {
             </div>
             ) : (
 
-        <div className='grid grid-cols-1 lg:grid-cols-2 gap-4 sm:p-0 md:p-5 lg:p-5'>
+        <div className='grid grid-cols-1  gap-2 sm:p-0 md:p-5 lg:p-5 space-y-6'>
+            <Suplier purchase={purchase}/>
             <PurchaseComponent purchase={purchase} />
-
-            <div className='space-y-6 h-fit'>
-                <Suplier purchase={purchase}/>
-                <Payment purchase={purchase} fetchPurchase={fetchPurchase}/>
-            </div>
+            <Payment purchase={purchase} fetchPurchase={fetchPurchase}/>
         </div>
 
         )
