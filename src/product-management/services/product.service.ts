@@ -1,5 +1,4 @@
 import { GenericService } from "src/common/services/generic.service";
-import { Category } from "../entities/category.entity";
 import { DataSource, Repository, UpdateResult } from "typeorm";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { Product } from "../entities/product.entity";

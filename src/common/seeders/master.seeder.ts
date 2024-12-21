@@ -13,13 +13,13 @@ import { ZonePermissionSeeder } from 'src/zone-table-management/seeders/zone-per
 import { StoragePermissionSeeder } from 'src/storage-management/seeders/storage-permissions.dto';
 import { InventoryMovementPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-movement-permissions.seeder';
 import { InventoryPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-permission.seeder';
-import { CategoryPermissionSeeder } from 'src/product-management/seeders/category-permission.seeder';
 import { ProductPermissionSeeder } from 'src/product-management/seeders/product-permission.seeder';
 import { ShiftZonePermissionSeeder } from 'src/shift-zone-management/seeders/shift.permission';
 import { FundPermissionSeeder } from 'src/fund-management/seeders/fund.seeder';
 import { OperationsPermissionSeeder } from 'src/fund-management/seeders/operation.seeder';
 import { PurchasePermissionSeeder } from 'src/purchase-management/seeders/purchase.seeder';
 import { LanguageSeeder } from 'src/language-management/seeders/language.seeder';
+import { CategoryPermissionSeeder } from 'src/category-item-management/seeders/category-permission.seeder';
 
 @Injectable()
 export class MasterSeeder {

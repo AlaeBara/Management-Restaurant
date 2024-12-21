@@ -56,30 +56,30 @@ export class GenericService<T> {
     if (searchQuery) {
       const searchCriteria: SearchQuery = {};
       Object.entries(searchQuery).forEach(([key, value]) => {
-       if (key.startsWith('search.')) {
-         const field = key.split('.')[1];
-         const values = Array.isArray(value) ? value : [value];
-         searchCriteria[field] = values;
-       }
-     });
+        if (key.startsWith('search.')) {
+          const field = key.split('.')[1];
+          const values = Array.isArray(value) ? value : [value];
+          searchCriteria[field] = values;
+        }
+      });
       Object.entries(searchCriteria).forEach(([column, values], index) => {
-       // Get the column metadata to check if it's an enum
-       const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(column);
-       const isEnum = columnMetadata?.type === 'enum';
+        // Get the column metadata to check if it's an enum
+        const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(column);
+        const isEnum = columnMetadata?.type === 'enum';
         const conditions = values.map((value, valueIndex) => {
-         const paramName = `search${index}_${valueIndex}`;
-         // Use exact matching for enums, ILIKE for text
-         return isEnum 
-           ? `${this.name}.${column} = :${paramName}`
-           : `${this.name}.${column} ILIKE :${paramName}`;
-       });
+          const paramName = `search${index}_${valueIndex}`;
+          // Use exact matching for enums, ILIKE for text
+          return isEnum
+            ? `${this.name}.${column} = :${paramName}`
+            : `${this.name}.${column} ILIKE :${paramName}`;
+        });
         query.andWhere(`(${conditions.join(' OR ')})`,
-         values.reduce((params, value, valueIndex) => ({
-           ...params,
-           [`search${index}_${valueIndex}`]: isEnum ? value : `%${value}%`
-         }), {})
-       );
-     });
+          values.reduce((params, value, valueIndex) => ({
+            ...params,
+            [`search${index}_${valueIndex}`]: isEnum ? value : `%${value}%`
+          }), {})
+        );
+      });
     }
 
     const currentPage = Math.max(1, Number(page) || 1);
@@ -309,7 +309,7 @@ export class GenericService<T> {
         where: { [key]: value } as any,
         withDeleted: false,
       });
-  
+
       if (count > 0) {
         throw new ConflictException(
           `${this.name.charAt(0).toUpperCase() + this.name.slice(1)} avec ${key} "${value}" existe deja`
@@ -431,7 +431,13 @@ export class GenericService<T> {
     return result;
   } */
 
-  async softDelete(id: number | string) {
+  async softDelete(id: number | string, checkIsDeleted?: boolean) {
+    if (checkIsDeleted) {
+      const count = await this.repository.count({ where: { id } as any });
+      if (count == 0) {
+        throw new BadRequestException(`${this.name.charAt(0).toUpperCase() + this.name.slice(1)} Introuvable`);
+      }
+    }
     return this.repository.softDelete(id);
   }
 
@@ -474,8 +480,12 @@ export class GenericService<T> {
              withDeleted: false,
            })) as any; */
 
-        const conditions = listOfUniqueAttributes.map(attr => ({
+      /*   const conditions = listOfUniqueAttributes.map(attr => ({
           [attr]: entity[attr]
+        })); */
+
+        const conditions = listOfUniqueAttributes.map(attr => ({
+          [attr]: typeof entity[attr] === 'string' ? entity[attr].toLowerCase() : entity[attr]
         }));
 
         // Check if any active record exists with any of the unique attributes

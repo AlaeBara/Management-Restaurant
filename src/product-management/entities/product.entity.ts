@@ -1,6 +1,5 @@
 import { BaseEntity } from "src/common/entities/base.entity";
 import { AfterLoad, Column, Entity, Index, JoinColumn, ManyToOne, OneToMany, RelationId } from "typeorm";
-import { Category } from "./category.entity";
 import { ProductType } from "../enums/type.enum";
 import { Unit } from "src/unit-management/entities/unit.entity";
 import { Exclude } from "class-transformer";

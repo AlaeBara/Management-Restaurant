@@ -43,7 +43,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
                 Invenetory.totalQuantity = totalQuantity - Number(quantity);
                 break;
             default:
-                throw new BadRequestException(`Invalid movement action: ${movementAction}`);
+                throw new BadRequestException(`Action de mouvement invalide: ${movementAction}`);
         }
 
         await this.inventoryRepository.save(Invenetory);
@@ -55,7 +55,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
      * @throws BadRequestException if the quantity is not greater than 0
      */
     async validateQuantity(quantity: number): Promise<void> {
-        if (quantity <= 0) throw new BadRequestException('Quantity must be greater than 0');
+        if (quantity <= 0) throw new BadRequestException('La quantité doit être supérieure à 0');
     }
 
     /**
@@ -74,7 +74,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
 
         //The movement action must be either 'increase' or 'decrease'
         if (['increase', 'decrease'].includes(inventoryMovementObject.movementAction) === false) {
-            throw new BadRequestException('Invalid movement action');
+            throw new BadRequestException('Action de mouvement invalide');
         }
 
         // Fetch the related inventory record with additional options
@@ -88,7 +88,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
 
         // Validate that we're not trying to decrease more than what's available
         if (inventoryMovementObject.movementAction === 'decrease' && inventoryMovementObject.quantity > Inventory.totalQuantity) {
-            throw new BadRequestException('Quantity is greater than the inventory total quantity');
+            throw new BadRequestException('La quantité est supérieure à la quantité totale de l\'inventaire');
         }
 
         // Set the user who initiated this movement
