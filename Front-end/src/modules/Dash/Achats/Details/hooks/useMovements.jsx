@@ -70,7 +70,10 @@ export const useMovements = (id, formData, CloseModel) => {
     }
   }, [id, formData]);
 
-  const resetErrors = () => {setAlert({})};
+    const resetErrors = () => {
+        setAlert({ message: null, type: null });
+        setErrors({}); // Reset errors state
+    };
 
   return { issLoading, alert, errors, fetchMovements,resetErrors };
 };
