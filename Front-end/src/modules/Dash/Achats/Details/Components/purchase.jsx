@@ -214,10 +214,10 @@ const purchase = ({purchase , fetchData}) => {
                         <TableRow  className='hover:bg-transparent'>
                             <TableHead>Produit</TableHead>
                             <TableHead className="text-center border">Qté</TableHead>
-                            <TableHead className="text-center border">Qté Traiter</TableHead>
+                            <TableHead className="text-center border">Qté à Traiter</TableHead>
                             <TableHead className="text-center border">Prix</TableHead>
                             <TableHead className="text-center border">Sous-total</TableHead>
-                            <TableHead className="text-center border">Actions</TableHead>
+                            <TableHead className="text-center border">Traitment</TableHead>
                         </TableRow>
                     </TableHeader>
                     <TableBody>
@@ -225,11 +225,11 @@ const purchase = ({purchase , fetchData}) => {
                             <TableRow key={item.id} className="font-sans font-medium border border-gray-200">
                                 <TableCell>{item.product.productName}</TableCell>
                                 <TableCell className="text-center  p-4 border">{(Number(item.quantity)).toFixed(0)}</TableCell>
-                                <TableCell className="text-center  p-4 border">{(Number(item.quantityMoved)).toFixed(0)}</TableCell>
+                                <TableCell className="text-center  p-4 border">{(Number(item.quantityInProgress)).toFixed(0) == 0 ? 'Traitment Terminé' : (Number(item.quantityInProgress)).toFixed(0)}</TableCell>
                                 <TableCell className="text-center  p-4 border">{formatCurrency(item.unitPrice)}</TableCell>
                                 <TableCell className="text-center  p-4 border">{formatCurrency(item.totalAmount)}</TableCell>
                                 <TableCell className="text-center">
-                                    {purchase?.status ==='completed' ? 
+                                    {item?.status ==='completed' ? 
                                         <span className={`px-3 py-1 rounded-full text-sm ${StatusToFrench(item?.status).style}`}>
                                             {StatusToFrench(item?.status).label}
                                         </span> 
