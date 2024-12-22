@@ -198,20 +198,19 @@ export class PurchaseService extends GenericService<Purchase> {
 
     async updatePurchasePaiementStatus(purchaseId: string) {
         const purchase = await this.findOrThrowByUUID(purchaseId);
-
-        const allPaid = purchase.purchasePaiements.every(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
-        console.log("allPaid", allPaid)
-        console.log("purchase.totalRemainingAmount", purchase.totalRemainingAmount)
-        if (allPaid && purchase.totalRemainingAmount === 0) {
-            purchase.paiementStatus = PurchasePaiementStatus.PAID;
-            return this.purchaseRepository.save(purchase);
-        }
-        console.log("purchase.totalRemainingAmount", purchase.totalRemainingAmount)
+        
         const hasPartial = purchase.purchasePaiements.some(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
         if (hasPartial && purchase.totalRemainingAmount > 0) {
             purchase.paiementStatus = PurchasePaiementStatus.PARTIALLY_PAID;
             return this.purchaseRepository.save(purchase);
         }
+
+        const allPaid = purchase.purchasePaiements.every(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
+        if (allPaid && purchase.totalRemainingAmount == 0) {
+            purchase.paiementStatus = PurchasePaiementStatus.PAID;
+            return this.purchaseRepository.save(purchase);
+        }
+        
     }
 
     async deletePurchase(purchaseId: string) {
