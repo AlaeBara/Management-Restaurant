@@ -9,7 +9,7 @@ const MoveSchema = z.object({
     quantityToReturn: z.string().nullable().optional(),
 });
 
-export const useMovements = (id, formData, CloseModel) => {
+export const useMovements = (id, formData, CloseModel ,fetchData,idd ) => {
   const [issLoading, setIsLoading] = useState(false);
   const [alert, setAlert] = useState({ message: null, type: null });
   const [errors, setErrors] = useState({});
@@ -51,6 +51,7 @@ export const useMovements = (id, formData, CloseModel) => {
         });
         CloseModel()
         setErrors({})
+        fetchData(idd)
     } catch (err) {
         if (err instanceof z.ZodError) {
             const fieldErrors = err.errors.reduce((acc, { path, message }) => {

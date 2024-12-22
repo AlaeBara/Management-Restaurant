@@ -84,13 +84,16 @@ return (
                     Historique des paiements
                 </CardTitle>
 
-                <Button
-                    type="submit"
-                    className="w-full sm:w-auto rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
-                    onClick={showModel}
-                >
-                    <Plus className='mr-2 h-4 w-4'/> Ajouter Paiement
-                </Button>
+                {purchase?.totalRemainingAmount !== '0.00' &&
+
+                    <Button
+                        type="submit"
+                        className="w-full sm:w-auto rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
+                        onClick={showModel}
+                    >
+                        <Plus className='mr-2 h-4 w-4'/> Ajouter Paiement
+                    </Button>
+                }
             </CardHeader>
 
             <CardContent>
@@ -101,6 +104,7 @@ return (
                             <TableHead className="text-center border">Status</TableHead>
                             <TableHead className="text-center border">Montant</TableHead>
                             <TableHead className="text-center border">Date</TableHead>
+                            <TableHead className="text-center border">Action</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -117,11 +121,19 @@ return (
                                     </TableCell>
                                     <TableCell className="text-center p-4 border">{formatCurrency(payment.amount)}</TableCell>
                                     <TableCell className="text-center  p-4 text-nowrap border">{payment.datePaiement ? formatDate(payment.datePaiement) : "-"}</TableCell>
+                                    <TableCell className="text-center  p-4 text-nowrap border">
+                                        <Button
+                                            type="submit"
+                                            className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
+                                        >
+                                            Validé
+                                        </Button>
+                                    </TableCell>
                                 </TableRow>
                                 ))
                             ) : (
                                 <TableRow>
-                                    <TableCell colSpan="4" className="text-center p-4">
+                                    <TableCell colSpan="5" className="text-center p-4">
                                         Aucun paiement trouvé.
                                     </TableCell>
                                 </TableRow>

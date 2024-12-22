@@ -89,7 +89,7 @@ const purchase = ({purchase , fetchData}) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const { issLoading , alert, errors, fetchMovements ,resetErrors} = useMovements(idSelected , formData ,CloseModel)
+    const { issLoading , alert, errors, fetchMovements ,resetErrors} = useMovements(idSelected , formData ,CloseModel , fetchData ,id)
 
     //model of creation item
     const [isModalCreationVisible ,setIsModalCreationVisible] =useState(false)
@@ -169,13 +169,15 @@ const purchase = ({purchase , fetchData}) => {
                     </span>
                 </CardTitle>
                
-                <Button
-                    type="submit"
-                    className="w-full sm:w-auto rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
-                    onClick={showModelCreation}
-                >
-                    <Plus className='mr-2 h-4 w-4'/> Ajouter Item
-                </Button>
+                {purchase?.status ==='created' &&
+                    <Button
+                        type="submit"
+                        className="w-full sm:w-auto rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
+                        onClick={showModelCreation}
+                    >
+                        <Plus className='mr-2 h-4 w-4'/> Ajouter Article
+                    </Button>
+                }
             </CardHeader>
 
             <CardContent>
@@ -200,7 +202,11 @@ const purchase = ({purchase , fetchData}) => {
                     <div className="flex text-base">
                         <Dot />
                         <span className='text-black text-base mr-2 font-medium'>Tax :</span>
-                        <span> {purchase?.taxPercentage} %</span>
+                        <span>
+                            {purchase?.taxPercentage % 1 === 0
+                                ? `${Number(purchase?.taxPercentage).toFixed(0)}%`
+                                : `${Number(purchase?.taxPercentage).toFixed(2)}%`}
+                        </span>
                     </div>
                 </div>
                 <Table>
@@ -208,6 +214,7 @@ const purchase = ({purchase , fetchData}) => {
                         <TableRow  className='hover:bg-transparent'>
                             <TableHead>Produit</TableHead>
                             <TableHead className="text-center border">Qté</TableHead>
+                            <TableHead className="text-center border">Qté Traiter</TableHead>
                             <TableHead className="text-center border">Prix</TableHead>
                             <TableHead className="text-center border">Sous-total</TableHead>
                             <TableHead className="text-center border">Actions</TableHead>
@@ -217,13 +224,20 @@ const purchase = ({purchase , fetchData}) => {
                         {purchase?.purchaseItems.map((item) => (
                             <TableRow key={item.id} className="font-sans font-medium border border-gray-200">
                                 <TableCell>{item.product.productName}</TableCell>
-                                <TableCell className="text-center  p-4 border">{item.quantity}</TableCell>
+                                <TableCell className="text-center  p-4 border">{(Number(item.quantity)).toFixed(0)}</TableCell>
+                                <TableCell className="text-center  p-4 border">{(Number(item.quantityMoved)).toFixed(0)}</TableCell>
                                 <TableCell className="text-center  p-4 border">{formatCurrency(item.unitPrice)}</TableCell>
                                 <TableCell className="text-center  p-4 border">{formatCurrency(item.totalAmount)}</TableCell>
                                 <TableCell className="text-center">
-                                <button onClick={() => showModel(item?.id,item.product.productName)}>
-                                    <ArrowLeftRight />
-                                </button>
+                                    {purchase?.status ==='completed' ? 
+                                        <span className={`px-3 py-1 rounded-full text-sm ${StatusToFrench(item?.status).style}`}>
+                                            {StatusToFrench(item?.status).label}
+                                        </span> 
+                                        :
+                                        <button onClick={() => showModel(item?.id,item.product.productName)}>
+                                            <ArrowLeftRight />
+                                        </button>
+                                    }
                                 </TableCell>
                             </TableRow>
                         ))}
