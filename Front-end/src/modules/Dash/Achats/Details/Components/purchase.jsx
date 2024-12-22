@@ -14,24 +14,46 @@ import {useFetchIventory} from '../../Hooks/useFetchInventorys'
 import {useAddItem} from '../hooks/useAddItem'
 import { useParams } from 'react-router-dom';
 
-const purchase = ({purchase}) => {
+const purchase = ({purchase , fetchData}) => {
 
     const {id} =useParams()
     const [isModalVisible ,setIsModalVisible] =useState(false)
 
     function StatusToFrench(status) {
-        if (typeof status !== 'string') {
-            return 'Status not available'; 
-        }
+  
+        const normalizedStatus = status ? status.toUpperCase().trim() : '';
+      
         const statusTranslations = {
-            'CREATED': 'Créé',
-            'CONFIRMED': 'Confirmé',
-            'DELIVERING': 'En livraison',
-            'CANCELLED': 'Annulé',
-            'COMPLETED': 'Terminé',
+          'CREATED': { 
+            label: 'Créé', 
+            style: 'bg-gray-200 text-gray-800 rounded px-2 py-1 text-sm font-medium' 
+          },
+          'CONFIRMED': { 
+            label: 'Confirmé', 
+            style: 'bg-blue-200 text-blue-800 rounded px-2 py-1 text-sm font-medium' 
+          },
+          'DELIVERING': { 
+            label: 'En livraison', 
+            style: 'bg-yellow-200 text-yellow-800 rounded px-2 py-1 text-sm font-medium' 
+          },
+          'CANCELLED': { 
+            label: 'Annulé', 
+            style: 'bg-red-200 text-red-800 rounded px-2 py-1 text-sm font-medium' 
+          },
+          'COMPLETED': { 
+            label: 'Terminé', 
+            style: 'bg-green-200 text-green-800 rounded px-2 py-1 text-sm font-medium' 
+          }
         };
-        return statusTranslations[status.toUpperCase()] || status;
+      
+        const statusInfo = statusTranslations[normalizedStatus] || { 
+          label: status || 'Statut inconnu', 
+          style: 'bg-gray-200 text-gray-800 rounded px-2 py-1 text-sm font-medium' 
+        };
+      
+        return statusInfo;
     }
+
     const formatCurrency = (value) => {
         return new Intl.NumberFormat('fr-MA', {
         style: 'currency',
@@ -69,12 +91,9 @@ const purchase = ({purchase}) => {
 
     const { issLoading , alert, errors, fetchMovements ,resetErrors} = useMovements(idSelected , formData ,CloseModel)
 
-
-
     //model of creation item
     const [isModalCreationVisible ,setIsModalCreationVisible] =useState(false)
     
-
     const [formData2, setFormData2] = useState({
         productId: '',
         inventoryId: '',
@@ -127,7 +146,7 @@ const purchase = ({purchase}) => {
 
     //api for get All Produit + All inventaire of product
     const {products , fetchProduct} = useFetchProduct()
-    const {inventorys, totalIventory, loading, error, fetchIventory}=useFetchIventory()
+    const {inventorys,  fetchIventory}=useFetchIventory()
 
     useEffect(()=>{
         fetchProduct({fetchAll:true})
@@ -135,31 +154,30 @@ const purchase = ({purchase}) => {
     },[isModalCreationVisible])
 
 
-    const {isssLoading, alertt, errorss, fetchAddItem, resetErrorss} = useAddItem(id,formData2, CloseModelCreation)
+    const {isssLoading, alertt, errorss, fetchAddItem, resetErrorss} = useAddItem(id,formData2, CloseModelCreation,fetchData)
 
 
   return (
     <>
         <Card className='shadow-lg hover:shadow-xl transition-shadow duration-300 h-fit rounded-2xl'>
-            <CardHeader className='border-b border-gray-100 bg-gray-50 mb-5 rounded-tl-2xl rounded-tr-2xl'>
-                <CardTitle className='text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
+            <CardHeader className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 border-b border-gray-100 bg-gray-50 rounded-tl-2xl rounded-tr-2xl p-4 mb-5'>
+                <CardTitle className='text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
                     <ChevronRight className='mr-2 text-primary' />
                     Détails de l'achat 
                     <span className="ml-2 p-2 border border-black bg-black rounded  cursor-pointer">
                         <Download className="w-4 h-4" stroke="white" />
                     </span>
                 </CardTitle>
-            </CardHeader>
-
-            <div className='flex justify-end p-4'>
+               
                 <Button
                     type="submit"
-                    className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
+                    className="w-full sm:w-auto rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
                     onClick={showModelCreation}
                 >
                     <Plus className='mr-2 h-4 w-4'/> Ajouter Item
                 </Button>
-            </div>
+            </CardHeader>
+
             <CardContent>
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-4 mb-5">
                     <div className="flex text-base">
@@ -175,7 +193,9 @@ const purchase = ({purchase}) => {
                     <div className="flex text-base">
                         <Dot />
                         <span className='text-black text-base mr-2 font-medium'>Status :</span>
-                        <span>{StatusToFrench(purchase?.status)}</span>
+                        <span className={`px-3 py-1 rounded-full text-sm ${StatusToFrench(purchase?.status).style}`}>
+                            {StatusToFrench(purchase?.status).label}
+                        </span>
                     </div>
                     <div className="flex text-base">
                         <Dot />
@@ -184,8 +204,8 @@ const purchase = ({purchase}) => {
                     </div>
                 </div>
                 <Table>
-                    <TableHeader  className="border border-gray-200">
-                        <TableRow  className='hover:bg-transparent '>
+                    <TableHeader className="border border-gray-200">
+                        <TableRow  className='hover:bg-transparent'>
                             <TableHead>Produit</TableHead>
                             <TableHead className="text-center border">Qté</TableHead>
                             <TableHead className="text-center border">Prix</TableHead>

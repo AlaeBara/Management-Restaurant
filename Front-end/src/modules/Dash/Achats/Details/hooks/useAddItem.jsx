@@ -32,7 +32,7 @@ const AddItemSchema = z.object({
     .positive({ message: "Le montant total doit être un nombre positif ou zéro" }),
 });
 
-export const useAddItem= (id, formData2, CloseModelCreation) => {
+export const useAddItem= (id, formData2, CloseModelCreation , fetchData) => {
   const [isssLoading, setIsssLoading] = useState(false);
   const [alertt, setAlert] = useState({ message: null, type: null });
   const [errorss, setErrors] = useState({});
@@ -60,6 +60,7 @@ export const useAddItem= (id, formData2, CloseModelCreation) => {
             position: "top-right",
             autoClose: 3000,
         });
+        fetchData(id)
         CloseModelCreation()
         setErrors({})
     } catch (err) {

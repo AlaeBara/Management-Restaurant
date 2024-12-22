@@ -21,20 +21,12 @@ const Payment = ({purchase , fetchPurchase}) => {
         currency: 'MAD'
         }).format(value);
     };
-    const payments = [
-        { id: 1, date: '15 juin 2023', method: 'Carte bancaire', amount: 1500 },
-        { id: 2, date: '16 juin 2023', method: 'Espèces', amount: 1000 },
-        { id: 3, date: '17 juin 2023', method: 'Virement', amount: 100 }
-    ];
-    const totalPaid = payments.reduce((acc, payment) => acc + payment.amount, 0);
-
 
     const [isModalVisible ,setIsModalVisible] =useState(false)
 
     const showModel =()=>{
         setIsModalVisible(true);
     }
-
 
     const [formData, setFormData] = useState({
         amount: '',
@@ -61,7 +53,6 @@ const Payment = ({purchase , fetchPurchase}) => {
 
     const getStatusStyle = (status) => {
         const normalizedStatus = status ? status.toUpperCase().trim() : '';
-        
         switch (normalizedStatus) {
             case 'PAID':
                 return {
@@ -87,47 +78,45 @@ return (
     <>
 
         <Card className='shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-2xl'>
-            <CardHeader className='border-b border-gray-100 bg-gray-50 rounded-tl-2xl rounded-tr-2xl'>
-                <CardTitle className='text-xl lg:text-2xl font-bold text-gray-800  flex items-center'>
+            <CardHeader className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 border-b border-gray-100 bg-gray-50 rounded-tl-2xl rounded-tr-2xl p-4 mb-5'>
+                <CardTitle className='text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
                     <ChevronRight className='mr-2 text-primary' />
                     Historique des paiements
                 </CardTitle>
-            </CardHeader>
 
-            <div className='flex justify-end p-4'>
                 <Button
                     type="submit"
-                    className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
+                    className="w-full sm:w-auto rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
                     onClick={showModel}
                 >
                     <Plus className='mr-2 h-4 w-4'/> Ajouter Paiement
                 </Button>
-            </div>
+            </CardHeader>
 
-    
             <CardContent>
                 <Table>
-                    <TableHeader>
+                    <TableHeader className="border border-gray-200">
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead className="text-center">Référence</TableHead>
-                            <TableHead className="text-center">Status</TableHead>
-                            <TableHead className="text-center">Montant</TableHead>
-                            <TableHead className="text-center">Date</TableHead>
+                            <TableHead className=" border">Référence</TableHead>
+                            <TableHead className="text-center border">Status</TableHead>
+                            <TableHead className="text-center border">Montant</TableHead>
+                            <TableHead className="text-center border">Date</TableHead>
                         </TableRow>
                     </TableHeader>
+
                     <TableBody>
                         {
                             purchase?.purchasePaiements && purchase.purchasePaiements.length > 0 ? (
                                 purchase.purchasePaiements.map((payment) => (
                                 <TableRow key={payment.id} className="font-sans font-medium">
-                                    <TableCell className="text-center p-4">{payment.reference || "-"}</TableCell>
+                                    <TableCell className=" p-4 border">{payment.reference || "-"}</TableCell>
                                     <TableCell className="flex items-center justify-center p-4 text-nowrap">
-                                    <span className={getStatusStyle(payment.status).className}>
-                                        {getStatusStyle(payment.status).label}
-                                    </span>
+                                        <span className={getStatusStyle(payment.status).className}>
+                                            {getStatusStyle(payment.status).label}
+                                        </span>
                                     </TableCell>
-                                    <TableCell className="text-center p-4">{formatCurrency(payment.amount)}</TableCell>
-                                    <TableCell className="text-center  p-4 text-nowrap">{payment.datePaiement ? formatDate(payment.datePaiement) : "-"}</TableCell>
+                                    <TableCell className="text-center p-4 border">{formatCurrency(payment.amount)}</TableCell>
+                                    <TableCell className="text-center  p-4 text-nowrap border">{payment.datePaiement ? formatDate(payment.datePaiement) : "-"}</TableCell>
                                 </TableRow>
                                 ))
                             ) : (
@@ -146,6 +135,7 @@ return (
                             <TableCell colSpan={2} className="font-bold text-gray-800 text-lg">Total Restant</TableCell>
                             <TableCell className="font-bold text-center text-lg text-primary">{formatCurrency(purchase?.totalRemainingAmount)}</TableCell> 
                         </TableRow>
+                        
                     </TableBody>
                 </Table>
             </CardContent>

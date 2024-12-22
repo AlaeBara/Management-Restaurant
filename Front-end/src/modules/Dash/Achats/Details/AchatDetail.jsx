@@ -36,7 +36,7 @@ const AchatDetail = () => {
 
         {isLoading ? (
             <div className='flex items-center justify-center h-full'>
-                <Spinner title="Chargement des Catégories..." />
+                <Spinner title="Chargement des données..." />
             </div>
             ) : error ? (
             <div className='flex flex-col items-center justify-center h-full'>
@@ -47,7 +47,7 @@ const AchatDetail = () => {
 
         <div className='grid grid-cols-1  gap-2 sm:p-0 md:p-5 lg:p-5 space-y-6'>
             <Suplier purchase={purchase}/>
-            <PurchaseComponent purchase={purchase} />
+            <PurchaseComponent purchase={purchase} fetchData={fetchPurchase} />
             <Payment purchase={purchase} fetchPurchase={fetchPurchase}/>
         </div>
 

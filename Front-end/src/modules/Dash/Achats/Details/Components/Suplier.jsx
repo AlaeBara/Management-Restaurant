@@ -29,11 +29,11 @@ const Suplier = ({purchase}) => {
                 <div className="grid md:grid-cols-3 sm:grid-cols-1 lg:grid-cols-4 gap-4">
                     <div className="flex items-center space-x-4 text-base  font-normal">
                         <Phone className="h-4 w-4 text-muted-foreground" />
-                        <span>{purchase?.supplier?.phone}</span>
+                        <span>{purchase?.supplier?.phone || "-"}</span>
                     </div>
                     <div className="flex items-center space-x-4 text-base font-normal">
                         <Printer className="h-4 w-4 text-muted-foreground" />
-                        <span>{purchase?.supplier?.fax}</span>
+                        <span>{purchase?.supplier?.fax || "-"}</span>
                     </div>
                     <a href="mailto:baraalaeddine@gmail.com" className="flex items-center space-x-4 text-base  hover:underline font-normal">
                         <Mail className="h-4 w-4 text-muted-foreground" />
@@ -41,7 +41,7 @@ const Suplier = ({purchase}) => {
                     </a>
                     <div className="flex items-center space-x-4 text-base  font-normal">
                         <MapPin className="h-4 w-4 text-muted-foreground" />
-                        <span>{purchase?.supplier?.address}</span>
+                        <span>{purchase?.supplier?.address || "-"}</span>
                     </div>
                 </div>
             </CardContent>
