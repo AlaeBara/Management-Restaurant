@@ -9,11 +9,26 @@ import { MenuItemTagService } from './services/menu-item-tag.service';
 import { MenuItem } from './entities/menu-item.entity';
 import { MenuItemService } from './services/menu-item.service';
 import { MenuItemController } from './controllers/menu-item.controller';
+import { UnitModule } from 'src/unit-management/unit.module';
+import { MenuItemFormula } from './entities/menu-item-formula.entity';
+import { MenuItemPrice } from './entities/menu-item-price.entityt';
+import { MenuItemPriceHistory } from './entities/menu-item-price-history.entity';
+import { MenuItemDiscount } from './entities/menu-item-discount.entity';
+import { MenuItemTranslate } from './entities/menu-item-translation.enity';
+import { InventoryModule } from 'src/inventory-managemet/inventory.module';
+import { MenuItemAllocationMovement } from './entities/menu-item-allocation.entity';
+import { MenuItemDiscountService } from './services/menu-item-discount.service';
+import { MenuItemDiscountController } from './controllers/menu-item-discount.controller';
+import { MenuItemTranslationService } from './services/menu-item-translation.service';
+import { MenuItemPriceService } from './services/menu-item-price.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem]), forwardRef(() => LanguageModule), forwardRef(() => CategoryItemModule)],
-  controllers: [MenuItemTagController, MenuItemController],
-  providers: [MenuItemTagService, MenuItemService ],
+  imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
+    MenuItemDiscount, MenuItemTranslate, MenuItemAllocationMovement]),
+  forwardRef(() => LanguageModule), forwardRef(() => CategoryItemModule), forwardRef(() => ProductManagementModule),
+  forwardRef(() => UnitModule), forwardRef(() => InventoryModule)],
+  controllers: [MenuItemTagController, MenuItemController, MenuItemDiscountController],
+  providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService],
   exports: [],
 })
 export class MenuItemModule { }

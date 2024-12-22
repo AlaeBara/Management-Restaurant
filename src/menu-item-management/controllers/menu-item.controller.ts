@@ -7,6 +7,7 @@ import { MenuItemTag } from "../entities/menu-item-tag.entity";
 import { UpdateInventoryDto } from "src/inventory-managemet/dtos/inventory/update-inventory.dto";
 import { MenuItemService } from "../services/menu-item.service";
 import { MenuItem } from "../entities/menu-item.entity";
+import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 
 
 @Controller('api/menu-items')
@@ -42,6 +43,13 @@ export class MenuItemController {
             select,
             query,
         );
+    }
+
+    @Post()
+    @Permissions('create-menu-item')
+    @ApiOperation({ summary: 'Create a menu item' })
+    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto) {
+        return this.menuItemService.createMenuItem(createMenuItemDto);
     }
 
 }

@@ -7,5 +7,4 @@ import { MenuItem } from "./menu-item.entity";
 export class MenuItemTag extends BaseEntity {
     @Column({ type: 'varchar', length: 30 })
     tag: string;
-
 }

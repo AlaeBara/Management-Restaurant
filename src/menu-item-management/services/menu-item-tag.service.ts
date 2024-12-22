@@ -9,6 +9,7 @@ import { UpdateMenuItemTagDto } from "../dtos/menu-item-tag/update-menu-item-tag
 
 @Injectable()
 export class MenuItemTagService extends GenericService<MenuItemTag> {
+    
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemTag)

@@ -2,18 +2,102 @@ import { DataSource, Repository } from "typeorm";
 import { MenuItemTag } from "../entities/menu-item-tag.entity";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, Injectable } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
 import { MenuItem } from "../entities/menu-item.entity";
+import { CreateMenuItemTagDto } from "../dtos/menu-item-tag/create-menu-item-tag.dto";
+import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
+import { Category } from "src/category-item-management/entities/category.entity";
+import { CategoryService } from "src/category-item-management/services/category.service";
+import { MenuItemTagService } from "./menu-item-tag.service";
+import { MenuItemTranslationService } from "./menu-item-translation.service";
+import { LanguageService } from "src/language-management/services/langague.service";
+import { MenuItemTranslate } from "../entities/menu-item-translation.enity";
+import { MenuItemPriceService } from "./menu-item-price.service";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
     constructor(
-        @InjectDataSource() dataSource: DataSource,
+        @InjectDataSource() public dataSource: DataSource,
         @InjectRepository(MenuItem)
         readonly menuItemRepository: Repository<MenuItem>,
+        @Inject(forwardRef(() => CategoryService))
+        readonly categoryService: CategoryService,
+        @Inject(forwardRef(() => MenuItemTagService))
+        readonly TagService: MenuItemTagService,
+        @Inject(forwardRef(() => MenuItemTranslationService))
+        readonly translateService: MenuItemTranslationService,
+        @Inject(forwardRef(() => LanguageService))
+        readonly languageService: LanguageService,
+        @Inject(forwardRef(() => MenuItemPriceService))
+        readonly menuItemPriceService: MenuItemPriceService,
+
 
     ) {
         super(dataSource, MenuItem, 'article menu');
+    }
+
+
+
+    async createMenuItem(createMenuItemDto: CreateMenuItemDto) {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        
+        try {
+            const category = await this.categoryService.findOneByIdWithOptions(createMenuItemDto.categoryId);
+            const menuItem = this.menuItemRepository.create({
+                ...createMenuItemDto,
+                category: category,
+                tags: [],
+                translates: []
+            });
+    
+            // Fetch and add tags
+            await Promise.all(createMenuItemDto.tagIds.map(async (tagId) => {
+                const tag = await this.TagService.findOneByIdWithOptions(tagId);
+                menuItem.tags.push(tag);
+            }));
+    
+            // Save menu item using queryRunner
+            const menuItemSaved = await queryRunner.manager.save(MenuItem, menuItem);
+    
+            // Create translations
+            const translations = await Promise.all(
+                createMenuItemDto.translates.map(async (translate) => {
+                    const language = await this.languageService.getLanguageByCode(translate.languageId);
+                    return this.translateService.menuItemTranslationRepository.create({
+                        menuItem: menuItemSaved,
+                        language: language,
+                        name: translate.name,
+                        description: translate.description,
+                    });
+                })
+            );
+    
+            // Save translations using queryRunner
+            await queryRunner.manager.save(MenuItemTranslate,translations);
+
+
+        /*     // Create and save price using queryRunner
+            const price = this.menuItemPriceService.menuItemPriceRepository.create({
+                menuItem: menuItemSaved,
+                basePrice: createMenuItemDto.price.basePrice,
+                discount: createMenuItemDto.price.discountId ? await this.discountService.findOneByIdWithOptions(createMenuItemDto.price.discountId) : null,
+            });
+            await queryRunner.manager.save(price); */
+    
+            // Commit the transaction
+            await queryRunner.commitTransaction();
+            
+            return menuItemSaved;
+        } catch (error) {
+            // Rollback the transaction on error
+            await queryRunner.rollbackTransaction();
+            throw new BadRequestException(error.message);
+        } finally {
+            // Release the query runner
+            await queryRunner.release();
+        }
     }
 
 }

@@ -1,8 +1,11 @@
 import { Category } from "src/category-item-management/entities/category.entity";
 import { BaseEntity } from "src/common/entities/base.entity";
-import { AfterLoad, Column, Entity, Index, JoinTable, ManyToMany, ManyToOne, RelationId, Unique } from "typeorm";
-import { ItemMenuTag } from "../enums/item-menu-tag.enum";
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne} from "typeorm";
 import { MenuItemTag } from "./menu-item-tag.entity";
+import { MenuItemFormula } from "./menu-item-formula.entity";
+import { MenuItemPrice } from "./menu-item-price.entityt";
+import { MenuItemTranslate } from "./menu-item-translation.enity";
+import { Transform } from "class-transformer";
 
 
 
@@ -28,11 +31,20 @@ export class MenuItem extends BaseEntity {
     @ManyToOne(() => Category, (category) => category.id, { eager: false })
     category: Category
 
+    @Column({ type: 'varchar', nullable: true })
+    avatar: string;
+
     @ManyToMany(() => MenuItemTag, { eager: false })
     @JoinTable({ name: process.env.DATASET_PREFIX + 'item_menu_tag_relation' })
     tags: MenuItemTag[];
 
-    @Column({ type: 'varchar', nullable: true })
-    avatar: string;
+    @OneToMany(() => MenuItemFormula, (formula) => formula.id, { nullable: true })
+    formulas: MenuItemFormula[];
 
+    @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem)
+    @JoinColumn()
+    price: MenuItemPrice;
+
+    @OneToMany(() => MenuItemTranslate, (menuItemTranslate) => menuItemTranslate.menuItem, { eager: true })
+    translates: MenuItemTranslate[];
 }

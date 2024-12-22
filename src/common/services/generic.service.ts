@@ -5,7 +5,7 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { Repository, DeleteResult, UpdateResult, Table } from 'typeorm';
+import { Repository, DeleteResult, UpdateResult, Table, EntityManager } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityTarget } from 'typeorm';
 import FindOneOptions from '../interface/findoneoption.interface';
@@ -16,13 +16,15 @@ interface SearchQuery {
 @Injectable()
 export class GenericService<T> {
   private repository: Repository<T>;
+  protected entityManager: EntityManager;
   private name: string;
   constructor(
-    @InjectDataSource() protected readonly dataSource: DataSource,
+    @InjectDataSource() public readonly dataSource: DataSource,
     private readonly entity: EntityTarget<T>,
     modelName: string,
   ) {
     this.repository = this.dataSource.getRepository(this.entity);
+    this.entityManager = this.dataSource.manager;
     this.name = modelName.toLowerCase();
   }
 
@@ -480,13 +482,13 @@ export class GenericService<T> {
              withDeleted: false,
            })) as any; */
 
-      /*   const conditions = listOfUniqueAttributes.map(attr => ({
-          [attr]: entity[attr]
-        })); */
-
         const conditions = listOfUniqueAttributes.map(attr => ({
-          [attr]: typeof entity[attr] === 'string' ? entity[attr].toLowerCase() : entity[attr]
+          [attr]: entity[attr]
         }));
+
+        /* const conditions = listOfUniqueAttributes.map(attr => ({
+          [attr]: typeof entity[attr] === 'string' ? entity[attr].toLowerCase() : entity[attr]
+        })); */
 
         // Check if any active record exists with any of the unique attributes
         const existingEntity = (await this.repository.findOne({
