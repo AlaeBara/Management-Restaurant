@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import style from './Tags.module.css'
 import { useNavigate } from 'react-router-dom'
-import {Plus , SearchX ,Loader} from "lucide-react"
+import {Plus , SearchX ,Loader,ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -83,6 +83,9 @@ const Tags= () => {
     
 
         <div className={style.Headerpage2}>
+            <button onClick={() => navigate('/dash/tags/tag-supprimés')} className={style.showdeleteuser}>
+                <ExternalLink className="mr-3 h-4 w-4 "/>Tag Supprimés
+            </button> 
             <button onClick={() => showModel()} className={style.showFormButton}>
                 <Plus className="mr-3 h-4 w-4 " /> Ajouter Tag
             </button> 

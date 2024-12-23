@@ -78,7 +78,7 @@ return (
                                     <TableCell className="text-center p-4 border">{tag.tag}</TableCell>
                                     <TableCell className="text-center p-4 border">{formatDate(tag.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
-                                        <div className="flex justify-center items-center gap-8">
+                                        <div className="flex justify-center items-center gap-5 lg:gap-8">
                                             <button
                                                 onClick={() => handleUpdate(tag)}
                                                 className="text-blue-600 hover:text-blue-800"
