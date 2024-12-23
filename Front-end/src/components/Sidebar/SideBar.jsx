@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react';
 import style from './SideBar.module.css'
 import {
   ShoppingCart,
+  SquareMenu ,
+  Tag,
   BadgeCheck,
   Bell,
   LandPlot,
@@ -236,6 +238,19 @@ const SideBar = () => {
             title: "Achats",
             icon:  ShoppingCart,
             url: "/dash/achats",
+            permissions: ["access-granted", "view-units"],
+          },
+        ],
+      },
+      {
+        title: "Menu",
+        icon:  SquareMenu,
+        permissions: ["access-granted","view-units"],
+        items: [
+          {
+            title: "Tags",
+            icon:  Tag ,
+            url: "/dash/tags",
             permissions: ["access-granted", "view-units"],
           },
         ],

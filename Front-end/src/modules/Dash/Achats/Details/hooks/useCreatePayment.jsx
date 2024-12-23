@@ -72,7 +72,7 @@ export const useCreatePayment = (id,formData, CloseModel,fetchPurchase) => {
   }, [id, formData]);
 
 
-  const resetErrors = () => {setAlert({})};
+  const resetErrors = () => {setAlert({}) ;setErrors({}) };
 
   return { issLoading, alert, errors,  fetchCreatePayment , resetErrors};
 };

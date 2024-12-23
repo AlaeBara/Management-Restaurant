@@ -10,7 +10,7 @@ import Tableau from './Components/Tableau'
 import {useFetchPurchases} from './Hooks/useFetchPurchases'
 
 
-const Operation= () => {
+const Achats= () => {
     const  navigate = useNavigate()
 
     const {purchases, totalPurchases, Isloading, message, fetchPurchases}=useFetchPurchases()
@@ -99,4 +99,4 @@ const Operation= () => {
   )
 }
 
-export default Operation
+export default  Achats
