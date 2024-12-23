@@ -10,6 +10,7 @@ import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import {useCreatePayment} from '../hooks/useCreatePayment'
 import { useParams } from 'react-router-dom'
+import {useConfirmPayment} from '../hooks/useConfirmPayment'
 
 
 const Payment = ({purchase , fetchPurchase}) => {
@@ -71,6 +72,21 @@ const Payment = ({purchase , fetchPurchase}) => {
                 };
         }
     };
+
+    const {ConfirmPayment} =useConfirmPayment(fetchPurchase , id)
+
+    const [isModalPaymentVisible ,setIsModalPaymentVisible] =useState(false)
+    const [idPayment ,setIdPayment] =useState(false)
+
+    const handleConfirm = (id) => {
+        setIsModalPaymentVisible(true);
+        setIdPayment(id)
+    };
+
+    const confirm = (id) => {
+        setIsModalPaymentVisible(false)
+        ConfirmPayment(idPayment)
+    };
       
       
 
@@ -122,12 +138,17 @@ return (
                                     <TableCell className="text-center p-4 border">{formatCurrency(payment.amount)}</TableCell>
                                     <TableCell className="text-center  p-4 text-nowrap border">{payment.datePaiement ? formatDate(payment.datePaiement) : "-"}</TableCell>
                                     <TableCell className="text-center  p-4 text-nowrap border">
-                                        <Button
-                                            type="submit"
-                                            className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
-                                        >
-                                            Validé
-                                        </Button>
+                                        {payment.status === 'paid' ?
+                                          <span> Validé </span> 
+                                        :
+                                            <Button
+                                                type="submit"
+                                                className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white whitespace-nowrap"
+                                                onClick={()=>handleConfirm(payment.id)}
+                                            >
+                                                Valider Paiement
+                                            </Button>
+                                        }
                                     </TableCell>
                                 </TableRow>
                                 ))
@@ -297,6 +318,49 @@ return (
                 </div>
             </div>
         )}
+
+
+            {isModalPaymentVisible  && (
+                <div 
+                    className="fixed inset-0 z-50 flex items-center justify-center"
+                    role="dialog"
+                    aria-modal="true"
+                >
+                    <div 
+                        className="fixed inset-0 bg-black/50 transition-opacity"
+                        onClick={()=>setIsModalPaymentVisible(false)}
+                    />
+                        <div 
+                            className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
+                            onClick={(e) => e.stopPropagation()}
+                        >
+                            <div className="mb-4">
+                                <h3 className="text-lg font-semibold text-gray-800">Valider un Paiement</h3>
+                                <p className="mt-2 text-sm text-gray-600">
+                                Veuillez confirmer les détails du paiement ci-dessous. Une fois validé, cette action ne peut pas être annulée.
+                                </p>
+                            </div>
+
+                            <div className="mt-6 flex justify-end space-x-3">
+                                <button
+                                    type="button"
+                                    onClick={()=>setIsModalPaymentVisible(false)}
+                                    className="rounded-md px-4 py-2 text-sm font-medium text-gray-600 transition-colors hover:bg-gray-100"
+                                >
+                                    Annuler
+                                </button>
+
+                                <Button
+                                    type="submit"
+                                    className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
+                                    onClick={() => confirm()}
+                                >
+                                    Confirmer Paiement
+                                </Button>
+                            </div>
+                        </div>
+                    </div>
+            )}
     </>
   )
 }
