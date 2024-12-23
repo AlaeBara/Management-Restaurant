@@ -65,7 +65,7 @@ const Tags= () => {
     }, [currentPage, limit, fetchTags]);
 
 
-    const { deleteTag }=useDeleteTag(fetchTags , currentPage , limit)
+    const { deleteTag }= useDeleteTag(fetchTags , currentPage , limit)
 
 
 
@@ -103,7 +103,7 @@ const Tags= () => {
                     {tags.length > 0 ? (
                         <>
                             <div className="grid grid-cols-1" >
-                                <Tableau tags={tags} deleteTag={deleteTag}/>
+                                <Tableau tags={tags} deleteTag={deleteTag} fetchTags={fetchTags}/>
                             </div>
                             <PaginationNav
                                 currentPage={currentPage}
