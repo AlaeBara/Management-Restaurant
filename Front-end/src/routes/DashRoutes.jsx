@@ -75,6 +75,10 @@ const Achats = lazy(()=> import('@/modules/Dash/Achats/Achats'))
 const AchatDetails =lazy(()=> import('@/modules/Dash/Achats/Details/AchatDetail'))
 const Tags =lazy(()=> import('@/modules/Dash/MenuItem/Tags/Tags'))
 const TagsDeleted =lazy(()=> import('@/modules/Dash/MenuItem/Tags/Components/DeletedTags'))
+const MenuItems =lazy(()=> import('@/modules/Dash/MenuItem/menu-item/MenuItems'))
+const AddProductMenu  =lazy(()=> import('@/modules/Dash/MenuItem/menu-item/Components/AddProducts'))
+
+
 
 const ClientRoutes = () => {
   return (
@@ -834,6 +838,28 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <TagsDeleted/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/produits-menu" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <MenuItems/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/produits-menu/ajouter-produit" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddProductMenu/>
               </MainLayout>
             </ProtectedRoute>
           } 

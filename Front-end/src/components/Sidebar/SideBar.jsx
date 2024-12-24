@@ -3,6 +3,7 @@ import style from './SideBar.module.css'
 import {
   ShoppingCart,
   SquareMenu ,
+  Utensils,
   Tag,
   BadgeCheck,
   Bell,
@@ -243,7 +244,7 @@ const SideBar = () => {
         ],
       },
       {
-        title: "Menu",
+        title: "Gestion du Menu",
         icon:  SquareMenu,
         permissions: ["access-granted","view-units"],
         items: [
@@ -251,6 +252,12 @@ const SideBar = () => {
             title: "Tags",
             icon:  Tag ,
             url: "/dash/tags",
+            permissions: ["access-granted", "view-units"],
+          },
+          {
+            title: "Produits du Menu",
+            icon:  Utensils ,
+            url: "/dash/produits-menu",
             permissions: ["access-granted", "view-units"],
           },
         ],
