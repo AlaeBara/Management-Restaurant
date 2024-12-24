@@ -255,6 +255,12 @@ const SideBar = () => {
             permissions: ["access-granted", "view-units"],
           },
           {
+            title: "Code Promo",
+            icon:  Tag ,
+            url: "/dash/code-promo",
+            permissions: ["access-granted", "view-units"],
+          },
+          {
             title: "Produits du Menu",
             icon:  Utensils ,
             url: "/dash/produits-menu",
