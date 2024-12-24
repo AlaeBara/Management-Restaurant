@@ -18,6 +18,7 @@ import {
   Cog,
   Shield,
   Grid,
+  Gift,
   User,
   Package,
   Layers,
@@ -256,7 +257,7 @@ const SideBar = () => {
           },
           {
             title: "Code Promo",
-            icon:  Tag ,
+            icon:  Gift,
             url: "/dash/code-promo",
             permissions: ["access-granted", "view-units"],
           },

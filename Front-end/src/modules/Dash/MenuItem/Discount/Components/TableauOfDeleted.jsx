@@ -1,22 +1,22 @@
 import React, { useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { TrashIcon,PencilIcon } from 'lucide-react'
+import { RotateCcw } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
 import { useNavigate } from 'react-router-dom'
 
-const Tableau = ({ Discounts , deleteDiscount }) => {
+const Tableau = ({ Discounts , Restore}) => {
     const navigate = useNavigate()
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [DiscountSelected , setDiscountSelected] =useState(false);
 
-    const handleDelete = (discount) => {
+    const handleRestore = (discount) => {
         setIsModalVisible(true);
         setDiscountSelected(discount)
     };
 
-    const confirmDelete = () => {
-        deleteDiscount(DiscountSelected.id)
+    const confirmRestore = () => {
+        Restore(DiscountSelected.id)
         setIsModalVisible(false);
     };
 
@@ -92,18 +92,11 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                             <TableCell className="text-center p-4 text-nowrap border">
                                                 <div className="flex justify-center items-center gap-5 lg:gap-8">
                                                     <button
-                                                        onClick={() => navigate(`/dash/code-promo/mettre-à-jour-codepromo/${Discount.id}`)}
-                                                        className="text-blue-600 hover:text-blue-800"
-                                                        title="Modifier"
-                                                    >
-                                                        <PencilIcon className="h-5 w-5" />
-                                                    </button>
-                                                    <button
-                                                        onClick={() => handleDelete(Discount)}
+                                                        onClick={() => handleRestore(Discount)}
                                                         className="text-red-600 hover:text-red-800"
                                                         title="Supprimer"
                                                     >
-                                                        <TrashIcon className="h-5 w-5" />
+                                                        <RotateCcw className="h-5 w-5" />
                                                     </button>
                                                 </div>
                                             </TableCell>
@@ -125,9 +118,9 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
             {isModalVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
                     <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
-                        <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
+                        <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                         <p className="mb-4">
-                            Êtes-vous sûr de vouloir supprimer le code promo "{DiscountSelected.discountSku}"
+                            Êtes-vous sûr de vouloir restaurer le code promo "{DiscountSelected.discountSku}"
                         </p>
                         <div className="mt-9 flex justify-end gap-3">
                             <button
@@ -137,10 +130,10 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                 Annuler
                             </button>
                             <button
-                                onClick={()=> confirmDelete()}
+                                onClick={()=> confirmRestore()}
                                 className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700"
                             >
-                                Supprimer
+                                Restaurer
                             </button>
                         </div>
                     </div>

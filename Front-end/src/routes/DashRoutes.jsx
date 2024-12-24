@@ -79,6 +79,8 @@ const MenuItems =lazy(()=> import('@/modules/Dash/MenuItem/menu-item/MenuItems')
 const AddProductMenu  =lazy(()=> import('@/modules/Dash/MenuItem/menu-item/Components/AddProducts'))
 const Discount = lazy(()=> import('@/modules/Dash/MenuItem/Discount/Discount'))
 const AddDiscount =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components/AddDiscount'))
+const UpdateDiscounts =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components/UpdateDiscount'))
+const DeletedDiscount =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components/DeletedDiscount'))
 
 const ClientRoutes = () => {
   return (
@@ -886,6 +888,30 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/code-promo/mettre-à-jour-codepromo/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <UpdateDiscounts/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/code-promo/code-promo-supprimés" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DeletedDiscount/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+
 
 
 

@@ -1,19 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import style from './Discount.module.css'
+import style from './DeletedDiscount.module.css'
 import { useNavigate } from 'react-router-dom'
 import {Plus , SearchX ,ExternalLink} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
+import PaginationNav from '../../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
-import {useFetchDiscounts} from './Hooks/useFetchDiscounts'
-import Tableau from './Components/Tableau'
-import {useDeleteDiscount} from './Hooks/useDeleteDiscounts'
+import Tableau from './TableauOfDeleted'
+import {useFetchDiscountsDeleted} from '../Hooks/useFetchDiscountsDeleted'
+import {useRestoreDiscount} from '../Hooks/useRestoreDiscount'
 
-const Discount= () => {
+const DiscountDeleted= () => {
     const  navigate = useNavigate()
 
-    const { discounts, totalDiscounts, Isloading, message, fetchDiscounts } =useFetchDiscounts()
+    const { discounts, totalDiscounts, Isloading, message, fetchDiscounts } = useFetchDiscountsDeleted()
 
     const [currentPage, setCurrentPage] = useState(1);
     const [limit] = useState(10);
@@ -35,7 +35,7 @@ const Discount= () => {
         fetchDiscounts({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchDiscounts]);
 
-    const {deleteDiscount} =useDeleteDiscount(fetchDiscounts,currentPage, limit)
+   const {RestoreDiscount}=useRestoreDiscount(fetchDiscounts,currentPage, limit)
 
 
   return (
@@ -45,22 +45,12 @@ const Discount= () => {
 
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion des Codes Promo</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement vos codes promo. Ajoutez, modifiez et organisez vos promotions pour attirer davantage de clients.</p>
+                <h1 className={`${style.title} !mb-0 `}>Historique Des Code Promo  Supprimés</h1>
+                <p className="text-base text-gray-600 mt-0">Consultez l'historique des Code Promo supprimées de votre plateforme. Vous pouvez visualiser les Code Promo qui ont été supprimées et les restaurer si nécessaire.</p>
             </div>
         </div>
     
-        <div className={style.Headerpage2}>
-            <button onClick={() => navigate('/dash/code-promo/code-promo-supprimés')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Promo Supprimés
-            </button> 
-            <button onClick={() => navigate(`/dash/code-promo/ajouter-promo`)} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter Promo
-            </button> 
-        </div>
-
-
-
+    
         <div>
             {Isloading ? (
                 <div className="mt-5">
@@ -76,7 +66,7 @@ const Discount= () => {
                     {discounts.length > 0 ? (
                         <>
                             <div className="grid grid-cols-1" >
-                                <Tableau Discounts={discounts}  deleteDiscount={deleteDiscount}/>
+                                <Tableau Discounts={discounts}  Restore={RestoreDiscount}/>
                             </div>
                             <PaginationNav
                                 currentPage={currentPage}
@@ -91,7 +81,7 @@ const Discount= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun  code promo trouvé</h1>
+                        <h1>Aucun Code Promo Supprimés Trouvé</h1>
                     </div>
                     )}
                 </>
@@ -102,4 +92,4 @@ const Discount= () => {
   )
 }
 
-export default Discount
+export default DiscountDeleted
