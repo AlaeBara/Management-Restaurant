@@ -22,14 +22,15 @@ import { MenuItemDiscountController } from './controllers/menu-item-discount.con
 import { MenuItemTranslationService } from './services/menu-item-translation.service';
 import { MenuItemPriceService } from './services/menu-item-price.service';
 import { MenuItemPriceHistoryService } from './services/menu-item-price-history.service';
+import { MenuItemFormulaService } from './services/menu-item-formulas.service';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
+  imports: [ TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
     MenuItemDiscount, MenuItemTranslate, MenuItemAllocationMovement]),
   forwardRef(() => LanguageModule), forwardRef(() => CategoryItemModule), forwardRef(() => ProductManagementModule),
-  forwardRef(() => UnitModule), forwardRef(() => InventoryModule)],
+  forwardRef(() => UnitModule), forwardRef(() => InventoryModule), forwardRef(() => ProductManagementModule)],
   controllers: [MenuItemTagController, MenuItemController, MenuItemDiscountController],
-  providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService, MenuItemPriceHistoryService],
+  providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService, MenuItemPriceHistoryService, MenuItemFormulaService],
   exports: [],
 })
 export class MenuItemModule { }

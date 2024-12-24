@@ -5,15 +5,16 @@ import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
 import { MenuItemTranslate } from "../entities/menu-item-translation.enity";
 import { MenuItemPrice } from "../entities/menu-item-price.entityt";
+import { MenuItemFormula } from "../entities/menu-item-formula.entity";
 
 @Injectable()
-export class MenuItemPriceService extends GenericService<MenuItemPrice> {
+export class MenuItemFormulaService extends GenericService<MenuItemFormula> {
     constructor(
         @InjectDataSource() dataSource: DataSource,
-        @InjectRepository(MenuItemPrice)
-        readonly menuItemPriceRepository: Repository<MenuItemPrice>,
+        @InjectRepository(MenuItemFormula)
+        readonly menuItemFormulaRepository: Repository<MenuItemFormula>,
 
     ) {
-        super(dataSource, MenuItemPrice, 'prix de l\'article menu');
+        super(dataSource, MenuItemFormula, 'formule de l\'article menu');
     }
 }

@@ -5,7 +5,7 @@ import { MenuItemTag } from "./menu-item-tag.entity";
 import { MenuItemFormula } from "./menu-item-formula.entity";
 import { MenuItemPrice } from "./menu-item-price.entityt";
 import { MenuItemTranslate } from "./menu-item-translation.enity";
-import { Transform } from "class-transformer";
+
 
 
 
@@ -34,11 +34,14 @@ export class MenuItem extends BaseEntity {
     @Column({ type: 'varchar', nullable: true })
     avatar: string;
 
+    @Column({ type: 'boolean', default: false })
+    hasFormulas: boolean; // if the menu item has formulas to track the quantity of the product and handel inventory automatically
+
     @ManyToMany(() => MenuItemTag, { eager: false })
     @JoinTable({ name: process.env.DATASET_PREFIX + 'item_menu_tag_relation' })
     tags: MenuItemTag[];
 
-    @OneToMany(() => MenuItemFormula, (formula) => formula.id, { nullable: true, cascade: true})
+    @OneToMany(() => MenuItemFormula, (formula) => formula.menuItem, { nullable: true, eager: true, cascade: true})
     formulas: MenuItemFormula[];
 
     @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem, { eager: true })

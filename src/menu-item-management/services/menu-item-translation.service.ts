@@ -6,7 +6,7 @@ import { Injectable } from "@nestjs/common";
 import { MenuItemTranslate } from "../entities/menu-item-translation.enity";
 
 @Injectable()
-export class MenuItemTranslationService extends GenericService<MenuItemTranslationService> {
+export class MenuItemTranslationService extends GenericService<MenuItemTranslate> {
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemTranslate)

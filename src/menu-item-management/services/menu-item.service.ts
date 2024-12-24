@@ -17,6 +17,10 @@ import { MenuItemDiscountService } from "./menu-item-discount.service";
 import { MenuItemPriceHistoryService } from "./menu-item-price-history.service";
 import { MenuItemPriceHistory } from "../entities/menu-item-price-history.entity";
 import { MenuItemPrice } from "../entities/menu-item-price.entityt";
+import { ProductService } from "src/product-management/services/product.service";
+import { UnitService } from "src/unit-management/services/unit.service";
+import { MenuItemFormulaService } from "./menu-item-formulas.service";
+import { MenuItemFormula } from "../entities/menu-item-formula.entity";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -38,6 +42,12 @@ export class MenuItemService extends GenericService<MenuItem> {
         readonly discountService: MenuItemDiscountService,
         @Inject(forwardRef(() => MenuItemPriceHistoryService))
         readonly menuItemPriceHistoryService: MenuItemPriceHistoryService,
+        @Inject(forwardRef(() => ProductService))
+        readonly productService: ProductService,
+        @Inject(forwardRef(() => UnitService))
+        readonly unitService: UnitService,
+        @Inject(forwardRef(() => MenuItemFormulaService))
+        readonly menuItemFormulaService: MenuItemFormulaService,
 
 
     ) {
@@ -99,7 +109,7 @@ export class MenuItemService extends GenericService<MenuItem> {
 
 
 
-            
+
 
             const discount = createMenuItemDto.price.discountId ? await this.discountService.findOneByIdWithOptions(createMenuItemDto.price.discountId) : null;
             const price = createMenuItemDto.price.basePrice;
@@ -123,8 +133,25 @@ export class MenuItemService extends GenericService<MenuItem> {
 
 
 
+            if(createMenuItemDto.hasFormulas){
+                const formulas = await Promise.all(createMenuItemDto.formulas.map(async (formula) => {
+                    const product = await this.productService.findOneByIdWithOptions(formula.productId);
+                    const unit = await this.unitService.findOneByIdWithOptions(formula.unitId);
+                    return this.menuItemFormulaService.menuItemFormulaRepository.create({
+                        menuItem: menuItemSaved,
+                        product: product,
+                        warningQuantity: formula.warningQuantity,
+                        quantityFormula: formula.quantityFormula,
+                        portionProduced: formula.portionProduced,
+                        unit: unit,
+                        quantityRequiredPerPortion: formula.quantityFormula / formula.portionProduced,
+                    });
+                }));
+                await queryRunner.manager.save(formulas);
+            }
 
 
+           
 
 
 
