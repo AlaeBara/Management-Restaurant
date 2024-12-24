@@ -21,6 +21,7 @@ import { MenuItemDiscountService } from './services/menu-item-discount.service';
 import { MenuItemDiscountController } from './controllers/menu-item-discount.controller';
 import { MenuItemTranslationService } from './services/menu-item-translation.service';
 import { MenuItemPriceService } from './services/menu-item-price.service';
+import { MenuItemPriceHistoryService } from './services/menu-item-price-history.service';
 
 @Module({
   imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
@@ -28,7 +29,7 @@ import { MenuItemPriceService } from './services/menu-item-price.service';
   forwardRef(() => LanguageModule), forwardRef(() => CategoryItemModule), forwardRef(() => ProductManagementModule),
   forwardRef(() => UnitModule), forwardRef(() => InventoryModule)],
   controllers: [MenuItemTagController, MenuItemController, MenuItemDiscountController],
-  providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService],
+  providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService, MenuItemPriceHistoryService],
   exports: [],
 })
 export class MenuItemModule { }

@@ -13,18 +13,8 @@ import {
   Min
 } from 'class-validator';
 import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
+import { CreateMenuItemPriceDto } from '../menu-item-price/create-menu-item-price.dto';
 
-
-export class CreateMenuItemPriceDto {
-  @IsNumber()
-  @Min(0)
-  amount: number;
-
-  @IsString()
-  @IsNotEmpty()
-  @Length(3, 3)
-  currency: string;
-}
 
 export class CreateMenuItemFormulaDto {
   @IsNumber()
@@ -82,9 +72,9 @@ export class CreateMenuItemDto {
   @Type(() => CreateMenuItemTranslate)
   @ArrayMinSize(1)
   translates: CreateMenuItemTranslate[];
-/* 
+
   @ValidateNested()
   @Type(() => CreateMenuItemPriceDto)
   @IsNotEmpty()
-  price: CreateMenuItemPriceDto; */
+  price: CreateMenuItemPriceDto;
 }

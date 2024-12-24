@@ -1,6 +1,6 @@
 import { Category } from "src/category-item-management/entities/category.entity";
 import { BaseEntity } from "src/common/entities/base.entity";
-import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne} from "typeorm";
+import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { MenuItemTag } from "./menu-item-tag.entity";
 import { MenuItemFormula } from "./menu-item-formula.entity";
 import { MenuItemPrice } from "./menu-item-price.entityt";
@@ -38,13 +38,13 @@ export class MenuItem extends BaseEntity {
     @JoinTable({ name: process.env.DATASET_PREFIX + 'item_menu_tag_relation' })
     tags: MenuItemTag[];
 
-    @OneToMany(() => MenuItemFormula, (formula) => formula.id, { nullable: true })
+    @OneToMany(() => MenuItemFormula, (formula) => formula.id, { nullable: true, cascade: true})
     formulas: MenuItemFormula[];
 
-    @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem)
+    @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem, { eager: true })
     @JoinColumn()
     price: MenuItemPrice;
 
-    @OneToMany(() => MenuItemTranslate, (menuItemTranslate) => menuItemTranslate.menuItem, { eager: true })
+    @OneToMany(() => MenuItemTranslate, (menuItemTranslate) => menuItemTranslate.menuItem, { eager: true, cascade: true })
     translates: MenuItemTranslate[];
 }

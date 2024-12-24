@@ -13,6 +13,10 @@ import { MenuItemTranslationService } from "./menu-item-translation.service";
 import { LanguageService } from "src/language-management/services/langague.service";
 import { MenuItemTranslate } from "../entities/menu-item-translation.enity";
 import { MenuItemPriceService } from "./menu-item-price.service";
+import { MenuItemDiscountService } from "./menu-item-discount.service";
+import { MenuItemPriceHistoryService } from "./menu-item-price-history.service";
+import { MenuItemPriceHistory } from "../entities/menu-item-price-history.entity";
+import { MenuItemPrice } from "../entities/menu-item-price.entityt";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -30,6 +34,10 @@ export class MenuItemService extends GenericService<MenuItem> {
         readonly languageService: LanguageService,
         @Inject(forwardRef(() => MenuItemPriceService))
         readonly menuItemPriceService: MenuItemPriceService,
+        @Inject(forwardRef(() => MenuItemDiscountService))
+        readonly discountService: MenuItemDiscountService,
+        @Inject(forwardRef(() => MenuItemPriceHistoryService))
+        readonly menuItemPriceHistoryService: MenuItemPriceHistoryService,
 
 
     ) {
@@ -44,6 +52,10 @@ export class MenuItemService extends GenericService<MenuItem> {
         await queryRunner.startTransaction();
         
         try {
+
+
+
+
             const category = await this.categoryService.findOneByIdWithOptions(createMenuItemDto.categoryId);
             const menuItem = this.menuItemRepository.create({
                 ...createMenuItemDto,
@@ -51,16 +63,24 @@ export class MenuItemService extends GenericService<MenuItem> {
                 tags: [],
                 translates: []
             });
-    
+
+
+
             // Fetch and add tags
             await Promise.all(createMenuItemDto.tagIds.map(async (tagId) => {
                 const tag = await this.TagService.findOneByIdWithOptions(tagId);
                 menuItem.tags.push(tag);
             }));
+
+
     
             // Save menu item using queryRunner
             const menuItemSaved = await queryRunner.manager.save(MenuItem, menuItem);
     
+
+
+
+
             // Create translations
             const translations = await Promise.all(
                 createMenuItemDto.translates.map(async (translate) => {
@@ -73,19 +93,43 @@ export class MenuItemService extends GenericService<MenuItem> {
                     });
                 })
             );
-    
+
             // Save translations using queryRunner
             await queryRunner.manager.save(MenuItemTranslate,translations);
 
 
-        /*     // Create and save price using queryRunner
-            const price = this.menuItemPriceService.menuItemPriceRepository.create({
+
+            
+
+            const discount = createMenuItemDto.price.discountId ? await this.discountService.findOneByIdWithOptions(createMenuItemDto.price.discountId) : null;
+            const price = createMenuItemDto.price.basePrice;
+            // Create and save price using queryRunner
+            const menuItemPrice = this.menuItemPriceService.menuItemPriceRepository.create({
                 menuItem: menuItemSaved,
-                basePrice: createMenuItemDto.price.basePrice,
-                discount: createMenuItemDto.price.discountId ? await this.discountService.findOneByIdWithOptions(createMenuItemDto.price.discountId) : null,
+                basePrice: price,
+                discount: discount,
+                finalPrice: await this.discountService.setDiscount(price, discount),
             });
-            await queryRunner.manager.save(price); */
+            await queryRunner.manager.save(menuItemPrice);
+
+
+            const menuItemPriceHistory = this.menuItemPriceHistoryService.menuItemPriceHistoryRepository.create({
+                price: menuItemPrice,
+                oldPrice: null,
+                newPrice: menuItemPrice.finalPrice,
+            });
+            await queryRunner.manager.save(menuItemPriceHistory);
     
+
+
+
+
+
+
+
+
+
+
             // Commit the transaction
             await queryRunner.commitTransaction();
             

@@ -1,4 +1,4 @@
-import { IsNotEmpty, IsOptional, ValidateIf } from "class-validator";
+import { IsNotEmpty, IsNumber, IsOptional, IsUUID, ValidateIf } from "class-validator";
 import { IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
@@ -8,9 +8,7 @@ import { BadRequestException } from "@nestjs/common";
 export class CreateMenuItemPriceDto {
 
     @IsNotEmpty()
-    @IsString()
-    @MinLength(3)
-    @MaxLength(30)
+    @IsNumber()
     @ApiProperty({
         description: 'The price of the menu item',
         example: '99.99'
@@ -18,6 +16,7 @@ export class CreateMenuItemPriceDto {
     basePrice: number;
 
     @IsOptional()
+    @IsUUID()
     @IsString()
     @ApiProperty({
         description: 'The discount id of the menu item',

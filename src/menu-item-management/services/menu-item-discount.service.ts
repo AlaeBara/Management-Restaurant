@@ -6,6 +6,7 @@ import { MenuItemDiscount } from "../entities/menu-item-discount.entity";
 import { CreateDiscountDto } from "../dtos/menu-item-discount/create-discount.dto";
 import { UpdateDiscountDto } from "../dtos/menu-item-discount/update-discount.dto";
 import { MenuItemPrice } from "../entities/menu-item-price.entityt";
+import { DiscountType } from "../enums/item-menu-discount.enum";
 
 @Injectable()
 export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
@@ -44,5 +45,16 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
             withDeleted: false
         });
         return count > 0;
+    }
+
+    async setDiscount(price:number, discount:MenuItemDiscount): Promise<number> { // return the final price after discount
+        if(!discount) return price;
+        if(discount.discountType === DiscountType.PERCENTAGE){
+            return price - (price * discount.discountValue / 100);
+        }
+        if(discount.discountType === DiscountType.FIXED){
+            return price - discount.discountValue;
+        }
+        return price;
     }
 }

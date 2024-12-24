@@ -27,6 +27,6 @@ export class MenuItemFormula extends BaseEntity {
     @ManyToOne(() => Unit, (unit) => unit.id, { nullable: true })
     unit: Unit;
 
-    @ManyToOne(() => MenuItem, (menuItem) => menuItem.formulas, { nullable: true })
+    @ManyToOne(() => MenuItem, (menuItem) => menuItem.id, { nullable: true })
     menuItem: MenuItem;
 }

@@ -12,10 +12,13 @@ export class MenuItemPriceHistory extends BaseEntity {
     @ManyToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.id)
     price: MenuItemPrice;
 
-    @Column({ type: 'numeric', precision: 10, scale: 2 })
+    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
     oldPrice: number;
 
-    @Column({ type: 'numeric', precision: 10, scale: 2 })
+    @ManyToOne(() => MenuItemDiscount, (discount) => discount.id, { nullable: true , eager:true })
+    discount: MenuItemDiscount;
+
+    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
     newPrice: number;
 
     @CreateDateColumn({ type: 'timestamp' })
