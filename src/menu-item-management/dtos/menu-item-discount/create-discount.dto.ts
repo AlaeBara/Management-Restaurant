@@ -1,10 +1,11 @@
-import { IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateIf } from "class-validator";
+import { IsArray, IsBoolean, IsDate, IsEnum, IsNotEmpty, IsNumber, IsOptional, ValidateIf } from "class-validator";
 import { IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
 import { BadRequestException } from "@nestjs/common";
-import { DiscountType } from "src/menu-item-management/enums/item-menu-discount.enum";
+import { DiscountMethod } from "src/menu-item-management/enums/discount-method";
 import { Type } from "class-transformer";
+import { DiscountType } from "src/menu-item-management/enums/discount-type.enum";
 
 export class CreateDiscountDto {
     @IsNotEmpty()
@@ -19,11 +20,20 @@ export class CreateDiscountDto {
     discountSku: string;
 
     @IsNotEmpty()
+    @IsEnum(DiscountMethod)
+    @ApiProperty({
+        description: 'The type of the discount',
+        required: true,
+        example: DiscountMethod.PERCENTAGE
+    })
+    discountMethod: DiscountMethod;
+
+    @IsOptional()
     @IsEnum(DiscountType)
     @ApiProperty({
         description: 'The type of the discount',
         required: true,
-        example: DiscountType.PERCENTAGE
+        example: DiscountType.PERIOD
     })
     discountType: DiscountType;
 
@@ -37,6 +47,16 @@ export class CreateDiscountDto {
     discountValue: number;
 
     @IsOptional()
+    @IsArray()
+    @IsString({ each: true })
+    @ApiProperty({
+        description: 'The days of the week when the discount is active',
+        required: false,
+        example: ['Monday', 'Tuesday']
+    })
+    activeDays: string[];
+
+    @IsOptional()
     @IsBoolean()
     @ApiProperty({
         description: 'The active status of the discount',
@@ -48,21 +68,70 @@ export class CreateDiscountDto {
     @IsOptional()
     @IsDate()
     @Type(() => Date)
-    @ApiProperty({
-        description: 'The start date time of the discount',
-        required: false,
-        example: new Date()
+    @ValidateIf((obj, value) => {
+        if (value) {
+            const date = new Date(value);
+            return date.getHours() === 0 && 
+                   date.getMinutes() === 0 && 
+                   date.getSeconds() === 0 && 
+                   date.getMilliseconds() === 0;
+        }
+        return true;
     })
-    startDateTime: Date;
+    @ApiProperty({
+        description: 'The start date of the discount (must not include time)',
+        required: false,
+        example: '2024-03-15'
+    })
+    startDate: Date;
 
     @IsOptional()
     @IsDate()
     @Type(() => Date)
-    @ApiProperty({
-        description: 'The end date time of the discount',
-        required: false,
-        example: new Date()
+    @ValidateIf((obj, value) => {
+        if (value) {
+            const date = new Date(value);
+            return date.getHours() === 0 && 
+                   date.getMinutes() === 0 && 
+                   date.getSeconds() === 0 && 
+                   date.getMilliseconds() === 0;
+        }
+        return true;
     })
-    endDateTime: Date;
+    @ApiProperty({
+        description: 'The end date of the discount (must not include time)',
+        required: false,
+        example: '2024-03-20'
+    })
+    endDate: Date;
+    
 
+    @IsOptional()
+    @IsBoolean()
+    @ApiProperty({
+        description: 'The specific time of the discount',
+        required: false,
+        example: true
+    })
+    specificTime: boolean;
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        description: 'The start time of the discount (HH:mm format)',
+        required: false,
+        example: '14:30'
+    })
+    startTime: string;
+
+    @IsOptional()
+    @IsString()
+    @ApiProperty({
+        description: 'The end time of the discount (HH:mm format)',
+        required: false,
+        example: '23:00'
+    })
+    endTime: string;
+
+    
 }

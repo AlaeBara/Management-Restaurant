@@ -3,8 +3,8 @@ import { IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
 import { BadRequestException } from "@nestjs/common";
-import { DiscountType } from "src/menu-item-management/enums/item-menu-discount.enum";
 import { Type } from "class-transformer";
+import { DiscountMethod } from "src/menu-item-management/enums/discount-method";
 
 export class UpdateDiscountDto {
     @IsOptional()
@@ -19,13 +19,13 @@ export class UpdateDiscountDto {
     discountSku: string;
 
     @IsOptional()
-    @IsEnum(DiscountType)
+    @IsEnum(DiscountMethod)
     @ApiProperty({
         description: 'The type of the discount',
         required: true,
-        example: DiscountType.PERCENTAGE
+        example: DiscountMethod.PERCENTAGE
     })
-    discountType: DiscountType;
+    discountMethod: DiscountMethod;
 
     @IsOptional()
     @IsNumber()

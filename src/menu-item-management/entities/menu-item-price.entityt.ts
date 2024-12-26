@@ -1,5 +1,5 @@
 import { BaseEntity } from "src/common/entities/base.entity";
-import { Column, Entity, ManyToOne, OneToMany, OneToOne } from "typeorm";
+import { AfterLoad, Column, Entity, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { MenuItem } from "./menu-item.entity";
 import { MenuItemDiscount } from "./menu-item-discount.entity";
 import { MenuItemPriceHistory } from "./menu-item-price-history.entity";
@@ -15,9 +15,13 @@ export class MenuItemPrice extends BaseEntity {
     @ManyToOne(() => MenuItemDiscount, (discount) => discount.id, { nullable: true, eager: true })
     discount: MenuItemDiscount;
 
-    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
-    finalPrice: number;
-
     @OneToMany(() => MenuItemPriceHistory, (priceHistory) => priceHistory.id, { cascade: true })
     priceHistory: MenuItemPriceHistory[];
+
+    finalPrice: number;
+
+    /* @AfterLoad()
+    async calculateFinalPrice() {
+        this.finalPrice = await this.discount.setDiscount(this.basePrice);
+    } */
 }

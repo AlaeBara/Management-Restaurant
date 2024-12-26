@@ -1,4 +1,4 @@
-export enum DiscountType {
+export enum DiscountMethod {
     PERCENTAGE = 'percentage',
     FIXED = 'fixed'
 }

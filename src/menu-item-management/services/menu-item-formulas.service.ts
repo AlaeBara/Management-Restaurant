@@ -12,7 +12,7 @@ export class MenuItemFormulaService extends GenericService<MenuItemFormula> {
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemFormula)
-        readonly menuItemFormulaRepository: Repository<MenuItemFormula>,
+        readonly formulaRepository: Repository<MenuItemFormula>,
 
     ) {
         super(dataSource, MenuItemFormula, 'formule de l\'article menu');

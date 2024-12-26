@@ -9,11 +9,11 @@ import { UpdateMenuItemTagDto } from "../dtos/menu-item-tag/update-menu-item-tag
 
 @Injectable()
 export class MenuItemTagService extends GenericService<MenuItemTag> {
-    
+
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemTag)
-        readonly menuItemTagRepository: Repository<MenuItemTag>,
+        readonly tagRepository: Repository<MenuItemTag>,
         @InjectRepository(MenuItem)
         readonly menuItemRepository: Repository<MenuItem>,
 
@@ -22,9 +22,9 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
     }
 
     async createMenuItemTag(createMenuItemTagDto: CreateMenuItemTagDto) {
-        const menuItemTag = this.menuItemTagRepository.create({ tag: createMenuItemTagDto.tag.toLowerCase() });
+        const menuItemTag = this.tagRepository.create({ tag: createMenuItemTagDto.tag.toLowerCase() });
         await this.validateUnique({ tag: menuItemTag.tag });
-        return this.menuItemTagRepository.save(menuItemTag);
+        return this.tagRepository.save(menuItemTag);
     }
 
     async updateMenuItemTag(id: string, updateMenuItemTagDto: UpdateMenuItemTagDto) {
@@ -32,7 +32,7 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
         await this.isTagInUse(id, 'update', updateMenuItemTagDto); // check if the tag is in use in the menu item
         const menuItemTag = await this.findOneByIdWithOptions(id);
         Object.assign(menuItemTag, {...updateMenuItemTagDto, tag: updateMenuItemTagDto.tag.toLowerCase()});
-        return this.menuItemTagRepository.save(menuItemTag);
+        return this.tagRepository.save(menuItemTag);
     }
 
     async deleteMenuItemTag(id: string) {

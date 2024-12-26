@@ -37,17 +37,17 @@ export class MenuItemService extends GenericService<MenuItem> {
         @Inject(forwardRef(() => LanguageService))
         readonly languageService: LanguageService,
         @Inject(forwardRef(() => MenuItemPriceService))
-        readonly menuItemPriceService: MenuItemPriceService,
+        readonly PriceService: MenuItemPriceService,
         @Inject(forwardRef(() => MenuItemDiscountService))
         readonly discountService: MenuItemDiscountService,
         @Inject(forwardRef(() => MenuItemPriceHistoryService))
-        readonly menuItemPriceHistoryService: MenuItemPriceHistoryService,
+        readonly priceHistoryService: MenuItemPriceHistoryService,
         @Inject(forwardRef(() => ProductService))
         readonly productService: ProductService,
         @Inject(forwardRef(() => UnitService))
         readonly unitService: UnitService,
         @Inject(forwardRef(() => MenuItemFormulaService))
-        readonly menuItemFormulaService: MenuItemFormulaService,
+        readonly formulaService: MenuItemFormulaService,
 
 
     ) {
@@ -63,7 +63,7 @@ export class MenuItemService extends GenericService<MenuItem> {
         
         try {
 
-
+            await this.validateUnique({menuItemSku: createMenuItemDto.menuItemSku});
 
 
             const category = await this.categoryService.findOneByIdWithOptions(createMenuItemDto.categoryId);
@@ -95,7 +95,7 @@ export class MenuItemService extends GenericService<MenuItem> {
             const translations = await Promise.all(
                 createMenuItemDto.translates.map(async (translate) => {
                     const language = await this.languageService.getLanguageByCode(translate.languageId);
-                    return this.translateService.menuItemTranslationRepository.create({
+                    return this.translateService.translationRepository.create({
                         menuItem: menuItemSaved,
                         language: language,
                         name: translate.name,
@@ -114,19 +114,18 @@ export class MenuItemService extends GenericService<MenuItem> {
             const discount = createMenuItemDto.price.discountId ? await this.discountService.findOneByIdWithOptions(createMenuItemDto.price.discountId) : null;
             const price = createMenuItemDto.price.basePrice;
             // Create and save price using queryRunner
-            const menuItemPrice = this.menuItemPriceService.menuItemPriceRepository.create({
+            const menuItemPrice = this.PriceService.priceRepository.create({
                 menuItem: menuItemSaved,
                 basePrice: price,
                 discount: discount,
-                finalPrice: await this.discountService.setDiscount(price, discount),
             });
             await queryRunner.manager.save(menuItemPrice);
 
 
-            const menuItemPriceHistory = this.menuItemPriceHistoryService.menuItemPriceHistoryRepository.create({
+            const menuItemPriceHistory = this.priceHistoryService.priceHistoryRepository.create({
                 price: menuItemPrice,
                 oldPrice: null,
-                newPrice: menuItemPrice.finalPrice,
+                newPrice: menuItemPrice.basePrice,
             });
             await queryRunner.manager.save(menuItemPriceHistory);
     
@@ -137,7 +136,7 @@ export class MenuItemService extends GenericService<MenuItem> {
                 const formulas = await Promise.all(createMenuItemDto.formulas.map(async (formula) => {
                     const product = await this.productService.findOneByIdWithOptions(formula.productId);
                     const unit = await this.unitService.findOneByIdWithOptions(formula.unitId);
-                    return this.menuItemFormulaService.menuItemFormulaRepository.create({
+                    return this.formulaService.formulaRepository.create({
                         menuItem: menuItemSaved,
                         product: product,
                         warningQuantity: formula.warningQuantity,

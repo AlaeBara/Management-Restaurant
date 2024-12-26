@@ -11,7 +11,7 @@ export class MenuItemPriceService extends GenericService<MenuItemPrice> {
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemPrice)
-        readonly menuItemPriceRepository: Repository<MenuItemPrice>,
+        readonly priceRepository: Repository<MenuItemPrice>,
 
     ) {
         super(dataSource, MenuItemPrice, 'prix de l\'article menu');

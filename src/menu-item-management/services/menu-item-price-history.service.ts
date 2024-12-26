@@ -10,7 +10,7 @@ export class MenuItemPriceHistoryService extends GenericService<MenuItemPriceHis
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemPriceHistory)
-        readonly menuItemPriceHistoryRepository: Repository<MenuItemPriceHistory>,
+        readonly priceHistoryRepository: Repository<MenuItemPriceHistory>,
 
     ) {
         super(dataSource, MenuItemPriceHistory, 'historique du prix de l\'article menu');

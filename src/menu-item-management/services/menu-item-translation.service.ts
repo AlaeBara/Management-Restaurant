@@ -10,7 +10,7 @@ export class MenuItemTranslationService extends GenericService<MenuItemTranslate
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemTranslate)
-        readonly menuItemTranslationRepository: Repository<MenuItemTranslate>,
+        readonly translationRepository: Repository<MenuItemTranslate>,
 
     ) {
         super(dataSource, MenuItemTranslate, 'translate menu item');
