@@ -327,14 +327,17 @@ export default function AchatCreationForm() {
                     <div className="space-y-4">
                         <div className="flex justify-between items-center">
                             <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">Traductions de l'article du menu</h2>
-                            <Button 
-                                type="button" 
-                                variant="outline" 
-                                onClick={addTranslate}
-                                className="flex items-center gap-2"
-                            >
-                                <Plus size={16} /> Ajouter Traductions
-                            </Button>
+
+                            {formData.translates.length=== 3 ||
+                                <Button 
+                                    type="button" 
+                                    variant="outline" 
+                                    onClick={addTranslate}
+                                    className="flex items-center gap-2"
+                                >
+                                    <Plus size={16} /> Ajouter Traductions
+                                </Button>
+                            }
                         </div>
 
                         {/* Product Grid */}

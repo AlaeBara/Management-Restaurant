@@ -25,6 +25,12 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
         { value: 'fixed', label: 'Montant fixe' },
     ];
 
+    const discountType = [
+        { value: 'regularly', label: 'Régulièrement' },
+        { value: 'limited_date', label: 'Date limitée' },
+        { value: 'quantity', label: 'Quantité' },
+    ];
+
     const getStatusBadgeStyle = (isActive) => {
         return isActive ? 'bg-green-200 text-green-800 rounded px-2 py-1 text-sm font-medium' : 'bg-red-200 text-red-800 rounded px-2 py-1 text-sm font-medium';
     };
@@ -39,7 +45,8 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                             <TableRow className='hover:bg-transparent'>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Code Promo</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Type de réduction</TableHead>
-                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Valeur de réduction</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Type de remise</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Valeur de remise</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Statut</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de début</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de fin</TableHead>
@@ -54,14 +61,19 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                     Discounts.map((Discount) => (
                                         <TableRow key={Discount.id} className="font-sans">
                                             <TableCell className="text-center p-4 border">{Discount.discountSku}</TableCell>
+                                            <TableCell className="text-center p-4 border">
+                                                {
+                                                    discountType.find(type => type.value === Discount.discountType)?.label
+                                                }
+                                            </TableCell>
                                             <TableCell className="text-center p-4 border"> 
                                                 {
-                                                    statuses.find(status => status.value === Discount.discountType)?.label
+                                                    statuses.find(status => status.value === Discount.discountMethod)?.label
                                                 }
                                             </TableCell>
                                             <TableCell className="text-center p-4 border">                                                
                                                 {
-                                                    Discount.discountType === 'percentage' ? 
+                                                    Discount.discountMethod === 'percentage' ? 
                                                     <> 
                                                         {Discount.discountValue % 1 === 0
                                                         ? `${Number(Discount.discountValue).toFixed(0)} %`
