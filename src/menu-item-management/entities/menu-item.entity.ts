@@ -6,10 +6,7 @@ import { MenuItemFormula } from "./menu-item-formula.entity";
 import { MenuItemPrice } from "./menu-item-price.entityt";
 import { MenuItemTranslate } from "./menu-item-translation.enity";
 
-
-
-
-@Entity(process.env.DATASET_PREFIX + 'item_menu')
+@Entity(`${process.env.DATASET_PREFIX || ''}item_menu`)
 @Index(['menuItemSku'])
 export class MenuItem extends BaseEntity {
 
@@ -37,17 +34,25 @@ export class MenuItem extends BaseEntity {
     @Column({ type: 'boolean', default: false })
     hasFormulas: boolean; // if the menu item has formulas to track the quantity of the product and handel inventory automatically
 
-    @ManyToMany(() => MenuItemTag, { eager: false })
-    @JoinTable({ name: process.env.DATASET_PREFIX + 'item_menu_tag_relation' })
+    @ManyToMany(() => MenuItemTag, { eager: true })
+    @JoinTable({ name: `${process.env.DATASET_PREFIX || ''}item_menu_tag_relation` })
     tags: MenuItemTag[];
 
-    @OneToMany(() => MenuItemFormula, (formula) => formula.menuItem, { nullable: true, eager: true, cascade: true})
+    @OneToMany(() => MenuItemFormula, (formula) => formula.menuItem, { nullable: true, eager: true, cascade: true, orphanedRowAction: 'delete' })
     formulas: MenuItemFormula[];
 
-    @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem, { eager: true })
-    @JoinColumn()
+    @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem, {
+        eager: true,
+        cascade: true,
+        orphanedRowAction: 'delete', // Automatically deletes the orphaned row
+    })
+    @JoinColumn({ name: `${process.env.DATASET_PREFIX || ''}item_menu_price_id` })
     price: MenuItemPrice;
 
-    @OneToMany(() => MenuItemTranslate, (menuItemTranslate) => menuItemTranslate.menuItem, { eager: true, cascade: true })
+    @OneToMany(
+        () => MenuItemTranslate,
+        (menuItemTranslate) => menuItemTranslate.menuItem,
+        { eager: true, cascade: true, orphanedRowAction: 'delete' } // Properly configured
+    )
     translates: MenuItemTranslate[];
 }

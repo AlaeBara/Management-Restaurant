@@ -6,8 +6,13 @@ import { Language } from "src/language-management/entities/language.entity";
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_translate`)
 export class MenuItemTranslate extends BaseEntity {
 
-    @ManyToOne(() => MenuItem, (menuItem) => menuItem.id, { eager: false })
-    menuItem: MenuItem;
+    /* @ManyToOne(() => MenuItem, (menuItem) => menuItem.id, { eager: false })
+    menuItem: MenuItem; */
+    @ManyToOne(() => MenuItem, (menuItem) => menuItem.translates, {
+        eager: false,
+        onDelete: 'CASCADE', // Ensure this is explicitly set
+      })
+      menuItem: MenuItem;
 
     @ManyToOne(() => Language, (language) => language.id, { eager: true })
     language: Language;

@@ -1,4 +1,4 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, IsNull, Not, QueryRunner, Repository } from "typeorm";
 import { MenuItemTag } from "../entities/menu-item-tag.entity";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
@@ -54,16 +54,19 @@ export class MenuItemService extends GenericService<MenuItem> {
         super(dataSource, MenuItem, 'article menu');
     }
 
-
-
-    async createMenuItem(createMenuItemDto: CreateMenuItemDto) {
+    async inizializeQueryRunner() {
         const queryRunner = this.dataSource.createQueryRunner();
         await queryRunner.connect();
         await queryRunner.startTransaction();
-        
+        return queryRunner;
+    }
+
+    async createMenuItem(createMenuItemDto: CreateMenuItemDto) {
+        const queryRunner = await this.inizializeQueryRunner();
+
         try {
 
-            await this.validateUnique({menuItemSku: createMenuItemDto.menuItemSku});
+            await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
 
 
             const category = await this.categoryService.findOneByIdWithOptions(createMenuItemDto.categoryId);
@@ -71,10 +74,10 @@ export class MenuItemService extends GenericService<MenuItem> {
                 ...createMenuItemDto,
                 category: category,
                 tags: [],
-                translates: []
+                translates: [],
+                formulas: [],
+                price: null,
             });
-
-
 
             // Fetch and add tags
             await Promise.all(createMenuItemDto.tagIds.map(async (tagId) => {
@@ -82,30 +85,42 @@ export class MenuItemService extends GenericService<MenuItem> {
                 menuItem.tags.push(tag);
             }));
 
-
-    
             // Save menu item using queryRunner
             const menuItemSaved = await queryRunner.manager.save(MenuItem, menuItem);
-    
+            let formulas: MenuItemFormula[] = [];
+            if (createMenuItemDto.hasFormulas) {
+                formulas = await Promise.all(createMenuItemDto.formulas.map(async (formula) => {
 
-
-
-
-            // Create translations
-            const translations = await Promise.all(
-                createMenuItemDto.translates.map(async (translate) => {
-                    const language = await this.languageService.getLanguageByCode(translate.languageId);
-                    return this.translateService.translationRepository.create({
+                    const product = await this.productService.findOneByIdWithOptions(formula.productId);
+                    const unit = await this.unitService.findOneByIdWithOptions(formula.unitId);
+                    return this.formulaService.formulaRepository.create({
                         menuItem: menuItemSaved,
-                        language: language,
-                        name: translate.name,
-                        description: translate.description,
+                        product: product,
+                        warningQuantity: formula.warningQuantity,
+                        quantityFormula: formula.quantityFormula,
+                        portionProduced: formula.portionProduced,
+                        unit: unit,
+                        quantityRequiredPerPortion: formula.quantityFormula / formula.portionProduced,
                     });
-                })
-            );
+                }));
+            }
 
-            // Save translations using queryRunner
-            await queryRunner.manager.save(MenuItemTranslate,translations);
+            await queryRunner.manager.save(MenuItemFormula, formulas);
+
+
+
+            const translations = await Promise.all(createMenuItemDto.translates.map(async (translate) => {
+                const language = await this.languageService.getLanguageByCode(translate.languageId);
+                return this.translateService.translationRepository.create({
+                    menuItem: menuItemSaved,
+                    language: language,
+                    name: translate.name,
+                    description: translate.description,
+                });
+
+            }));
+
+            await queryRunner.manager.save(MenuItemTranslate, translations);
 
 
 
@@ -128,37 +143,10 @@ export class MenuItemService extends GenericService<MenuItem> {
                 newPrice: menuItemPrice.basePrice,
             });
             await queryRunner.manager.save(menuItemPriceHistory);
-    
-
-
-
-            if(createMenuItemDto.hasFormulas){
-                const formulas = await Promise.all(createMenuItemDto.formulas.map(async (formula) => {
-                    const product = await this.productService.findOneByIdWithOptions(formula.productId);
-                    const unit = await this.unitService.findOneByIdWithOptions(formula.unitId);
-                    return this.formulaService.formulaRepository.create({
-                        menuItem: menuItemSaved,
-                        product: product,
-                        warningQuantity: formula.warningQuantity,
-                        quantityFormula: formula.quantityFormula,
-                        portionProduced: formula.portionProduced,
-                        unit: unit,
-                        quantityRequiredPerPortion: formula.quantityFormula / formula.portionProduced,
-                    });
-                }));
-                await queryRunner.manager.save(formulas);
-            }
-
-
-           
-
-
-
-
 
             // Commit the transaction
             await queryRunner.commitTransaction();
-            
+
             return menuItemSaved;
         } catch (error) {
             // Rollback the transaction on error
@@ -170,4 +158,78 @@ export class MenuItemService extends GenericService<MenuItem> {
         }
     }
 
+ 
+
+    async findOneByIdOrFail(id: string) {
+        const menuItem = await this.menuItemRepository.findOne({
+            where: {
+                id,
+                deletedAt: IsNull()
+            }
+        });
+        if (!menuItem) throw new BadRequestException('Le produit de menu n\'existe pas.');
+        return menuItem;
+    }
+
+    async validateMenuItemDeletion(menuItem: MenuItem) {
+        if (menuItem.hasFormulas && menuItem.quantity > 0) {
+            throw new BadRequestException('Le produit de menu ne peut être supprimé car il a une quantité supérieure à 0 . Vous devez d\'abord libérer les quantités en stock.');
+        }
+    }
+
+    async deleteMenuItem(id: string) {
+        const queryRunner = await this.inizializeQueryRunner();
+        try {
+            const menuItem = await this.findOneByIdOrFail(id);
+            await this.validateMenuItemDeletion(menuItem);
+            await this.translateService.softDeleteTranslations(menuItem, queryRunner);
+            await this.formulaService.softDeleteFormulas(menuItem, queryRunner);
+            await this.PriceService.softDeletePrice(menuItem, queryRunner);
+            await queryRunner.manager.softDelete(MenuItem, { id: menuItem.id });
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw new BadRequestException(error.message);
+        } finally {
+            await queryRunner.release();
+        }
+    }
+
+    async findDeletedOneByIdOrFail(id: string) {
+        console.log(id);
+        const menuItem = await this.menuItemRepository.findOne({
+            where: {
+                id,
+                deletedAt: Not(IsNull())
+            },
+            withDeleted: true
+        });
+        console.log(menuItem);
+        if (!menuItem) throw new BadRequestException('Le produit de menu supprimé n\'existe pas');
+        const doubleSku = await this.menuItemRepository.findOne({
+            where: {
+                menuItemSku: menuItem.menuItemSku
+            },
+            withDeleted: false
+        });
+        if (doubleSku) throw new BadRequestException('Un produit de menu avec le même SKU existe déjà');
+        return menuItem;
+    }
+
+    async restoreMenuItem(id: string) {
+        const queryRunner = await this.inizializeQueryRunner();
+        try {
+            const menuItem = await this.findDeletedOneByIdOrFail(id);
+            await this.translateService.restoreTranslations(menuItem, queryRunner);
+            await this.formulaService.restoreFormulas(menuItem, queryRunner);
+            await this.PriceService.restorePrice(menuItem, queryRunner);
+            await queryRunner.manager.restore(MenuItem, { id: id });
+            await queryRunner.commitTransaction();
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw new BadRequestException(error.message);
+        } finally {
+            await queryRunner.release();
+        }
+    }
 }

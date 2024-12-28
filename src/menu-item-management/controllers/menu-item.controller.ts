@@ -49,7 +49,32 @@ export class MenuItemController {
     @Permissions('create-menu-item')
     @ApiOperation({ summary: 'Create a menu item' })
     async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto) {
-        return this.menuItemService.createMenuItem(createMenuItemDto);
+        await this.menuItemService.createMenuItem(createMenuItemDto);
+        return { message: 'Super! Vot produit de menu a été créé avec succès', status: 201 };
+
+    }
+
+    @Get(':id')
+    @Permissions('view-menu-item')
+    @ApiOperation({ summary: 'Get a menu item by id' })
+    async getMenuItem(@Param('id', ParseUUIDPipe) id: string) {
+        return this.menuItemService.findOneByIdOrFail(id);
+    }
+
+    @Delete(':id')
+    @Permissions('delete-menu-item')
+    @ApiOperation({ summary: 'Delete a menu item' })
+    async deleteMenuItem(@Param('id', ParseUUIDPipe) id: string) {
+        await this.menuItemService.deleteMenuItem(id);
+        return { message: 'Super! Vot produit de menu a été supprimé avec succès', status: 200 };
+    }
+
+    @Patch(':id/restore')
+    @Permissions('restore-menu-item')
+    @ApiOperation({ summary: 'Restore a menu item' })
+    async restoreMenuItem(@Param('id', ParseUUIDPipe) id: string) {
+        await this.menuItemService.restoreMenuItem(id);
+        return { message: 'Super! Vot produit de menu a été restauré avec succès', status: 200 };
     }
 
 }

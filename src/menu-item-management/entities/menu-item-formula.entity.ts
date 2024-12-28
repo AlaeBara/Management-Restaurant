@@ -33,7 +33,13 @@ export class MenuItemFormula extends BaseEntity {
     unitName: string;
     unitId: string;
 
-    @ManyToOne(() => MenuItem, (menuItem) => menuItem.id, { nullable: true })
+    /*    @ManyToOne(() => MenuItem, (menuItem) => menuItem.id, { nullable: true })
+       menuItem: MenuItem; */
+
+    @ManyToOne(() => MenuItem, (menuItem) => menuItem.formulas, {
+        eager: false,
+        onDelete: 'CASCADE', // Ensure this is explicitly set
+    })
     menuItem: MenuItem;
 
     @AfterLoad()

@@ -7,7 +7,12 @@ import { DiscountStatus } from "../enums/discount-status.enum";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_price`)
 export class MenuItemPrice extends BaseEntity {
-    @OneToOne(() => MenuItem, (menuItem) => menuItem.price) // Fix: Reference the price property
+    /* @OneToOne(() => MenuItem, (menuItem) => menuItem.price) // Fix: Reference the price property
+    menuItem: MenuItem; */
+
+    @OneToOne(() => MenuItem, (menuItem) => menuItem.price, {
+        onDelete: 'CASCADE', // Propagate delete operation from MenuItem
+    })
     menuItem: MenuItem;
 
     @Column({ type: 'numeric', precision: 10, scale: 2 })
@@ -16,8 +21,16 @@ export class MenuItemPrice extends BaseEntity {
     @ManyToOne(() => MenuItemDiscount, (discount) => discount.id, { nullable: true, eager: true })
     discount: MenuItemDiscount;
 
-    @OneToMany(() => MenuItemPriceHistory, (priceHistory) => priceHistory.id, { cascade: true })
+    @OneToMany(() => MenuItemPriceHistory, (priceHistory) => priceHistory.price, { cascade: true, orphanedRowAction: 'delete' })
     priceHistory: MenuItemPriceHistory[];
+
+
+    /* @OneToMany(
+        () => MenuItemTranslate,
+        (menuItemTranslate) => menuItemTranslate.menuItem,
+        { eager: true, cascade: true, orphanedRowAction: 'delete' } // Properly configured
+    )
+    translates: MenuItemTranslate[]; */
 
     finalPrice: number;
 
