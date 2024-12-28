@@ -24,11 +24,11 @@ return (
         <Card className='border-none shadow-none'>
             <CardContent>
                 <Table>
-                    <TableHeader className="border border-gray-200">
+                    <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead className="text-center border">Nom du Tag</TableHead>
-                            <TableHead className="text-center border">Date Creation</TableHead>
-                            <TableHead className="text-center border">Action</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Tag</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Date Creation</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                         </TableRow>
                     </TableHeader>
 
@@ -36,7 +36,7 @@ return (
                         {
                             tags.length > 0 ? (
                                 tags.map((tag) => (
-                                <TableRow key={tag.id} className="font-sans font-medium">
+                                <TableRow key={tag.id} className="font-sans">
                                     <TableCell className="text-center p-4 border">{tag.tag}</TableCell>
                                     <TableCell className="text-center p-4 border">{formatDate(tag.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
