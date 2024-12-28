@@ -68,7 +68,7 @@ export class MenuItemDiscount extends BaseEntity {
         );
 
 
-        if (this.discountType === DiscountType.PERIOD) {
+        if (this.discountType === DiscountType.REGULARLY) {
             if (!this.activeDays) {
                 this.status = DiscountStatus.NO_DISCOUNT;
                 return;

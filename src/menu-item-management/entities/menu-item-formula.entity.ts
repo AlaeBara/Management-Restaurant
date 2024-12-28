@@ -6,7 +6,7 @@ import { Unit } from "src/unit-management/entities/unit.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_formula`)
 export class MenuItemFormula extends BaseEntity {
-    @ManyToOne(() => Product, (product) => product.id, { nullable: true, eager: true })
+    @ManyToOne(() => Product, (product) => product.id, { nullable: false, eager: true })
     product: Product;
 
     productName: string;
@@ -38,6 +38,7 @@ export class MenuItemFormula extends BaseEntity {
 
     @AfterLoad()
     setNames() {
+        console.log(this.unit);
         this.productName = this.product.productName;
         this.productId = this.product.id;
         delete this.product;

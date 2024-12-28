@@ -3,6 +3,7 @@ import { AfterLoad, Column, Entity, ManyToOne, OneToMany, OneToOne } from "typeo
 import { MenuItem } from "./menu-item.entity";
 import { MenuItemDiscount } from "./menu-item-discount.entity";
 import { MenuItemPriceHistory } from "./menu-item-price-history.entity";
+import { DiscountStatus } from "../enums/discount-status.enum";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_price`)
 export class MenuItemPrice extends BaseEntity {
@@ -20,8 +21,12 @@ export class MenuItemPrice extends BaseEntity {
 
     finalPrice: number;
 
-    /* @AfterLoad()
+    @AfterLoad()
     async calculateFinalPrice() {
+        if (this.discount.status === DiscountStatus.NO_DISCOUNT) {
+            this.finalPrice = this.basePrice;
+            return;
+        }
         this.finalPrice = await this.discount.setDiscount(this.basePrice);
-    } */
+    }
 }

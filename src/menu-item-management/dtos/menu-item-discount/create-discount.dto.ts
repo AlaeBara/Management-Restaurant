@@ -33,7 +33,7 @@ export class CreateDiscountDto {
     @ApiProperty({
         description: 'The type of the discount',
         required: true,
-        example: DiscountType.PERIOD
+        example: DiscountType.REGULARLY
     })
     discountType: DiscountType;
 
@@ -45,6 +45,15 @@ export class CreateDiscountDto {
         example: 10
     })
     discountValue: number;
+
+    @IsOptional()
+    @IsNumber()
+    @ApiProperty({
+        description: 'The usage quota of the discount',
+        required: false,
+        example: 25
+    })
+    usageQuota: number;
 
     @IsOptional()
     @IsArray()

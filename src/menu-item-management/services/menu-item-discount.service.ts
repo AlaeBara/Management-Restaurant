@@ -43,7 +43,7 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
         const discount = this.discountRepository.create(createDiscountDto);
 
         switch (discount.discountType) {
-            case DiscountType.PERIOD:
+            case DiscountType.REGULARLY:
                 if (!discount.activeDays || discount.activeDays.length === 0) // if the discount is a period discount, the active days are required
                     throw new BadRequestException('Les jours actifs sont requis pour les réductions à horaires spécifiques de type quotidien');
                 if (discount.specificTime) {
