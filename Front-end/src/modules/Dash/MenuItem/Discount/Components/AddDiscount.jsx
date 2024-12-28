@@ -49,12 +49,12 @@ const DiscountSchema = z.object({
 
     specificTime:z.boolean().optional(),
 
-    startDateTime: z
+    startDate: z
         .string()
         .nullable()
         .optional(),
 
-    endDateTime: z
+    endDate: z
         .string()
         .nullable()
         .optional(),
@@ -114,8 +114,8 @@ export default function Component() {
 
         specificTime :false,
 
-        startDateTime:'',
-        endDateTime:'',
+        startDate:'',
+        endDate:'',
 
         startTime: '',
         endTime: '',
@@ -165,8 +165,13 @@ export default function Component() {
             }
     
             if (updatedData.discountType !== 'limited_date') {
-                updatedData.startDateTime = '';
-                updatedData.endDateTime = '';
+                updatedData.startDate = '';
+                updatedData.endDate = '';
+            }
+
+            if (!updatedData.specificTime) {
+                updatedData.startTime = '';
+                updatedData.endTime = '';
             }
     
             if (updatedData.discountType !== 'quantity') {
@@ -175,7 +180,7 @@ export default function Component() {
     
             return updatedData;
         });
-    }, [formData.discountType, resetTimeRestrictionFields]);
+    }, [formData.discountType, formData.specificTime ,resetTimeRestrictionFields]);
     
 
     
@@ -191,12 +196,12 @@ export default function Component() {
     
             let customErrors = {};
     
-            // Check if startDateTime and endDateTime are valid
-            if (formData.startDateTime && formData.endDateTime) {
-                const startDateTime = new Date(formData.startDateTime);
-                const endDateTime = new Date(formData.endDateTime);
-                if (startDateTime >= endDateTime) {
-                    customErrors.startDateTime = "La date de fin doit être supérieure à la date de début.";
+            // Check if startDate and endDate are valid
+            if (formData.startDate && formData.endDate) {
+                const startDate = new Date(formData.startDate);
+                const endDate = new Date(formData.endDate);
+                if (startDate >= endDate) {
+                    customErrors.startDate = "La date de fin doit être supérieure à la date de début.";
                 }
             }
     
@@ -214,24 +219,27 @@ export default function Component() {
             }
     
             // Check if specificTime and discountType are properly handled
-            if(formData.discountType === 'regularly' &&formData.activeDays.length === 0){
+            if(formData.discountType === 'regularly' && formData.activeDays.length === 0){
                 customErrors.activeDays='Les jours actifs sont requis pour les réductions à horaires spécifiques de type quotidien'
             }
 
             if (formData.specificTime) {
-                if (formData.discountType === 'regularly') {
+                if (formData.discountType === 'regularly' || formData.discountType === 'limited_date') {
                     if (!formData.startTime || !formData.endTime) {
-                        customErrors.startTime = "Veuillez entrer toutes les informations de temps (date et heure) pour activer l'option spécifique.";
-                        customErrors.endTime = "Veuillez entrer toutes les informations de temps (date et heure) pour activer l'option spécifique.";
-                    }
-                }
-                if (formData.discountType === 'limited_date') {
-                    if (!formData.startDateTime || !formData.endDateTime) {
-                        customErrors.startDateTime = "Veuillez entrer toutes les informations de temps (date et heure) pour activer l'option spécifique.";
-                        customErrors.endDateTime = "Veuillez entrer toutes les informations de temps (date et heure) pour activer l'option spécifique.";
+                        customErrors.startTime = "Veuillez entrer toutes les informations de temps (heure) pour activer l'option spécifique.";
+                        customErrors.endTime = "Veuillez entrer toutes les informations de temps (heure) pour activer l'option spécifique.";
                     }
                 }
             }
+
+            
+            if (formData.discountType === 'limited_date') {
+                if (!formData.startDate || !formData.endDate) {
+                    customErrors.startDate = "Veuillez entrer toutes les informations de temps (date) pour activer l'option spécifique.";
+                    customErrors.endDate = "Veuillez entrer toutes les informations de temps (date) pour activer l'option spécifique.";
+                }
+            }
+            
             // Validate form data with DiscountSchema and merge errors
             try {
                 DiscountSchema.parse(formData);
@@ -269,8 +277,8 @@ export default function Component() {
                 discountValue: null,
                 isActive: true,
                 specificTime: false,
-                startDateTime: '',
-                endDateTime: '',
+                startDate: '',
+                endDate: '',
                 startTime: '',
                 endTime: '',
                 activeDays: [],
@@ -472,6 +480,43 @@ export default function Component() {
                             </div>
                         )}
                         
+                        
+
+                        {formData.discountType ==='limited_date'  && ( 
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                <div className="space-y-2">
+                                    <Label htmlFor="startDate">Date  début </Label>
+                                    <input
+                                        type="date"
+                                        id="startDate"
+                                        name="startDate"
+                                        value={formData.startDate || ""}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                    />
+                                    {errors.startDate && (
+                                        <p className="text-xs text-red-500 mt-1">{errors.startDate}</p>
+                                    )}
+                                </div>
+
+                                <div className="space-y-2">
+                                    <Label htmlFor="startDate">Date fin</Label>
+                                    <input
+                                        type="date"
+                                        id="endDate"
+                                        name="endDate"
+                                        value={formData.endDate || ""}
+                                        onChange={handleChange}
+                                        className="w-full p-2 border border-gray-300 rounded-md"
+                                    />
+                                    {errors.endDate && (
+                                        <p className="text-xs text-red-500 mt-1">{errors.endDate}</p>
+                                    )}
+                                </div>
+
+                            </div>
+                       )}
+
                         {(formData.discountType === 'limited_date' || formData.discountType === 'regularly') && ( 
                             <div className="space-y-2">
                                 <Label htmlFor="isActive">Le temps spécifique de la réduction</Label>
@@ -495,43 +540,7 @@ export default function Component() {
                             </div>
                         )}
 
-
-                        {formData.specificTime && formData.discountType ==='limited_date'  && ( 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                <div className="space-y-2">
-                                    <Label htmlFor="startDateTime">Date et heure de début </Label>
-                                    <input
-                                        type="datetime-local"
-                                        id="startDateTime"
-                                        name="startDateTime"
-                                        value={formData.startDateTime || ""}
-                                        onChange={handleChange}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                    />
-                                    {errors.startDateTime && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.startDateTime}</p>
-                                    )}
-                                </div>
-
-                                <div className="space-y-2">
-                                    <Label htmlFor="startDateTime">Date et heure de fin</Label>
-                                    <input
-                                        type="datetime-local"
-                                        id="endDateTime"
-                                        name="endDateTime"
-                                        value={formData.endDateTime || ""}
-                                        onChange={handleChange}
-                                        className="w-full p-2 border border-gray-300 rounded-md"
-                                    />
-                                    {errors.endDateTime && (
-                                        <p className="text-xs text-red-500 mt-1">{errors.endDateTime}</p>
-                                    )}
-                                </div>
-
-                            </div>
-                       )}
-
-                        {formData.specificTime && formData.discountType ==='regularly'  && ( 
+                        {formData.specificTime && (formData.discountType ==='regularly' || formData.discountType === 'limited_date' )  && ( 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
                                     <Label htmlFor="startTime">Heure de début </Label>

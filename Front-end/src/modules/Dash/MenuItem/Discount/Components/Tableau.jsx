@@ -30,6 +30,49 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
         { value: 'limited_date', label: 'Date limitée' },
         { value: 'quantity', label: 'Quantité' },
     ];
+    
+    const getDiscountStyle = (discountType) => {
+        switch (discountType) {
+            case 'regularly':
+                return {
+                    className: 'text-blue-700 font-medium'
+                 
+                };
+            case 'limited_date':
+                return {
+                    className: 'text-red-700 font-medium'
+                     
+                };
+            case 'quantity':
+                return {
+                    className: 'text-green-700 font-medium'
+                   
+                };
+            default:
+                return {
+                    className: ' text-gray-700 font-medium'
+                   
+                };
+        }
+    };
+
+    const getStatusStyle = (status) => {
+        switch (status) {
+            case 'percentage':
+                return {
+                    className: 'text-yellow-700 font-semibold'
+                };
+            case 'fixed':
+                return {
+                    className: 'text-purple-700 font-semibold'
+                };
+            default:
+                return {
+                    className: 'text-gray-700'
+                };
+        }
+    };
+    
 
     const getStatusBadgeStyle = (isActive) => {
         return isActive ? 'bg-green-200 text-green-800 rounded px-2 py-1 text-sm font-medium' : 'bg-red-200 text-red-800 rounded px-2 py-1 text-sm font-medium';
@@ -48,8 +91,8 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Type de remise</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Valeur de remise</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Statut</TableHead>
-                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de début</TableHead>
-                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de fin</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Date</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Heure</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de création</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                             </TableRow>
@@ -61,17 +104,17 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                     Discounts.map((Discount) => (
                                         <TableRow key={Discount.id} className="font-sans">
                                             <TableCell className="text-center p-4 border">{Discount.discountSku}</TableCell>
-                                            <TableCell className="text-center p-4 border">
-                                                {
-                                                    discountType.find(type => type.value === Discount.discountType)?.label
-                                                }
+                                            <TableCell className={`text-center p-4 border font-bold ${
+                                                getDiscountStyle(Discount.discountType).className}`}
+                                            >
+                                                {discountType.find((type) => type.value === Discount.discountType)?.label || 'N/A'}
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border"> 
-                                                {
-                                                    statuses.find(status => status.value === Discount.discountMethod)?.label
-                                                }
+                                            <TableCell className={`text-center p-4 border font-bold ${
+                                                getStatusStyle(Discount.discountMethod).className}`}
+                                            > 
+                                                {statuses.find((status) => status.value === Discount.discountMethod)?.label || 'N/A'}
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">                                                
+                                            <TableCell className="text-center p-4 border font-medium">                                                
                                                 {
                                                     Discount.discountMethod === 'percentage' ? 
                                                     <> 
@@ -97,8 +140,8 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                                     {Discount.isActive ? 'Actif' : 'Inactif'}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">{Discount.startDateTime ? formatDate(Discount.startDateTime) : '-'}</TableCell>
-                                            <TableCell className="text-center p-4 border">{Discount.endDateTime ? formatDate(Discount.endDateTime) : '-'}</TableCell>
+                                            <TableCell className="text-center p-4 border">{Discount.startDate ? `de ${Discount.startDate} à ${Discount.endDate}` : '-'}</TableCell>
+                                            <TableCell className="text-center p-4 border">{Discount.startTime ? `de ${Discount.startTime.slice(0, 5)} à ${Discount.endTime.slice(0, 5)}` : '-'}</TableCell>
                                             <TableCell className="text-center p-4 border">{formatDate(Discount.createdAt)}</TableCell>
 
                                             <TableCell className="text-center p-4 text-nowrap border">
