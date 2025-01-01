@@ -2,23 +2,23 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const useFetchDiscounts = () => {
-  const [discounts, setDiscounts] = useState([]);
-  const [totalDiscounts, setTotalDiscounts] = useState(0);
-  const [Isloading, setIsloading] = useState(false);
-  const [message,  setMessage] = useState(null);
+export const useFetchLangages = () => {
+  const [langages, setLangages] = useState([]);
+  const [totaLangages, setTotalLangages] = useState(0);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
 
-  const fetchDiscounts= useCallback(
+  const fetchLangage= useCallback(
     async ({ page = 1, limit = 10, fetchAll = false } = {}) => {
-      setIsloading(true);
-      setMessage(null);
+      setLoading(true);
+      setError(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/menu-item-discounts`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/languages`;
 
       try {
         if (fetchAll) {
-          const allDiscounts = [];
+          const allLangages = [];
           let currentPage = page;
 
           while (true) {
@@ -28,14 +28,14 @@ export const useFetchDiscounts = () => {
             });
 
             const { data, total } = response.data;
-            allDiscounts.push(...data);
+            allLangages.push(...data);
 
-            if (allDiscounts.length >= total) break;
+            if (allLangages.length >= total) break;
             currentPage++;
           }
 
-          setDiscounts(allDiscounts);
-          setTotalDiscounts(allDiscounts.length);
+          setLangages(allLangages);
+          setTotalLangages(allLangages.length);
         } else {
           const response = await axios.get(url, {
             params: { page, limit, sort: "createdAt:desc" },
@@ -43,18 +43,18 @@ export const useFetchDiscounts = () => {
           });
 
           const { data, total } = response.data;
-          setDiscounts(data);
-          setTotalDiscounts(total);
+          setLangages(data);
+          setTotalLangages(total);
         }
       } catch (err) {
-        console.error("Failed to fetch discounts:", err);
-        setMessage("Une erreur s'est produite lors du chargement des code promo");
+        console.error("Failed to fetch langages:", err);
+        setError("Une erreur s'est produite lors du chargement des Language.");
       } finally {
-        setIsloading(false);
+        setLoading(false);
       }
     },
     []
   );
 
-  return { discounts, totalDiscounts, Isloading, message, fetchDiscounts };
+  return { langages, totaLangages, loading, error, fetchLangage };
 };
