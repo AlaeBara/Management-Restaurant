@@ -42,8 +42,8 @@ const Tableau = ({produits}) => {
                                     produits.map((produit) => (
                                         <TableRow key={produit.id} className="font-sans">
                                             <TableCell className="text-center p-4 border">{produit.menuItemSku}</TableCell>
-                                            <TableCell className="text-center p-4 border">{produit?.price?.basePrice}</TableCell>
-                                            <TableCell className="text-center p-4 border">{produit?.price?.finalPrice}</TableCell>
+                                            <TableCell className="text-center p-4 border">{produit?.price?.basePrice} Dh</TableCell>
+                                            <TableCell className="text-center p-4 border">{produit?.price?.finalPrice} Dh</TableCell>
                                             <TableCell className="text-center p-4 border">{formatDate(produit.createdAt)}</TableCell>
 
                                             <TableCell className="text-center p-4 text-nowrap border">
