@@ -10,55 +10,56 @@ const generatePDF = async (purchase) => {
       format: "a4",
     });
 
-    // Header
+    // Header: Title on the Left and Logo on the Right
+    const logoWidth = 30; // Width of the logo
+    const logoX = doc.internal.pageSize.width - logoWidth - 10; // Position the logo on the right
+    doc.addImage("https://media.istockphoto.com/id/981368726/fr/vectoriel/restaurant-nourriture-boissons-logo-fourchette-couteau-background-image-vectorielle.jpg?s=612x612&w=0&k=20&c=B7_5cMkmJU_myFhzyr7w_VeTvq4J_C_PjL9x1JuVHGc=", "PNG", logoX, 10, logoWidth, 30);
+
+    // Title: Align left
     doc.setFont("helvetica", "bold");
     doc.setFontSize(20);
     doc.setTextColor(22, 160, 133);
-    doc.text("Purchase Report", 20, 15);
+    doc.text("Facture d'Achat", 10, 25); // Position title on the left
 
     // Purchase Details (Above Table)
-    doc.setFontSize(12);
+    doc.setFontSize(10);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(100);
-    doc.text(`Purchase ID: ${purchase.id}`, 20, 25);
-    doc.text(`Generated on: ${new Date().toLocaleString()}`, 20, 32);
+    doc.text(`Généré le: ${new Date().toLocaleString()}`, 10,30);
 
-    // Supplier Information (Outside Table)
+
+    // Supplier Information (Right-aligned)
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
     doc.setTextColor(50);
-    doc.text("Supplier Information:", 20, 40);
+    doc.text("Fournisseur:", 10, 42);
     doc.setFontSize(10);
-    doc.text(`Supplier Name: ${purchase.supplier.name}`, 20, 46);
-    doc.text(`Supplier Email: ${purchase.supplier.email}`, 20, 52);
+    doc.text(`Nom: ${purchase.supplier.name}`, 10, 50);
+    doc.text(`Email: ${purchase.supplier.email}`, 10, 55);
+    doc.text(`Adresse: ${purchase.supplier.address}`,10, 60);
+    doc.text(`Téléphone: ${purchase.supplier.phone}`,10, 65);
 
-    // Table Columns (Without Supplier Details)
+    // Table Columns
     const tableColumn = [
-      "Date d'Achat",
-      "Statut",
-      "Montant Total (HT)",
-      "Taxe (%)",
-      "Montant Total (TTC)",
-      "Statut de Paiement",
+      "Produit",
+      "Quantité",
+      "Prix Unitaire (Dh)",
+      "Montant Total (Dh)",
     ];
 
-    // Table Rows
-    const tableRows = [
-      [
-        formatDate(purchase.purchaseDate),
-        purchase.status,
-        `${purchase.totalAmountHT} Dh`,
-        `${purchase.taxPercentage}%`,
-        `${purchase.totalAmountTTC} Dh`,
-        purchase.paiementStatus,
-      ],
-    ];
+    // Table Rows - Loop through purchaseItems
+    const tableRows = purchase.purchaseItems.map(item => [
+      item.product.productName,
+      item.quantity,
+      `${item.unitPrice} Dh`,
+      `${item.totalAmount} Dh`,
+    ]);
 
     // Auto Table Configuration
     doc.autoTable({
       head: [tableColumn],
       body: tableRows,
-      startY: 58, // Adjust startY to position below supplier info
+      startY: 75, // Start the table below the supplier info
       theme: "grid",
       headStyles: {
         fillColor: [22, 160, 133],
@@ -83,7 +84,17 @@ const generatePDF = async (purchase) => {
       },
     });
 
-    // Footer (with page number and message)
+    // Total Amounts at the Bottom Right
+    const totalAmountY = doc.lastAutoTable.finalY + 10; // Adjust positioning based on table size
+    const totalX = doc.internal.pageSize.width - 80; // Adjust the X position to fit within page
+
+    doc.setFontSize(12);
+    doc.setFont("helvetica", "normal");
+    doc.text(`Montant Total HT: ${purchase.totalAmountHT} Dh`, totalX, totalAmountY);
+    doc.text(`Taxe: ${purchase.taxPercentage}%`, totalX, totalAmountY + 8);
+    doc.text(`Montant Total TTC: ${purchase.totalAmountTTC} Dh`, totalX, totalAmountY + 16);
+
+    // Footer (Page number and message)
     const pageCount = doc.internal.getNumberOfPages();
     doc.setFont("helvetica", "normal");
     for (let i = 1; i <= pageCount; i++) {
@@ -97,7 +108,7 @@ const generatePDF = async (purchase) => {
         { align: "right" }
       );
       doc.text(
-        "Thank you for your business!",
+        "Merci pour votre achat!",
         15,
         doc.internal.pageSize.height - 10
       );
@@ -109,5 +120,6 @@ const generatePDF = async (purchase) => {
     console.error("Failed to generate PDF:", pdfError.message);
   }
 };
+
 
 export default generatePDF;
