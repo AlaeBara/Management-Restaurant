@@ -140,7 +140,14 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                                     {Discount.isActive ? 'Actif' : 'Inactif'}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">{Discount.startDate ? `de ${Discount.startDate} à ${Discount.endDate}` : '-'}</TableCell>
+                                            <TableCell className="text-center p-4 border">
+                                                {Discount.discountType == 'regularly' && 'Chaque: ' + Discount.activeDays}
+                                                {Discount.discountType == 'limited_date' &&
+                                                    (Discount.startDate
+                                                    ? `de ${Discount.startDate} à ${Discount.endDate}`
+                                                    : '-') }
+                                            </TableCell>
+
                                             <TableCell className="text-center p-4 border">{Discount.startTime ? `de ${Discount.startTime.slice(0, 5)} à ${Discount.endTime.slice(0, 5)}` : '-'}</TableCell>
                                             <TableCell className="text-center p-4 border">{formatDate(Discount.createdAt)}</TableCell>
 

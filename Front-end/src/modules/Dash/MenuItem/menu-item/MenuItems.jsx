@@ -1,15 +1,38 @@
 import React, { useEffect, useState } from 'react';
 import style from './MenuItems.module.css'
 import { useNavigate } from 'react-router-dom'
-import {Plus , SearchX ,ExternalLink} from "lucide-react"
+import {Plus , SearchX ,Ban} from "lucide-react"
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import Spinner from '@/components/Spinner/Spinner';
+import {useFetchProduits} from './hooks/useFetchProducts'
+import Tableau from './Components/Tableau'
 
-
-const Tags= () => {
+const produit= () => {
     const  navigate = useNavigate()
+
+    const {produits, totalProduits, Isloading, message, fetchProduits}=useFetchProduits()
+    const [currentPage, setCurrentPage] = useState(1);
+    const [limit] = useState(10);
+    const totalPages = Math.ceil(totalProduits / limit);
+    const handleNextPage = () => {
+        if (currentPage < totalPages) {
+          setCurrentPage(prev => prev + 1);
+        }
+    };
+    const handlePreviousPage = () => {
+        if (currentPage > 1) {
+          setCurrentPage(prev => prev - 1);
+        }
+    };
+    const startItem = (currentPage - 1) * limit + 1;
+    const endItem = Math.min(currentPage * limit, totalProduits);
+  
+    useEffect(() => {
+        fetchProduits({page: currentPage, limit :limit});
+    }, [currentPage, limit, fetchProduits]);
+
 
   return (
     <div className={style.container}>
@@ -29,7 +52,7 @@ const Tags= () => {
             </button> 
         </div>
 
-        {/* <div>
+        <div>
             {Isloading ? (
                 <div className="mt-5">
                     <Spinner title="Chargement des données..." />
@@ -41,17 +64,17 @@ const Tags= () => {
             </div>
             ) : (
                 <>
-                    {tags.length > 0 ? (
+                    {produits.length > 0 ? (
                         <>
                             <div className="grid grid-cols-1" >
-                                <Tableau tags={tags} deleteTag={deleteTag} fetchTags={fetchTags}/>
+                                <Tableau produits={produits}/>
                             </div>
                             <PaginationNav
                                 currentPage={currentPage}
                                 totalPages={totalPages}
                                 startItem={startItem}
                                 endItem={endItem}
-                                numberOfData={totalTags}
+                                numberOfData={totalProduits}
                                 onPreviousPage={handlePreviousPage}
                                 onNextPage={handleNextPage}
                             />
@@ -59,15 +82,15 @@ const Tags= () => {
                     ) : (
                     <div className={style.notfound}>
                         <SearchX className={style.icon} />
-                        <h1>Aucun Tag trouvé</h1>
+                        <h1>Aucun Produit menu trouvé</h1>
                     </div>
                     )}
                 </>
             )}
-        </div> */}
+        </div>
 
     </div>
   )
 }
 
-export default Tags
+export default produit

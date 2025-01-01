@@ -64,7 +64,7 @@ import ReactSelect from 'react-select';
                 invalid_type_error: "Le prix doit être un nombre.",
             })
             .nonnegative({ message: "Le prix doit être un nombre positif." }),
-        discountId: z.string().optional(),
+        discountId: z.string().nullable().optional(),
     }).required({ message: "Les informations de prix sont obligatoires" });
 
 
@@ -127,9 +127,9 @@ import ReactSelect from 'react-select';
             .string()
             .nonempty({ message: "La Catégorie est obligatoire." }),
 
-        avatar: z.string()
-            .url("L'image de produit doit être une URL valide") 
-            .optional(), 
+        // avatar: z.string()
+        //     .url("L'image de produit doit être une URL valide") 
+        //     .optional(), 
 
         price: priceSchema,
 
@@ -165,7 +165,7 @@ export default function AchatCreationForm() {
         warningQuantity: '',
         isPublished: false,
         isDraft: false,
-        avatar: '',
+        // avatar: '',
         categoryId: '',
         hasFormulas: false,
         formulas: [
@@ -300,6 +300,12 @@ export default function AchatCreationForm() {
                 formData.price.basePrice = parseFloat(formData.price.basePrice);
             }
 
+            if(formData.price.discountId===""){
+                formData.price.discountId=null
+            }
+
+
+
             formData.quantity = parseFloat(formData.quantity);
             formData.warningQuantity = parseFloat(formData.warningQuantity);
 
@@ -324,7 +330,7 @@ export default function AchatCreationForm() {
                 warningQuantity: '',
                 isPublished: false,
                 isDraft: false,
-                avatar: '',
+                // avatar: '',
                 categoryId: '',
                 hasFormulas: false,
                 formulas: [
@@ -558,9 +564,9 @@ export default function AchatCreationForm() {
                                     </div>
 
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> */}
 
-                                        <div className="space-y-2">
+                                        {/* <div className="space-y-2">
                                             <Label>Image de produit </Label>
                                             <Input
                                                 name="avatar"
@@ -571,29 +577,10 @@ export default function AchatCreationForm() {
                                             {errors.avatar && (
                                                 <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
                                             )}
-                                        </div>
+                                        </div> */}
 
-                                        <div className="space-y-2">
-                                            <Label>Contient des formules <span className='text-red-500 text-base'>*</span></Label>
-                                            <Select
-                                                name="hasFormulas"
-                                                value={formData.hasFormulas === null ? "" : String(formData.hasFormulas)}
-                                                onValueChange={(value) => handleChange({ target: { name: 'hasFormulas',  value: value === 'true' } })}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner une Choix" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="true">Oui</SelectItem>
-                                                    <SelectItem value="false">Non</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            
-                                            {errors.categoryId && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.categoryId}</p>
-                                            )}
-                                        </div>
-                                    </div>
+                                        
+                                    {/* </div> */}
                                     
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -646,13 +633,34 @@ export default function AchatCreationForm() {
                                                 <p className="text-xs text-red-500 mt-1">{errors.price?.discountId}</p>
                                             )}
                                         </div>
-                                    </div>
 
+                                    </div>
                                 </TabsContent>
 
 
                                 <TabsContent value="fermola" className="space-y-4">
                                     <div className="space-y-4">
+                                        <div className="space-y-2">
+                                            <Label>Contient des formules <span className='text-red-500 text-base'>*</span></Label>
+                                            <Select
+                                                name="hasFormulas"
+                                                value={formData.hasFormulas === null ? "" : String(formData.hasFormulas)}
+                                                onValueChange={(value) => handleChange({ target: { name: 'hasFormulas',  value: value === 'true' } })}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Sélectionner une Choix" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    <SelectItem value="true">Oui</SelectItem>
+                                                    <SelectItem value="false">Non</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                            
+                                            {errors.hasFormulas && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.hasFormulas}</p>
+                                            )}
+                                        </div>
+
                                         <div className="flex justify-between items-center">
                                             <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">Les Formule</h2>
                                             <Button 
@@ -672,7 +680,7 @@ export default function AchatCreationForm() {
                                                     className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 border p-4 rounded-lg"
                                                 >
                                                     <div className="space-y-2">
-                                                        <Label>Produit <span className='text-red-500 text-base'>*</span></Label>
+                                                        <Label>Produit</Label>
                                                         <Select
                                                             name="productId"
                                                             value={formulas.productId || ""}
@@ -711,6 +719,7 @@ export default function AchatCreationForm() {
                                                             onChange={(e) => handleChangee2(e.target.value, index, 'warningQuantity')}
                                                             placeholder="Quantité d'alerte"
                                                             disabled={!formData.hasFormulas}
+                                                            min="0"
                                                         />
                                                         {errors.formulas && errors.formulas[index] && errors.formulas[index].warningQuantity && (
                                                             <p className="text-xs text-red-500 mt-1">
@@ -728,6 +737,7 @@ export default function AchatCreationForm() {
                                                             onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
                                                             placeholder='Quantité dans la formule'
                                                             disabled={!formData.hasFormulas}
+                                                            min="0"
                                                         />
                                                     
                                                         {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
@@ -747,6 +757,7 @@ export default function AchatCreationForm() {
                                                             onChange={(e) => handleChangee2(e.target.value, index, 'portionProduced')}
                                                             placeholder='Quantité dans la formule'
                                                             disabled={!formData.hasFormulas}
+                                                            min="0"
                                                         />
                                                     
                                                         {errors.formulas && errors.formulas[index] && errors.formulas[index].portionProduced && (
@@ -772,7 +783,7 @@ export default function AchatCreationForm() {
                                                                     units
                                                                         .map((unit) => (
                                                                             <SelectItem key={unit.id} value={unit.id}>
-                                                                                {unit.unit} → {unit.baseUnit} {unit.conversionFactorToBaseUnit && `( ${unit.unit} → ${unit.conversionFactorToBaseUnit}${unit.baseUnit} )`}
+                                                                                {unit.unit}
                                                                             </SelectItem>
                                                                         ))
                                                                 ) : (
@@ -916,11 +927,11 @@ export default function AchatCreationForm() {
                                                                 <SelectValue placeholder="Sélectionner une Choix" />
                                                             </SelectTrigger>
                                                             <SelectContent>
-                                                                {/* disabled={formData.translates.some((t) => t.languageId === langage.id && t.languageId !== translates.languageId)} */}
+                                                                
                                                                 {langages.length > 0 ? (
                                                                     langages
                                                                         .map((langage) => (
-                                                                            <SelectItem key={langage.id} value={langage.id}>
+                                                                            <SelectItem key={langage.id} value={langage.id} disabled={formData.translates.some((t) => t.languageId === langage.id && t.languageId !== translates.languageId)}>
                                                                                 {langage.label}
                                                                             </SelectItem>
                                                                         ))

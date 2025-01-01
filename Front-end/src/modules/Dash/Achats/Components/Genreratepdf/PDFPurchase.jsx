@@ -115,7 +115,7 @@ const generatePDF = async (purchase) => {
     }
 
     // Save PDF
-    doc.save(`purchase-report-${purchase.id}.pdf`);
+    doc.save(`Facture d'Achat-${purchase.ownerReferenece}-${formatDate(purchase.createdAt)}.pdf`);
   } catch (pdfError) {
     console.error("Failed to generate PDF:", pdfError.message);
   }
