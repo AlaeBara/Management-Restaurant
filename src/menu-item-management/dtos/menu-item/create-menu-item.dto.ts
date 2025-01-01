@@ -66,7 +66,6 @@ export class CreateMenuItemDto {
   categoryId: string;
 
   @IsOptional()
-  @IsUrl()
   @ApiProperty({
     description: 'The avatar of the menu item',
     example: 'https://example.com/avatar.jpg'
