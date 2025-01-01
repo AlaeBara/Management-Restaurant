@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { TrashIcon,PencilIcon } from 'lucide-react'
+import { TrashIcon,PencilIcon , Minus } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
 import { useNavigate } from 'react-router-dom'
 
@@ -28,9 +28,10 @@ const Tableau = ({produits}) => {
                     <Table>
                         <TableHeader className="border bg-gray-100">
                             <TableRow className='hover:bg-transparent'>
-                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Sku de Produit</TableHead>
-                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Prix</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom de Produit</TableHead>
+                                {/* <TableHead className="p-3 text-center border text-sm text-black font-bold">Prix</TableHead> */}
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Final Prix</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Quantité</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de création</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                             </TableRow>
@@ -41,9 +42,25 @@ const Tableau = ({produits}) => {
                                 produits.length > 0 ? (
                                     produits.map((produit) => (
                                         <TableRow key={produit.id} className="font-sans">
-                                            <TableCell className="text-center p-4 border">{produit.menuItemSku}</TableCell>
-                                            <TableCell className="text-center p-4 border">{produit?.price?.basePrice} Dh</TableCell>
-                                            <TableCell className="text-center p-4 border">{produit?.price?.finalPrice} Dh</TableCell>
+                                            <TableCell className="text-center p-4 border">{produit.translates[0].name}</TableCell>
+                                            <TableCell className="text-center p-4 border">
+                                                {produit?.price?.discount?.status === 'noDiscount' ? (
+                                                    <div className="font-medium">
+                                                        {produit?.price?.finalPrice} Dh
+                                                    </div>
+                                                ) : (
+                                                    <div className="flex items-center justify-center gap-2">
+                                                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                                                            <Minus className="w-3 h-3 mr-1" />{produit?.price?.discount?.discountValue}
+                                                              {produit?.price?.discount?.discountMethod === 'fixed' ? "Dh" : "%"}
+                                                        </span>
+                                                        <span className="font-medium">
+                                                            {produit?.price?.finalPrice}Dh
+                                                        </span>
+                                                    </div>
+                                                )}
+                                            </TableCell>
+                                            <TableCell className="text-center p-4 border">{produit.quantity}</TableCell>
                                             <TableCell className="text-center p-4 border">{formatDate(produit.createdAt)}</TableCell>
 
                                             <TableCell className="text-center p-4 text-nowrap border">
