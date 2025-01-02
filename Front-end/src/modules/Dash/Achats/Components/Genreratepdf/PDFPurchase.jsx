@@ -90,17 +90,19 @@ const generatePDF = async (purchase) => {
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(
-      `Remise: ${
-        purchase.discountType && purchase.discountValue !== null
-          ? purchase.discountType === 'amount'
-            ? `${Number(purchase.discountValue).toString()} Dh`
-            : `${Number(purchase.discountValue).toString()} %`
-          : '-'
-      }`,
-      totalX,
-      totalAmountY
-    );      
+    {(purchase.discountType && purchase.discountValue!== null ) &&
+      doc.text(
+        `Remise: ${
+          purchase.discountType && purchase.discountValue !== null
+            ? purchase.discountType === 'amount'
+              ? `${Number(purchase.discountValue).toString()} Dh`
+              : `${Number(purchase.discountValue).toString()} %`
+            : '-'
+        }`,
+        totalX,
+        totalAmountY
+      ); 
+    }     
     doc.text(`Montant Total HT: ${Number(purchase.totalAmountHT)} Dh`, totalX, totalAmountY+8);
     doc.text(`Taxe: ${Number(purchase.taxPercentage)}%`, totalX, totalAmountY + 16);
     doc.text(`Montant Total TTC: ${Number(purchase.totalAmountTTC)} Dh`, totalX, totalAmountY + 24);

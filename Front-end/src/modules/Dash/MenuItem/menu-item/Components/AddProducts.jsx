@@ -57,16 +57,6 @@ import ReactSelect from 'react-select';
 
     });
 
-    const priceSchema = z.object({
-        basePrice: z.coerce
-            .number({
-                required_error: "Le prix de base est obligatoire.",
-                invalid_type_error: "Le prix doit être un nombre.",
-            })
-            .nonnegative({ message: "Le prix doit être un nombre positif." }),
-        discountId: z.string().nullable().optional(),
-    }).required({ message: "Les informations de prix sont obligatoires" });
-
 
     const TranslateSchema = z.object({
         languageId: z
@@ -93,7 +83,6 @@ import ReactSelect from 'react-select';
             .min(1, "Au moins un tag est requis"),
 
         //Translate 
-
         translates: z.array(TranslateSchema).min(1, { 
             message: "Au moins un produit est requis" 
         }),
@@ -126,12 +115,6 @@ import ReactSelect from 'react-select';
         categoryId:  z
             .string()
             .nonempty({ message: "La Catégorie est obligatoire." }),
-
-        // avatar: z.string()
-        //     .url("L'image de produit doit être une URL valide") 
-        //     .optional(), 
-
-        price: priceSchema,
 
     });
 
@@ -295,30 +278,69 @@ export default function AchatCreationForm() {
 
     const handler = async (e) => {
         e.preventDefault();
+
+        console.log(formData)
+
         try {
             if(formData.price.basePrice){
                 formData.price.basePrice = parseFloat(formData.price.basePrice);
             }
 
-            if(formData.price.discountId===""){
-                formData.price.discountId=null
-            }
-
-
-
             formData.quantity = parseFloat(formData.quantity);
             formData.warningQuantity = parseFloat(formData.warningQuantity);
 
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+            let customErrors = {};
+
+            // Custom validation for price.basePrice
+            if (!formData.price.basePrice) {
+                customErrors.price = customErrors.price || {};
+                customErrors.price.basePrice = "Le prix de base est obligatoire.";
+            } else if (formData.price.basePrice < 0) {
+                customErrors.price = customErrors.price || {};
+                customErrors.price.basePrice = "Le prix doit être un nombre positif.";
+            }
+
+            // Validate the form data against the schema
+            try {
+                ProductSchema.parse(formData);
+            } catch (error) {
+                if (error instanceof z.ZodError) {
+                    error.errors.forEach(({ path, message }) => {
+                        if (path.length === 1) {
+                            customErrors[path[0]] = message;
+                        } else if (path.length > 1) {
+                            const [parentField, childField] = path;
+                            customErrors[parentField] = customErrors[parentField] || {};
+                            customErrors[parentField][childField] = message;
+                        }
+                    });
+                }
+            }
+
+            // Handle custom errors
+            if (Object.keys(customErrors).length > 0) {
+                setErrors(customErrors);
+                return;
+            }
+
+            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+            ProductSchema.parse(formData);
+
+            if(formData.price.discountId ===""){
+                formData.price.discountId = null
+            }
             // Validate formulas if hasFormulas is true
             if (!formData.hasFormulas) {
                 formData.formulas = [];
             }
 
-            ProductSchema.parse(formData);
-
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
+
+            console.log(preparedData)
     
             const token = Cookies.get('access_token');
             const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`, preparedData, {
@@ -330,7 +352,6 @@ export default function AchatCreationForm() {
                 warningQuantity: '',
                 isPublished: false,
                 isDraft: false,
-                // avatar: '',
                 categoryId: '',
                 hasFormulas: false,
                 formulas: [
@@ -384,9 +405,7 @@ export default function AchatCreationForm() {
                 return acc;
             }, {});
             
-            console.log(fieldErrors);
             setErrors(fieldErrors);
-        
         } else {
             console.error('Error creating produits:', error.response?.data?.message || error.message);
             setAlert({
@@ -434,13 +453,14 @@ export default function AchatCreationForm() {
 
                                 <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 h-max">
                                     <TabsTrigger value="basic" className="text-sm h-full py-2">Informations</TabsTrigger>
-                                    <TabsTrigger value="translations" className="text-sm h-full py-2">Traductions</TabsTrigger>
-                                    <TabsTrigger value="tag" className="text-sm h-full py-2">tag</TabsTrigger>
+                                    <TabsTrigger value="translations" className="text-sm h-full py-2">Titre</TabsTrigger>
+                                    <TabsTrigger value="price" className="text-sm h-full py-2">Prix</TabsTrigger>
                                     <TabsTrigger value="fermola" className="text-sm h-full py-2">Formule</TabsTrigger>
                                 </TabsList>
 
 
                                 <TabsContent value="basic" className="space-y-6 mt-5">
+
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
 
                                         <div className="space-y-2">
@@ -475,6 +495,7 @@ export default function AchatCreationForm() {
 
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+
                                         <div className="space-y-2">
                                             <Label>Quantité d'alerte <span className='text-red-500 text-base'>*</span></Label>
                                             <Input
@@ -487,49 +508,6 @@ export default function AchatCreationForm() {
                                             />
                                             {errors.warningQuantity && (
                                                 <p className="text-xs text-red-500 mt-1">{errors.warningQuantity}</p>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label>Publié</Label>
-                                            <Select
-                                                name="isPublished"
-                                                value={formData.isPublished === null ? "" : String(formData.isPublished)}
-                                                onValueChange={(value) => handleChange({ target: { name: 'isPublished',  value: value === 'true' } })}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner une Choix" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="true">Oui</SelectItem>
-                                                    <SelectItem value="false">Non</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            {errors.isPublished && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.isPublished}</p>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                                        <div className="space-y-2">
-                                            <Label>Brouillon </Label>
-                                            <Select
-                                                name="isDraft"
-                                                value={formData.isDraft === null ? "" : String(formData.isDraft)}
-                                                onValueChange={(value) => handleChange({ target: { name: 'isDraft',  value: value === 'true' } })}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner une Choix" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="true">Oui</SelectItem>
-                                                    <SelectItem value="false">Non</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            {errors.isDraft && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.isDraft}</p>
                                             )}
                                         </div>
 
@@ -563,82 +541,86 @@ export default function AchatCreationForm() {
                                         </div>
                                     </div>
 
+                                    <div className="space-y-2">
+                                        <Label>Tag <span className='text-red-500 text-base'>*</span></Label>
 
-                                    {/* <div className="grid grid-cols-1 sm:grid-cols-2 gap-4"> */}
-
-                                        {/* <div className="space-y-2">
-                                            <Label>Image de produit </Label>
-                                            <Input
-                                                name="avatar"
-                                                value={formData.avatar || ""}
-                                                onChange={handleChange}
-                                                placeholder='Image de produit'
-                                            />
-                                            {errors.avatar && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
-                                            )}
-                                        </div> */}
-
-                                        
-                                    {/* </div> */}
-                                    
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                        <div className="space-y-2">
-                                            <Label>Prix <span className='text-red-500 text-base'>*</span></Label>
-                                            <Input
-                                                type="number"
-                                                name="basePrice"
-                                                value={formData.price.basePrice || ""}
-                                                onChange={handleChange}
-                                                placeholder='Prix'
-                                                min="0"
-                                            />
-                                            {errors.price?.basePrice  && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.price?.basePrice}</p>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label>Nom de Réduction </Label>
-                                            <Select
-                                                name="discountId"
-                                                value={formData.price.discountId}
-                                                onValueChange={(value) => {
-                                                    setFormData((prevFormData) => ({
-                                                        ...prevFormData,
-                                                        price: {
-                                                            ...prevFormData.price,
-                                                            discountId: value, 
-                                                        },
-                                                    }));
-                                                }}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner Réduction" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    {discounts.length > 0 ? (
-                                                        discounts
-                                                            .map((discount) => (
-                                                                <SelectItem key={discount.id} value={discount.id}>
-                                                                    {discount.discountSku} - {discount.discountValue} {discount.discountMethod === "percentage" ? '%' :"Dh" }
-                                                                </SelectItem>
-                                                            ))
-                                                    ) : (
-                                                        <p className='text-sm'>Aucune donnée disponible</p>
-                                                    )}
-                                                </SelectContent>
-                                            </Select>
-                                            {errors.price?.discountId && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.price?.discountId}</p>
-                                            )}
-                                        </div>
-
+                                        <ReactSelect
+                                            id="activeDays"
+                                            isMulti
+                                            options={tags.map(tag => ({ value: tag.id, label: tag.tag }))}
+                                            className="basic-multi-select"
+                                            classNamePrefix="select"
+                                            value={tags.filter((tag) => formData.tagIds.includes(tag.id)).map(tag => ({ value: tag.id, label: tag.tag }))}
+                                            onChange={(selectedOptions) =>
+                                            handleSelectChange(
+                                                'tagIds',
+                                                selectedOptions.map((tag) => tag.value) 
+                                            )
+                                        }
+                                            menuPlacement="top" 
+                                            styles={{
+                                                control: (base) => ({
+                                                    ...base,
+                                                    minHeight: '38px', 
+                                                    height: 'auto',   
+                                                    overflow: 'hidden', 
+                                                }),
+                                                valueContainer: (base) => ({
+                                                    ...base,
+                                                    maxHeight: '38px', 
+                                                    overflowY: 'auto', 
+                                                    display: 'flex',
+                                                    flexWrap: 'wrap',  
+                                                    paddingRight: '30px', 
+                                                    '::-webkit-scrollbar': {
+                                                        height: '4px', 
+                                                    },
+                                                    '::-webkit-scrollbar-track': {
+                                                        background: '#f1f1f1', 
+                                                        borderRadius: '2px',
+                                                    },
+                                                    '::-webkit-scrollbar-thumb': {
+                                                        background: '#888', 
+                                                        borderRadius: '2px',
+                                                    },
+                                                    '::-webkit-scrollbar-thumb:hover': {
+                                                        background: '#555',
+                                                    },
+                                                    scrollbarWidth: 'thin',
+                                                    scrollbarColor: '#888 #f1f1f1',
+                                                }),
+                                                multiValue: (base) => ({
+                                                    ...base,
+                                                
+                                                    marginRight: '5px', 
+                                                }),
+                                                multiValueLabel: (base) => ({
+                                                    ...base,
+                                                    overflow: 'hidden',
+                                                    textOverflow: 'ellipsis',
+                                                }),
+                                                dropdownIndicator: (base) => ({
+                                                    ...base,
+                                                    padding: '0', 
+                                                    color: 'black', 
+                                                }),
+                                                clearIndicator: (base) => ({
+                                                    ...base,
+                                                    padding: '0', 
+                                                }),
+                                            }}
+                                        />
+                                        {errors.tagIds && (
+                                            <p className="text-xs text-red-500 mt-1">{errors.tagIds}</p>
+                                        )}
                                     </div>
+                                    
+                                    
+
                                 </TabsContent>
 
-
                                 <TabsContent value="fermola" className="space-y-4">
+
                                     <div className="space-y-4">
                                         <div className="space-y-2">
                                             <Label>Contient des formules <span className='text-red-500 text-base'>*</span></Label>
@@ -673,7 +655,9 @@ export default function AchatCreationForm() {
                                             </Button>
                                             
                                         </div>
+
                                         <div className="grid gap-4">
+
                                             {formData.formulas.map((formulas, index) => (
                                                 <div 
                                                     key={index} 
@@ -812,6 +796,7 @@ export default function AchatCreationForm() {
                                                             </Button>
                                                         )}
                                                     </div>
+
                                                 </div>
                                             ))}
                                         </div>
@@ -819,79 +804,60 @@ export default function AchatCreationForm() {
                                 </TabsContent>
 
 
-                                <TabsContent value="tag" className="space-y-4">
-                                    <div className="space-y-2">
-                                        <Label>Tag <span className='text-red-500 text-base'>*</span></Label>
+                                <TabsContent value="price" className="space-y-4">
 
-                                        <ReactSelect
-                                            id="activeDays"
-                                            isMulti
-                                            options={tags.map(tag => ({ value: tag.id, label: tag.tag }))}
-                                            className="basic-multi-select"
-                                            classNamePrefix="select"
-                                            value={tags.filter((tag) => formData.tagIds.includes(tag.id)).map(tag => ({ value: tag.id, label: tag.tag }))}
-                                            onChange={(selectedOptions) =>
-                                            handleSelectChange(
-                                                'tagIds',
-                                                selectedOptions.map((tag) => tag.value) 
-                                            )
-                                        }
-                                            menuPlacement="top" 
-                                            styles={{
-                                                control: (base) => ({
-                                                    ...base,
-                                                    minHeight: '38px', 
-                                                    height: 'auto',   
-                                                    overflow: 'hidden', 
-                                                }),
-                                                valueContainer: (base) => ({
-                                                    ...base,
-                                                    maxHeight: '38px', 
-                                                    overflowY: 'auto', 
-                                                    display: 'flex',
-                                                    flexWrap: 'wrap',  
-                                                    paddingRight: '30px', 
-                                                    '::-webkit-scrollbar': {
-                                                        height: '4px', 
-                                                    },
-                                                    '::-webkit-scrollbar-track': {
-                                                        background: '#f1f1f1', 
-                                                        borderRadius: '2px',
-                                                    },
-                                                    '::-webkit-scrollbar-thumb': {
-                                                        background: '#888', 
-                                                        borderRadius: '2px',
-                                                    },
-                                                    '::-webkit-scrollbar-thumb:hover': {
-                                                        background: '#555',
-                                                    },
-                                                    scrollbarWidth: 'thin',
-                                                    scrollbarColor: '#888 #f1f1f1',
-                                                }),
-                                                multiValue: (base) => ({
-                                                    ...base,
-                                                
-                                                    marginRight: '5px', 
-                                                }),
-                                                multiValueLabel: (base) => ({
-                                                    ...base,
-                                                    overflow: 'hidden',
-                                                    textOverflow: 'ellipsis',
-                                                }),
-                                                dropdownIndicator: (base) => ({
-                                                    ...base,
-                                                    padding: '0', 
-                                                    color: 'black', 
-                                                }),
-                                                clearIndicator: (base) => ({
-                                                    ...base,
-                                                    padding: '0', 
-                                                }),
-                                            }}
-                                        />
-                                        {errors.tagIds && (
-                                            <p className="text-xs text-red-500 mt-1">{errors.tagIds}</p>
-                                        )}
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Prix <span className='text-red-500 text-base'>*</span></Label>
+                                            <Input
+                                                type="number"
+                                                name="basePrice"
+                                                value={formData.price.basePrice || ""}
+                                                onChange={handleChange}
+                                                placeholder='Prix'
+                                                min="0"
+                                            />
+                                            {errors.price?.basePrice  && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.price?.basePrice}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Nom de Réduction </Label>
+                                            <Select
+                                                name="discountId"
+                                                value={formData.price.discountId}
+                                                onValueChange={(value) => {
+                                                    setFormData((prevFormData) => ({
+                                                        ...prevFormData,
+                                                        price: {
+                                                            ...prevFormData.price,
+                                                            discountId: value, 
+                                                        },
+                                                    }));
+                                                }}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Sélectionner Réduction" />
+                                                </SelectTrigger>
+                                                <SelectContent>
+                                                    {discounts.length > 0 ? (
+                                                        discounts
+                                                            .map((discount) => (
+                                                                <SelectItem key={discount.id} value={discount.id}>
+                                                                    {discount.discountSku} - {discount.discountValue} {discount.discountMethod === "percentage" ? '%' :"Dh" }
+                                                                </SelectItem>
+                                                            ))
+                                                    ) : (
+                                                        <p className='text-sm'>Aucune donnée disponible</p>
+                                                    )}
+                                                </SelectContent>
+                                            </Select>
+                                            {errors.price?.discountId && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.price?.discountId}</p>
+                                            )}
+                                        </div>
+
                                     </div>
                                 </TabsContent>
 
@@ -1000,10 +966,13 @@ export default function AchatCreationForm() {
 
                             <div className="flex justify-end w-full">
                                 <div className="flex justify-end max-w-2xl gap-4">
-                                    <Button type="button" onClick={() => navigate('/dash/produits-menu')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
+                                    <Button type="button" onClick={() => navigate('/dash/produits-menu')} className="w-full bg-red-500  text-white hover:bg-red-600">
                                         Annuler
                                     </Button>
-                                    <Button type="submit" className="w-full">
+                                    <Button type="submit" className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]" onClick={() => {formData.isDraft = true ; formData.isPublished = false} }>
+                                        Brouillon
+                                    </Button>
+                                    <Button type="submit" className="w-full" onClick={() => {formData.isDraft = false ; formData.isPublished = true} }>
                                         Ajouter
                                     </Button>
                                 </div>

@@ -30,7 +30,7 @@ const Tableau = ({produits}) => {
                             <TableRow className='hover:bg-transparent'>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom de Produit</TableHead>
                                 {/* <TableHead className="p-3 text-center border text-sm text-black font-bold">Prix</TableHead> */}
-                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Final Prix</TableHead>
+                                <TableHead className="p-3 text-center border text-sm text-black font-bold">Prix</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Quantité</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de création</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>

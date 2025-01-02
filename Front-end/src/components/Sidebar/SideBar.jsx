@@ -10,6 +10,7 @@ import {
   LandPlot,
   ChevronRight,
   ChevronsUpDown,
+  FileText,
   Command,
   CreditCard,
   LogOut,
@@ -130,19 +131,19 @@ const SideBar = () => {
           },
         ],
       },
-      {
-        title: "Gestion Fournisseurs",
-        icon: Package,
-        permissions: ["access-granted", "view-suppliers"],
-        items: [
-          {
-            title: "Fournisseurs",
-            icon: Truck,
-            url: '/dash/Supliers',
-            permissions: ["access-granted", "view-suppliers"],
-          },
-        ],
-      },
+      // {
+      //   title: "Gestion Fournisseurs",
+      //   icon: Package,
+      //   permissions: ["access-granted", "view-suppliers"],
+      //   items: [
+      //     {
+      //       title: "Fournisseurs",
+      //       icon: Truck,
+      //       url: '/dash/Supliers',
+      //       permissions: ["access-granted", "view-suppliers"],
+      //     },
+      //   ],
+      // },
       {
         title: "Gestion des Produits",
         icon: FolderOpen,
@@ -237,8 +238,14 @@ const SideBar = () => {
         permissions: ["access-granted","view-units"],
         items: [
           {
-            title: "Achats",
-            icon:  ShoppingCart,
+            title: "Fournisseurs",
+            icon: Truck,
+            url: '/dash/Supliers',
+            permissions: ["access-granted", "view-suppliers"],
+          },
+          {
+            title: "Bon Achats",
+            icon:  FileText,
             url: "/dash/achats",
             permissions: ["access-granted", "view-units"],
           },
