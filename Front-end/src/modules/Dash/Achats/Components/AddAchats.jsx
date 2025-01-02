@@ -517,11 +517,9 @@ export default function AchatCreationForm() {
                                     } else if (value > 100) {
                                         value = 100;
                                     }
-                        
                                     handleChange({ target: { name: "taxPercentage", value } });
                                 }}
                                 placeholder='Pourcentage de taxe'
-                                min="0"
                                 max="100"
                                 
                             />
@@ -559,11 +557,22 @@ export default function AchatCreationForm() {
                             <Input
                                 type="number"
                                 name="discountValue"
-                                onChange={handleChange}
+                                onChange={(e) => {
+                                    let value = e.target.value;
+                                
+                                    if (value === "") {
+                                      value = 0; // Ensure empty values default to 0
+                                    } else if (value < 0) {
+                                      value = 0; 
+                                    } else if (formData.discountType === 'percentage' && value > 100) {
+                                      value = 100; 
+                                    }
+                                    handleChange({ target: { name: "discountValue", value } });
+                                }}
                                 value={formData.discountValue || ''}
                                 disabled={!formData.discountType}
                                 placeholder='Remise'
-                                min='0'
+                                
                                 step='any'
                                 max={formData.discountType === 'percentage' ? '100' : undefined}
                             />
@@ -735,23 +744,23 @@ export default function AchatCreationForm() {
                             <div className="space-y-2">
                                 <div className="flex justify-between">
                                     <span>Remise</span>
-                                    <strong>{totals.remiseTotal} {formData.discountType === 'percentage' ? '%' : '$' }</strong>
+                                    <strong>{totals.remiseTotal} {formData.discountType === 'percentage' ? '%' : 'Dh' }</strong>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Total HT</span>
-                                    <strong>{totals.totalHT.toFixed(2)} €</strong>
+                                    <strong>{totals.totalHT.toFixed(2)} Dh</strong>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>Base HT</span>
-                                    <strong>{totals.baseHT.toFixed(2)} €</strong>
+                                    <strong>{totals.baseHT.toFixed(2)} Dh</strong>
                                 </div>
                                 <div className="flex justify-between">
                                     <span>TVA ({((formData.taxPercentage/100) * 100).toFixed(0)}%)</span>
-                                    <strong>{totals.tva.toFixed(2)} €</strong>
+                                    <strong>{totals.tva.toFixed(2)} DH</strong>
                                 </div>
                                 <div className="flex justify-between text-xl font-bold border-t pt-2">
                                     <span>Total TTC</span>
-                                    <strong>{totals.totalTTC.toFixed(2)} €</strong>
+                                    <strong>{totals.totalTTC.toFixed(2)} DH</strong>
                                 </div>
                             </div>
                         </div>

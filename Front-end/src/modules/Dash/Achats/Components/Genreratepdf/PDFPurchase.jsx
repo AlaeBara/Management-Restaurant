@@ -50,9 +50,9 @@ const generatePDF = async (purchase) => {
     // Table Rows - Loop through purchaseItems
     const tableRows = purchase.purchaseItems.map(item => [
       item.product.productName,
-      item.quantity,
-      `${item.unitPrice} Dh`,
-      `${item.totalAmount} Dh`,
+      Number(item.quantity),
+      `${Number(item.unitPrice)} Dh`,
+      `${Number(item.totalAmount)} Dh`,
     ]);
 
     // Auto Table Configuration
@@ -90,9 +90,20 @@ const generatePDF = async (purchase) => {
 
     doc.setFontSize(12);
     doc.setFont("helvetica", "normal");
-    doc.text(`Montant Total HT: ${purchase.totalAmountHT} Dh`, totalX, totalAmountY);
-    doc.text(`Taxe: ${purchase.taxPercentage}%`, totalX, totalAmountY + 8);
-    doc.text(`Montant Total TTC: ${purchase.totalAmountTTC} Dh`, totalX, totalAmountY + 16);
+    doc.text(
+      `Remise: ${
+        purchase.discountType && purchase.discountValue !== null
+          ? purchase.discountType === 'amount'
+            ? `${Number(purchase.discountValue).toString()} Dh`
+            : `${Number(purchase.discountValue).toString()} %`
+          : '-'
+      }`,
+      totalX,
+      totalAmountY
+    );      
+    doc.text(`Montant Total HT: ${Number(purchase.totalAmountHT)} Dh`, totalX, totalAmountY+8);
+    doc.text(`Taxe: ${Number(purchase.taxPercentage)}%`, totalX, totalAmountY + 16);
+    doc.text(`Montant Total TTC: ${Number(purchase.totalAmountTTC)} Dh`, totalX, totalAmountY + 24);
 
     // Footer (Page number and message)
     const pageCount = doc.internal.getNumberOfPages();
