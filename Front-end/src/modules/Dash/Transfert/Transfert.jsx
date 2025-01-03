@@ -12,6 +12,7 @@ import { z } from 'zod';
 import {useFetchProduct} from './hooks/useFetchProduct'
 import {useFetchInventorysProduct} from './hooks/useFetchInventorysOfProuct'
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {Loader} from 'lucide-react'
 
 
 const InventoriesMovements = z.object({
@@ -87,6 +88,8 @@ export default function Component() {
     };
 
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const Submit = async (e) => {
         e.preventDefault();
         try {
@@ -99,7 +102,7 @@ export default function Component() {
           
             const token = Cookies.get('access_token');
 
-            console.log(preparedData)
+            setIsLoading(true);
             const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/inventories-movements/transfer`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -123,6 +126,7 @@ export default function Component() {
                 position: "top-right",
                 autoClose: 1000,
             });
+            setIsLoading(false);
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -139,6 +143,7 @@ export default function Component() {
                 : error.response?.data?.message || 'Erreur lors de la creation du Transfert',
                 type: "error",
             });
+            setIsLoading(false);
         }
         }
     };
@@ -337,8 +342,15 @@ export default function Component() {
                         </div>
                         
                         <div className="flex gap-4">
-                            <Button type="submit" className="w-full">
-                                Ajouter
+                            <Button type="submit" className="w-full"  disabled={isLoading}>
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                        <span>Création en cours...</span>
+                                    </div>
+                                    ) : (
+                                    "Ajouter"
+                                )}
                             </Button>
                         </div>
                     </form>
