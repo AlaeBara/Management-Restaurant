@@ -22,7 +22,6 @@ import {useFetchDiscounts} from '../../../MenuItem/Discount/Hooks/useFetchDiscou
 import ReactSelect from 'react-select';
 
 
-
     const fomulastemSchema = z.object({
         productId: z
             .string()
@@ -82,7 +81,8 @@ import ReactSelect from 'react-select';
         //Info
         menuItemSku: z
             .string()
-            .nonempty({ message: "Sku de l'aricle est obligatoire." }),
+            .nonempty({ message: "Sku de l'aricle est obligatoire." })
+            .max(15, { message: "Le Sku de l'article ne doit pas dépasser 15 caractères." }),
 
         quantity:z.coerce
             .number({
@@ -96,7 +96,7 @@ import ReactSelect from 'react-select';
                 required_error: "Le Quantité d'alerte est obligatoire.",
                 invalid_type_error: "Le Quantité d'alerte doit être un nombre.",
             })
-            .nonnegative({ message: "Le Quantité d'alerte doit être un nombre positif." }).optional(),
+            .nonnegative({ message: "Le Quantité d'alerte doit être un nombre positif." }),
 
         isPublished: z.boolean().optional(),
 
@@ -145,10 +145,9 @@ export default function AchatCreationForm() {
     const [formData, setFormData] = useState({
         menuItemSku: '',
         quantity: '',
-        warningQuantity: '',
+        warningQuantity: null,
         isPublished: false,
         isDraft: false,
-        // avatar: '',
         categoryId: '',
         hasFormulas: false,
         portionProduced:  null,
@@ -217,17 +216,27 @@ export default function AchatCreationForm() {
     };
 
     const handleChangee2 = (value, index, field) => {
-       
+        // Define numeric fields
         const numericFields = ['warningQuantity', 'quantityFormula', 'portionProduced'];
-        
-        const processedValue = numericFields.includes(field) ? Number(value) || '' : value;
     
+        // Process the value based on the field type
+        let processedValue;
+        if (numericFields.includes(field)) {
+            // Convert to number if the value is not empty, otherwise set to null
+            processedValue = value === "" ? null : Number(value);
+        } else {
+            // For non-numeric fields, keep the value as-is
+            processedValue = value;
+        }
+    
+        // Update the specific formula in the formulas array
         const updatedItems = [...formData.formulas];
         updatedItems[index] = {
             ...updatedItems[index],
             [field]: processedValue
         };
     
+        // Update the formData state
         setFormData(prevFormData => ({
             ...prevFormData,
             formulas: updatedItems
@@ -277,21 +286,28 @@ export default function AchatCreationForm() {
 
     const handler = async (e) => {
         e.preventDefault();
-
-        console.log(formData)
-
+    
+        console.log(formData);
+    
         try {
-            if(formData.price.basePrice){
+            // Parse numeric fields
+            if (formData.price.basePrice) {
                 formData.price.basePrice = parseFloat(formData.price.basePrice);
             }
 
-            formData.quantity = parseFloat(formData.quantity);
-            formData.warningQuantity = parseFloat(formData.warningQuantity);
-
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-            let customErrors = {};
+            if(formData.quantity){
+                formData.quantity = parseFloat(formData.quantity);
+            }
+            if(formData.warningQuantity){
+                formData.warningQuantity = parseFloat(formData.warningQuantity);
+            }
+            if(formData.portionProduced){
+                formData.portionProduced = parseFloat(formData.portionProduced);
+            }
+            
 
             // Custom validation for price.basePrice
+            let customErrors = {};
             if (!formData.price.basePrice) {
                 customErrors.price = customErrors.price || {};
                 customErrors.price.basePrice = "Le prix de base est obligatoire.";
@@ -300,51 +316,108 @@ export default function AchatCreationForm() {
                 customErrors.price.basePrice = "Le prix doit être un nombre positif.";
             }
 
-            // Validate the form data against the schema
-            try {
-                ProductSchema.parse(formData);
-            } catch (error) {
-                if (error instanceof z.ZodError) {
-                    error.errors.forEach(({ path, message }) => {
-                        if (path.length === 1) {
-                            customErrors[path[0]] = message;
-                        } else if (path.length > 1) {
-                            const [parentField, childField] = path;
-                            customErrors[parentField] = customErrors[parentField] || {};
-                            customErrors[parentField][childField] = message;
+            //Custom validation for warningQuantity
+            if (formData.warningQuantity === null || formData.warningQuantity === undefined || formData.warningQuantity === "") {
+                customErrors.warningQuantity = "Le Quantité d'alerte est obligatoire.";
+            } else if (formData.warningQuantity < 0) {
+                customErrors.warningQuantity = "Le Quantité d'alerte doit être un nombre positif.";
+            }
+    
+            // Validate formulas if hasFormulas is true
+            if (formData.hasFormulas) {
+                if (!formData.formulas || formData.formulas.length === 0) {
+                    customErrors.formulas = "Au moins une recette est requise.";
+                } else {
+                    formData.formulas.forEach((formula, index) => {
+                        if (!formula.productId) {
+                            customErrors.formulas = customErrors.formulas || [];
+                            customErrors.formulas[index] = customErrors.formulas[index] || {};
+                            customErrors.formulas[index].productId = "L'ingrédient est obligatoire.";
+                        }
+                        if (!formula.quantityFormula) {
+                            customErrors.formulas = customErrors.formulas || [];
+                            customErrors.formulas[index] = customErrors.formulas[index] || {};
+                            customErrors.formulas[index].quantityFormula = "La quantité nécessaire est obligatoire.";
+                        }
+                        if (!formula.unitId) {
+                            customErrors.formulas = customErrors.formulas || [];
+                            customErrors.formulas[index] = customErrors.formulas[index] || {};
+                            customErrors.formulas[index].unitId = "L'unité est obligatoire.";
+                        }
+                        if (!formData.portionProduced) {
+                            customErrors.portionProduced = "Le Portion produite est obligatoire.";
                         }
                     });
                 }
             }
 
-            // Handle custom errors
-            if (Object.keys(customErrors).length > 0) {
-                setErrors(customErrors);
+            if (!formData.hasFormulas) {
+                if (!formData.quantity) {
+                    customErrors.quantity = "Le Quantité  est obligatoire.";
+                }
+            }
+    
+            // Validate the form data against the schema
+            let schemaErrors = {};
+            try {
+                ProductSchema.parse(formData);
+            } catch (error) {
+                if (error instanceof z.ZodError) {
+                    schemaErrors = error.errors.reduce((acc, err) => {
+                        const { path = [], message } = err;
+    
+                        if (path.length === 1) {
+                            acc[path[0]] = message;
+                        } else if (path[0] === 'formulas' || path[0] === 'translates') {
+                            const [field, index, subfield] = path;
+                            acc[field] = acc[field] || [];
+                            acc[field][index] = acc[field][index] || {};
+                            acc[field][index][subfield] = message;
+                        } else if (path.length > 1) {
+                            const [parentField, childField] = path;
+                            acc[parentField] = acc[parentField] || {};
+                            acc[parentField][childField] = message;
+                        }
+                        return acc;
+                    }, {});
+                }
+            }
+    
+            // Merge custom errors and schema errors
+            const allErrors = { ...customErrors, ...schemaErrors };
+    
+            if (Object.keys(allErrors).length > 0) {
+                setErrors(allErrors);
+                console.log(allErrors)
                 return;
             }
+    
 
-            //////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-
-            ProductSchema.parse(formData);
-
-            if(formData.price.discountId ===""){
-                formData.price.discountId = null
+            // Clean up form data
+            if (formData.price.discountId === "") {
+                formData.price.discountId = null;
             }
-            // Validate formulas if hasFormulas is true
             if (!formData.hasFormulas) {
                 formData.formulas = [];
             }
 
+            if (formData.hasFormulas) {
+                formData.quantity= null;
+            }
+    
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
-
-            console.log(preparedData)
     
+            console.log(preparedData);
+    
+            // Send data to the backend
             const token = Cookies.get('access_token');
-            const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`, preparedData, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
+    
+            // Reset form and errors
             setFormData({
                 menuItemSku: '',
                 quantity: '',
@@ -353,7 +426,7 @@ export default function AchatCreationForm() {
                 isDraft: false,
                 categoryId: '',
                 hasFormulas: false,
-                portionProduced:  null,
+                portionProduced: null,
                 formulas: [
                     {
                         productId: '',
@@ -380,6 +453,8 @@ export default function AchatCreationForm() {
                 message: null,
                 type: null
             });
+    
+            // Show success toast
             toast.success(response.data.message || 'Produit créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
@@ -387,33 +462,13 @@ export default function AchatCreationForm() {
                 onClose: () => navigate(`/dash/produits-menu`),
             });
         } catch (error) {
-        if (error instanceof z.ZodError) {
-            const fieldErrors = error.errors.reduce((acc, err) => {
-                const { path = [], message } = err;
-        
-                if (path.length === 1) {
-                    acc[path[0]] = message;
-                }
-                
-                else if (path[0] === 'formulas' || path[0] === 'translates') {
-                    const [field, index, subfield] = path;
-                    acc[field] = acc[field] || [];
-                    acc[field][index] = acc[field][index] || {};
-                    acc[field][index][subfield] = message;
-                }
-                return acc;
-            }, {});
-            console.log(fieldErrors)
-            setErrors(fieldErrors);
-        } else {
-            console.error('Error creating produits:', error.response?.data?.message || error.message);
+            console.error('Error creating produit of menu:', error.response?.data?.message || error.message);
             setAlert({
-                message: Array.isArray(error.response?.data?.message) 
-                ? error.response?.data?.message[0] 
-                : error.response?.data?.message || 'Erreur lors de la creation du Produit!',
+                message: Array.isArray(error.response?.data?.message)
+                    ? error.response?.data?.message[0]
+                    : error.response?.data?.message || 'Erreur lors de la creation du Produit!',
                 type: "error",
             });
-        }
         }
     };
 
@@ -512,10 +567,10 @@ export default function AchatCreationForm() {
                                             <Input
                                                 type="number"
                                                 name="warningQuantity"
-                                                value={formData.warningQuantity || ""}
+                                                value={formData.warningQuantity !== null && formData.warningQuantity !== undefined ? formData.warningQuantity : ""}
                                                 onChange={handleChange}
                                                 placeholder='Exemple : 30 portions'
-                                                min="0"
+                                                min='0'
                                             />
                                             <p className="text-xs text-gray-600 mt-0">
                                                 Définissez un seuil pour déclencher une alerte lorsque la quantité de cet article est faible. Par exemple, si vous entrez "30 portions", une alerte sera activée lorsque le stock atteindra ce niveau.
@@ -636,15 +691,19 @@ export default function AchatCreationForm() {
                                             </div>
 
                                             <div className="space-y-2">
-                                                <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
+                                                <Label>Quantité</Label>
                                                 <Input
                                                     type="number"
                                                     name="quantity"
                                                     value={formData.quantity || ""}
                                                     onChange={handleChange}
-                                                    placeholder='Quantité'
+                                                    placeholder='Exemple : 30 portions'
                                                     min="0"
+                                                    disabled={formData.hasFormulas}
                                                 />
+                                                <p className="text-xs text-gray-600 mt-0">
+                                                    Si "Contient des Recettes" est <strong>Non</strong>, la quantité du produit dans le menu sera directement liée à la quantité du produit en inventaire. Si <strong>Oui</strong>, la quantité sera déterminée par la <strong>Portion produite</strong>.
+                                                </p>
                                                 {errors.quantity && (
                                                     <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
                                                 )}
@@ -704,18 +763,55 @@ export default function AchatCreationForm() {
 
                                                     <div className="space-y-2">
                                                         <Label>Quantité nécessaire</Label>
-                                                        <Input
-                                                            type="number"
-                                                            name="quantityFormula"
-                                                            value={formulas.quantityFormula || ""}
-                                                            onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
-                                                            placeholder='Exemple : 2 portions'
-                                                            disabled={!formData.hasFormulas}
-                                                            min="0"
-                                                        />
+                                                        <div className="flex gap-2">
+                                                            <Input
+                                                                type="number"
+                                                                name="quantityFormula"
+                                                                value={formulas.quantityFormula !== null && formulas.quantityFormula !== undefined ? formulas.quantityFormula : ""}
+                                                                onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
+                                                                placeholder='Quantité nécessaire'
+                                                                disabled={!formData.hasFormulas}
+                                                                step='any'
+                                                                min="0"
+                                                                className="flex-1"
+                                                            />
+                                                            
+                                                            <Select
+                                                                name="unitId"
+                                                                value={formulas.unitId || ""}
+                                                                onValueChange={(value) => handleChangee2(value, index, 'unitId')}
+                                                                disabled={!formData.hasFormulas}
+                                                            >
+                                                                <SelectTrigger
+                                                                    className={`w-[100px] ${
+                                                                        !formulas.unitId && errors.formulas?.[index]?.unitId
+                                                                            ? " border-solid border-2 border-red-500"
+                                                                            : ""
+                                                                    }`}
+                                                                >
+                                                                    <SelectValue placeholder="Unité" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {units.length > 0 ? (
+                                                                        units.map((unit) => (
+                                                                            <SelectItem key={unit.id} value={unit.id}>
+                                                                                {unit.unit}
+                                                                            </SelectItem>
+                                                                        ))
+                                                                    ) : (
+                                                                        <p className='text-sm'>Aucune donnée disponible</p>
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                        </div>
                                                         {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
                                                             <p className="text-xs text-red-500 mt-1">
                                                                 {errors.formulas[index].quantityFormula}
+                                                            </p>
+                                                        )}
+                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].unitId && (
+                                                            <p className="text-xs text-red-500 mt-1">
+                                                                {errors.formulas[index].unitId}
                                                             </p>
                                                         )}
                                                     </div>
@@ -725,7 +821,7 @@ export default function AchatCreationForm() {
                                                         <Input
                                                             type="number"
                                                             name="warningQuantity"
-                                                            value={formulas.warningQuantity || ""}
+                                                            value={formulas.warningQuantity !== null && formulas.warningQuantity !== undefined ? formulas.warningQuantity : ""}
                                                             onChange={(e) => handleChangee2(e.target.value, index, 'warningQuantity')}
                                                             placeholder="Quantité d'alerte"
                                                             disabled={!formData.hasFormulas}
@@ -738,39 +834,6 @@ export default function AchatCreationForm() {
                                                         )}
                                                     </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label>L'unité</Label>
-                                                        <Select
-                                                            name="unitId"
-                                                            value={formulas.unitId|| ""}
-                                                            onValueChange={(value) => handleChangee2(value, index, 'unitId')}
-                                                            disabled={!formData.hasFormulas}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Sélectionner une Choix" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {units.length > 0 ? (
-                                                                    units
-                                                                        .map((unit) => (
-                                                                            <SelectItem key={unit.id} value={unit.id}>
-                                                                                {unit.unit}
-                                                                            </SelectItem>
-                                                                        ))
-                                                                ) : (
-                                                                    <p className='text-sm'>Aucune donnée disponible</p>
-                                                                )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                    
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].unitId && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].unitId}
-                                                            </p>
-                                                        )}
-                                                    </div>
-
-                
                                                     <div className="flex items-end justify-center h-full">
                                                         {formData.formulas.length > 1 && (
                                                             <Button 
@@ -796,7 +859,7 @@ export default function AchatCreationForm() {
                                                     name="portionProduced"
                                                     value={formData.portionProduced || ""}
                                                     onChange={handleChange}
-                                                    placeholder='Quantité dans la formule'
+                                                    placeholder='Exemple : 30 portions'
                                                     disabled={!formData.hasFormulas}
                                                     min="0"
                                                 />
@@ -806,7 +869,6 @@ export default function AchatCreationForm() {
                                                     </p>
                                                 )}
                                             </div>
-
                                         </div>
                                     </div>
                                 </TabsContent>
