@@ -42,14 +42,6 @@ import ReactSelect from 'react-select';
                 invalid_type_error: "Le Quantité dans la formule doit être un nombre.",
             })
             .nonnegative({ message: "Le Quantité dans la formule doit être un nombre positif." }).optional(),
-
-        portionProduced:z.coerce
-            .number({
-                required_error: "Le Portion produite est obligatoire.",
-                invalid_type_error: "Le Portion produite doit être un nombre.",
-            })
-            .nonnegative({ message: "Le Portion produite doit être un nombre positif." }).optional(),
-
         unitId:z
             .string()
             .nullable()
@@ -116,6 +108,14 @@ import ReactSelect from 'react-select';
             .string()
             .nonempty({ message: "La Catégorie est obligatoire." }),
 
+
+        portionProduced:z.coerce
+            .number({
+                required_error: "Le Portion produite est obligatoire.",
+                invalid_type_error: "Le Portion produite doit être un nombre.",
+            })
+            .nonnegative({ message: "Le Portion produite doit être un nombre positif." }).optional(),
+
     });
 
 
@@ -151,12 +151,12 @@ export default function AchatCreationForm() {
         // avatar: '',
         categoryId: '',
         hasFormulas: false,
+        portionProduced:  null,
         formulas: [
             {
                 productId: '',
                 warningQuantity:  null,
                 quantityFormula: null,
-                portionProduced:  null,
                 unitId: ''
             }
         ],
@@ -260,7 +260,6 @@ export default function AchatCreationForm() {
                 productId: '',
                 warningQuantity:  null,
                 quantityFormula: null,
-                portionProduced:  null,
                 unitId: ''
             }]
         });
@@ -354,12 +353,12 @@ export default function AchatCreationForm() {
                 isDraft: false,
                 categoryId: '',
                 hasFormulas: false,
+                portionProduced:  null,
                 formulas: [
                     {
                         productId: '',
                         warningQuantity: '',
                         quantityFormula: '',
-                        portionProduced: '',
                         unitId: ''
                     }
                 ],
@@ -404,7 +403,7 @@ export default function AchatCreationForm() {
                 }
                 return acc;
             }, {});
-            
+            console.log(fieldErrors)
             setErrors(fieldErrors);
         } else {
             console.error('Error creating produits:', error.response?.data?.message || error.message);
@@ -424,9 +423,9 @@ export default function AchatCreationForm() {
 
             <ToastContainer />
             <div className="space-y-2 p-4">
-                <h1 className="text-2xl font-bold text-black font-sans">Ajouter un Nouvel Produit</h1>
+                <h1 className="text-2xl font-bold text-black font-sans">Ajouter Article de Menu</h1>
                 <p className="text-base text-gray-600">
-                    Remplissez les informations ci-dessous pour ajouter un nouvel Produit au menu.
+                    Remplissez les informations ci-dessous pour ajouter un nouvel article au menu. Assurez-vous de fournir tous les détails nécessaires pour une gestion efficace et une expérience client optimale.
                 </p>
             </div>
     
@@ -455,59 +454,27 @@ export default function AchatCreationForm() {
                                     <TabsTrigger value="basic" className="text-sm h-full py-2">Informations</TabsTrigger>
                                     <TabsTrigger value="translations" className="text-sm h-full py-2">Titre</TabsTrigger>
                                     <TabsTrigger value="price" className="text-sm h-full py-2">Prix</TabsTrigger>
-                                    <TabsTrigger value="fermola" className="text-sm h-full py-2">Formule</TabsTrigger>
+                                    <TabsTrigger value="fermola" className="text-sm h-full py-2">Recettes</TabsTrigger>
                                 </TabsList>
 
 
                                 <TabsContent value="basic" className="space-y-6 mt-5">
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
 
                                         <div className="space-y-2">
-                                            <Label>SKU de l'article du menu <span className='text-red-500 text-base'>*</span></Label>
+                                            <Label>Code l'article <span className='text-red-500 text-base'>*</span></Label>
                                             <Input
                                                 name="menuItemSku"
                                                 value={formData.menuItemSku}
                                                 onChange={handleChange}
-                                                placeholder="SKU de l'article du menu"
+                                                placeholder="Exemple : PIZZA-MARG-001"
                                             />
+                                            <p className="text-xs text-gray-600 mt-0">
+                                                Veuillez saisir le code unique associé à cet article. Ce code est essentiel pour identifier et gérer l'article dans le système. Assurez-vous qu'il est exact et cohérent avec votre inventaire.
+                                            </p>
                                             {errors.menuItemSku && (
                                                 <p className="text-xs text-red-500 mt-1">{errors.menuItemSku}</p>
-                                            )}
-                                        </div>
-
-                                        <div className="space-y-2">
-                                            <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
-                                            <Input
-                                                type="number"
-                                                name="quantity"
-                                                value={formData.quantity || ""}
-                                                onChange={handleChange}
-                                                placeholder='Quantité'
-                                                min="0"
-                                            />
-                                            {errors.quantity && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
-                                            )}
-                                        </div>
-
-                                    </div>
-
-
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-
-                                        <div className="space-y-2">
-                                            <Label>Quantité d'alerte <span className='text-red-500 text-base'>*</span></Label>
-                                            <Input
-                                                type="number"
-                                                name="warningQuantity"
-                                                value={formData.warningQuantity || ""}
-                                                onChange={handleChange}
-                                                placeholder='Quantité'
-                                                min="0"
-                                            />
-                                            {errors.warningQuantity && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.warningQuantity}</p>
                                             )}
                                         </div>
 
@@ -539,11 +506,29 @@ export default function AchatCreationForm() {
                                                 <p className="text-xs text-red-500 mt-1">{errors.categoryId}</p>
                                             )}
                                         </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Alerte de quantité faible  <span className='text-red-500 text-base'>*</span></Label>
+                                            <Input
+                                                type="number"
+                                                name="warningQuantity"
+                                                value={formData.warningQuantity || ""}
+                                                onChange={handleChange}
+                                                placeholder='Exemple : 30 portions'
+                                                min="0"
+                                            />
+                                            <p className="text-xs text-gray-600 mt-0">
+                                                Définissez un seuil pour déclencher une alerte lorsque la quantité de cet article est faible. Par exemple, si vous entrez "30 portions", une alerte sera activée lorsque le stock atteindra ce niveau.
+                                            </p>
+                                            {errors.warningQuantity && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.warningQuantity}</p>
+                                            )}
+                                        </div>
+                
                                     </div>
 
                                     <div className="space-y-2">
                                         <Label>Tag <span className='text-red-500 text-base'>*</span></Label>
-
                                         <ReactSelect
                                             id="activeDays"
                                             isMulti
@@ -610,38 +595,61 @@ export default function AchatCreationForm() {
                                                 }),
                                             }}
                                         />
+                                        <p className="text-xs text-gray-600 mt-0">
+                                            Sélectionnez un ou plusieurs tags pour associer cet article à des catégories ou thèmes spécifiques. Ces tags aident à organiser et filtrer les articles. Par exemple, L'article "Pizza Margherita" peut être tagué "Italien", "Végétarien" et "Plat Principal". Lorsqu'un client choisit un tag, tous les articles correspondants s'affichent dans le menu.
+                                        </p>
                                         {errors.tagIds && (
                                             <p className="text-xs text-red-500 mt-1">{errors.tagIds}</p>
                                         )}
                                     </div>
                                     
-                                    
-
                                 </TabsContent>
 
                                 <TabsContent value="fermola" className="space-y-4">
 
                                     <div className="space-y-4">
-                                        <div className="space-y-2">
-                                            <Label>Contient des formules <span className='text-red-500 text-base'>*</span></Label>
-                                            <Select
-                                                name="hasFormulas"
-                                                value={formData.hasFormulas === null ? "" : String(formData.hasFormulas)}
-                                                onValueChange={(value) => handleChange({ target: { name: 'hasFormulas',  value: value === 'true' } })}
-                                            >
-                                                <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner une Choix" />
-                                                </SelectTrigger>
-                                                <SelectContent>
-                                                    <SelectItem value="true">Oui</SelectItem>
-                                                    <SelectItem value="false">Non</SelectItem>
-                                                </SelectContent>
-                                            </Select>
-                                            
-                                            {errors.hasFormulas && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.hasFormulas}</p>
-                                            )}
-                                        </div>
+
+                                        <p className="text-ms mt-0">
+                                            Ce formulaire vous permet de créer une <strong>recette de plat</strong> en spécifiant les <strong>ingrédients clés</strong> à suivre en stock (comme la dinde) et la <strong>portion produite</strong>. Les quantités d'ingrédients saisies ici seront automatiquement <strong>déduites du stock</strong> à chaque commande. Assurez-vous de remplir tous les champs nécessaires pour une <strong>gestion précise des stocks</strong>.
+                                        </p>
+
+                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Contient des Recettes <span className='text-red-500 text-base'>*</span></Label>
+                                                <Select
+                                                    name="hasFormulas"
+                                                    value={formData.hasFormulas === null ? "" : String(formData.hasFormulas)}
+                                                    onValueChange={(value) => handleChange({ target: { name: 'hasFormulas',  value: value === 'true' } })}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Sélectionner une Choix" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        <SelectItem value="true">Oui</SelectItem>
+                                                        <SelectItem value="false">Non</SelectItem>
+                                                    </SelectContent>
+                                                </Select>
+                                                
+                                                {errors.hasFormulas && (
+                                                    <p className="text-xs text-red-500 mt-1">{errors.hasFormulas}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
+                                                <Input
+                                                    type="number"
+                                                    name="quantity"
+                                                    value={formData.quantity || ""}
+                                                    onChange={handleChange}
+                                                    placeholder='Quantité'
+                                                    min="0"
+                                                />
+                                                {errors.quantity && (
+                                                    <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
+                                                )}
+                                            </div>
+                                        </div> 
 
                                         <div className="flex justify-between items-center">
                                             <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">Les Formule</h2>
@@ -651,7 +659,7 @@ export default function AchatCreationForm() {
                                                 onClick={addFormule}
                                                 className="flex items-center gap-2"
                                             >
-                                                <Plus size={16} /> Ajouter Formule
+                                                <Plus size={16} /> Ajouter Recette
                                             </Button>
                                             
                                         </div>
@@ -664,7 +672,7 @@ export default function AchatCreationForm() {
                                                     className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 border p-4 rounded-lg"
                                                 >
                                                     <div className="space-y-2">
-                                                        <Label>Produit</Label>
+                                                        <Label>Ingrédient</Label>
                                                         <Select
                                                             name="productId"
                                                             value={formulas.productId || ""}
@@ -672,7 +680,7 @@ export default function AchatCreationForm() {
                                                             disabled={!formData.hasFormulas}
                                                         >
                                                             <SelectTrigger>
-                                                                <SelectValue placeholder="Sélectionner une Choix" />
+                                                                <SelectValue placeholder="Sélectionner une Ingrédient" />
                                                             </SelectTrigger>
                                                             <SelectContent>
                                                                 {product.length > 0 ? (
@@ -695,6 +703,24 @@ export default function AchatCreationForm() {
                                                     </div>
 
                                                     <div className="space-y-2">
+                                                        <Label>Quantité nécessaire</Label>
+                                                        <Input
+                                                            type="number"
+                                                            name="quantityFormula"
+                                                            value={formulas.quantityFormula || ""}
+                                                            onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
+                                                            placeholder='Exemple : 2 portions'
+                                                            disabled={!formData.hasFormulas}
+                                                            min="0"
+                                                        />
+                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
+                                                            <p className="text-xs text-red-500 mt-1">
+                                                                {errors.formulas[index].quantityFormula}
+                                                            </p>
+                                                        )}
+                                                    </div>
+
+                                                    <div className="space-y-2">
                                                         <Label>Quantité d'alerte</Label>
                                                         <Input
                                                             type="number"
@@ -708,45 +734,6 @@ export default function AchatCreationForm() {
                                                         {errors.formulas && errors.formulas[index] && errors.formulas[index].warningQuantity && (
                                                             <p className="text-xs text-red-500 mt-1">
                                                                 {errors.formulas[index].warningQuantity}
-                                                            </p>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label>Quantité dans la formule</Label>
-                                                        <Input
-                                                            type="number"
-                                                            name="quantityFormula"
-                                                            value={formulas.quantityFormula || ""}
-                                                            onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
-                                                            placeholder='Quantité dans la formule'
-                                                            disabled={!formData.hasFormulas}
-                                                            min="0"
-                                                        />
-                                                    
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].quantityFormula}
-                                                            </p>
-                                                        )}
-                                                    </div>
-
-
-                                                    <div className="space-y-2">
-                                                        <Label>Portion produite</Label>
-                                                        <Input
-                                                            type="number"
-                                                            name="portionProduced"
-                                                            value={formulas.portionProduced || ""}
-                                                            onChange={(e) => handleChangee2(e.target.value, index, 'portionProduced')}
-                                                            placeholder='Quantité dans la formule'
-                                                            disabled={!formData.hasFormulas}
-                                                            min="0"
-                                                        />
-                                                    
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].portionProduced && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].portionProduced}
                                                             </p>
                                                         )}
                                                     </div>
@@ -800,11 +787,36 @@ export default function AchatCreationForm() {
                                                 </div>
                                             ))}
                                         </div>
+
+                                        <div className='flex justify-end'>
+                                            <div className="space-y-2 w-full sm:w-1/2 md:w-1/3 lg:w-1/3">
+                                                <Label>Portion produite</Label>
+                                                <Input
+                                                    type="number"
+                                                    name="portionProduced"
+                                                    value={formData.portionProduced || ""}
+                                                    onChange={handleChange}
+                                                    placeholder='Quantité dans la formule'
+                                                    disabled={!formData.hasFormulas}
+                                                    min="0"
+                                                />
+                                                {errors.portionProduced && (
+                                                    <p className="text-xs text-red-500 mt-1">
+                                                        {errors.portionProduced}
+                                                    </p>
+                                                )}
+                                            </div>
+
+                                        </div>
                                     </div>
                                 </TabsContent>
 
 
                                 <TabsContent value="price" className="space-y-4">
+
+                                    <p className="text-ms mt-0">
+                                        Définissez le <strong>prix de base</strong> de l'article et appliquez une <strong>réduction</strong> si nécessaire. Le prix de base est obligatoire, tandis que la réduction est facultative. Assurez-vous que le prix est cohérent avec votre stratégie tarifaire.
+                                    </p>
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -814,7 +826,7 @@ export default function AchatCreationForm() {
                                                 name="basePrice"
                                                 value={formData.price.basePrice || ""}
                                                 onChange={handleChange}
-                                                placeholder='Prix'
+                                                placeholder="Prix (ex: 100 DH)"
                                                 min="0"
                                             />
                                             {errors.price?.basePrice  && (
@@ -840,7 +852,14 @@ export default function AchatCreationForm() {
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Sélectionner Réduction" />
                                                 </SelectTrigger>
-                                                <SelectContent>
+                                                <SelectContent  position="popper" 
+                                                    side="bottom" 
+                                                    align="start"
+                                                    className="max-h-[300px] overflow-y-auto"
+                                                >
+                                                    <SelectItem value={null} className="font-semibold text-gray-400">
+                                                        Aucune réduction
+                                                    </SelectItem>
                                                     {discounts.length > 0 ? (
                                                         discounts
                                                             .map((discount) => (
@@ -863,8 +882,11 @@ export default function AchatCreationForm() {
 
                                 <TabsContent value="translations" className="space-y-4">
                                     <div className="space-y-4">
+                                        <p className="text-ms mt-0">
+                                            Cette section vous permet de <strong> traduire le nom et la description de l'article </strong> dans différentes langues. Ces traductions seront <strong> affichées dans le menu </strong> en fonction de la langue choisie par le client. Assurez-vous de remplir les détails dans chaque langue pour offrir une <strong>expérience claire et agréable</strong> à vos clients.
+                                        </p>
                                         <div className="flex justify-between items-center">
-                                            <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">Traductions de l'article du menu</h2>
+                                            <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">Les Titre</h2>
                                             {formData.translates.length === 3 ||
                                                 <Button 
                                                     type="button" 
@@ -872,11 +894,12 @@ export default function AchatCreationForm() {
                                                     onClick={addTranslate}
                                                     className="flex items-center gap-2"
                                                 >
-                                                    <Plus size={16} /> Ajouter Traductions
+                                                    <Plus size={16} /> Ajouter Titre
                                                 </Button>
                                             }
                                         </div>
                                         <div className="grid gap-4">
+                                            
                                             {formData.translates.map((translates, index) => (
                                                 <div 
                                                     key={index} 
@@ -914,12 +937,12 @@ export default function AchatCreationForm() {
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label>Nom du produit du menu <span className='text-red-500 text-base'>*</span></Label>
+                                                        <Label>Désignation de l'article <span className='text-red-500 text-base'>*</span></Label>
                                                         <Input
                                                             name="name"
                                                             value={translates.name || ""}
                                                             onChange={(e) => handleChangee(e.target.value, index, 'name')}
-                                                            placeholder='Nom du produit du menu'
+                                                            placeholder='Exemple : Pizza Margherita'
                                                         />
                                                     
                                                         {errors.translates && errors.translates[index] && errors.translates[index].name && (
@@ -930,14 +953,13 @@ export default function AchatCreationForm() {
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label>Description du produit du menu <span className='text-red-500 text-base'>*</span></Label>
+                                                        <Label>Détails de plat <span className='text-red-500 text-base'>*</span></Label>
                                                         <Input
                                                             name="description"
                                                             value={translates.description || ""}
                                                             onChange={(e) => handleChangee(e.target.value, index, 'description')}
-                                                            placeholder='Description du produit du menu'
+                                                            placeholder='Exemple : Une délicieuse pizza Margherita ...'
                                                         />
-                                                    
                                                         {errors.translates && errors.translates[index] && errors.translates[index].description && (
                                                             <p className="text-xs text-red-500 mt-1">
                                                                 {errors.translates[index].description}
