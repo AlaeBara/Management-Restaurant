@@ -1,4 +1,4 @@
-import { Category } from "src/category-item-management/entities/category.entity";
+import { Category } from "src/category-management/entities/category.entity";
 import { BaseEntity } from "src/common/entities/base.entity";
 import { Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne, OneToMany, OneToOne } from "typeorm";
 import { MenuItemTag } from "./menu-item-tag.entity";
@@ -40,6 +40,9 @@ export class MenuItem extends BaseEntity {
 
     @OneToMany(() => MenuItemFormula, (formula) => formula.menuItem, { nullable: true, eager: true, cascade: true, orphanedRowAction: 'delete' })
     formulas: MenuItemFormula[];
+
+    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
+    portionProduced: number;
 
     @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem, {
         eager: true,

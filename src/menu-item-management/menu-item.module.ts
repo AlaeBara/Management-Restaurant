@@ -1,6 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { CategoryItemModule } from 'src/category-item-management/category-item.module';
+import { CategoryModule } from 'src/category-management/category.module';
 import { LanguageModule } from 'src/language-management/language.module';
 import { ProductManagementModule } from 'src/product-management/product.module';
 import { MenuItemTag } from './entities/menu-item-tag.entity';
@@ -28,7 +28,7 @@ import { MenuItemFormulaService } from './services/menu-item-formulas.service';
   imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
     MenuItemDiscount, MenuItemTranslate, MenuItemAllocationMovement]),
   forwardRef(() => LanguageModule),
-  forwardRef(() => CategoryItemModule),
+  forwardRef(() => CategoryModule),
   forwardRef(() => ProductManagementModule),
   forwardRef(() => UnitModule),
   forwardRef(() => InventoryModule)],

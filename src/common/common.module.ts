@@ -13,7 +13,7 @@ import { ShiftZoneModule } from 'src/shift-zone-management/shift-zone.module';
 import { FundModule } from 'src/fund-management/fund.module';
 import { PurchaseManagementModule } from 'src/purchase-management/purchase-management.module';
 import { LanguageModule } from 'src/language-management/language.module';
-import { CategoryItemModule } from 'src/category-item-management/category-item.module';
+import { CategoryModule } from 'src/category-management/category.module';
 
 @Global()
 @Module({
@@ -30,7 +30,7 @@ import { CategoryItemModule } from 'src/category-item-management/category-item.m
     forwardRef(() => FundModule),
     forwardRef(() => PurchaseManagementModule),
     forwardRef(() => LanguageModule),
-    forwardRef(() => CategoryItemModule)],
+    forwardRef(() => CategoryModule)],
   controllers: [],
   providers: [MailService, MasterSeeder],
   exports: [MailService],

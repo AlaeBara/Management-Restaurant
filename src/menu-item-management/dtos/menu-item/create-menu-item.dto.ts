@@ -107,6 +107,14 @@ export class CreateMenuItemDto {
   })
   formulas: CreateMenuItemFormulaDto[];
 
+  @IsNumber()
+  @IsOptional()
+  @ApiProperty({
+    description: 'The portion produced of the menu item',
+    example: '10'
+  })
+  portionProduced: number;
+
   @IsBoolean()
   @IsOptional()
   @ApiProperty({

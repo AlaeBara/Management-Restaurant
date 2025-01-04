@@ -19,7 +19,7 @@ import { FundPermissionSeeder } from 'src/fund-management/seeders/fund.seeder';
 import { OperationsPermissionSeeder } from 'src/fund-management/seeders/operation.seeder';
 import { PurchasePermissionSeeder } from 'src/purchase-management/seeders/purchase.seeder';
 import { LanguageSeeder } from 'src/language-management/seeders/language.seeder';
-import { CategoryPermissionSeeder } from 'src/category-item-management/seeders/category-permission.seeder';
+import { CategoryPermissionSeeder } from 'src/category-management/seeders/category-permission.seeder';
 
 @Injectable()
 export class MasterSeeder {

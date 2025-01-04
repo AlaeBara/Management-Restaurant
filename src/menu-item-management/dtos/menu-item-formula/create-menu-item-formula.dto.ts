@@ -31,13 +31,7 @@ export class CreateMenuItemFormulaDto {
     })
     quantityFormula: number;
 
-    @IsOptional()
-    @IsNumber()
-    @ApiProperty({
-        description: 'The portion produced from the quantity formula of the menu item',
-        example: '10'
-    })
-    portionProduced: number;
+   
 
     @IsOptional()
     @IsUUID()

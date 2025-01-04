@@ -11,4 +11,4 @@ import { CategoryPermissionSeeder } from './seeders/category-permission.seeder';
   providers: [CategoryService, CategoryPermissionSeeder],
   exports: [CategoryService, CategoryPermissionSeeder],
 })
-export class CategoryItemModule { }
+export class CategoryModule { }

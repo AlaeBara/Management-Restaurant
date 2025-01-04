@@ -6,8 +6,8 @@ import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/com
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemTagDto } from "../dtos/menu-item-tag/create-menu-item-tag.dto";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
-import { Category } from "src/category-item-management/entities/category.entity";
-import { CategoryService } from "src/category-item-management/services/category.service";
+import { Category } from "src/category-management/entities/category.entity";
+import { CategoryService } from "src/category-management/services/category.service";
 import { MenuItemTagService } from "./menu-item-tag.service";
 import { MenuItemTranslationService } from "./menu-item-translation.service";
 import { LanguageService } from "src/language-management/services/langague.service";
@@ -70,6 +70,10 @@ export class MenuItemService extends GenericService<MenuItem> {
 
 
             const category = await this.categoryService.findOneByIdWithOptions(createMenuItemDto.categoryId);
+            if(createMenuItemDto.hasFormulas){
+                if(createMenuItemDto.portionProduced <= 0) throw new BadRequestException('La quantité produite ne peut être inférieure ou égale à 0');
+            }
+           
             const menuItem = this.menuItemRepository.create({
                 ...createMenuItemDto,
                 category: category,
@@ -89,8 +93,13 @@ export class MenuItemService extends GenericService<MenuItem> {
             const menuItemSaved = await queryRunner.manager.save(MenuItem, menuItem);
             let formulas: MenuItemFormula[] = [];
             if (createMenuItemDto.hasFormulas) {
-                formulas = await Promise.all(createMenuItemDto.formulas.map(async (formula) => {
 
+                if (createMenuItemDto.formulas.length === 0) throw new BadRequestException('Vous devez ajouter au moins une formule');
+
+                formulas = await Promise.all(createMenuItemDto.formulas.map(async (formula) => {
+                    if (formula.quantityFormula <= 0) throw new BadRequestException('La quantité de la recette ne peut être inférieure ou égale à 0');
+                    //if (formula.portionProduced <= 0) throw new BadRequestException('La quantité produite ne peut être inférieure ou égale à 0');
+                    if (formula.warningQuantity < 0) throw new BadRequestException('La quantité de sécurité ne peut être inférieure à 0');
                     const product = await this.productService.findOneByIdWithOptions(formula.productId);
                     const unit = await this.unitService.findOneByIdWithOptions(formula.unitId);
                     return this.formulaService.formulaRepository.create({
@@ -98,9 +107,9 @@ export class MenuItemService extends GenericService<MenuItem> {
                         product: product,
                         warningQuantity: formula.warningQuantity,
                         quantityFormula: formula.quantityFormula,
-                        portionProduced: formula.portionProduced,
+                      //  portionProduced: formula.portionProduced,
                         unit: unit,
-                        quantityRequiredPerPortion: formula.quantityFormula / formula.portionProduced,
+                        quantityRequiredPerPortion: formula.quantityFormula / menuItemSaved.portionProduced,
                     });
                 }));
             }
@@ -158,7 +167,7 @@ export class MenuItemService extends GenericService<MenuItem> {
         }
     }
 
- 
+
 
     async findOneByIdOrFail(id: string) {
         const menuItem = await this.menuItemRepository.findOne({

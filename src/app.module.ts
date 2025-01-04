@@ -20,7 +20,7 @@ import { FundModule } from './fund-management/fund.module';
 import { ShiftZoneModule } from './shift-zone-management/shift-zone.module';
 import { PurchaseManagementModule } from './purchase-management/purchase-management.module';
 import { LanguageModule } from './language-management/language.module';
-import { CategoryItemModule } from './category-item-management/category-item.module';
+import { CategoryModule } from './category-management/category.module';
 import { MenuItemModule } from './menu-item-management/menu-item.module';
 @Module({
   imports: [
@@ -46,7 +46,7 @@ import { MenuItemModule } from './menu-item-management/menu-item.module';
     PurchaseManagementModule,
     CommonModule,
     LanguageModule,
-    CategoryItemModule,
+    CategoryModule,
     MenuItemModule,
     TypeOrmModule.forRoot({
       type: 'postgres',

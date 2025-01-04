@@ -21,9 +21,6 @@ export class MenuItemFormula extends BaseEntity {
     @Column({ type: 'numeric', precision: 10, scale: 2 })
     quantityFormula: number;
 
-    @Column({ type: 'numeric', precision: 10, scale: 2 })
-    portionProduced: number;
-
     @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
     quantityRequiredPerPortion: number;
 
