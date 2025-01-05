@@ -22,6 +22,8 @@ import { PurchaseManagementModule } from './purchase-management/purchase-managem
 import { LanguageModule } from './language-management/language.module';
 import { CategoryModule } from './category-management/category.module';
 import { MenuItemModule } from './menu-item-management/menu-item.module';
+import { UploadModule } from './upload-management/upload.module';
+import { MediaLibraryModule } from './media-library-management/media-library.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -48,6 +50,8 @@ import { MenuItemModule } from './menu-item-management/menu-item.module';
     LanguageModule,
     CategoryModule,
     MenuItemModule,
+    UploadModule,
+    MediaLibraryModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

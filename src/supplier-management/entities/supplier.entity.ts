@@ -6,8 +6,14 @@ import {
   Column,
   Entity,
   Index,
+  ManyToOne,
+  RelationId,
+  AfterLoad,
+  BeforeSoftRemove,
+  AfterRecover,
 } from 'typeorm';
 import { SupplierStatus } from '../enums/status-supplier.enum';
+import { MediaLibrary } from 'src/media-library-management/entities/media-library.entity';
 
 @Entity(process.env.DATASET_PREFIX + 'suppliers')
 @Index(['name'])
@@ -45,6 +51,9 @@ export class Supplier {
   @Column()
   iceNumber: string;
 
+  @ManyToOne(() => MediaLibrary, (mediaLibrary) => mediaLibrary.id, { nullable: true , eager: true})
+  logo: MediaLibrary;
+
   @CreateDateColumn()
   createdAt: Date;
 
@@ -53,4 +62,21 @@ export class Supplier {
 
   @DeleteDateColumn()
   deletedAt: Date;
+
+  @BeforeSoftRemove()
+  async beforeSoftRemove() {
+    console.log('entred');
+    if (this.logo) {
+      console.log('logo found');
+      this.logo.deletedAt = new Date();
+      console.log('logo deleted');
+    }
+  }
+
+  @AfterRecover()
+  async afterRecover() {
+    if (this.logo) {
+      this.logo.deletedAt = null;
+    }
+  }
 }

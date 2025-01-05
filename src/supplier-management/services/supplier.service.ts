@@ -6,27 +6,33 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierStatus } from '../enums/status-supplier.enum';
-import { ConflictException } from '@nestjs/common';
-import { UUID } from 'typeorm/driver/mongodb/bson.typings';
+import { ConflictException, Req } from '@nestjs/common';
 import { UpdateSupplierDto } from '../dto/update-supplier.dto';
+import { MediaLibraryService } from 'src/media-library-management/services/media-library.service';
+
 export class SupplierService extends GenericService<Supplier> {
   constructor(
     @InjectDataSource() dataSource: DataSource,
     @InjectRepository(Supplier)
     private supplierRepository: Repository<Supplier>,
+    private mediaLibraryService: MediaLibraryService
   ) {
     super(dataSource, Supplier, 'supplier');
   }
 
-  async createSupplier(createSupplierDto: CreateSupplierDto) {
+  async createSupplier(createSupplierDto: CreateSupplierDto,file:Express.Multer.File,@Req() req:Request) {
+    const supplier = await this.supplierRepository.create(createSupplierDto);
+    
     await this.validateUnique({
-      name: createSupplierDto.name,
-      phone: createSupplierDto.phone,
-      email: createSupplierDto.email,
-      rcNumber: createSupplierDto.rcNumber,
-      iceNumber: createSupplierDto.iceNumber,
+      name: supplier.name,
+      phone: supplier.phone,
+      email: supplier.email,
+      rcNumber: supplier.rcNumber,
+      iceNumber: supplier.iceNumber,
     });
-    await this.supplierRepository.save(createSupplierDto);
+
+    supplier.logo = await this.mediaLibraryService.iniMediaLibrary(file,'suppliers',req['user'].sub);
+    return await this.supplierRepository.save(supplier);
   }
 
   async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto) {

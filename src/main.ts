@@ -4,7 +4,8 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
 import { MasterSeeder } from './common/seeders/master.seeder';
 import helmet from 'helmet';
-
+import { join } from 'path';
+import { NestExpressApplication } from '@nestjs/platform-express';
 async function bootstrap() {
   // Create a new NestJS application instance using Fastify as the underlying HTTP server
   // This represents a change from the default Express platform to Fastify for improved performance
@@ -14,7 +15,15 @@ async function bootstrap() {
    ); */
 
   // Use the default NestJS application instance
-  const app = await NestFactory.create(AppModule);
+
+  //const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Important: Configure static file serving
+  app.useStaticAssets(join(__dirname, '..', 'dist/uploads'), {
+    prefix: process.env.STATIC_ASSETS_PREFIX,   // This matches your URL path
+    index: false,         // Disable directory listing
+  });
 
   // Run database seeders if RUN_SEEDER environment variable is set to TRUE
   if (process.env.RUN_SEEDER === 'TRUE') {

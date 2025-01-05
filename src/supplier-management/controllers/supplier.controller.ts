@@ -1,10 +1,11 @@
 import { Supplier } from '../entities/supplier.entity';
-import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
   import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierService } from '../services/supplier.service';
 import { Permissions } from 'src/user-management/decorators/auth.decorator';
 import { UpdateSupplierDto } from '../dto/update-supplier.dto';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('api/suppliers')
 @ApiTags('Suppliers')
@@ -50,8 +51,9 @@ export class SupplierController {
   @Post()
   @Permissions('create-supplier')
   @ApiOperation({ summary: 'Create a new supplier' })
-  async createSupplier(@Body() createSupplierDto: CreateSupplierDto) {
-    await this.supplierService.createSupplier(createSupplierDto);
+  @UseInterceptors(FileInterceptor('avatar')) 
+  async createSupplier(@Body() createSupplierDto: CreateSupplierDto, @UploadedFile() file: Express.Multer.File,@Req() req: Request) {
+    await this.supplierService.createSupplier(createSupplierDto,file,req);
     return { message: 'Super! Le fournisseur a été créé avec succès', status: 200 };
   }
 
