@@ -36,10 +36,10 @@ export class MenuItemPrice extends BaseEntity {
 
     @AfterLoad()
     async calculateFinalPrice() {
-        if (this.discount.status === DiscountStatus.NO_DISCOUNT) {
-            this.finalPrice = this.basePrice;
+        if (this.discount && this.discount.status === DiscountStatus.IN_DISCOUNT) {
+            this.finalPrice = await this.discount.setDiscount(this.basePrice);
             return;
         }
-        this.finalPrice = await this.discount.setDiscount(this.basePrice);
+        this.finalPrice = this.basePrice;
     }
 }
