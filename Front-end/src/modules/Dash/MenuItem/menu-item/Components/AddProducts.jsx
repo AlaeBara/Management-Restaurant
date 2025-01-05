@@ -10,7 +10,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { Trash2, Plus } from 'lucide-react';
+import { Trash2, Plus , Loader } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
 import {useFetchTags} from '../../Tags/hooks/useFetchTags'
@@ -283,12 +283,11 @@ export default function AchatCreationForm() {
 
     // Submit handler
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handler = async (e) => {
         e.preventDefault();
-    
-        console.log(formData);
-    
+
         try {
             // Parse numeric fields
             if (formData.price.basePrice) {
@@ -388,7 +387,6 @@ export default function AchatCreationForm() {
     
             if (Object.keys(allErrors).length > 0) {
                 setErrors(allErrors);
-                console.log(allErrors)
                 return;
             }
     
@@ -409,7 +407,8 @@ export default function AchatCreationForm() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
     
-            console.log(preparedData);
+          
+            setIsLoading(true);
     
             // Send data to the backend
             const token = Cookies.get('access_token');
@@ -453,14 +452,13 @@ export default function AchatCreationForm() {
                 message: null,
                 type: null
             });
-    
-            // Show success toast
             toast.success(response.data.message || 'Produit créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
                 onClose: () => navigate(`/dash/produits-menu`),
             });
+            setIsLoading(false);
         } catch (error) {
             console.error('Error creating produit of menu:', error.response?.data?.message || error.message);
             setAlert({
@@ -469,6 +467,7 @@ export default function AchatCreationForm() {
                     : error.response?.data?.message || 'Erreur lors de la creation du Produit!',
                 type: "error",
             });
+            setIsLoading(false);
         }
     };
 
@@ -1053,11 +1052,25 @@ export default function AchatCreationForm() {
                                     <Button type="button" onClick={() => navigate('/dash/produits-menu')} className="w-full bg-red-500  text-white hover:bg-red-600">
                                         Annuler
                                     </Button>
-                                    <Button type="submit" className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]" onClick={() => {formData.isDraft = true ; formData.isPublished = false} }>
-                                        Brouillon
+                                    <Button type="submit" disabled={isLoading} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]" onClick={() => {formData.isDraft = true ; formData.isPublished = false} }>
+                                        {isLoading && formData.isDraft === true ? (
+                                            <div className="flex items-center gap-2">
+                                                <Loader className="h-4 w-4 animate-spin" />
+                                                <span>Enregistrement en cours...</span>
+                                            </div>
+                                            ) : (
+                                            "Brouillon"
+                                        )}
                                     </Button>
-                                    <Button type="submit" className="w-full" onClick={() => {formData.isDraft = false ; formData.isPublished = true} }>
-                                        Ajouter
+                                    <Button type="submit" disabled={isLoading} className="w-full" onClick={() => {formData.isDraft = false ; formData.isPublished = true} }>
+                                        {isLoading && formData.isDraft === false ? (
+                                            <div className="flex items-center gap-2">
+                                                <Loader className="h-4 w-4 animate-spin" />
+                                                <span>Publication en cours...</span>
+                                            </div>
+                                            ) : (
+                                            "publie"
+                                        )}
                                     </Button>
                                 </div>
                             </div>
