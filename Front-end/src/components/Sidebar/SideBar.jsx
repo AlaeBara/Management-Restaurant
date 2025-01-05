@@ -131,32 +131,13 @@ const SideBar = () => {
           },
         ],
       },
-      // {
-      //   title: "Gestion Fournisseurs",
-      //   icon: Package,
-      //   permissions: ["access-granted", "view-suppliers"],
-      //   items: [
-      //     {
-      //       title: "Fournisseurs",
-      //       icon: Truck,
-      //       url: '/dash/Supliers',
-      //       permissions: ["access-granted", "view-suppliers"],
-      //     },
-      //   ],
-      // },
       {
         title: "Gestion des Produits",
         icon: FolderOpen,
         permissions: ["access-granted", "view-products", "view-categories", "view-inventories"],
         items: [
           {
-            title: "Categories",
-            icon: Component,
-            url: "/dash/categories-Produits",
-            permissions: ["access-granted", "view-categories"],
-          },
-          {
-            title: "Produits",
+            title: "ingrédient",
             icon: ShoppingBag,
             url: "/dash/Produits",
             permissions: ["access-granted", "view-products"],
@@ -256,6 +237,12 @@ const SideBar = () => {
         icon:  SquareMenu,
         permissions: ["access-granted","view-units"],
         items: [
+          {
+            title: "Categories",
+            icon: Component,
+            url: "/dash/categories-Produits",
+            permissions: ["access-granted", "view-categories"],
+          },
           {
             title: "Tags",
             icon:  Tag ,
