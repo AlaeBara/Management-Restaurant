@@ -1069,7 +1069,7 @@ export default function AchatCreationForm() {
                                                 <span>Publication en cours...</span>
                                             </div>
                                             ) : (
-                                            "publie"
+                                            "Publié"
                                         )}
                                     </Button>
                                 </div>

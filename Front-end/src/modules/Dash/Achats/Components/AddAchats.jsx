@@ -17,6 +17,7 @@ import {useFetchSupliers} from '../Hooks/useFetchALLSupliers'
 import {useFetchProduct} from '../Hooks/useFetchALLProducts'
 import {useFetchFunds} from '../Hooks/useFetchALLCaisses'
 import {useFetchIventory} from '../Hooks/useFetchInventorys'
+import {Loader} from 'lucide-react'
 
 
 const ProductItemSchema = z.object({
@@ -38,13 +39,13 @@ const ProductItemSchema = z.object({
         required_error: "Le prix unitaire est obligatoire",
         invalid_type_error: "Le prix unitaire est obligatoire",
     })
-    .positive({ message: "Le prix unitaire doit être un nombre positif" }),
+    .nonnegative({ message: "Le prix unitaire doit être un nombre positif" }),
     
     totalAmount: z.coerce.number({
         required_error: "Le montant total est obligatoire",
         invalid_type_error: "Le montant total est obligatoire",
     })
-    .positive({ message: "Le montant total doit être un nombre positif ou zéro" }),
+    .nonnegative({ message: "Le montant total doit être un nombre positif ou zéro" }),
 });
 
 const AchatFormSchema = z.object({
@@ -289,6 +290,7 @@ export default function AchatCreationForm() {
 
     // Submit handler
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async(e) => {
         e.preventDefault();
@@ -306,7 +308,7 @@ export default function AchatCreationForm() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
 
-            console.log(preparedData)
+            setIsLoading(true);
             const token = Cookies.get('access_token');
             const response =await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/purchases`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -341,6 +343,7 @@ export default function AchatCreationForm() {
                 autoClose: 1000,
                 onClose: () => navigate(`/dash/achats`),
             });
+            setIsLoading(false);
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -369,6 +372,7 @@ export default function AchatCreationForm() {
                 : error.response?.data?.message || 'Erreur lors de la creation d\'achats',
                 type: "error",
             });
+            setIsLoading(false);
         }
         }
     };
@@ -397,7 +401,9 @@ export default function AchatCreationForm() {
                         <AlertDescription>{alert.message}</AlertDescription>
                     </Alert>
                 )}
+
                 <form onSubmit={handleSubmit} className="space-y-6">
+
                     <div className="grid sm:grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                         <div className="space-y-2">
                             <Label>Fournisseur <span className='text-red-500 text-base'>*</span></Label>
@@ -457,12 +463,6 @@ export default function AchatCreationForm() {
 
                         <div className="space-y-2">
                             <Label>Date d'achat <span className='text-red-500 text-base'>*</span></Label>
-                            {/* <Input
-                                type="date"
-                                name="purchaseDate"
-                                value={formData.purchaseDate}
-                                onChange={handleChange}
-                            /> */}
                             <input
                                 type="datetime-local"
                                 id="movementDate"
@@ -482,8 +482,9 @@ export default function AchatCreationForm() {
                                 name="ownerReferenece"
                                 value={formData.ownerReferenece}
                                 onChange={handleChange}
-                                placeholder='Référence propriétaire'
+                                placeholder='Exemple : REF12345'
                             />
+                            <p className="text-xs text-gray-500">Entrez une référence unique pour identifier cet achat.</p>
                             {errors.ownerReferenece && (
                                 <p className="text-xs text-red-500 mt-1">{errors.ownerReferenece}</p>
                             )}
@@ -495,8 +496,9 @@ export default function AchatCreationForm() {
                                 name="supplierReference"
                                 value={formData.supplierReference}
                                 onChange={handleChange}
-                                placeholder='Référence fournisseur'
+                                placeholder='Example : SUP12345'
                             />
+                            <p className="text-xs text-gray-500">Entrez la référence fournisseur associée à cet achat.</p>
                             {errors.supplierReference && (
                                 <p className="text-xs text-red-500 mt-1">{errors.supplierReference}</p>
                             )}
@@ -519,7 +521,7 @@ export default function AchatCreationForm() {
                                     }
                                     handleChange({ target: { name: "taxPercentage", value } });
                                 }}
-                                placeholder='Pourcentage de taxe'
+                                placeholder='Exemple : 20%'
                                 max="100"
                                 
                             />
@@ -571,11 +573,12 @@ export default function AchatCreationForm() {
                                 }}
                                 value={formData.discountValue || ''}
                                 disabled={!formData.discountType}
-                                placeholder='Remise'
+                                placeholder='Example : 10'
                                 
                                 step='any'
                                 max={formData.discountType === 'percentage' ? '100' : undefined}
                             />
+                            <p className="text-xs text-gray-500">Entrez la valeur de la remise. Si le type est un pourcentage, la valeur doit être entre 0 et 100.</p>
                             {errors.discountValue && (
                                 <p className="text-xs text-red-500 mt-1">{errors.discountValue}</p>
                             )}
@@ -647,12 +650,22 @@ export default function AchatCreationForm() {
                                             <SelectContent>
                                                 {inventorys.length > 0 ? (
                                                     inventorys
-                                                    .filter((inventory) => inventory.productId ===product.productID)
+                                                        .filter((inventory) => inventory.productId === product.productID)
                                                         .map((inventory) => (
                                                             <SelectItem key={inventory.id} value={inventory.id}>
                                                                 {inventory.sku} 
                                                             </SelectItem>
-                                                        ))
+                                                        )).length > 0 ? (
+                                                            inventorys
+                                                                .filter((inventory) => inventory.productId === product.productID)
+                                                                .map((inventory) => (
+                                                                    <SelectItem key={inventory.id} value={inventory.id}>
+                                                                        {inventory.sku} 
+                                                                    </SelectItem>
+                                                                ))
+                                                        ) : (
+                                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                                        )
                                                 ) : (
                                                     <p className='text-sm'>Aucune donnée disponible</p>
                                                 )}
@@ -672,7 +685,7 @@ export default function AchatCreationForm() {
                                             name="quantity"
                                             value={product.quantity  || ''}
                                             onChange={(e) => handleChangee(e.target.value, index, 'quantity')}
-                                            placeholder="Quantité"
+                                            placeholder="Example : 5"
                                             min="0"
                                         />
                                         {errors.items && errors.items[index] && errors.items[index].quantity && (
@@ -687,9 +700,10 @@ export default function AchatCreationForm() {
                                         <Input
                                             type="number"
                                             name="unitPrice"
-                                            value={product.unitPrice || ''}
+                                            // value={product.unitPrice || ''}
+                                            value={product.unitPrice !== null && product.unitPrice !== undefined ? product.unitPrice : ""}
                                             onChange={(e) => handleChangee(e.target.value, index, 'unitPrice')}
-                                            placeholder="Prix HT"
+                                            placeholder="Example : 100 DH"
                                             step="any"
                                             min="0"
                                         />
@@ -705,13 +719,15 @@ export default function AchatCreationForm() {
                                         <Input
                                             type="number"
                                             name="totalAmount"
-                                            value={product.totalAmount  || ''}
+                                            // value={product.totalAmount  || ''}
+                                            value={product.totalAmount !== null && product.totalAmount !== undefined ? product.totalAmount  : ""}
                                             onChange={(e) => handleChangee(e.target.value, index, 'totalAmount')}
-                                            placeholder="Montant total"
+                                            placeholder="Example : 500 DH"
                                             step="any"
                                             min="0"
                                             disabled={true}
                                         />
+                                        <p className="text-xs text-gray-500">Le montant total est calculé automatiquement.</p>
                                         {errors.items && errors.items[index] && errors.items[index].totalAmount && (
                                             <p className="text-xs text-red-500 mt-1">
                                                 {errors.items[index].totalAmount}
@@ -787,8 +803,15 @@ export default function AchatCreationForm() {
                         >
                             Annuler
                         </Button>
-                        <Button type="submit" className="w-full">
-                            Créer Achat
+                        <Button type="submit" className="w-full" disabled={isLoading}>
+                            {isLoading ? (
+                                <div className="flex items-center gap-2">
+                                    <Loader className="h-4 w-4 animate-spin" />
+                                    <span>Création en cours...</span>
+                                </div>
+                                ) : (
+                                "Créer Achat"
+                            )}
                         </Button>
                     </div>
                 </form>

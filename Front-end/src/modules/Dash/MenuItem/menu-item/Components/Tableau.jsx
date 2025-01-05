@@ -46,16 +46,23 @@ const Tableau = ({produits}) => {
                                             <TableCell className="text-center p-4 border">
                                                 {produit?.price?.discount?.status === 'noDiscount' ? (
                                                     <div className="font-medium">
-                                                        {produit?.price?.finalPrice} Dh
+                                                        {parseFloat(produit.price.finalPrice).toFixed(2)} Dh
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center justify-center gap-2">
-                                                        <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                                                        {/* <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
                                                             <Minus className="w-3 h-3 mr-1" />{produit?.price?.discount?.discountValue}
                                                               {produit?.price?.discount?.discountMethod === 'fixed' ? "Dh" : "%"}
-                                                        </span>
+                                                        </span> */}
+                                                        {produit?.price?.discount && produit?.price?.discount?.discountValue !== null && (
+                                                            <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
+                                                                <Minus className="w-3 h-3 mr-1" />
+                                                                {Number(produit.price.discount.discountValue)}
+                                                                {produit.price.discount.discountMethod === 'fixed' ? "Dh" : "%"}
+                                                            </span>
+                                                        )}
                                                         <span className="font-medium">
-                                                            {produit?.price?.finalPrice}Dh
+                                                            {parseFloat(produit.price.finalPrice).toFixed(2)} Dh
                                                         </span>
                                                     </div>
                                                 )}

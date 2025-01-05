@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import ReactSelect from 'react-select';
+import {Loader} from 'lucide-react'
 
 
 
@@ -185,6 +186,8 @@ export default function Component() {
 
     
 
+    const [isLoading, setIsLoading] = useState(false);
+
     const Submit = async (e) => {
         e.preventDefault();
         try {
@@ -260,9 +263,8 @@ export default function Component() {
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
-    
-            console.log(preparedData);
-    
+
+            setIsLoading(true);
             // Send the data to the backend
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-item-discounts`, preparedData, {
@@ -297,6 +299,8 @@ export default function Component() {
                 autoClose: 1000,
                 onClose: () => navigate(`/dash/code-promo`),
             });
+
+            setIsLoading(false);
         } catch (error) {
             console.error('Erreur lors de la création du code promo:', error.response?.data?.message || error.message);
             setAlert({
@@ -305,6 +309,7 @@ export default function Component() {
                     : error.response?.data?.message || 'Erreur lors de la création du code promo',
                 type: "error",
             });
+            setIsLoading(false);
         }
     };
     
@@ -338,6 +343,12 @@ export default function Component() {
 
                     <form onSubmit={Submit} className="space-y-4">
 
+                        <p className="text-sm mt-0 text-gray-600">
+                            Ce formulaire permet de créer une nouvelle réduction. Vous pouvez spécifier le type de réduction (par exemple, <strong>pourcentage</strong> ou <strong>montant fixe</strong>), 
+                            définir une période de validité, et même limiter l'utilisation de la réduction à des jours ou heures spécifiques. 
+                            Assurez-vous de remplir tous les champs requis pour éviter des erreurs lors de la soumission.
+                        </p>
+
                         <div className="space-y-2">
                             <Label htmlFor="discountSku">SKU de la réduction  <span className='text-red-500 text-base'>*</span></Label>
                             <Input
@@ -345,8 +356,9 @@ export default function Component() {
                                 name="discountSku"
                                 value={formData.discountSku || ''}
                                 onChange={handleChange}
-                                placeholder="SKU de la réduction"
+                                placeholder="Exemple : DISCOUNT2023"
                             />
+                            <p className="text-xs text-gray-600 mt-0">Entrez un identifiant unique pour la réduction.</p>
                             {errors.discountSku && (
                                 <p className="text-xs text-red-500 mt-1">{errors.discountSku}</p>
                             )}
@@ -391,7 +403,7 @@ export default function Component() {
                                     name="discountValue"
                                     value={formData.discountValue || ''}
                                     onChange={handleChange}
-                                    placeholder="Valeur de la remise"
+                                    placeholder="Exemple : 10"
                                     min="0"
                                     step="any"
                                     disabled={!formData.discountMethod}
@@ -481,7 +493,6 @@ export default function Component() {
                         )}
                         
                         
-
                         {formData.discountType ==='limited_date'  && ( 
                             <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                 <div className="space-y-2">
@@ -585,24 +596,32 @@ export default function Component() {
                                     name="usageQuota"
                                     value={formData.usageQuota || ''}
                                     onChange={handleChange}
-                                    placeholder="Quota d'utilisation de la remise"
+                                    placeholder="Exemple : 100"
                                     min="0"
                                 />
+                                <p className="text-xs text-gray-500">Entrez le nombre maximum d'utilisations de la réduction.</p>
                                 {errors.usageQuota && (
-                                <p className="text-xs text-red-500 mt-1">{errors.usageQuota}</p>
+                                    <p className="text-xs text-red-500 mt-1">{errors.usageQuota}</p>
                                 )}
                             </div>
                         )}
-
 
                         <div className="flex gap-4">
                             <Button type="button" onClick={() => navigate(`/dash/code-promo`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                 Annuler
                             </Button>
-                            <Button type="submit" className="w-full">
-                                Ajouter
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                        <span>Création en cours...</span>
+                                    </div>
+                                    ) : (
+                                    "Ajouter"
+                                )}
                             </Button>
                         </div>
+
                     </form>
                 </CardContent>
             </Card>
