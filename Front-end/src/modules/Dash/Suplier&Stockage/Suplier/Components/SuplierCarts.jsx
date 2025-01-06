@@ -53,7 +53,7 @@ const SupplierCard = ({ supplier , Delete }) => {
                
                 <div className={style.headerCart}>
                     <img
-                        src="https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"
+                        src={supplier.logo?.localPath ? `${import.meta.env.VITE_BACKEND_URL}${supplier.logo.localPath}` : "https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"}
                         alt="Avatar"
                         className={style.avatar}
                     />
