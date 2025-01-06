@@ -11,7 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import { X } from 'lucide-react';
+import { X ,Loader} from 'lucide-react';
 
 // Zod schema for form validation
 const SuplierSchema = z.object({
@@ -97,79 +97,19 @@ export default function Component() {
     };
 
 
-
-    // const handleSubmit = async (e) => {
-    //     e.preventDefault();
-    //     try {
-    //         SuplierSchema.parse(formData);
-
-    //         const preparedData = Object.fromEntries(
-    //             Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
-    //         );
-    //         const token = Cookies.get('access_token');
-    //         const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`, preparedData, {
-    //             headers: {
-    //             Authorization: `Bearer ${token}`,
-    //             },
-    //         });
-
-    //         setFormData({
-    //             name: '',
-    //             address: '',
-    //             fax: '',
-    //             phone: '',
-    //             email: '',
-    //             website: '',
-    //             description: '',
-    //             status: STATUS.ACTIVE,
-    //             rcNumber: '',
-    //             iceNumber: '',
-    //         });
-    //         setErrors({});
-
-    //         setAlert({
-    //             message: null,
-    //             type: null
-    //         });
-    //         toast.success(response.data.message || 'Fournisseur créé avec succès!', {
-    //             icon: '✅',
-    //             position: "top-right",
-    //             autoClose: 1000,
-    //             onClose: () => navigate("/dash/Supliers")
-    //         });
-    //     } catch (error) {
-    //         if (error instanceof z.ZodError) {
-    //             const fieldErrors = error.errors.reduce((acc, { path, message }) => {
-    //                 acc[path[0]] = message;
-    //                 return acc;
-    //             }, {});
-    //             setErrors(fieldErrors);
-    //         } else {
-    //             console.error('Error creating suplier:', error.response?.data?.message || error.message);
-    //             setAlert({
-    //                 message: Array.isArray(error.response?.data?.message) 
-    //                 ? error.response?.data?.message[0] 
-    //                 : error.response?.data?.message || 'Erreur lors de la creation du Fournisseur!',
-    //                 type: "error",
-    //             });
-    //         }
-    //     }
-    // };
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleSubmit = async (e) => {
         e.preventDefault();
     
-        // Check if a file is selected and if it's an image
         if (file && !file.type.startsWith('image/')) {
             setErrors((prevErrors) => ({ ...prevErrors, avatar: 'Veuillez sélectionner un fichier image valide.' }));
             return;
         }
     
         try {
-            
             SuplierSchema.parse(formData);
     
-            // Prepare form data for submission
             const formDataWithFile = new FormData();
             Object.entries(formData).forEach(([key, value]) => {
                 if (value !== null && value !== "") {
@@ -179,8 +119,8 @@ export default function Component() {
             if (file) {
                 formDataWithFile.append('avatar', file);
             }
-            console.log(formDataWithFile)
-            // Submit the form data
+
+            setIsLoading(true);
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers`, formDataWithFile, {
                 headers: {
@@ -205,13 +145,13 @@ export default function Component() {
             setFile(null);
             document.getElementById('avatar').value = '';
             setErrors({});
-            // Show success message and navigate
             toast.success(response.data.message || 'Fournisseur créé avec succès!', {
                 icon: '✅',
                 position: "top-right",
                 autoClose: 1000,
                 onClose: () => navigate("/dash/Supliers"),
             });
+            setIsLoading(false);
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -227,7 +167,9 @@ export default function Component() {
                         : error.response?.data?.message || 'Erreur lors de la creation du Fournisseur!',
                     type: "error",
                 });
+                setIsLoading(false);
             }
+
         }
     };
 
@@ -418,7 +360,7 @@ export default function Component() {
 
                         </div>
 
-                        <div className="space-y-2">
+                        {/* <div className="space-y-2">
                             <Label htmlFor="avatar">Avatar du fournisseur</Label>
                             <div className="flex items-center gap-2">
                                 <div className="relative flex-1">
@@ -445,18 +387,64 @@ export default function Component() {
                             {errors.avatar && (
                                 <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
                             )}
+                        </div> */}
+
+                        <div className="space-y-4">
+                            <Label htmlFor="avatar">Logo du fournisseur</Label>
+                            <div
+                                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer transition-colors"
+                            >
+                                <input
+                                    id="avatar"
+                                    name="avatar"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={handleFileChange}
+                                    className="hidden"
+                                />
+                                <label htmlFor="avatar" className="cursor-pointer">
+                                    <p className="text-gray-600">
+                                        Cliquez pour téléverser
+                                    </p>
+                                    <p className="text-sm text-gray-500">
+                                        Seuls les fichiers image sont acceptés
+                                    </p>
+                                </label>
+                            </div>
+
+                            {file && (
+                                <div className="flex items-center justify-between bg-gray-100 rounded-lg p-3">
+                                    <p className="text-sm text-gray-700">{file.name}</p>
+                                    <button
+                                        type="button"
+                                        onClick={handleRemoveFile}
+                                        className="p-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                                        aria-label="Supprimer le fichier"
+                                    >
+                                        <X className="h-4 w-4" /> 
+                                    </button>
+                                </div>
+                            )}
+                            {errors.avatar && (
+                                <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
+                            )}
                         </div>
 
-
-                    
 
                         <div className='flex gap-4'>
 
                             <Button type="submit" onClick={()=>navigate('/dash/Supliers')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                 Annuler 
                             </Button>
-                            <Button type="submit" className="w-full">
-                                Ajouter
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                        <span>Création en cours...</span>
+                                    </div>
+                                    ) : (
+                                    "Ajouter"
+                                )}
                             </Button>
 
                         </div>
