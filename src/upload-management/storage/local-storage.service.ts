@@ -8,7 +8,8 @@ import { v4 as uuidv4 } from 'uuid';
 import { MediaLibrary } from 'src/media-library-management/entities/media-library.entity';
 @Injectable()
 export class LocalStorageService implements StorageService {
-    private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads');
+   // private readonly uploadDir = path.join(__dirname, '..', '..', 'uploads');
+    private readonly uploadDir = path.join(process.cwd(), 'uploads');
     private readonly validExtensions = ['jpg', 'jpeg', 'png', 'gif', 'bmp', 'tiff', 'ico', 'webp','pdf'];
     private readonly maxFileSize = 5 * 1024 * 1024; // 5MB
 

@@ -20,7 +20,7 @@ export class SupplierService extends GenericService<Supplier> {
     super(dataSource, Supplier, 'supplier');
   }
 
-  async createSupplier(createSupplierDto: CreateSupplierDto,file:Express.Multer.File,@Req() req:Request) {
+  async createSupplier(createSupplierDto: CreateSupplierDto,@Req() req:Request) {
     const supplier = await this.supplierRepository.create(createSupplierDto);
     
     await this.validateUnique({
@@ -31,11 +31,11 @@ export class SupplierService extends GenericService<Supplier> {
       iceNumber: supplier.iceNumber,
     });
 
-    supplier.logo = await this.mediaLibraryService.iniMediaLibrary(file,'suppliers',req['user'].sub);
+    supplier.logo = await this.mediaLibraryService.iniMediaLibrary(createSupplierDto.avatar,'suppliers',req['user'].sub);
     return await this.supplierRepository.save(supplier);
   }
 
-  async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto) {
+  async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto,@Req() req:Request) {
     await this.validateUniqueExcludingSelf({
       name: updateSupplierDto.name,
       phone: updateSupplierDto.phone,
@@ -43,7 +43,15 @@ export class SupplierService extends GenericService<Supplier> {
       rcNumber: updateSupplierDto.rcNumber,
       iceNumber: updateSupplierDto.iceNumber,
     }, id);
-    await this.supplierRepository.update(id, updateSupplierDto);
+
+    const supplier = await this.findOneByIdWithOptions(id, { relations: ['logo'] });
+    if (updateSupplierDto.avatar) {
+      supplier.logo = await this.mediaLibraryService.iniMediaLibrary(updateSupplierDto.avatar,'suppliers',req['user'].sub);
+    }
+
+    Object.assign(supplier, updateSupplierDto);
+
+    return await this.supplierRepository.save(supplier);
   }
 
   async deleteSupplier(id: string) {

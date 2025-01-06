@@ -20,8 +20,8 @@ async function bootstrap() {
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
 
   // Important: Configure static file serving
-  app.useStaticAssets(join(__dirname, '..', 'dist/uploads'), {
-    prefix: process.env.STATIC_ASSETS_PREFIX,   // This matches your URL path
+  app.useStaticAssets(join(__dirname, '..', 'uploads'), {
+    prefix: process.env.STATIC_ASSETS_PREFIX || '/local',   // This matches your URL path
     index: false,         // Disable directory listing
   });
 

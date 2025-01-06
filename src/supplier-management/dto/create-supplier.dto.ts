@@ -38,6 +38,9 @@ export class CreateSupplierDto {
   @ApiProperty({description: 'The description of the supplier',example: 'This is a description of the supplier',required: false})
   description: string;
 
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  avatar?: Express.Multer.File;
+
   @IsOptional()
   @IsEnum(SupplierStatus)
   @ApiProperty({description: 'The status of the supplier',example: 'ACTIVE',required: false})
