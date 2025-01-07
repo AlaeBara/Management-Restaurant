@@ -8,7 +8,11 @@ import { UnitModule } from 'src/unit-management/unit.module';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { ProductPermissionSeeder } from './seeders/product-permission.seeder';
 @Module({
-    imports: [TypeOrmModule.forFeature([Product]), UnitModule, forwardRef(() => InventoryModule)],
+    imports: [
+        TypeOrmModule.forFeature([Product]),
+        forwardRef(() => UnitModule),
+        forwardRef(() => InventoryModule)
+    ],
     controllers: [ProductController],
     providers: [ProductService, ProductPermissionSeeder],
     exports: [ProductService, ProductPermissionSeeder],

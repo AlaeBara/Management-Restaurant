@@ -6,16 +6,19 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierStatus } from '../enums/status-supplier.enum';
-import { ConflictException, Req } from '@nestjs/common';
+import { ConflictException, forwardRef, Inject, Req } from '@nestjs/common';
 import { UpdateSupplierDto } from '../dto/update-supplier.dto';
 import { MediaLibraryService } from 'src/media-library-management/services/media-library.service';
+import { PurchaseService } from 'src/purchase-management/services/purchase.service';
 
 export class SupplierService extends GenericService<Supplier> {
   constructor(
     @InjectDataSource() dataSource: DataSource,
     @InjectRepository(Supplier)
     private supplierRepository: Repository<Supplier>,
-    private mediaLibraryService: MediaLibraryService
+    private mediaLibraryService: MediaLibraryService,
+    @Inject(forwardRef(() => PurchaseService))
+    private purchaseService: PurchaseService
   ) {
     super(dataSource, Supplier, 'supplier');
   }
@@ -81,5 +84,22 @@ export class SupplierService extends GenericService<Supplier> {
       await this.update(supplier.id, { status: SupplierStatus.DELETED });
       throw new ConflictException('Problème lors de la restauration du fournisseur:' + error.message);
     }
+  }
+
+  async getRemainingAmount(supplierId: string) {
+    const purchases = await this.purchaseService.getPurchaseBySupplier(supplierId);
+  
+    const totalPaidAmount = purchases.reduce((acc, purchase) => 
+      acc + Number(purchase.totalPaidAmount || 0), 0);
+    const totalRemainingAmount = purchases.reduce((acc, purchase) => 
+      acc + Number(purchase.totalRemainingAmount || 0), 0);
+   
+    const totalAmountTTC = purchases.reduce((acc, purchase) => 
+      acc + Number(purchase.totalAmountTTC || 0), 0);
+    return {
+      totalPaidAmount,
+      totalRemainingAmount,
+      totalAmountTTC
+    };
   }
 }

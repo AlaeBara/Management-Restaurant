@@ -113,4 +113,11 @@ export class SupplierController {
     await this.supplierService.restoreSupplier(id);
     return { message: 'Super! Le fournisseur a été restauré avec succès', status: 200 };
   }
+
+  @Get(':id/purchases')
+  @Permissions('view-all-purchase-supplier')
+  @ApiOperation({ summary: 'Get all Supplier Purchases' })
+  async getPurchaseBySupplier(@Param('id', ParseUUIDPipe) id: string) {
+      return this.supplierService.getRemainingAmount(id);
+  }
 }

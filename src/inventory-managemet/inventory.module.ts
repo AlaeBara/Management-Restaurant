@@ -13,7 +13,12 @@ import { InventoryMovementPermissionSeeder } from './seeders/inventory-movement-
 import { InventoryPermissionSeeder } from './seeders/inventory-permission.seeder';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Inventory, InventoryMovement]), ProductManagementModule, forwardRef(() => StorageModule), forwardRef(() => UserManagementModule)],
+  imports: [
+    TypeOrmModule.forFeature([Inventory, InventoryMovement]),
+    forwardRef(() => ProductManagementModule),
+    forwardRef(() => StorageModule),
+    forwardRef(() => UserManagementModule)
+  ],
   controllers: [InventoryController, InvetoryMovementController],
   providers: [InventoryService, InventoryMovementService, Inventory, InventoryPermissionSeeder, InventoryMovementPermissionSeeder],
   exports: [InventoryService, InventoryMovementService, Inventory, InventoryPermissionSeeder, InventoryMovementPermissionSeeder],

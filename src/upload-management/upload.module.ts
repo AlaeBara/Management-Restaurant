@@ -1,8 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UploadController } from './upload.controller';
-import { ImageService } from './db.service';
-import { HostingerService } from './hostinger.service';
 import { EncryptionModule } from 'src/encryption-management/encryption.module';
 import { CloudCredentials } from './entities/cloud-credentials.entity';
 import { MediaLibrary } from 'src/media-library-management/entities/media-library.entity';
@@ -19,7 +16,7 @@ import { LocalStorageService } from './storage/local-storage.service';
         TypeOrmModule.forFeature([MediaLibrary]),
         forwardRef(() => UserManagementModule)
     ],
-    controllers: [CloudCredentialsController, UploadController],
+    controllers: [CloudCredentialsController],
     providers: [CloudCredentialsService, LocalStorageService],
     exports: [CloudCredentialsService,LocalStorageService],
 })
