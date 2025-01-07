@@ -64,7 +64,7 @@ const SupplierCard = ({ supplier , Delete }) => {
                 
                 <div className={style.email}>
                     <Mail className="mr-2 h-4 w-4 text-muted-foreground" />
-                    <a href={`mailto:${supplier.email}`} className="text-sm hover:underline">
+                    <a href={`mailto:${supplier.email}`} className="text-sm hover:underline" onClick={(e) => e.stopPropagation()} >
                         {supplier.email}
                     </a>
                 </div>
@@ -74,14 +74,14 @@ const SupplierCard = ({ supplier , Delete }) => {
                 </div>
                 <div className={style.phone}>
                     <Phone className="mr-2  h-4 w-4 text-muted-foreground" />
-                    <a href={`tel:${supplier.phone}`} className="text-sm hover:underline">
+                    <a href={`tel:${supplier.phone}`} className="text-sm hover:underline" onClick={(e) => e.stopPropagation()} >
                         {supplier.phone}
                     </a>
                 </div>
                 <div className={style.fax}>
                     <Printer className="mr-2 h-4 w-4 text-muted-foreground" />
                     {supplier.fax ? (
-                        <a href={`tel:${supplier.fax}`} className="text-sm hover:underline">
+                        <a href={`tel:${supplier.fax}`} className="text-sm hover:underline" onClick={(e) => e.stopPropagation()} >
                         {supplier.fax}
                         </a>
                     ) : (
@@ -93,7 +93,7 @@ const SupplierCard = ({ supplier , Delete }) => {
                     <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
                     {supplier.website ? (
                         <a
-                            href={supplier.website.startsWith('http') ? supplier.website : `https://${supplier.website}`}
+                            href={supplier.website.startsWith('http') ? supplier.website : `https://${supplier.website}`} onClick={(e) => e.stopPropagation()} 
                             target="_blank"
                             rel="noopener noreferrer"
                             className="text-sm hover:underline"

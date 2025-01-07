@@ -57,15 +57,12 @@ const Supliers = () => {
             });
         } catch (error) {
             console.error(error.response);
-            toast.error("Erreur lors de la restauration dU Fournisseur.", {
+            toast.error(error.response.data.message || "Erreur lors de la restauration du Fournisseur.", {
                 position: "top-right",
-                autoClose: 3000,
+                autoClose: 7000,
             });
         }
     };
-
-
-
 
 
   return (

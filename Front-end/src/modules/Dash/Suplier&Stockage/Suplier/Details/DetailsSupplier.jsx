@@ -6,6 +6,8 @@ import Spinner from '@/components/Spinner/Spinner';
 import{Ban}from 'lucide-react'
 import Info from './Components/info'
 import Carts from './Components/Carts'
+import Tables from './Components/Tables'
+import Charts from './Components/Charts'
 
 const DetailsSupplier = () => {
 
@@ -35,8 +37,14 @@ const DetailsSupplier = () => {
                 </div>
             ) : (
                 <>
-                    <Info supplier={supplier} />
-                    <Carts/>
+                    <div className='grid grid-cols-1  gap-2 sm:p-0 md:p-5 lg:p-5 space-y-6'>
+                        <Info supplier={supplier} />
+                        <Carts/>
+                        <div className='grid grid-cols-1 sm:grid-cols-2 gap-2'>
+                            <Tables/>
+                            <Charts/>
+                        </div>
+                    </div>
                 </>
             )}
         </div>
