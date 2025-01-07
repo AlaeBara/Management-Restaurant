@@ -39,7 +39,7 @@ export class PurchaseService extends GenericService<Purchase> {
         private readonly fundService: FundService,
         @Inject(FundOperationService)
         private readonly fundOperationService: FundOperationService,
-        @Inject(SupplierService)
+        @Inject(forwardRef(() => SupplierService))
         private readonly supplierService: SupplierService,
         @Inject(UserService)
         private readonly userService: UserService,
@@ -198,7 +198,7 @@ export class PurchaseService extends GenericService<Purchase> {
 
     async updatePurchasePaiementStatus(purchaseId: string) {
         const purchase = await this.findOrThrowByUUID(purchaseId);
-        
+
         const hasPartial = purchase.purchasePaiements.some(paiement => paiement.status === PurchaseLinePaiementStatus.PAID);
         if (hasPartial && purchase.totalRemainingAmount > 0) {
             purchase.paiementStatus = PurchasePaiementStatus.PARTIALLY_PAID;
@@ -210,7 +210,7 @@ export class PurchaseService extends GenericService<Purchase> {
             purchase.paiementStatus = PurchasePaiementStatus.PAID;
             return this.purchaseRepository.save(purchase);
         }
-        
+
     }
 
     async deletePurchase(purchaseId: string) {
@@ -228,7 +228,7 @@ export class PurchaseService extends GenericService<Purchase> {
             reference: createPurchasePaiementDto.reference,
             datePaiement: createPurchasePaiementDto.datePaiement
         });
-        if(await this.isPurchasePaid(purchase)) throw new BadRequestException('La commande est déjà payée');
+        if (await this.isPurchasePaid(purchase)) throw new BadRequestException('La commande est déjà payée');
         await this.isAmountValid(Number(createPurchasePaiementDto.amount), purchase);
         if (createPurchasePaiementDto.status && createPurchasePaiementDto.status === PurchaseLinePaiementStatus.PAID) {
             await this.executePaiement(purchase.id, request, createPurchasePaiementDto.amount, createPurchasePaiementDto.reference);
@@ -240,14 +240,14 @@ export class PurchaseService extends GenericService<Purchase> {
     async isAmountValid(amount: number, purchase: Purchase) {
         const TotalCreatedPaiements = purchase.purchasePaiements.reduce((acc, paiement) => acc + Number(paiement.amount), 0);
         if (Number(amount) > Number(purchase.totalRemainingAmount)) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
-        if(TotalCreatedPaiements+amount > purchase.totalAmountTTC) throw new BadRequestException('Le montant du paiement en total est supérieur au montant total de la commande');
-        if(amount > purchase.totalAmountTTC) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
-        if(amount < 0) throw new BadRequestException('Le montant du paiement ne peut pas être négatif');
-        if(amount === 0) throw new BadRequestException('Le montant du paiement ne peut pas être égal à 0');
+        if (TotalCreatedPaiements + amount > purchase.totalAmountTTC) throw new BadRequestException('Le montant du paiement en total est supérieur au montant total de la commande');
+        if (amount > purchase.totalAmountTTC) throw new BadRequestException('Le montant du paiement est supérieur au montant restant à payer');
+        if (amount < 0) throw new BadRequestException('Le montant du paiement ne peut pas être négatif');
+        if (amount === 0) throw new BadRequestException('Le montant du paiement ne peut pas être égal à 0');
     }
 
     async isPurchasePaid(purchase: Purchase) {
-        if(purchase.totalRemainingAmount === 0 || purchase.paiementStatus === PurchasePaiementStatus.PAID) return true;
+        if (purchase.totalRemainingAmount === 0 || purchase.paiementStatus === PurchasePaiementStatus.PAID) return true;
         return false;
     }
 
@@ -284,6 +284,12 @@ export class PurchaseService extends GenericService<Purchase> {
         purchase.totalRemainingAmount = Number(purchase.totalAmountTTC) - Number(purchase.totalPaidAmount);
         await this.purchaseRepository.save(purchase);
         await this.updatePurchasePaiementStatus(purchase.id);
+    }
+
+    async getPurchaseBySupplier(supplierId: string) {
+        return await this.purchaseRepository.find({
+            where: { supplier: { id: supplierId } }
+        });
     }
 
 }
