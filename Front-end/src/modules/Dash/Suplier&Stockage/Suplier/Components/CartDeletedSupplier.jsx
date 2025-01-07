@@ -84,10 +84,10 @@ const  SupplierDeletedCard  = ({ supplier , RESTORE }) => {
                     <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
                     {supplier.website ? (
                         <a
-                        href={supplier.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm hover:underline"
+                            href={supplier.website.startsWith('http') ? supplier.website : `https://${supplier.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm hover:underline"
                         >
                         {supplier.website}
                         </a>

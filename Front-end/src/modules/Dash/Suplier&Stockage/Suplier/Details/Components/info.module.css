@@ -1,0 +1,96 @@
+@import url('https://fonts.googleapis.com/css2?family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Poppins:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900&display=swap');
+
+
+.ProduitDetails {
+    margin-top: 30px;
+    position: relative;
+}
+
+.ProduitCart {
+    border-radius: 10px;
+    padding: 20px;
+    position: relative;
+    width: 100%; 
+    border: 1px solid #e0e0e0;
+}
+
+.ProduitDetails h1 {
+    font-size: 20px;
+    font-weight: 600;
+    font-family: "Poppins", sans-serif;
+    position: absolute;
+    top: -13px;
+    left: 20px;
+    background: white;
+    padding: 0 10px;
+    z-index: 1;
+}
+
+.ProduitInfo {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 10px;
+    /* justify-content: space-between; */
+    width: 100%;
+    gap: 20px;
+}
+
+.infoItem h2{
+    text-transform: capitalize;
+}
+
+.label {
+    color: #666;
+    display: block;
+    font-family: "Poppins", sans-serif;
+}
+
+
+.status {
+    width: fit-content;
+    text-align: center;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+
+.ACTIVE {
+    background-color: #e6f7ed;
+    color: #0d9f4f;
+}
+
+.INACTIVE {
+    background-color: #f0f0f0;
+    color: #6b6b6b;
+}
+.BLOCKED {
+    background-color: #ffe8e8;
+    color: #ff4d4d;
+}
+
+
+.supplierImage {
+    max-width: 100%;
+    height: 70px;
+    border-radius: 50%;
+    margin-top: 10px;
+    border: 1px solid #e0e0e0;
+}
+
+
+
+@media (max-width: 600px) {
+    .ProduitInfo {
+        flex-direction: column;
+        gap: 20px;
+    }
+    .ProduitDetails h1 {
+        font-size: 18px;
+    }
+    
+}
+
+
+

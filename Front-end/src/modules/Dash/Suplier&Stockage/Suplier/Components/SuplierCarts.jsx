@@ -41,7 +41,7 @@ const SupplierCard = ({ supplier , Delete }) => {
 
     return (
         <>
-            <div className={style.userCard}>
+            <div className={style.userCard}  onClick={() => navigate(`/dash/fournisseurs/fournisseur-details/${supplier.id}`)}>
 
                 
                 <div className={`${style.status} ${style[supplier.status]}`}>
@@ -93,10 +93,10 @@ const SupplierCard = ({ supplier , Delete }) => {
                     <Globe className="mr-2 h-4 w-4 text-muted-foreground" />
                     {supplier.website ? (
                         <a
-                        href={supplier.website}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-sm hover:underline"
+                            href={supplier.website.startsWith('http') ? supplier.website : `https://${supplier.website}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm hover:underline"
                         >
                         {supplier.website}
                         </a>
@@ -108,7 +108,7 @@ const SupplierCard = ({ supplier , Delete }) => {
 
 
                 <div className={style.userAction}>
-                    <div className={style.btn} onClick={() => navigate(`/dash/Update-Suplier/${supplier.id}`)}>
+                    <div className={style.btn} onClick={(e) => {e.stopPropagation(); navigate(`/dash/Update-Suplier/${supplier.id}`)}}>
                         <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                     </div>
 
