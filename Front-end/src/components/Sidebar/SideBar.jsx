@@ -294,7 +294,8 @@ const SideBar = () => {
     }
 
     // Persistent menu state logic
-    const isPersistentMenu = item.title.includes('Gestion');
+    // const isPersistentMenu = item.title.includes('Gestion');
+    const isPersistentMenu = item.title;
     const [isOpen, setIsOpen] = useState(() => {
       if (isPersistentMenu) {
         const savedState = localStorage.getItem(`submenu-${item.title}`);
