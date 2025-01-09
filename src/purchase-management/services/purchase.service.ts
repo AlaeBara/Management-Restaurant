@@ -146,7 +146,6 @@ export class PurchaseService extends GenericService<Purchase> {
         const purchase = await this.findOneByIdWithOptions(purchaseItem.purchaseId, {
             select: ['supplierReference', 'ownerReferenece']
         })
-        console.log("asdadsasd", purchase)
         const inventoryMovementDto: CreateInventoryMovementDto = {
             inventoryId: purchaseItem.inventory.id,
             destinationInventoryId: null,

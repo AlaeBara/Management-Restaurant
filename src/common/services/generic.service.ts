@@ -54,35 +54,71 @@ export class GenericService<T> {
     if (FindBy) {
       query.where(FindBy);
     }
-
+    // ... existing code ...
     if (searchQuery) {
       const searchCriteria: SearchQuery = {};
       Object.entries(searchQuery).forEach(([key, value]) => {
         if (key.startsWith('search.')) {
-          const field = key.split('.')[1];
+          const fieldPath = key.split('.').slice(1); // Get all parts after 'search.'
           const values = Array.isArray(value) ? value : [value];
-          searchCriteria[field] = values;
+          searchCriteria[fieldPath.join('.')] = values;
         }
       });
-      Object.entries(searchCriteria).forEach(([column, values], index) => {
-        // Get the column metadata to check if it's an enum
-        const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(column);
-        const isEnum = columnMetadata?.type === 'enum';
-        const conditions = values.map((value, valueIndex) => {
-          const paramName = `search${index}_${valueIndex}`;
-          // Use exact matching for enums, ILIKE for text
-          return isEnum
-            ? `${this.name}.${column} = :${paramName}`
-            : `${this.name}.${column} ILIKE :${paramName}`;
-        });
-        query.andWhere(`(${conditions.join(' OR ')})`,
-          values.reduce((params, value, valueIndex) => ({
-            ...params,
-            [`search${index}_${valueIndex}`]: isEnum ? value : `%${value}%`
-          }), {})
-        );
+
+      Object.entries(searchCriteria).forEach(([path, values], index) => {
+        const pathParts = path.split('.');
+        const isNested = pathParts.length > 1;
+
+        if (isNested) {
+          const relationPath = pathParts.slice(0, -1).join('.');
+          const lastField = pathParts[pathParts.length - 1];
+
+          // Add join if not already added
+          query.leftJoinAndSelect(`${this.name}.${relationPath}`, relationPath);
+
+          // Get column metadata to check type
+          const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(`${relationPath}.${lastField}`);
+          const isUUID = columnMetadata?.type === 'uuid';
+
+          const conditions = values.map((value, valueIndex) => {
+            const paramName = `search${index}_${valueIndex}`;
+            return isUUID
+              ? `${relationPath}.${lastField} = :${paramName}`
+              : `${relationPath}.${lastField} ILIKE :${paramName}`;
+          });
+
+          query.andWhere(`(${conditions.join(' OR ')})`,
+            values.reduce((params, value, valueIndex) => ({
+              ...params,
+              [`search${index}_${valueIndex}`]: isUUID ? value : `%${value}%`
+            }), {})
+          );
+        } else {
+          // Check if the field ends with 'Id' or is a known UUID field
+          const isIdField = path.endsWith('Id');
+          const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(path);
+          const isUUID = columnMetadata?.type === 'uuid' || isIdField;
+          const isEnum = columnMetadata?.type === 'enum';
+
+          const conditions = values.map((value, valueIndex) => {
+            const paramName = `search${index}_${valueIndex}`;
+            if (isUUID || isEnum) {
+              return `${this.name}.${path} = :${paramName}`;
+            }
+            return `${this.name}.${path} ILIKE :${paramName}`;
+          });
+
+          query.andWhere(`(${conditions.join(' OR ')})`,
+            values.reduce((params, value, valueIndex) => ({
+              ...params,
+              [`search${index}_${valueIndex}`]: isUUID || isEnum ? value : `%${value}%`
+            }), {})
+          );
+        }
       });
     }
+
+    // ... existing code ...
 
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.max(1, Number(limit) || 10);
