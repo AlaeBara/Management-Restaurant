@@ -3,18 +3,41 @@ import axios from 'axios';
 import Cookies from 'js-cookie';
 
 export function useFetchSuplier(id) {
-  const [formData, setFormData] = useState({ name: '', label: '' });
-  const [initialData, setInitialData] = useState({ name: '', label: '' }); 
+  const [formData, setFormData] = useState({ 
+    name: '', 
+    address: '', 
+    fax: '', 
+    phone: '', 
+    email: '', 
+    website: '', 
+    description: '', 
+    status: '', 
+    rcNumber: '', 
+    iceNumber: '', 
+    avatar: '' 
+  });
+  const [initialData, setInitialData] = useState({ 
+    name: '', 
+    address: '', 
+    fax: '', 
+    phone: '', 
+    email: '', 
+    website: '', 
+    description: '', 
+    status: '', 
+    rcNumber: '', 
+    iceNumber: '', 
+    avatar: '' 
+  });
 
   const [message , setmessage] = useState(null);
   const [loading, setLoading] = useState(true);
-
 
   useEffect(() => {
     const fetchSuplier = async () => {
       try {
         const token = Cookies.get('access_token');
-        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}`, {
+        const response = await axios.get(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}?relations=logo`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -30,7 +53,8 @@ export function useFetchSuplier(id) {
             description: response.data.description || "",
             status: response.data.status,
             rcNumber: response.data.rcNumber,
-            iceNumber: response.data.rcNumber
+            iceNumber: response.data.iceNumber,
+            avatar: response.data.logo?.fileName  || ""
         });
         setInitialData({
             name: response.data.name,
@@ -42,7 +66,8 @@ export function useFetchSuplier(id) {
             description: response.data.description || "",
             status: response.data.status,
             rcNumber: response.data.rcNumber,
-            iceNumber: response.data.rcNumber
+            iceNumber: response.data.iceNumber,
+            avatar: response.data.logo?.fileName  || ""
         });
         setLoading(false);
       } catch (error) {

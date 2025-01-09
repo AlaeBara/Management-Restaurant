@@ -12,6 +12,9 @@ import { useFetchSuplier } from '../Hooks/useFetchSuplier';
 import { useUpdateSupplier } from '../Hooks/useUpdateSuplier';
 import Spinner from '@/components/Spinner/Spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {X} from 'lucide-react'
+import { formatDate } from '@/components/dateUtils/dateUtils';
+
 
 const STATUS = {
     ACTIVE : 'ACTIVE',
@@ -26,8 +29,7 @@ export default function Component() {
     const { id } = useParams();
 
     const { formData, setFormData, initialData, setInitialData , message, loading  } = useFetchSuplier(id);
-    const { errors, updateSupplier,alert } = useUpdateSupplier(id, formData, setFormData, initialData, setInitialData);
-
+    const { errors, updateSupplier ,alert , setErrors } = useUpdateSupplier(id, formData, setFormData, initialData, setInitialData);
 
     const handleSelectChange = ({ target: { name, value } }) => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
@@ -37,6 +39,45 @@ export default function Component() {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     }, [formData, setFormData]);
    
+    const [file, setFile] = useState(null);
+
+    const handleSubmit = (e) => {
+        e.preventDefault();
+        updateSupplier(e, file);  // Pass the file to updateSupplier
+    };
+
+    const handleFileChange = (e) => {
+        const selectedFile = e.target.files[0];
+        if (selectedFile && selectedFile.type.startsWith('image/')) {
+          setFile(selectedFile);
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            avatar: selectedFile.name,
+          }));
+          setErrors((prevErrors) => ({ ...prevErrors, avatar: '' }));
+        } else {
+          setFile(selectedFile);
+          setFormData((prevFormData) => ({
+            ...prevFormData,
+            avatar: '',
+          }));
+          setErrors((prevErrors) => ({ ...prevErrors, avatar: 'Veuillez sélectionner un fichier image valide.' }));
+        }
+    };
+
+    const handleRemoveFile = () => {
+        setFile(null);
+        setFormData((prevFormData) => ({
+          ...prevFormData,
+          avatar: '',
+        }));
+        setErrors((prevErrors) => ({ ...prevErrors, avatar: '' }));
+        document.getElementById('avatar').value = '';
+    };
+
+
+
+
   return (
     <>
         <ToastContainer />
@@ -75,7 +116,7 @@ export default function Component() {
                             </Alert>
                         )}
 
-                        <form onSubmit={updateSupplier} className="space-y-4">
+                        <form onSubmit={handleSubmit} className="space-y-4">
 
 
                             <div className="space-y-2">
@@ -236,6 +277,49 @@ export default function Component() {
                                 </div>
 
                             </div>
+                            <div className="space-y-4">
+                                <Label htmlFor="avatar">Logo du fournisseur</Label>
+                                <div
+                                    className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer transition-colors"
+                                >
+                                    <input
+                                        id="avatar"
+                                        name="avatar"
+                                        type="file"
+                                        accept="image/*"
+                                        onChange={handleFileChange}
+                                        className="hidden"
+                                    />
+                                    <label htmlFor="avatar" className="cursor-pointer">
+                                        <p className="text-gray-600">
+                                            Cliquez pour téléverser
+                                        </p>
+                                        <p className="text-sm text-gray-500">
+                                            Seuls les fichiers image sont acceptés
+                                        </p>
+                                    </label>
+                                </div>
+
+                                {formData.avatar && (
+                                    <div className="flex items-center justify-between bg-gray-100 rounded-lg p-3">
+                                        <p className="text-sm text-gray-700">{formData.avatar}</p>
+                                        <button
+                                            type="button"
+                                            onClick={handleRemoveFile}
+                                            className="p-1 rounded-full bg-red-500 hover:bg-red-600 text-white"
+                                            aria-label="Supprimer le fichier"
+                                        >
+                                            <X className="h-4 w-4" /> 
+                                        </button>
+                                    </div>
+                                )}
+                                {errors.avatar && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
+                                )}
+                            </div>
+                            
+
+
                             
                             <div className='flex gap-4'>
 
@@ -247,8 +331,7 @@ export default function Component() {
                                 </Button>
 
                             </div>
-                            
-
+                        
                         </form>
                     </CardContent>
                 </Card>

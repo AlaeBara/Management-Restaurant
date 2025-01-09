@@ -4,12 +4,11 @@ import { toast } from 'react-toastify';
 import { z } from 'zod';
 import Cookies from 'js-cookie';
 
-// Zod schema for form validation
 const SuplierSchema = z.object({
   name: z.string().min(1, "Le nom du fournisseur ne peut pas être vide"),
   address: z.string().min(1, "L'adresse du fournisseur ne peut pas être vide"),
   fax: z.string().nullable().optional(),
-  phone:z.string()
+  phone: z.string()
       .min(1, "Le numéro de téléphone du fournisseur ne peut pas être vide")
       .refine(value => value === null || /^[+]?[0-9\s]*$/.test(value), {
           message: 'Numéro de téléphone invalide.',
@@ -22,17 +21,24 @@ const SuplierSchema = z.object({
   iceNumber: z.string().min(1, "Le numéro ICE du fournisseur ne peut pas être vide"),
 });
 
-export function useUpdateSupplier(id, formData, setFormData, initialData, setInitialData) {
+export function useUpdateSupplier(id, formData, setFormData, initialData, setInitialData, file) {
   const [errors, setErrors] = useState({});
   const [alert, setAlert] = useState({ message: null, type: null });
 
-
-  // Memoizing the updateRole function with useCallback
-  const updateSupplier = useCallback(async (e) => {
+  const updateSupplier = useCallback(async (e, file) => {
     e.preventDefault();
 
-    // Check if formData is the same as initialData (meaning no change)
-    const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialData);
+    if (file && !file.type.startsWith('image/')) {
+      setErrors((prevErrors) => ({ ...prevErrors, avatar: 'Veuillez sélectionner un fichier image valide.' }));
+      toast.error('Veuillez sélectionner un fichier image valide.', {
+        icon: '❌',
+        position: "top-right",
+        autoClose: 3000,
+      });
+      return; 
+    }
+  
+    const isFormChanged = JSON.stringify(formData) !== JSON.stringify(initialData) || file;
 
     if (!isFormChanged) {
       toast.info("Aucune modification détectée", {
@@ -40,34 +46,45 @@ export function useUpdateSupplier(id, formData, setFormData, initialData, setIni
         position: "top-right",
         autoClose: 3000,
       });
-      return; // Do nothing if no data is updated
+      return; 
     }
-
+  
     try {
       SuplierSchema.parse(formData);
+  
+      const formDataToSend = new FormData();
 
-      const modifiedData = Object.keys(formData).reduce((acc, key) => {
-        if (formData[key] !== initialData[key]) {
-            acc[key] = formData[key];
+
+      Object.keys(formData).forEach(key => {
+        if (key !== 'avatar' && formData[key] !== initialData[key]) {
+          formDataToSend.append(key, formData[key]);
         }
-        return acc;
-      }, {});
+      });
+  
+      if (file) {
+        formDataToSend.append('avatar', file); 
+      } else if (formData.avatar === '') {
+        formDataToSend.append('avatar', null);
+      }
+  
+      for (let [key, value] of formDataToSend.entries()) {
+        console.log(`FormData Key: ${key}, Value: ${value}`);
+      }
       const token = Cookies.get('access_token');
-      const response =await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}`, modifiedData, {
+      const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/suppliers/${id}?relations=logo`, formDataToSend, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data', 
         },
       });
-
-      // On success, set initialData to the current formData
-      setInitialData(formData); // Update the initial data to reflect the changes
-
+  
+      setInitialData(formData); 
       setErrors({});
-
       setAlert({
         message: null,
         type: null
       });
+  
       toast.success(response.data.message || 'Fournisseur mis à jour avec succès!', {
         icon: '✅',
         position: "top-right",
@@ -91,7 +108,7 @@ export function useUpdateSupplier(id, formData, setFormData, initialData, setIni
         });
       }
     }
-  }, [formData, initialData, id, setFormData, setInitialData]);
+  }, [formData, initialData, id, setFormData, setInitialData, file]);
 
-  return { errors, updateSupplier,alert };
+  return { errors, setErrors, updateSupplier, alert };
 }
