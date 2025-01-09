@@ -6,10 +6,11 @@ import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource } from 'typeorm';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierStatus } from '../enums/status-supplier.enum';
-import { ConflictException, forwardRef, Inject, Req } from '@nestjs/common';
+import { BadRequestException, ConflictException, forwardRef, Inject, Req } from '@nestjs/common';
 import { UpdateSupplierDto } from '../dto/update-supplier.dto';
 import { MediaLibraryService } from 'src/media-library-management/services/media-library.service';
 import { PurchaseService } from 'src/purchase-management/services/purchase.service';
+import { isEmpty } from 'class-validator';
 
 export class SupplierService extends GenericService<Supplier> {
   constructor(
@@ -23,9 +24,9 @@ export class SupplierService extends GenericService<Supplier> {
     super(dataSource, Supplier, 'supplier');
   }
 
-  async createSupplier(createSupplierDto: CreateSupplierDto,@Req() req:Request) {
+  async createSupplier(createSupplierDto: CreateSupplierDto, @Req() req: Request) {
     const supplier = await this.supplierRepository.create(createSupplierDto);
-    
+
     await this.validateUnique({
       name: supplier.name,
       phone: supplier.phone,
@@ -34,11 +35,12 @@ export class SupplierService extends GenericService<Supplier> {
       iceNumber: supplier.iceNumber,
     });
 
-    supplier.logo = await this.mediaLibraryService.iniMediaLibrary(createSupplierDto.avatar,'suppliers',req['user'].sub);
+    supplier.logo = await this.mediaLibraryService.iniMediaLibrary(createSupplierDto.avatar, 'suppliers', req['user'].sub);
     return await this.supplierRepository.save(supplier);
   }
 
-  async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto,@Req() req:Request) {
+  async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto, @Req() req: Request) {
+    console.log(updateSupplierDto);
     await this.validateUniqueExcludingSelf({
       name: updateSupplierDto.name,
       phone: updateSupplierDto.phone,
@@ -49,12 +51,29 @@ export class SupplierService extends GenericService<Supplier> {
 
     const supplier = await this.findOneByIdWithOptions(id, { relations: ['logo'] });
     if (updateSupplierDto.avatar) {
-      supplier.logo = await this.mediaLibraryService.iniMediaLibrary(updateSupplierDto.avatar,'suppliers',req['user'].sub);
+      if (supplier.logo) {
+        const oldSupplier = supplier.logo;
+        supplier.logo = await this.mediaLibraryService.iniMediaLibrary(updateSupplierDto.avatar, 'suppliers', req['user'].sub);
+        // await this.mediaLibraryService.deleteMediaLibrary(oldSupplier.id);
+      } else {
+        supplier.logo = await this.mediaLibraryService.iniMediaLibrary(updateSupplierDto.avatar, 'suppliers', req['user'].sub);
+      }
     }
+
+    // Handle category_id
+
 
     Object.assign(supplier, updateSupplierDto);
 
-    return await this.supplierRepository.save(supplier);
+
+    if ('avatar' in updateSupplierDto && isEmpty(updateSupplierDto.avatar)) {
+      const mediaId = supplier.logo.id;
+      supplier.logo = null;  // Set to null before saving
+      await this.supplierRepository.save(supplier);  // Save first to remove the FK reference
+      await this.mediaLibraryService.deleteMediaLibrary(mediaId);  // Then delete the media
+    } else {
+      await this.supplierRepository.save(supplier);
+    }
   }
 
   async deleteSupplier(id: string) {
@@ -88,13 +107,13 @@ export class SupplierService extends GenericService<Supplier> {
 
   async getRemainingAmount(supplierId: string) {
     const purchases = await this.purchaseService.getPurchaseBySupplier(supplierId);
-  
-    const totalPaidAmount = purchases.reduce((acc, purchase) => 
+
+    const totalPaidAmount = purchases.reduce((acc, purchase) =>
       acc + Number(purchase.totalPaidAmount || 0), 0);
-    const totalRemainingAmount = purchases.reduce((acc, purchase) => 
+    const totalRemainingAmount = purchases.reduce((acc, purchase) =>
       acc + Number(purchase.totalRemainingAmount || 0), 0);
-   
-    const totalAmountTTC = purchases.reduce((acc, purchase) => 
+
+    const totalAmountTTC = purchases.reduce((acc, purchase) =>
       acc + Number(purchase.totalAmountTTC || 0), 0);
     return {
       totalPaidAmount,

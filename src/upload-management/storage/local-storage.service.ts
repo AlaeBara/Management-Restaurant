@@ -90,6 +90,20 @@ export class LocalStorageService implements StorageService {
     }
 
     async delete(filePath: string): Promise<void> {
-        fs.unlinkSync(filePath);
+        // Remove the '/local' prefix and convert to proper path
+        const relativePath = filePath.replace(/^\/local\//, '');
+        const absolutePath = path.join(this.uploadDir, relativePath);
+        
+        // Check if file exists before attempting to delete
+        if (!fs.existsSync(absolutePath)) {
+            throw new BadRequestException(`File not found: ${filePath}`);
+        }
+        
+        // Ensure the final path is within uploadDir (prevent path traversal)
+        if (!absolutePath.startsWith(this.uploadDir)) {
+            throw new BadRequestException('Invalid delete path');
+        }
+    
+        await fs.promises.unlink(absolutePath);
     }
 }
