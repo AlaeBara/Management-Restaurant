@@ -64,7 +64,7 @@ export function useUpdateSupplier(id, formData, setFormData, initialData, setIni
       if (file) {
         formDataToSend.append('avatar', file); 
       } else if (formData.avatar === '') {
-        formDataToSend.append('avatar', null);
+        formDataToSend.append('setAvatarAsNull', true);
       }
   
       for (let [key, value] of formDataToSend.entries()) {

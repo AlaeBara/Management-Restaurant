@@ -44,6 +44,7 @@ export default function Component() {
     const handleSubmit = (e) => {
         e.preventDefault();
         updateSupplier(e, file);  // Pass the file to updateSupplier
+        setFile(null)
     };
 
     const handleFileChange = (e) => {
