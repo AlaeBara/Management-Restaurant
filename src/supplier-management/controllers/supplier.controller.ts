@@ -92,7 +92,7 @@ export class SupplierController {
   async updateSupplier(@Param('id', ParseUUIDPipe) id: string, @Body() updateSupplierDto: UpdateSupplierDto,@UploadedFile() file: Express.Multer.File,@Req() req:Request) {
     const supplierData = {
       ...updateSupplierDto,
-      avatar: file
+      ...(file && { avatar: file })
     };
     await this.supplierService.updateSupplier(id, supplierData,req);
     return { message: 'Super! Le fournisseur a été mis à jour avec succès', status: 200 };

@@ -1,5 +1,5 @@
 
-import { IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
+import { IsBoolean, IsEmail, IsEnum, IsOptional, IsString } from 'class-validator';
 import { SupplierStatus } from '../enums/status-supplier.enum';
 import { ApiProperty } from '@nestjs/swagger';
 import { Exclude } from 'class-transformer';
@@ -40,9 +40,13 @@ export class UpdateSupplierDto {
   @ApiProperty({description: 'The description of the supplier',example: 'This is a description of the supplier',required: false})
   description: string;
 
-  @Exclude()
+  
   @ApiProperty({ type: 'string', format: 'binary', required: false })
   avatar?: Express.Multer.File;
+
+  @IsOptional()
+  @ApiProperty({description: 'When Setting Avatar To Null',example: true,required: false})
+  setAvatarAsNull:boolean;
 
   @IsOptional()
   @IsEnum(SupplierStatus)

@@ -47,7 +47,9 @@ export class SupplierService extends GenericService<Supplier> {
   }
 
   async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto, @Req() req: Request) {
-
+    if(updateSupplierDto.setAvatarAsNull){
+      updateSupplierDto.setAvatarAsNull = updateSupplierDto.setAvatarAsNull.toString().toLowerCase() === 'true';
+    }
     const queryRunner = await this.inizializeQueryRunner();
     // Start a new transaction
     try {
@@ -64,7 +66,8 @@ export class SupplierService extends GenericService<Supplier> {
         relations: ['logo']
       });
     
-      if (updateSupplierDto.avatar) {
+      if (updateSupplierDto.avatar && !updateSupplierDto.setAvatarAsNull) {
+
         if (supplier.logo) {
           const logoToDeleteId = supplier.logo.id;
           await this.mediaLibraryService.deleteMediaLibrary(logoToDeleteId, queryRunner);
@@ -74,11 +77,12 @@ export class SupplierService extends GenericService<Supplier> {
       
       Object.assign(supplier, updateSupplierDto);
  
-      if ('avatar' in updateSupplierDto && isEmpty(updateSupplierDto.avatar)) {
+      if (updateSupplierDto.setAvatarAsNull && updateSupplierDto.setAvatarAsNull) {
+        console.log('entred here3');
         if(supplier.logo) await this.mediaLibraryService.deleteMediaLibrary(supplier.logo.id, queryRunner);
         supplier.logo = null;
       }
-      
+
       await queryRunner.manager.save(Supplier, supplier);
       await queryRunner.commitTransaction();
       return supplier;
