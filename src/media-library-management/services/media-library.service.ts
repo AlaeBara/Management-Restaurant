@@ -2,7 +2,7 @@ import { InjectRepository } from "@nestjs/typeorm";
 
 import { InjectDataSource } from "@nestjs/typeorm";
 import { MediaLibrary } from "../entities/media-library.entity";
-import { Repository } from "typeorm";
+import { QueryRunner, Repository } from "typeorm";
 import { GenericService } from "src/common/services/generic.service";
 import { DataSource } from "typeorm";
 import { ResponseUploadFileDto } from "src/upload-management/dtos/response-upload-file.dto";
@@ -24,7 +24,7 @@ export class MediaLibraryService extends GenericService<MediaLibrary> {
     super(dataSource, MediaLibrary, 'média');
   }
 
-  async saveMediaLibrary(metadata: ResponseUploadFileDto, uploadedBy?: User): Promise<MediaLibrary> {
+  async saveMediaLibrary(metadata: ResponseUploadFileDto, uploadedBy?: User, queryRunner?: QueryRunner): Promise<MediaLibrary> {
     const mediaLibrary = new MediaLibrary();
     mediaLibrary.localPath = metadata.filePath;
     mediaLibrary.fileName = metadata.filename;
@@ -32,18 +32,22 @@ export class MediaLibraryService extends GenericService<MediaLibrary> {
     mediaLibrary.fileSize = metadata.size;
     mediaLibrary.fileExtension = metadata.extension;
     if (uploadedBy) mediaLibrary.uploadedBy = uploadedBy;
-    return await this.mediaLibraryRepository.save(mediaLibrary);
+    if (queryRunner) {
+      return await queryRunner.manager.save(MediaLibrary, mediaLibrary);
+    } else {
+      return await this.mediaLibraryRepository.save(mediaLibrary);
+    }
   }
 
-  async iniMediaLibrary(file: Express.Multer.File, path: string, userId: string) {
+  async iniMediaLibrary(file: Express.Multer.File, path: string, userId: string, queryRunner?: QueryRunner) {
     const metadata = await this.uploadService.localUpload(file, path);
     const user = await this.userService.findOne(userId);
-    return await this.saveMediaLibrary(metadata, user);
+    return await this.saveMediaLibrary(metadata, user, queryRunner);
   }
 
-  async deleteMediaLibrary(mediaLibraryId: string) {
+  async deleteMediaLibrary(mediaLibraryId: string, queryRunner: QueryRunner) {
     const mediaLibrary = await this.findOneByIdWithOptions(mediaLibraryId);
-    await this.mediaLibraryRepository.delete(mediaLibraryId);
+    await queryRunner.manager.softDelete(MediaLibrary, mediaLibraryId);
     return await this.uploadService.delete(mediaLibrary.localPath);
   }
 }

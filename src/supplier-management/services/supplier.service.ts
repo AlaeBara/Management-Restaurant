@@ -24,6 +24,13 @@ export class SupplierService extends GenericService<Supplier> {
     super(dataSource, Supplier, 'supplier');
   }
 
+  async inizializeQueryRunner() {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    return queryRunner;
+}
+
   async createSupplier(createSupplierDto: CreateSupplierDto, @Req() req: Request) {
     const supplier = await this.supplierRepository.create(createSupplierDto);
 
@@ -40,39 +47,46 @@ export class SupplierService extends GenericService<Supplier> {
   }
 
   async updateSupplier(id: string, updateSupplierDto: UpdateSupplierDto, @Req() req: Request) {
-    console.log(updateSupplierDto);
-    await this.validateUniqueExcludingSelf({
-      name: updateSupplierDto.name,
-      phone: updateSupplierDto.phone,
-      email: updateSupplierDto.email,
-      rcNumber: updateSupplierDto.rcNumber,
-      iceNumber: updateSupplierDto.iceNumber,
-    }, id);
 
-    const supplier = await this.findOneByIdWithOptions(id, { relations: ['logo'] });
-    if (updateSupplierDto.avatar) {
-      if (supplier.logo) {
-        const oldSupplier = supplier.logo;
-        supplier.logo = await this.mediaLibraryService.iniMediaLibrary(updateSupplierDto.avatar, 'suppliers', req['user'].sub);
-        // await this.mediaLibraryService.deleteMediaLibrary(oldSupplier.id);
-      } else {
+    const queryRunner = await this.inizializeQueryRunner();
+    // Start a new transaction
+    try {
+      await this.validateUniqueExcludingSelf({
+        name: updateSupplierDto.name,
+        phone: updateSupplierDto.phone,
+        email: updateSupplierDto.email,
+        rcNumber: updateSupplierDto.rcNumber,
+        iceNumber: updateSupplierDto.iceNumber,
+      }, id);
+   
+      const supplier = await queryRunner.manager.findOne(Supplier, {
+        where: { id },
+        relations: ['logo']
+      });
+    
+      if (updateSupplierDto.avatar) {
+        if (supplier.logo) {
+          const logoToDeleteId = supplier.logo.id;
+          await this.mediaLibraryService.deleteMediaLibrary(logoToDeleteId, queryRunner);
+        }
         supplier.logo = await this.mediaLibraryService.iniMediaLibrary(updateSupplierDto.avatar, 'suppliers', req['user'].sub);
       }
-    }
-
-    // Handle category_id
-
-
-    Object.assign(supplier, updateSupplierDto);
-
-
-    if ('avatar' in updateSupplierDto && isEmpty(updateSupplierDto.avatar)) {
-      const mediaId = supplier.logo.id;
-      supplier.logo = null;  // Set to null before saving
-      await this.supplierRepository.save(supplier);  // Save first to remove the FK reference
-      await this.mediaLibraryService.deleteMediaLibrary(mediaId);  // Then delete the media
-    } else {
-      await this.supplierRepository.save(supplier);
+      
+      Object.assign(supplier, updateSupplierDto);
+ 
+      if ('avatar' in updateSupplierDto && isEmpty(updateSupplierDto.avatar)) {
+        if(supplier.logo) await this.mediaLibraryService.deleteMediaLibrary(supplier.logo.id, queryRunner);
+        supplier.logo = null;
+      }
+      
+      await queryRunner.manager.save(Supplier, supplier);
+      await queryRunner.commitTransaction();
+      return supplier;
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw new BadRequestException(error.message);
+    } finally {
+      await queryRunner.release();
     }
   }
 
