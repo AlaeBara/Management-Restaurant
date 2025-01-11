@@ -20,7 +20,7 @@ import {useFetchProduct} from '../../../Products/Hooks/useFetchProduct'
 import {useFetchUnits} from '../../../Units/Hooks/useFetchUnits'
 import {useFetchDiscounts} from '../../../MenuItem/Discount/Hooks/useFetchDiscounts'
 import ReactSelect from 'react-select';
-
+import {X} from 'lucide-react'
 
     const fomulastemSchema = z.object({
         productId: z
@@ -170,7 +170,8 @@ export default function AchatCreationForm() {
         price: {
             basePrice: null,
             discountId: ''
-        }
+        },
+        images: [] 
     });
     
     
@@ -193,6 +194,35 @@ export default function AchatCreationForm() {
                 [name]: value,
             };
         });
+    };
+
+    const [fileError, setFileError] = useState("");
+
+    const handleImageChange = (e) => {
+        const files = Array.from(e.target.files); // Convert FileList to an array
+
+        // Validate file types
+        const validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
+        const invalidFiles = files.filter((file) => !validImageTypes.includes(file.type));
+
+        if (invalidFiles.length > 0) {
+            setFileError("Seuls les fichiers image (JPEG, PNG, JPG) sont acceptés.");
+            return; // Stop further processing if invalid files are found
+        }
+
+        setFileError("");
+
+        // Append valid files to the images array
+        setFormData((prev) => ({
+            ...prev,
+            images: [...prev.images, ...files], // Append new files to the existing images array
+        }));
+    };
+    const removeImage = (index) => {
+        setFormData((prev) => ({
+            ...prev,
+            images: prev.images.filter((_, i) => i !== index), // Remove the image at the specified index
+        }));
     };
     
 
@@ -655,6 +685,67 @@ export default function AchatCreationForm() {
                                         {errors.tagIds && (
                                             <p className="text-xs text-red-500 mt-1">{errors.tagIds}</p>
                                         )}
+
+                                        {/* iMAGES */}
+
+                                        <div className="space-y-4">
+                                            <Label htmlFor="images">Images de l'article</Label>
+                                            <div
+                                                className="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center cursor-pointer transition-colors"
+                                            >
+                                                <input
+                                                    id="images"
+                                                    name="images"
+                                                    type="file"
+                                                    accept="image/*"
+                                                    multiple
+                                                    onChange={handleImageChange}
+                                                    className="hidden"
+                                                />
+                                                <label htmlFor="images" className="cursor-pointer">
+                                                    <p className="text-gray-600">
+                                                        Cliquez pour téléverser
+                                                    </p>
+                                                    <p className="text-sm text-gray-500">
+                                                        Vous pouvez sélectionner plusieurs images pour cet article. Les images doivent être au format JPEG, PNG ou JPG.
+                                                    </p>
+                                                </label>
+                                            </div>
+                                           
+                                            {formData.images.length > 0 && (
+                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                    {formData.images.map((file, index) => (
+                                                        <div key={index} className="relative w-24 h-24">
+                                                            <img
+                                                                src={URL.createObjectURL(file)}
+                                                                alt={`Preview ${index}`}
+                                                                className="w-full h-full object-cover rounded"
+                                                            />
+                                                            <button
+                                                                type="button"
+                                                                onClick={() => removeImage(index)}
+                                                                className="absolute top-0 right-0 bg-red-500 text-white rounded-full w-6 h-6 flex items-center justify-center"
+                                                                aria-label="Supprimer l'image"
+                                                            >
+                                                                <X className="h-4 w-4" />
+                                                            </button>
+                                                        </div>
+                                                    ))}
+                                                </div>
+                                            )}
+                                            
+                                            {/* Display file type error message */}
+                                            {fileError && (
+                                                <p className="text-xs text-red-500 mt-1">{fileError}</p>
+                                            )}
+
+                                            {/* Display error message */}
+                                            {errors.images && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.images}</p>
+                                            )}
+                                        </div>
+
+
                                     </div>
                                     
                                 </TabsContent>

@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import {useFetchFunds} from '../../Fund/hooks/useFetchFunds'
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import {Loader} from 'lucide-react'
 
 
 
@@ -95,6 +96,7 @@ export default function Component() {
     
 
     const [errors, setErrors] = useState({});
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
@@ -138,7 +140,7 @@ export default function Component() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
             );
         
-            console.log(preparedData)
+            setIsLoading(true);
             const token = Cookies.get('access_token');
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/funds-operations`, preparedData, {
                 headers: { Authorization: `Bearer ${token}` },
@@ -163,6 +165,7 @@ export default function Component() {
                 autoClose: 1000,
                 onClose: () => navigate(`/dash/opérations`),
             });
+            setIsLoading(false);
         } catch (error) {
         if (error instanceof z.ZodError) {
             const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -178,6 +181,7 @@ export default function Component() {
                 : error.response?.data?.message || 'Erreur lors de la creation du Opération ',
                 type: "error",
             });
+            setIsLoading(false);
         }
         }
     };
@@ -400,8 +404,15 @@ export default function Component() {
                             <Button type="button" onClick={() => navigate(`/dash/opérations`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                 Annuler
                             </Button>
-                            <Button type="submit" className="w-full">
-                                Ajouter
+                            <Button type="submit" className="w-full" disabled={isLoading}>
+                                {isLoading ? (
+                                    <div className="flex items-center gap-2">
+                                        <Loader className="h-4 w-4 animate-spin" />
+                                        <span>Création en cours...</span>
+                                    </div>
+                                    ) : (
+                                    "Ajouter"
+                                )}
                             </Button>
                         </div>
                     </form>

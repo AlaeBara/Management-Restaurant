@@ -25,7 +25,7 @@ const DetailsSupplier = () => {
     <>
         <div className={styles.container}>
             <div className={styles.header}>
-                <h1>Détails de la  Fournisseur</h1>
+                <h1>Détails du Fournisseur</h1>
                 <p>Consultez les informations détaillées de la  Fournisseur sélectionné</p>
             </div>
 

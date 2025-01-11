@@ -13,7 +13,6 @@ import { useUpdateSupplier } from '../Hooks/useUpdateSuplier';
 import Spinner from '@/components/Spinner/Spinner';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {X} from 'lucide-react'
-import { formatDate } from '@/components/dateUtils/dateUtils';
 
 
 const STATUS = {
@@ -43,26 +42,26 @@ export default function Component() {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        updateSupplier(e, file);  // Pass the file to updateSupplier
+        updateSupplier(e, file);
         setFile(null)
     };
 
     const handleFileChange = (e) => {
         const selectedFile = e.target.files[0];
         if (selectedFile && selectedFile.type.startsWith('image/')) {
-          setFile(selectedFile);
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            avatar: selectedFile.name,
-          }));
-          setErrors((prevErrors) => ({ ...prevErrors, avatar: '' }));
+            setFile(selectedFile);
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                avatar: selectedFile.name,
+            }));
+            setErrors((prevErrors) => ({ ...prevErrors, avatar: '' }));
         } else {
-          setFile(selectedFile);
-          setFormData((prevFormData) => ({
-            ...prevFormData,
-            avatar: '',
-          }));
-          setErrors((prevErrors) => ({ ...prevErrors, avatar: 'Veuillez sélectionner un fichier image valide.' }));
+            setFile(selectedFile);
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                avatar: '',
+            }));
+            setErrors((prevErrors) => ({ ...prevErrors, avatar: 'Veuillez sélectionner un fichier image valide.' }));
         }
     };
 
@@ -301,9 +300,9 @@ export default function Component() {
                                     </label>
                                 </div>
 
-                                {formData.avatar && (
+                                {(formData.avatar || file) && (
                                     <div className="flex items-center justify-between bg-gray-100 rounded-lg p-3">
-                                        <p className="text-sm text-gray-700">{formData.avatar}</p>
+                                        <p className="text-sm text-gray-700">{formData.avatar || file.name}</p>
                                         <button
                                             type="button"
                                             onClick={handleRemoveFile}
