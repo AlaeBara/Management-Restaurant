@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
+import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { MenuItemTagService } from "../services/menu-item-tag.service";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Inventory } from "src/inventory-managemet/entities/inventory.entity";
@@ -8,6 +8,7 @@ import { UpdateInventoryDto } from "src/inventory-managemet/dtos/inventory/updat
 import { MenuItemService } from "../services/menu-item.service";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
+import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 
 
 @Controller('api/menu-items')
@@ -45,13 +46,27 @@ export class MenuItemController {
         );
     }
 
-    @Post()
+   /*  @Post()
     @Permissions('create-menu-item')
     @ApiOperation({ summary: 'Create a menu item' })
-    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto) {
+    @UseInterceptors(FileInterceptor('images'))
+    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFile() images: Express.Multer.File[], @Req() req: Request) {
+        console.log(images);
+        return;
+        createMenuItemDto.images = images;
         await this.menuItemService.createMenuItem(createMenuItemDto);
         return { message: 'Super! Vot produit de menu a été créé avec succès', status: 201 };
 
+    } */
+
+    @Post()
+    @Permissions('create-menu-item')
+    @ApiOperation({ summary: 'Create a menu item' })
+    @UseInterceptors(FilesInterceptor('images', 10))
+    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFiles() images: Array<Express.Multer.File>,@Req() req: Request) {
+        createMenuItemDto.images = images;
+        await this.menuItemService.createMenuItem(createMenuItemDto); 
+        return { message: 'Super! Vot produit de menu a été créé avec succès', status: 201 };
     }
 
     @Get(':id')

@@ -10,7 +10,8 @@ import {
   ArrayMinSize,
   IsNotEmpty,
   Length,
-  Min
+  Min,
+  IsArray
 } from 'class-validator';
 import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
 import { CreateMenuItemPriceDto } from '../menu-item-price/create-menu-item-price.dto';
@@ -65,13 +66,6 @@ export class CreateMenuItemDto {
   })
   categoryId: string;
 
-  @IsOptional()
-  @ApiProperty({
-    description: 'The avatar of the menu item',
-    example: 'https://example.com/avatar.jpg'
-  })
-  avatar?: string;
-
   @IsUUID(undefined, { each: true })
   @ArrayMinSize(1)
   @ApiProperty({
@@ -103,7 +97,7 @@ export class CreateMenuItemDto {
   @IsOptional()
   @ApiProperty({
     description: 'The formulas of the menu item',
-    example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', warningQuantity: 10, quantityFormula: 10, portionProduced: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', quantityRequiredPerPortion: 10 }]
+    example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', warningQuantity: 10, quantityFormula: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', quantityRequiredPerPortion: 10 }]
   })
   formulas: CreateMenuItemFormulaDto[];
 
@@ -122,4 +116,9 @@ export class CreateMenuItemDto {
     example: 'true'
   })
   hasFormulas: boolean;
+
+  @ValidateNested()
+  @IsOptional()
+  @IsArray()
+  images?: Express.Multer.File[];
 }

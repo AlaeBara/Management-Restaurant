@@ -23,6 +23,7 @@ import { MenuItemTranslationService } from './services/menu-item-translation.ser
 import { MenuItemPriceService } from './services/menu-item-price.service';
 import { MenuItemPriceHistoryService } from './services/menu-item-price-history.service';
 import { MenuItemFormulaService } from './services/menu-item-formulas.service';
+import { MediaLibraryModule } from 'src/media-library-management/media-library.module';
 
 @Module({
   imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
@@ -31,7 +32,8 @@ import { MenuItemFormulaService } from './services/menu-item-formulas.service';
   forwardRef(() => CategoryModule),
   forwardRef(() => ProductManagementModule),
   forwardRef(() => UnitModule),
-  forwardRef(() => InventoryModule)],
+  forwardRef(() => InventoryModule),
+  forwardRef(() => MediaLibraryModule)],
   controllers: [MenuItemTagController, MenuItemController, MenuItemDiscountController],
   providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService, MenuItemPriceHistoryService, MenuItemFormulaService],
   exports: [],

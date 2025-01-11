@@ -54,14 +54,10 @@ export class SupplierController {
   @UseInterceptors(FileInterceptor('avatar'))
   async createSupplier(
     @Body() createSupplierDto: CreateSupplierDto,
-    @UploadedFile() file: Express.Multer.File,
+    @UploadedFile() avatar: Express.Multer.File,
     @Req() req: Request) {
-      const supplierData = {
-        ...createSupplierDto,
-        avatar: file
-      };
-   
-    await this.supplierService.createSupplier(supplierData, req);
+    createSupplierDto.avatar = avatar;
+    await this.supplierService.createSupplier(createSupplierDto, req);
     return { message: 'Super! Le fournisseur a été créé avec succès', status: 200 };
   }
 
@@ -93,7 +89,7 @@ export class SupplierController {
     const supplierData = {
       ...updateSupplierDto,
       ...(file && { avatar: file })
-    };
+    }; 
     await this.supplierService.updateSupplier(id, supplierData,req);
     return { message: 'Super! Le fournisseur a été mis à jour avec succès', status: 200 };
   }

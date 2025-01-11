@@ -5,6 +5,7 @@ import { MenuItemTag } from "./menu-item-tag.entity";
 import { MenuItemFormula } from "./menu-item-formula.entity";
 import { MenuItemPrice } from "./menu-item-price.entityt";
 import { MenuItemTranslate } from "./menu-item-translation.enity";
+import { MediaLibrary } from "src/media-library-management/entities/media-library.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu`)
 @Index(['menuItemSku'])
@@ -28,9 +29,6 @@ export class MenuItem extends BaseEntity {
     @ManyToOne(() => Category, (category) => category.id, { eager: false })
     category: Category
 
-    @Column({ type: 'varchar', nullable: true })
-    avatar: string;
-
     @Column({ type: 'boolean', default: false })
     hasFormulas: boolean; // if the menu item has formulas to track the quantity of the product and handel inventory automatically
 
@@ -38,10 +36,14 @@ export class MenuItem extends BaseEntity {
     @JoinTable({ name: `${process.env.DATASET_PREFIX || ''}item_menu_tag_relation` })
     tags: MenuItemTag[];
 
+    @ManyToMany(() => MediaLibrary, { eager: true })
+    @JoinTable({ name: `${process.env.DATASET_PREFIX || ''}item_menu_image_relation` })
+    images: MediaLibrary[];
+
     @OneToMany(() => MenuItemFormula, (formula) => formula.menuItem, { nullable: true, eager: true, cascade: true, orphanedRowAction: 'delete' })
     formulas: MenuItemFormula[];
 
-    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
+    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true, default: null })
     portionProduced: number;
 
     @OneToOne(() => MenuItemPrice, (menuItemPrice) => menuItemPrice.menuItem, {

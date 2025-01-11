@@ -5,6 +5,9 @@ import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
 import { MenuItemTranslate } from "../entities/menu-item-translation.enity";
 import { MenuItem } from "../entities/menu-item.entity";
+import { LanguageService } from "src/language-management/services/langague.service";
+import { CreateMenuItemTranslate } from "../dtos/menu-item-translate/create-menu-item-translation.dto";
+import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 
 @Injectable()
 export class MenuItemTranslationService extends GenericService<MenuItemTranslate> {
@@ -12,10 +15,37 @@ export class MenuItemTranslationService extends GenericService<MenuItemTranslate
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemTranslate)
         readonly translationRepository: Repository<MenuItemTranslate>,
+        private readonly languageService: LanguageService
 
     ) {
         super(dataSource, MenuItemTranslate, 'translate menu item');
     }
+
+     async createTranslation(menuItem: MenuItem, dto: CreateMenuItemTranslate, queryRunner: QueryRunner) {
+        const language = await this.languageService.getLanguageByCode(dto.languageId);
+        const translation = this.translationRepository.create({
+                menuItem: menuItem,
+                language: language,
+                name: dto.name,
+            description: dto.description,
+        });
+    
+        await queryRunner.manager.save(MenuItemTranslate, translation);
+    }
+
+ /*    private async createTranslations(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+        const translations = await Promise.all(dto.translates.map(async (translate) => {
+            const language = await this.languageService.getLanguageByCode(translate.languageId);
+            return this.translateService.translationRepository.create({
+                menuItem: menuItem,
+                language: language,
+                name: translate.name,
+                description: translate.description,
+            });
+        }));
+    
+        await queryRunner.manager.save(MenuItemTranslate, translations);
+    } */
 
     async softDeleteTranslations(menuItem: MenuItem, queryRunner: QueryRunner) {
         await queryRunner.manager.softDelete(MenuItemTranslate, { menuItem: { id: menuItem.id } });
