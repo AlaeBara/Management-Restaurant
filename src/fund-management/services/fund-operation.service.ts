@@ -130,11 +130,14 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         if ('operationAction' in operationData) {
             // If CreateFundOperationDto, use its operationAction
             operationAction = operationData.operationAction || getOperationAction(fundOperation.operationType);
-        } else {
-            // If CreateExpenseDto, default to getOperationAction
+        } else{
             operationAction = getOperationAction(fundOperation.operationType);
         }
 
+        if(operationData instanceof CreateExpenseDto){
+            operationAction = getOperationAction(operationType);
+        }
+        
         fundOperation.operationAction = operationAction;
         //The movement action must be either 'increase' or 'decrease'
         if (['increase', 'decrease'].includes(fundOperation.operationAction) === false) {
