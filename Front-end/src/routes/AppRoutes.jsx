@@ -4,6 +4,7 @@ import { ClientPreferencesProvider } from '../context/OrderFlowContext';
 import ClientRoutes from './ClientRoutes';
 import DashRoutes from './DashRoutes';
 import { UserProvider } from '../context/UserContext';
+import NotFound from '../components/404/PageNotFounds'
 
 const AppRoutes = () => {
   return (

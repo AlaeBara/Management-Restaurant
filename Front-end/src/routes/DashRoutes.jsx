@@ -83,11 +83,16 @@ const AddDiscount =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components
 const UpdateDiscounts =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components/UpdateDiscount'))
 const DeletedDiscount =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components/DeletedDiscount'))
 
+
+const NotFound =lazy(()=> import('@/components/404/PageNotFounds'))
+
 const ClientRoutes = () => {
   return (
     <Suspense fallback={<Spinner title="Chargement en cours..." />}>
       <Routes>
         <Route path="/login" element={<Login />} />
+
+        <Route path="*" element={<NotFound />} />
 
         <Route 
           path="/Home" 
@@ -921,14 +926,6 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
-
-
-
-
-
-
-
-
 
       </Routes>
     </Suspense>
