@@ -33,4 +33,12 @@ export const UserSchema = z.object({
     roleId: z.number().int().nullable().optional(),
     
     status : z.string().nullable().optional(),
+
+    avatar: z
+        .any() // Allow any type (File, undefined, etc.)
+        .optional() // Make the field optional
+        .refine(
+        (file) => !file || (file instanceof File && file.type.startsWith('image/')), // Validate if file is provided
+            { message: "Le fichier doit être une image." }
+        ),
 });

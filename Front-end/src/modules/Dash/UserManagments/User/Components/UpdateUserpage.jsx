@@ -42,8 +42,8 @@ export default function UpdateUser() {
     <>
         <ToastContainer />
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Mettre à Jour les Informations Utilisateur</h1>
-            <p className="text-base text-gray-600">Complétez les champs ci-dessous pour actualiser les informations de l’utilisateur.</p>
+            <h1 className="text-2xl font-bold text-black font-sans">Mettre à Jour les Informations Employés</h1>
+            <p className="text-base text-gray-600">Remplissez les champs ci-dessous pour mettre à jour les informations des employés.</p>
         </div>
 
 

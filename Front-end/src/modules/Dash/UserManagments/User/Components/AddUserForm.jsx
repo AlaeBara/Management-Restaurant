@@ -16,6 +16,7 @@ import UserStatus from './UserStatus';
 import {Loader} from 'lucide-react'
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { X } from 'lucide-react';
 
 
 
@@ -39,6 +40,7 @@ export default function Component() {
     phone: null,
     status: null,
     roleId: null,
+    avatar: null,
   })
 
   const [showPassword, setShowPassword] = useState(false)
@@ -55,17 +57,21 @@ export default function Component() {
     try {
       UserSchema.parse(formData)
 
-      const preparedData = Object.fromEntries(
-        Object.entries(formData).filter(([key, value]) => value !== null && value !== "")
-      );
+      const preparedData = new FormData();
+      for (const [key, value] of Object.entries(formData)) {
+        if (value !== null && value !== "") {
+          preparedData.append(key, value);
+          console.log(key," - ",value)
+        }
+      }
       setIsLoading(true);
       const token = Cookies.get('access_token')
       const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/users`, preparedData, {
         headers: {
           Authorization: `Bearer ${token}`,
+          'Content-Type': 'multipart/form-data',
         },
       })
-
 
       setFormData({
         firstname: '',
@@ -78,6 +84,7 @@ export default function Component() {
         phone: null,
         status: null,
         roleId: null,
+        avatar: null,
       })
       setErrors({})
       toast.success(response.data.message  || 'Employé créé avec succès!', {
@@ -323,6 +330,71 @@ export default function Component() {
                 </div>
                 {errors.password && (
                   <p className="text-xs text-red-500 mt-1">{errors.password}</p>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="avatar">Avatar</Label>
+                <div className="flex items-center justify-center w-full">
+                  <label
+                    htmlFor="avatar"
+                    className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400"
+                  >
+                    <div className="flex flex-col items-center justify-center">
+                      <span className="text-gray-500 text-center">Cliquez pour télécharger ou glisser-déposer</span>
+                      <span className="text-sm text-gray-400">PNG, JPG, JPEG</span>
+                    </div>
+                    <input
+                      id="avatar"
+                      name="avatar"
+                      type="file"
+                      accept="image/*"
+                      className="hidden"
+                      onChange={(e) => {
+                        const file = e.target.files[0];
+                        if (file) {
+                          setFormData((prevData) => ({ ...prevData, avatar: file }));
+                        }
+                      }}
+                    />
+                  </label>
+                </div>
+
+                {formData.avatar && (
+                  <div className="mt-4 flex flex-col items-center justify-center">
+                    {/* Display Image Preview or File Name */}
+                    {formData.avatar.type.startsWith('image/') ? (
+                      <div className="relative">
+                        <img
+                          src={URL.createObjectURL(formData.avatar)}
+                          alt="Avatar Preview"
+                          className="w-32 h-32 object-cover rounded-lg"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))}
+                          className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X className="h-4 w-4" /> 
+                        </button>
+                      </div>
+                    ) : (
+                      <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
+                        <span className="text-sm text-gray-700">{formData.avatar.name}</span>
+                        <button
+                          type="button"
+                          onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))}
+                          className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                        >
+                          <X className="h-4 w-4" /> 
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                )}
+
+                {errors.avatar && (
+                  <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
                 )}
               </div>
 

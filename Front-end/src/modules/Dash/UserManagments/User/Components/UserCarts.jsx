@@ -51,7 +51,7 @@ const userCarts = ({ user, deleteUser}) => {
                 
                 <div className={style.headerCart}>
                     <img
-                        src="https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"
+                        src={user.avatar?.localPath ? `${import.meta.env.VITE_BACKEND_URL}${user.avatar.localPath}` : "https://e7.pngegg.com/pngimages/931/209/png-clipart-computer-icons-symbol-avatar-logo-person-with-helmut-miscellaneous-black.png"}
                         alt="Avatar"
                         className={style.avatar}
                     />
