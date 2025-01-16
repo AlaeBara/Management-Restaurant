@@ -14,6 +14,8 @@ import { Eye, EyeOff } from 'lucide-react'
 import {useRoles} from '../hooks/useFetchRoles'
 import UserStatus from './UserStatus'; 
 import {Loader} from 'lucide-react'
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 
 
@@ -78,16 +80,12 @@ export default function Component() {
         roleId: null,
       })
       setErrors({})
-
-      setAlert({
-        message: response.data.message,
-        type: "success",
+      toast.success(response.data.message  || 'Employé créé avec succès!', {
+        icon: '✅',
+        position: "top-right",
+        autoClose: 1500,
+        onClose: () => navigate(`/dash/Create-User`),
       });
-
-      setTimeout(() => {
-        setAlert({ message: null, type: null });
-        navigate('/dash/Create-User');
-      }, 1500);
 
       setIsLoading(false);
     } catch (error) {
@@ -112,11 +110,13 @@ export default function Component() {
   return (
 
     <>
+
+      <ToastContainer />
       
       <div className="space-y-2 m-3">
-        <h1 className="text-2xl font-bold text-black font-sans">Ajouter un utilisateur</h1>
+        <h1 className="text-2xl font-bold text-black font-sans">Ajouter un Employé</h1>
         <p className="text-base text-gray-600">
-            Remplissez les informations ci-dessous pour ajouter un nouvel utilisateur au système.
+          Remplissez les informations ci-dessous pour ajouter un nouvel employé au système.
         </p>
       </div>
 
@@ -149,7 +149,7 @@ export default function Component() {
                     name="firstname"
                     value={formData.firstname}
                     onChange={handleChange}
-                    placeholder="Prénom"
+                    placeholder="Exemple: Ahmed"
                   />
                   {errors.firstname && (
                     <p className="text-xs text-red-500 mt-1">{errors.firstname}</p>
@@ -163,7 +163,7 @@ export default function Component() {
                     name="lastname"
                     value={formData.lastname}
                     onChange={handleChange}
-                    placeholder="Nom"
+                    placeholder="Exemple: El Mansouri"
                   />
                   {errors.lastname && (
                     <p className="text-xs text-red-500 mt-1">{errors.lastname}</p>
@@ -181,7 +181,7 @@ export default function Component() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    placeholder="Nom d'utilisateur"
+                    placeholder="Exemple: ahmed elmansouri"
                   />
                   {errors.username && (
                     <p className="text-xs text-red-500 mt-1">{errors.username}</p>
@@ -215,7 +215,7 @@ export default function Component() {
                     name="address"
                     value={formData.address || ''}
                     onChange={handleChange}
-                    placeholder="adresse"
+                    placeholder="Exemple: 45 Rue Mohamed Iqbal, Agadir"
                   />
                   {errors.address && (
                     <p className="text-xs text-red-500 mt-1">{errors.address}</p>
@@ -229,7 +229,7 @@ export default function Component() {
                     name="phone"
                     value={formData.phone || ''}
                     onChange={handleChange}
-                    placeholder="Numéro de Téléphone"
+                    placeholder="+212 6 12 34 56 78"
                   />
                   {errors.phone && (
                     <p className="text-xs text-red-500 mt-1">{errors.phone}</p>
@@ -295,7 +295,7 @@ export default function Component() {
                   type="email"
                   value={formData.email}
                   onChange={handleChange}
-                  placeholder="Email"
+                  placeholder="Exemple: ahmed.elmansouri@gmail.com"
                 />
                 {errors.email && (
                   <p className="text-xs text-red-500 mt-1">{errors.email}</p>
@@ -311,7 +311,7 @@ export default function Component() {
                     type={showPassword ? 'text' : 'password'}
                     value={formData.password}
                     onChange={handleChange}
-                    placeholder="Mot de passe"
+                    placeholder="Exemple: MotDePasse123!"
                   />
                   <button
                     type="button"

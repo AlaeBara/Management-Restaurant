@@ -49,14 +49,11 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
       setOriginalData({ ...originalData, ...updatedData });
       setErrors({});
 
-      setAlert({
-        message: response.data.message,
-        type: "success",
+      toast.success(response.data.message  || 'Employé modifier avec succès!', {
+        icon: '✅',
+        position: "top-right",
+        autoClose: 1500,
       });
-
-      setTimeout(() => {
-        setAlert({ message: null, type: null });
-      }, 3000);
 
       setIssLoading(false)
 

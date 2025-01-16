@@ -128,11 +128,10 @@ const CreateUsers = () => {
     <div className={style.container}>
         <ToastContainer />
 
-        {/* header of page  */}
         <div className={style.Headerpage}>
             <div>
-                <h1 className={`${style.title} !mb-0 `}>Gestion Des Utilisateurs</h1>
-                <p className="text-base text-gray-600 mt-0">Gérez efficacement tous les utilisateurs de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des utilisateurs, ainsi que gérer leurs rôles et leurs permissions.</p>
+                <h1 className={`${style.title} !mb-0 `}>Gestion Du Personnel</h1>
+                <p className="text-base text-gray-600 mt-0">Gérez efficacement tous les membres du personnel de votre plateforme. Vous pouvez consulter, modifier, ajouter ou supprimer des membres du personnel, ainsi que gérer leurs rôles et leurs permissions.</p>
             </div>
         </div> 
 
@@ -140,11 +139,11 @@ const CreateUsers = () => {
 
         <div className={style.Headerpage2}>
             <button onClick={() => navigate('/dash/Deleted-User')} className={style.showdeleteuser}>
-                <ExternalLink className="mr-3 h-4 w-4 "/>Utilisateurs Supprimés
+                <ExternalLink className="mr-3 h-4 w-4 "/>Employés Supprimés
             </button> 
         
             <button onClick={() => navigate('/dash/Add-User')} className={style.showFormButton}>
-                <Plus className="mr-3 h-4 w-4 " /> Ajouter  utilisateur
+                <Plus className="mr-3 h-4 w-4 " /> Ajouter un Employé
             </button> 
         </div>
 

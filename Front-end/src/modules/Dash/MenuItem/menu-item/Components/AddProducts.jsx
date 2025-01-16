@@ -218,6 +218,7 @@ export default function AchatCreationForm() {
             images: [...prev.images, ...files], // Append new files to the existing images array
         }));
     };
+
     const removeImage = (index) => {
         setFormData((prev) => ({
             ...prev,
@@ -421,7 +422,7 @@ export default function AchatCreationForm() {
             }
     
 
-            // Clean up form data
+            
             if (formData.price.discountId === "") {
                 formData.price.discountId = null;
             }
@@ -436,14 +437,133 @@ export default function AchatCreationForm() {
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
+
+            // const formDataObject = new FormData();
+
+            // // Append simple fields if they exist and have a value
+            // if (preparedData.menuItemSku) formDataObject.append('menuItemSku', preparedData.menuItemSku);
+            // if (preparedData.quantity !== null && preparedData.quantity !== "") formDataObject.append('quantity', preparedData.quantity);
+            // if (preparedData.warningQuantity !== null && preparedData.warningQuantity !== "") formDataObject.append('warningQuantity', preparedData.warningQuantity);
+            // if (preparedData.isPublished !== null && preparedData.isPublished !== "") formDataObject.append('isPublished', preparedData.isPublished);
+            // if (preparedData.isDraft !== null && preparedData.isDraft !== "") formDataObject.append('isDraft', preparedData.isDraft);
+            // if (preparedData.categoryId) formDataObject.append('categoryId', preparedData.categoryId);
+            // if (preparedData.hasFormulas !== null && preparedData.hasFormulas !== "") formDataObject.append('hasFormulas', preparedData.hasFormulas);
+            // if (preparedData.portionProduced !== null && preparedData.portionProduced !== "") formDataObject.append('portionProduced', preparedData.portionProduced);
+
+            // // Append price fields if they exist and have a value
+            // if (preparedData.price?.basePrice !== null && preparedData.price?.basePrice !== "") formDataObject.append('price[basePrice]', preparedData.price.basePrice);
+            // if (preparedData.price?.discountId !== null && preparedData.price?.discountId !== "") formDataObject.append('price[discountId]', preparedData.price.discountId);
+
+            // // Append formulas array if it exists and has items
+            // if (preparedData.formulas && preparedData.formulas.length > 0) {
+            //     preparedData.formulas.forEach((formula, index) => {
+            //         if (formula.productId) formDataObject.append(`formulas[${index}][productId]`, formula.productId);
+            //         if (formula.warningQuantity !== null && formula.warningQuantity !== "") formDataObject.append(`formulas[${index}][warningQuantity]`, formula.warningQuantity);
+            //         if (formula.quantityFormula !== null && formula.quantityFormula !== "") formDataObject.append(`formulas[${index}][quantityFormula]`, formula.quantityFormula);
+            //         if (formula.unitId) formDataObject.append(`formulas[${index}][unitId]`, formula.unitId);
+            //     });
+            // }
+
+            // // Append translates array if it exists and has items
+            // if (preparedData.translates && preparedData.translates.length > 0) {
+            //     preparedData.translates.forEach((translate, index) => {
+            //         if (translate.languageId) formDataObject.append(`translates[${index}][languageId]`, translate.languageId);
+            //         if (translate.name) formDataObject.append(`translates[${index}][name]`, translate.name);
+            //         if (translate.description) formDataObject.append(`translates[${index}][description]`, translate.description);
+            //     });
+            // }
+
+            // // Append tagIds array if it exists and has items
+            // if (preparedData.tagIds && preparedData.tagIds.length > 0) {
+            //     preparedData.tagIds.forEach((tagId, index) => {
+            //         if (tagId) formDataObject.append(`tagIds[${index}]`, tagId);
+            //     });
+            // }
+
+            // // Append images array if it exists and has items
+            // if (preparedData.images && preparedData.images.length > 0) {
+            //     preparedData.images.forEach((image, index) => {
+            //         if (image) formDataObject.append(`images[${index}]`, image);
+            //     });
+            // }
+
+
+            const formDataObject = new FormData();
+
+            // Helper function to append fields if they exist and have a value
+            const appendIfValid = (key, value) => {
+                if (value !== null && value !== "") {
+                    formDataObject.append(key, value);
+                }
+            };
+
+            // Helper function to append nested objects
+            const appendNestedObject = (prefix, obj) => {
+                for (const key in obj) {
+                    if (obj[key] !== null && obj[key] !== "") {
+                        formDataObject.append(`${prefix}[${key}]`, obj[key]);
+                    }
+                }
+            };
+
+            // Helper function to append arrays
+            const appendArray = (prefix, array) => {
+                if (array && array.length > 0) {
+                    array.forEach((item, index) => {
+                        if (typeof item === 'object' && !(item instanceof File)) {
+                            // Handle nested objects in arrays (e.g., formulas, translates)
+                            for (const key in item) {
+                                if (item[key] !== null && item[key] !== "") {
+                                    formDataObject.append(`${prefix}[${index}][${key}]`, item[key]);
+                                }
+                            }
+                        } else {
+                            // Handle simple values or File objects
+                            if (item !== null && item !== "") {
+                                formDataObject.append(`${prefix}[${index}]`, item);
+                            }
+                        }
+                    });
+                }
+            };
+
+
+            // Step 2: Append fields to FormData
+            appendIfValid('menuItemSku', preparedData.menuItemSku);
+            appendIfValid('quantity', preparedData.quantity);
+            appendIfValid('warningQuantity', preparedData.warningQuantity);
+            appendIfValid('isPublished', preparedData.isPublished);
+            appendIfValid('isDraft', preparedData.isDraft);
+            appendIfValid('categoryId', preparedData.categoryId);
+            appendIfValid('hasFormulas', preparedData.hasFormulas);
+            appendIfValid('portionProduced', preparedData.portionProduced);
+
+            // Append price fields
+            if (preparedData.price) {
+                appendNestedObject('price', preparedData.price);
+            }
+
+            // Append formulas array
+            appendArray('formulas', preparedData.formulas);
+
+            // Append translates array
+            appendArray('translates', preparedData.translates);
+
+            // Append tagIds array
+            appendArray('tagIds', preparedData.tagIds);
+
+            // Append images array
+            appendArray('images', preparedData.images);
+
+
+            for (const [key, value] of formDataObject.entries()) {
+                console.log(key, value);
+            }
     
-          
             setIsLoading(true);
-    
-            // Send data to the backend
             const token = Cookies.get('access_token');
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`, preparedData, {
-                headers: { Authorization: `Bearer ${token}` },
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`,  preparedData, {
+                headers: { Authorization: `Bearer ${token}` , 'Content-Type': 'multipart/form-data',},
             });
     
             // Reset form and errors

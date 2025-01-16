@@ -81,7 +81,7 @@ export default function UpdateUser() {
                                         name="firstname"
                                         value={formData.firstname}
                                         onChange={handleChange}
-                                        placeholder="Prénom"
+                                        placeholder="Exemple: Ahmed"
                                     />
                                     {errors.firstname && <p className="text-xs text-red-500 mt-1">{errors.firstname}</p>}
                                 </div>
@@ -93,7 +93,7 @@ export default function UpdateUser() {
                                         name="lastname"
                                         value={formData.lastname}
                                         onChange={handleChange}
-                                        placeholder="Nom"
+                                        placeholder="Exemple: El Mansouri"
                                     />
                                     {errors.lastname && <p className="text-xs text-red-500 mt-1">{errors.lastname}</p>}
                                 </div>
@@ -107,7 +107,7 @@ export default function UpdateUser() {
                                         name="username"
                                         value={formData.username}
                                         onChange={handleChange}
-                                        placeholder="Nom d'utilisateur"
+                                        placeholder="Exemple: ahmed elmansouri"
                                     />
                                     {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username}</p>}
                                 </div>
@@ -139,7 +139,7 @@ export default function UpdateUser() {
                                         name="address"
                                         value={formData.address || ''}
                                         onChange={handleChange}
-                                        placeholder="Adresse"
+                                        placeholder="Exemple: 45 Rue Mohamed Iqbal, Agadir"
                                     />
                                     {errors.address && <p className="text-xs text-red-500 mt-1">{errors.address}</p>}
                                 </div>
@@ -151,7 +151,7 @@ export default function UpdateUser() {
                                         name="phone"
                                         value={formData.phone || ''}
                                         onChange={handleChange}
-                                        placeholder="Numéro de Téléphone"
+                                        placeholder="+212 6 12 34 56 78"
                                     />
                                     {errors.phone && <p className="text-xs text-red-500 mt-1">{errors.phone}</p>}
                                 </div>
@@ -165,7 +165,7 @@ export default function UpdateUser() {
                                     type="email"
                                     value={formData.email}
                                     onChange={handleChange}
-                                    placeholder="Email"
+                                    placeholder="Exemple: ahmed.elmansouri@gmail.com"
                                 />
                                 {errors.email && <p className="text-xs text-red-500 mt-1">{errors.email}</p>}
                             </div>
@@ -179,7 +179,7 @@ export default function UpdateUser() {
                                     type={showPassword ? 'text' : 'password'}
                                     value={formData.password || ''}
                                     onChange={handleChange}
-                                    placeholder="Mot de passe"
+                                    placeholder="Exemple: MotDePasse123!"
                                 />
                                 <button
                                     type="button"

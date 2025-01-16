@@ -97,12 +97,12 @@ const DeletedUsers = () => {
         <div className={style.container}>
             <ToastContainer />
             <div className={style.Headerpage}>
-                <h1 className={style.title}>Historique Des Utilisateurs Supprimés</h1>
+                <h1 className={style.title}>Historique Des Employés Supprimés</h1>
             </div>
 
             {loading ? (
                 <div className={style.spinnerContainer}>
-                    <Spinner title="Chargement des utilisateurs supprimés..." />
+                    <Spinner title="Chargement des employés supprimés..." />
                 </div>
             ) : (
                 <>
@@ -128,7 +128,7 @@ const DeletedUsers = () => {
                     ) : (
                         <div className={style.notfound}>
                             <SearchX className={style.icon} />
-                            <h1>Aucun utilisateur supprimé trouvé</h1>
+                            <h1>Aucun employé supprimé trouvé</h1>
                         </div>
                     )}
                 </>
