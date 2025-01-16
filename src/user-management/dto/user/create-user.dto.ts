@@ -2,6 +2,7 @@ import { IsEmail, isEmpty, IsEnum, IsNotEmpty, IsNumber, IsOptional, IsString, L
 import { Gender } from "../../../common/enums/gender.enum";
 import { ApiProperty } from "@nestjs/swagger";
 import { UserStatus } from "src/user-management/enums/user-status.enum";
+import { Transform } from "class-transformer";
 
 export class CreateUserDto {
     @IsNotEmpty()
@@ -47,6 +48,7 @@ export class CreateUserDto {
 
     @IsOptional()
     @IsNumber()
+    @Transform(({ value }) => Number(value)) // Convert the value to a number
     @ApiProperty({ description: 'The role id of the user', example: '1', required: false })
     roleId: number;
 
