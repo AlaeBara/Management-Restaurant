@@ -9,10 +9,12 @@ import {
   DeleteDateColumn,
   Index,
   RelationId,
+  ManyToOne,
 } from 'typeorm';
 import { Role } from './role.entity';
 import { Gender } from '../../common/enums/gender.enum';
 import { UserStatus } from '../enums/user-status.enum';
+import { MediaLibrary } from 'src/media-library-management/entities/media-library.entity';
 
 @Index(['id','username','phone','email','status'])
 @Entity(process.env.DATASET_PREFIX + 'users')
@@ -47,8 +49,8 @@ export class User  {
   @Column({select: false})
   password: string;
 
-  @Column({ nullable: true })
-  avatar: string;
+  @ManyToOne(() => MediaLibrary, (mediaLibrary) => mediaLibrary.id, { nullable: true , eager: true})
+  avatar: MediaLibrary;
 
   @Column({ default: false })
   isEmailVerified: boolean;

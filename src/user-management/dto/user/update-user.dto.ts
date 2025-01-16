@@ -1,4 +1,5 @@
 import {
+  IsBoolean,
   IsEmail,
   isEmpty,
   IsEnum,
@@ -58,6 +59,13 @@ export class UpdateUserDto {
   @IsString()
   @ApiProperty({ description: 'The phone number of the user', example: '1234567890', required: false })
   phone: string;
+
+  @ApiProperty({ type: 'string', format: 'binary', required: false })
+  avatar?: Express.Multer.File;
+
+  @IsOptional()
+  @ApiProperty({description: 'When Setting Avatar To Null',example: true,required: false})
+  setAvatarAsNull:boolean;
 
   @IsOptional()
   @IsNumber()

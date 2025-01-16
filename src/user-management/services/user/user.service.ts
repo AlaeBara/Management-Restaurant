@@ -11,6 +11,7 @@ import { DataSource, Repository } from 'typeorm';
 import { RoleService } from '../role/role.service';
 import { UpdateUserDto } from 'src/user-management/dto/user/update-user.dto';
 import { UpdatePasswordDto } from 'src/user-management/dto/user/update-password.dto';
+import { MediaLibraryService } from 'src/media-library-management/services/media-library.service';
 
 @Injectable()
 export class UserService extends GenericService<User> {
@@ -20,9 +21,17 @@ export class UserService extends GenericService<User> {
     @Inject(forwardRef(() => RoleService))
     private roleService: RoleService,
     @InjectDataSource() dataSource: DataSource,
-    @InjectDataSource() private dataSourceprivate: DataSource,
+    @Inject(forwardRef(() => MediaLibraryService))
+    private mediaLibraryService: MediaLibraryService,
   ) {
     super(dataSource, User, 'user');
+  }
+
+  async inizializeQueryRunner() {
+    const queryRunner = this.dataSource.createQueryRunner();
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+    return queryRunner;
   }
 
   /**
@@ -30,48 +39,35 @@ export class UserService extends GenericService<User> {
    * @param createUserDto The user data to be created
    * @returns The created user
    */
-  async create(createUserDto: CreateUserDto) {
-    /**
-     * Validate if user with same username, email or phone already exists
-     * @param data The data to be validated
-     */
+  async createUser(createUserDto: CreateUserDto, profilePicture: Express.Multer.File, @Req() request: Request) {
+    // Validate if user with same username, email or phone already exists
     await this.validateUnique({
       username: createUserDto.username,
       email: createUserDto.email,
       phone: createUserDto.phone,
     });
 
-    /**
-     * Hash the password
-     * @param password The password to be hashed
-     * @returns The hashed password
-     */
+    // Hash the password before creating user
     createUserDto.password = await hash(createUserDto.password)
 
-    /**
-     * Create a new user
-     * @param createUserDto The user data to be created
-     * @returns A new user
-     */
+    // Create a new user instance
     const user = this.userRepository.create(createUserDto);
 
-    /**
-     * Handle status
-     * @param user The user to be updated
-     * @param status The status to be updated
-     */
+    // Handle user status if provided
     const status = createUserDto.status
     if (status || status !== undefined) {
       await this.updateStatusByUser(user, status)
     }
 
-    /**
-     * Handle role
-     * @param user The user to be updated
-     * @param roleId The role id to be updated
-     */
+    // Return early if no role ID is provided
     if (createUserDto.roleId == null) {
       return this.userRepository.save(user);
+    }
+
+    // Handle avatar
+    if (profilePicture) {
+      const avatar = await this.mediaLibraryService.iniMediaLibrary(profilePicture, 'profiles', request['user'].sub);
+      user.avatar = avatar;
     }
 
     user.roles = [];
@@ -185,6 +181,7 @@ export class UserService extends GenericService<User> {
    * @returns The updated user
    */
   async updateUser(id: number, userToUpdate: UpdateUserDto, @Req() request: Request) {
+    const queryRunner = await this.inizializeQueryRunner();
     if (Object.keys(userToUpdate).length === 0) {
       throw new BadRequestException('Aucun champ à mettre à jour');
     }
@@ -224,8 +221,31 @@ export class UserService extends GenericService<User> {
       await this.updateRoleByUser(user, roleId);
     }
 
-    const updatedUser = Object.assign(user, remainingUpdates);
-    return this.userRepository.save(updatedUser);
+    try {
+      // Handle update avatar
+      if (userToUpdate.avatar && !userToUpdate.setAvatarAsNull) {
+        if (user.avatar) {
+          await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
+        }
+        user.avatar = await this.mediaLibraryService.iniMediaLibrary(userToUpdate.avatar, 'profiles', request['user'].sub);
+      }
+
+      if (userToUpdate.setAvatarAsNull && userToUpdate.setAvatarAsNull) {
+        if (user.avatar) await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
+        user.avatar = null;
+      }
+
+      const updatedUser = Object.assign(user, remainingUpdates);
+      const savedUser = await queryRunner.manager.save(User,updatedUser);
+      await queryRunner.commitTransaction();
+      return savedUser;
+
+    } catch (error) {
+      await queryRunner.rollbackTransaction();
+      throw error;
+    } finally {
+      await queryRunner.release();
+    }
   }
 
   async updatePasswordByProfile(@Req() request: Request, updatePasswordDto: UpdatePasswordDto) {
@@ -234,8 +254,6 @@ export class UserService extends GenericService<User> {
     const oldPassword = updatePasswordDto.oldPassword;
     const newPassword = updatePasswordDto.newPassword;
     const confirmPassword = updatePasswordDto.confirmPassword;
-
-    console.log(user)
 
     if (oldPassword === newPassword) {
       throw new BadRequestException('Le nouveau mot de passe est le même que l\'ancien mot de passe');

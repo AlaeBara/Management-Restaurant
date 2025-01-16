@@ -12,6 +12,8 @@ import {
   Req,
   Inject,
   forwardRef,
+  UploadedFile,
+  UseInterceptors,
 } from '@nestjs/common';
 
 import { CreateUserDto } from '../dto/user/create-user.dto';
@@ -24,6 +26,7 @@ import { RoleService } from '../services/role/role.service';
 import { RolesGuard } from '../guards/roles.guard';
 import { PermissionsGuard } from '../guards/permission.guard';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 
 
@@ -75,9 +78,10 @@ export class UserController {
   @Post()
   @Permissions('create-user')
   @ApiOperation({ summary: 'Create a new user' })
-  async create(@Body() createUserDto: CreateUserDto): Promise<any> {
+  @UseInterceptors(FileInterceptor('avatar'))
+  async create(@Body() createUserDto: CreateUserDto, @UploadedFile() file: Express.Multer.File,@Req() request: Request): Promise<any> {
     //await this.userService.throwIfFoundByAnyAttribute({ username: createUserDto.username, email: createUserDto.email }, [], true);
-    await this.userService.create(createUserDto);
+    await this.userService.createUser(createUserDto, file, request);
     return { message: 'Super! Le compte utilisateur a été créé avec succès', status: 200 };
   }
 

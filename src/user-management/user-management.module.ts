@@ -1,4 +1,4 @@
-import { Module } from '@nestjs/common';
+import { forwardRef, Module } from '@nestjs/common';
 import { RoleService } from './services/role/role.service';
 import { UserService } from './services/user/user.service';
 import { PermissionService } from './services/permission/permission.service';
@@ -26,10 +26,12 @@ import { UserStatusService } from './services/user/user-status.service';
 import SendVerificationEmailController from './controllers/send-verification-email.controller';
 import { UserActionToken } from './entities/user-action-token.entity';
 import { EmailVerificationService } from './services/authentication/email-verification.service';
+import { MediaLibraryModule } from 'src/media-library-management/media-library.module';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([User, Role, Permission, UserActionToken]),
+    forwardRef(() => MediaLibraryModule)
   ],
   controllers: [
     UserController,
