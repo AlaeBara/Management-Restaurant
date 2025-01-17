@@ -14,7 +14,8 @@ const useFetchUserData = (id) => {
     address: '',
     phone: '',
     roleId: null,
-    status: ''
+    status: '',
+    avatar: null
   });
   const [originalData, setOriginalData] = useState({});
   const [isLoading, setIsLoading] = useState(true);
@@ -42,8 +43,11 @@ const useFetchUserData = (id) => {
           gender: userResponse.data.gender,
           email: userResponse.data.email,
           roleId: userResponse.data.roleIds?.[0] || null,
-          status: userResponse.data.status
+          status: userResponse.data.status,
+          avatar: userResponse.data.avatar?.localPath || ''
         }));
+
+
         setFormData((prevData) => ({
           ...prevData,
           firstname: userResponse.data.firstname,
@@ -55,7 +59,8 @@ const useFetchUserData = (id) => {
           gender: userResponse.data.gender,
           email: userResponse.data.email,
           roleId: userResponse.data.roleIds?.[0] || null,
-          status: userResponse.data.status
+          status: userResponse.data.status,
+          avatar: userResponse.data.avatar?.localPath || ''
         }));
         
         

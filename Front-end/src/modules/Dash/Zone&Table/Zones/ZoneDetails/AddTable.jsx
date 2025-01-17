@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {Loader} from 'lucide-react'
+import {useGetInfoZone} from '../Hooks/useGetInfoZone'
 
 // Table status constants
 const TABLE_STATUSES = {
@@ -30,6 +31,9 @@ const zoneAddSchema = z.object({
 
 export default function Component() {
     const {id}=useParams()
+
+    const {info, message, isloading} = useGetInfoZone(id)
+
     const navigate = useNavigate();
     const [formData, setFormData] = useState({
         zoneUUID: id,
@@ -107,7 +111,7 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Table Dans La Zone</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Ajouter une nouvelle table dans la zone "{info.zoneLabel}"</h1>
             <p className="text-base text-gray-600">
                 Remplissez les informations ci-dessous pour ajouter un nouveau Zone au système.
             </p>
@@ -135,7 +139,7 @@ export default function Component() {
                             name="tableName"
                             value={formData.tableName}
                             onChange={handleChange}
-                            placeholder="Label de la Zone"
+                            placeholder="Exemple: Table 1"
                         />
                         {errors.tableName && (
                         <p className="text-xs text-red-500 mt-1">{errors.tableName}</p>
@@ -149,7 +153,7 @@ export default function Component() {
                             name="tableCode"
                             value={formData.tableCode}
                             onChange={handleChange}
-                            placeholder="Code de la Zone"
+                            placeholder="Exemple: TBL-001"
                         />
                         {errors.tableCode && (
                         <p className="text-xs text-red-500 mt-1">{errors.tableCode}</p>

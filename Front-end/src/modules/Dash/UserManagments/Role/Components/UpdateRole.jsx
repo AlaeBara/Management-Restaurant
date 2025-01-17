@@ -70,7 +70,7 @@ return (
                                     name="name"
                                     value={formData.name}
                                     onChange={handleChange}
-                                    placeholder="Nom de rôle"
+                                    placeholder="Exemple: Administrateur"
                                 />
                                 {errors.name && (
                                     <div className="text-xs text-red-500 mt-1">{errors.name}</div>
@@ -84,7 +84,7 @@ return (
                                     name="label"
                                     value={formData.label}
                                     onChange={handleChange}
-                                    placeholder="Description du rôle"
+                                    placeholder="Exemple: Gère les utilisateurs et les permissions"
                                     className="w-full p-2 border border-gray-300 rounded-md"
                                     rows="3"
                                 />

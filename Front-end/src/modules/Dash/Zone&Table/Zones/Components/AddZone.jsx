@@ -136,7 +136,7 @@ export default function Component() {
                                     name="zoneLabel"  // Fixed name attribute
                                     value={formData.zoneLabel}
                                     onChange={handleChange}
-                                    placeholder="Label de la Zone"
+                                    placeholder="Exemple: Zone Terrasse"
                                 />
                                 {errors.zoneLabel && (
                                     <p className="text-xs text-red-500 mt-1">{errors.zoneLabel}</p>
@@ -150,7 +150,7 @@ export default function Component() {
                                     name="zoneCode"
                                     value={formData.zoneCode}
                                     onChange={handleChange}
-                                    placeholder="Code de la Zone"
+                                    placeholder="Exemple: ZT-001"
                                 />
                                 {errors.zoneCode && (
                                     <p className="text-xs text-red-500 mt-1">{errors.zoneCode}</p>

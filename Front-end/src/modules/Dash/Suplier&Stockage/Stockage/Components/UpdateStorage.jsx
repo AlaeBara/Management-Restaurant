@@ -79,7 +79,7 @@ export default function Component() {
                                         name="storageCode"
                                         value={formData.storageCode}
                                         onChange={handleChange}
-                                        placeholder="Code de stockage"
+                                        placeholder="Exemple: STO-001"
                                     />
                                     {errors.storageCode && (
                                         <p className="text-xs text-red-500 mt-1">{errors.storageCode}</p>
@@ -93,7 +93,7 @@ export default function Component() {
                                         name="storageName"
                                         value={formData.storageName}
                                         onChange={handleChange}
-                                        placeholder="Nom du stockage"
+                                        placeholder="Exemple: Stock Principal"
                                     />
                                     {errors.storageName && (
                                         <p className="text-xs text-red-500 mt-1">{errors.storageName}</p>

@@ -14,7 +14,7 @@ import useFetchUserData from '../hooks/useFetchUserData';
 import useUpdateUser from '../hooks/useUpdateUser';
 import UserStatus from './UserStatus'; 
 import {useRoles} from '../hooks/useFetchRoles'
-import {Loader} from 'lucide-react'
+import {Loader ,  X} from 'lucide-react'
 
 
 export default function UpdateUser() {
@@ -246,6 +246,88 @@ export default function UpdateUser() {
                                 </Select>
                                 {errors.roleId && <p className="text-xs text-red-500 mt-1">{errors.roleId}</p>}
                             </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="avatar">Avatar</Label>
+                                <div className="flex items-center justify-center w-full">
+                                    <label
+                                        htmlFor="avatar"
+                                        className="flex flex-col items-center justify-center w-full p-6 border-2 border-dashed border-gray-300 rounded-lg cursor-pointer hover:border-gray-400"
+                                    >
+                                    <div className="flex flex-col items-center justify-center">
+                                        <span className="text-gray-500 text-center">Cliquez pour télécharger ou glisser-déposer</span>
+                                        <span className="text-sm text-gray-400">PNG, JPG, JPEG</span>
+                                    </div>
+                                    <input
+                                        id="avatar"
+                                        name="avatar"
+                                        type="file"
+                                        accept="image/*"
+                                        className="hidden"
+                                        onChange={(e) => {
+                                            const file = e.target.files[0];
+                                            if (file) {
+                                                setFormData((prevData) => ({ ...prevData, avatar: file })); // Update with the new file
+                                            }
+                                        }}
+                                    />
+                                    </label>
+                                </div>
+
+                                {/* Display Image Preview or Existing Avatar */}
+                                {formData.avatar && (
+                                    <div className="mt-4 flex flex-col items-center justify-center">
+                                    {typeof formData.avatar === 'string' ? ( // Existing avatar (localPath)
+                                        <div className="relative mt-4">
+                                            <img
+                                                src={`${import.meta.env.VITE_BACKEND_URL}${formData.avatar}`} // Construct full URL
+                                                alt="Avatar Preview"
+                                                className="w-32 h-32 object-cover rounded-lg"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))} // Clear the avatar
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : formData.avatar.type?.startsWith('image/') ? ( 
+                                        <div className="relative mt-4">
+                                            <img
+                                                src={URL.createObjectURL(formData.avatar)} 
+                                                alt="Avatar Preview"
+                                                className="w-32 h-32 object-cover rounded-lg"
+                                            />
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))} 
+                                                className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    ) : (
+                                        <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg mt-4">
+                                            <span className="text-sm text-gray-700">{formData.avatar.name}</span>
+                                            <button
+                                                type="button"
+                                                onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))} // Clear the file
+                                                className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                                            >
+                                                <X className="h-4 w-4" />
+                                            </button>
+                                        </div>
+                                    )}
+                                    </div>
+                                )}
+
+                                {errors.avatar && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.avatar}</p>
+                                )}
+                                </div>
+
+
 
                             <div className='flex gap-4'>
                                 <Button type="submit" onClick={()=>navigate('/dash/Create-User')} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">

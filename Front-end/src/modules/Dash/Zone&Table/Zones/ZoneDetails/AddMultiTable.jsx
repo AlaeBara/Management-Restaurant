@@ -12,6 +12,7 @@ import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {Loader} from 'lucide-react'
+import {useGetInfoZone} from '../Hooks/useGetInfoZone'
 
 
 // Table status constants
@@ -43,6 +44,9 @@ const tableAddSchema = z.object({
 export default function Component() {
     const {id}=useParams()
     const navigate = useNavigate();
+
+    const {info, message, isloading} = useGetInfoZone(id)
+
     const [formData, setFormData] = useState({
         zoneUUID: id,
         startNumber: '',
@@ -122,7 +126,7 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Ajouter Plusieurs Tables Dans La Zone</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Ajouter plusieurs tables dans la zone "{info.zoneLabel}"</h1>
             <p className="text-base text-gray-600">
                 Remplissez les informations ci-dessous pour ajouter plusieurs tables au système.
             </p>
@@ -152,7 +156,7 @@ export default function Component() {
                             name="startNumber"
                             value={formData.startNumber}
                             onChange={handleChange}
-                            placeholder="Numéro de Départ"
+                            placeholder="Exemple: 1"
                         />
                         {errors.startNumber && (
                             <p className="text-xs text-red-500 mt-1">{errors.startNumber}</p>
@@ -167,7 +171,7 @@ export default function Component() {
                             name="endNumber"
                             value={formData.endNumber}
                             onChange={handleChange}
-                            placeholder="Numéro de Fin"
+                            placeholder="Exemple: 10"
                         />
                         {errors.endNumber && (
                         <p className="text-xs text-red-500 mt-1">{errors.endNumber}</p>

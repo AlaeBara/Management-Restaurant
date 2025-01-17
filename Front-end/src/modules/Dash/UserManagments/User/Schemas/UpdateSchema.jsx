@@ -33,4 +33,22 @@ export const UpdateSchema = z.object({
         roleId: z.number().int().nullable().optional(),
     
     status : z.string().optional().nullable().or(z.literal("")),
+
+    // avatar: z
+    //     .any() 
+    //     .optional() 
+    //     .refine(
+    //     (file) => !file || (file instanceof File && file.type.startsWith('image/')), // Validate if file is provided
+    //         { message: "Le fichier doit être une image." }
+    //     ),
+
+    avatar: z
+    .union([
+        z.string(), // Allow URLs (existing avatar)
+        z.instanceof(File).refine(
+        (file) => file.type.startsWith('image/'), // Validate if file is provided
+        { message: "Le fichier doit être une image." }
+        ),
+    ])
+    .optional(), // Make the field optional
 });

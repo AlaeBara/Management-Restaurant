@@ -87,6 +87,10 @@ export default function Component() {
         avatar: null,
       })
       setErrors({})
+      setAlert({
+        message: null,
+        type: null
+      });
       toast.success(response.data.message  || 'Employé créé avec succès!', {
         icon: '✅',
         position: "top-right",
@@ -364,7 +368,7 @@ export default function Component() {
                   <div className="mt-4 flex flex-col items-center justify-center">
                     {/* Display Image Preview or File Name */}
                     {formData.avatar.type.startsWith('image/') ? (
-                      <div className="relative">
+                      <div className="relative mt-4">
                         <img
                           src={URL.createObjectURL(formData.avatar)}
                           alt="Avatar Preview"
@@ -379,7 +383,7 @@ export default function Component() {
                         </button>
                       </div>
                     ) : (
-                      <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg">
+                      <div className="flex items-center gap-2 bg-gray-100 p-2 rounded-lg mt-4">
                         <span className="text-sm text-gray-700">{formData.avatar.name}</span>
                         <button
                           type="button"

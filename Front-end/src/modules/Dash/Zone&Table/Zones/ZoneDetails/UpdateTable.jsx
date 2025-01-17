@@ -83,7 +83,7 @@ export default function Component() {
                                     name="tableName"
                                     value={formData.tableName}
                                     onChange={handleChange}
-                                    placeholder="Label de la Zone"
+                                    placeholder="Exemple: Table 1"
                                 />
                                 {errors.tableName && (
                                     <p className="text-xs text-red-500 mt-1">{errors.tableName}</p>
@@ -97,7 +97,7 @@ export default function Component() {
                                     name="tableCode"
                                     value={formData.tableCode}
                                     onChange={handleChange}
-                                    placeholder="Code de la Zone"
+                                    placeholder="Exemple: TBL-001"
                                 />
                                 {errors.tableCode && (
                                     <p className="text-xs text-red-500 mt-1">{errors.tableCode}</p>
