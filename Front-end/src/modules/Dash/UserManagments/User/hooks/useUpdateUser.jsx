@@ -38,7 +38,7 @@ const useUpdateUser = (id, formData, setFormData, originalData, setOriginalData)
 
       for (const key in updatedData) {
         if (key === 'avatar') {
-          if (formData[key] === '') {
+          if (formData[key] === null) {
             // If avatar is an empty string, set a flag to remove the avatar
             formDataToSend.append('setAvatarAsNull', true);
           } else if (formData[key] instanceof File) {

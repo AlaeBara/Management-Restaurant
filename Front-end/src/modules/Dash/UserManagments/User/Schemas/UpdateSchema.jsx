@@ -49,6 +49,6 @@ export const UpdateSchema = z.object({
         (file) => file.type.startsWith('image/'), // Validate if file is provided
         { message: "Le fichier doit être une image." }
         ),
-    ])
+    ]).nullable()
     .optional(), // Make the field optional
 });
