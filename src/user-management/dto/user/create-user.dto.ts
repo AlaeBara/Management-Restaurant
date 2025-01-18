@@ -46,6 +46,9 @@ export class CreateUserDto {
     @ApiProperty({ description: 'The phone number of the user', example: '1234567890', required: false })
     phone: string;
 
+    @ApiProperty({ type: 'string', format: 'binary', required: false })
+    profilePicture?: Express.Multer.File;
+
     @IsOptional()
     @IsNumber()
     @Transform(({ value }) => Number(value)) // Convert the value to a number

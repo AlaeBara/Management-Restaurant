@@ -79,9 +79,13 @@ export class UserController {
   @Permissions('create-user')
   @ApiOperation({ summary: 'Create a new user' })
   @UseInterceptors(FileInterceptor('avatar'))
-  async create(@Body() createUserDto: CreateUserDto, @UploadedFile() file: Express.Multer.File,@Req() request: Request): Promise<any> {
+  async create(@Body() createUserDto: CreateUserDto, @UploadedFile() file: Express.Multer.File, @Req() request: Request): Promise<any> {
     //await this.userService.throwIfFoundByAnyAttribute({ username: createUserDto.username, email: createUserDto.email }, [], true);
-    await this.userService.createUser(createUserDto, file, request);
+    const data = {
+      ...createUserDto,
+      profilePicture: file
+    }
+    await this.userService.createUser(data, request);
     return { message: 'Super! Le compte utilisateur a été créé avec succès', status: 200 };
   }
 
@@ -99,13 +103,19 @@ export class UserController {
   @Put(':id')
   @Permissions('update-user')
   @ApiOperation({ summary: 'Update an existing user' })
+  @UseInterceptors(FileInterceptor('avatar'))
   async update(
     @Param('id', ParseIntPipe) id: number,
     @Body() updateUserDto: UpdateUserDto,
+    @UploadedFile() file: Express.Multer.File,
     @Req() request: Request,
   ) {
     // return await this.userService.update(+id, updateUserDto);
-    await this.userService.updateUser(id, updateUserDto, request);
+    const userData = {
+      ...updateUserDto,
+      ...(file && { avatar: file })
+    };
+    await this.userService.updateUser(id, userData, request);
     return { message: 'Super! Le compte utilisateur a été modifié avec succès', status: 200 };
   }
 

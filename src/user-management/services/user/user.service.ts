@@ -39,7 +39,7 @@ export class UserService extends GenericService<User> {
    * @param createUserDto The user data to be created
    * @returns The created user
    */
-  async createUser(createUserDto: CreateUserDto, profilePicture: Express.Multer.File, @Req() request: Request) {
+  async createUser(createUserDto: CreateUserDto, @Req() request: Request) {
     // Validate if user with same username, email or phone already exists
     await this.validateUnique({
       username: createUserDto.username,
@@ -51,7 +51,7 @@ export class UserService extends GenericService<User> {
     createUserDto.password = await hash(createUserDto.password)
 
     // Create a new user instance
-    const user = this.userRepository.create(createUserDto);
+    const user = await this.userRepository.create(createUserDto);
 
     // Handle user status if provided
     const status = createUserDto.status
@@ -65,8 +65,8 @@ export class UserService extends GenericService<User> {
     }
 
     // Handle avatar
-    if (profilePicture) {
-      const avatar = await this.mediaLibraryService.iniMediaLibrary(profilePicture, 'profiles', request['user'].sub);
+    if (createUserDto.profilePicture) {
+      const avatar = await this.mediaLibraryService.iniMediaLibrary(createUserDto.profilePicture, 'profiles', request['user'].sub);
       user.avatar = avatar;
     }
 
@@ -189,53 +189,62 @@ export class UserService extends GenericService<User> {
     const user = await this.findOneByIdWithOptions(id, { relations: ['roles'] });
 
     // Destructure update fields from DTO
-    const { status, username, email, phone, password, roleId, ...remainingUpdates } = userToUpdate;
+    //const { status, username, email, phone, password, roleId, ...remainingUpdates } = userToUpdate;
 
     // Update user status if provided
-    if (status || status !== undefined) {
-      await this.updateStatusByUser(user, status)
+    if (userToUpdate.status || userToUpdate.status !== undefined) {
+      await this.updateStatusByUser(user, userToUpdate.status)
     }
 
     // Update username if provided
-    if (username != null) {
+    if (userToUpdate.username || userToUpdate.username !== undefined) {
       await this.updateUsernameByUser(user, userToUpdate);
     }
 
     // Update email if provided
-    if (email != null) {
-      await this.updateEmailByUser(user, email);
+    if (userToUpdate.email || userToUpdate.email !== undefined) {
+      await this.updateEmailByUser(user, userToUpdate.email);
     }
 
     // Update phone if provided 
-    if (phone != null) {
-      await this.updatePhoneByUser(user, phone);
+    if (userToUpdate.phone || userToUpdate.phone !== undefined) {
+      await this.updatePhoneByUser(user, userToUpdate.phone);
     }
 
     // Update password if provided
-    if (password != null) {
-      await this.updatePasswordByUser(user, password);
+    if (userToUpdate.password || userToUpdate.password !== undefined) {
+      await this.updatePasswordByUser(user, userToUpdate.password);
     }
 
     // Update role if provided
-    if (roleId != null) {
-      await this.updateRoleByUser(user, roleId);
+    if (userToUpdate.roleId || userToUpdate.roleId !== undefined) {
+      await this.updateRoleByUser(user, userToUpdate.roleId);
     }
 
     try {
       // Handle update avatar
       if (userToUpdate.avatar && !userToUpdate.setAvatarAsNull) {
         if (user.avatar) {
+          console.log(`Deleting existing avatar with ID: ${user.avatar.id}`);
           await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
         }
+        console.log(userToUpdate.avatar);
         user.avatar = await this.mediaLibraryService.iniMediaLibrary(userToUpdate.avatar, 'profiles', request['user'].sub);
+        console.log(user.avatar);
+        console.log(`New avatar set for user with ID: ${user.id}`);
       }
 
       if (userToUpdate.setAvatarAsNull && userToUpdate.setAvatarAsNull) {
-        if (user.avatar) await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
+        if (user.avatar) {
+          console.log(`Deleting existing avatar with ID: ${user.avatar.id}`);
+          await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
+        }
         user.avatar = null;
+        console.log(`Avatar set to null for user with ID: ${user.id}`);
       }
 
-      const updatedUser = Object.assign(user, remainingUpdates);
+      const updatedUser = Object.assign(user, userToUpdate);
+      console.log(updatedUser);
       const savedUser = await queryRunner.manager.save(User,updatedUser);
       await queryRunner.commitTransaction();
       return savedUser;
