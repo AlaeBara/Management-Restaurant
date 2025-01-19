@@ -73,8 +73,12 @@ export class ExpenseTypeController {
     @Permissions('create-expense-type')
     @ApiOperation({ summary: 'Create a expense type' })
     async create(@Body() createExpenseTypeDto: CreateExpenseTypeDto) {
-        await this.expenseTypeService.createExpenseType(createExpenseTypeDto);
-        return { message: 'Super! Votre type de dépense a été créée avec succès', status: 201 };
+        const expenseType = await this.expenseTypeService.createExpenseType(createExpenseTypeDto);
+        return {
+            message: 'Super! Votre type de dépense a été créée avec succès',
+            id: expenseType.id, 
+            status: 201
+        };
     }
 
     @Put(':id')
