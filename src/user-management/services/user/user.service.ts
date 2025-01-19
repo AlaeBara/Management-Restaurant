@@ -186,10 +186,7 @@ export class UserService extends GenericService<User> {
       throw new BadRequestException('Aucun champ à mettre à jour');
     }
     // Find user by ID with roles relation
-    const user = await this.findOneByIdWithOptions(id, { relations: ['roles'] });
-
-    // Destructure update fields from DTO
-    //const { status, username, email, phone, password, roleId, ...remainingUpdates } = userToUpdate;
+    const user = await this.findOneByIdWithOptions(id, { relations: ['roles', 'avatar'] });
 
     // Update user status if provided
     if (userToUpdate.status || userToUpdate.status !== undefined) {
@@ -225,28 +222,31 @@ export class UserService extends GenericService<User> {
       // Handle update avatar
       if (userToUpdate.avatar && !userToUpdate.setAvatarAsNull) {
         if (user.avatar) {
-          console.log(`Deleting existing avatar with ID: ${user.avatar.id}`);
           await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
         }
-        console.log(userToUpdate.avatar);
-        user.avatar = await this.mediaLibraryService.iniMediaLibrary(userToUpdate.avatar, 'profiles', request['user'].sub);
-        console.log(user.avatar);
-        console.log(`New avatar set for user with ID: ${user.id}`);
-      }
 
-      if (userToUpdate.setAvatarAsNull && userToUpdate.setAvatarAsNull) {
+        const newAvatar = await this.mediaLibraryService.iniMediaLibrary(
+          userToUpdate.avatar,
+          'profiles',
+          request['user'].sub
+        );
+
+        user.avatar = newAvatar; 
+      }
+      
+      if (userToUpdate.setAvatarAsNull) {
         if (user.avatar) {
-          console.log(`Deleting existing avatar with ID: ${user.avatar.id}`);
           await this.mediaLibraryService.deleteMediaLibrary(user.avatar.id, queryRunner);
         }
         user.avatar = null;
-        console.log(`Avatar set to null for user with ID: ${user.id}`);
       }
 
-      const updatedUser = Object.assign(user, userToUpdate);
-      console.log(updatedUser);
-      const savedUser = await queryRunner.manager.save(User,updatedUser);
+      const { avatar, setAvatarAsNull, ...updateFields } = userToUpdate;
+      const updatedUser = Object.assign(user, updateFields);
+      
+      const savedUser = await queryRunner.manager.save(User, updatedUser);
       await queryRunner.commitTransaction();
+
       return savedUser;
 
     } catch (error) {
