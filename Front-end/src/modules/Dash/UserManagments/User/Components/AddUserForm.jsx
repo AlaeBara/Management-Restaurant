@@ -52,6 +52,11 @@ export default function Component() {
     setFormData((prevData) => ({ ...prevData, [name]: value }))
   }
 
+   const handleClearAvatar = () => {
+      setFormData((prevData) => ({ ...prevData, avatar: null })); // Clear the avatar from state
+      document.getElementById('avatar').value = ''; // Reset the input value
+    };
+
   const handleSubmit = async (e) => {
     e.preventDefault()
     try {
@@ -61,7 +66,6 @@ export default function Component() {
       for (const [key, value] of Object.entries(formData)) {
         if (value !== null && value !== "") {
           preparedData.append(key, value);
-          console.log(key," - ",value)
         }
       }
       setIsLoading(true);
@@ -192,7 +196,7 @@ export default function Component() {
                     name="username"
                     value={formData.username}
                     onChange={handleChange}
-                    placeholder="Exemple: ahmed elmansouri"
+                    placeholder="Exemple: ahmed11435"
                   />
                   {errors.username && (
                     <p className="text-xs text-red-500 mt-1">{errors.username}</p>
@@ -338,7 +342,7 @@ export default function Component() {
               </div>
 
               <div className="space-y-2">
-                <Label htmlFor="avatar">Avatar</Label>
+                <Label htmlFor="avatar">Employee Profile</Label>
                 <div className="flex items-center justify-center w-full">
                   <label
                     htmlFor="avatar"
@@ -376,7 +380,7 @@ export default function Component() {
                         />
                         <button
                           type="button"
-                          onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))}
+                          onClick={handleClearAvatar}
                           className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                         >
                           <X className="h-4 w-4" /> 
@@ -387,7 +391,7 @@ export default function Component() {
                         <span className="text-sm text-gray-700">{formData.avatar.name}</span>
                         <button
                           type="button"
-                          onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))}
+                          onClick={handleClearAvatar}
                           className="bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                         >
                           <X className="h-4 w-4" /> 

@@ -21,8 +21,6 @@ export default function UpdateUser() {
     const navigate = useNavigate();
     const { id } = useParams();
 
-    
-
     const { roles, fetchRoles } = useRoles();
 
     useEffect(() => {
@@ -35,6 +33,10 @@ export default function UpdateUser() {
 
     const handleChange = ({ target: { name, value } }) => {
         setFormData((prevData) => ({ ...prevData, [name]: value }));
+    };
+    const handleClearAvatar = () => {
+        setFormData((prevData) => ({ ...prevData, avatar: null })); // Clear the avatar from state
+        document.getElementById('avatar').value = ''; // Reset the input value
     };
 
 
@@ -107,7 +109,7 @@ export default function UpdateUser() {
                                         name="username"
                                         value={formData.username}
                                         onChange={handleChange}
-                                        placeholder="Exemple: ahmed elmansouri"
+                                        placeholder="Exemple: ahmed11435"
                                     />
                                     {errors.username && <p className="text-xs text-red-500 mt-1">{errors.username}</p>}
                                 </div>
@@ -248,7 +250,7 @@ export default function UpdateUser() {
                             </div>
 
                             <div className="space-y-2">
-                                <Label htmlFor="avatar">Avatar</Label>
+                                <Label htmlFor="avatar">Employee Profile</Label>
                                 <div className="flex items-center justify-center w-full">
                                     <label
                                         htmlFor="avatar"
@@ -267,7 +269,7 @@ export default function UpdateUser() {
                                         onChange={(e) => {
                                             const file = e.target.files[0];
                                             if (file) {
-                                                setFormData((prevData) => ({ ...prevData, avatar: file })); // Update with the new file
+                                                setFormData((prevData) => ({ ...prevData, avatar: file })); 
                                             }
                                         }}
                                     />
@@ -286,7 +288,7 @@ export default function UpdateUser() {
                                             />
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))} // Clear the avatar
+                                                onClick={() => {setFormData((prevData) => ({ ...prevData, avatar: null })) ,   document.getElementById('avatar').value = '';}} // Clear the avatar
                                                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                                             >
                                                 <X className="h-4 w-4" />
@@ -301,7 +303,7 @@ export default function UpdateUser() {
                                             />
                                             <button
                                                 type="button"
-                                                onClick={() => setFormData((prevData) => ({ ...prevData, avatar: null }))} 
+                                                onClick={handleClearAvatar} 
                                                 className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
                                             >
                                                 <X className="h-4 w-4" />
