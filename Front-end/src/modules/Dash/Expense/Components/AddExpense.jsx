@@ -11,8 +11,9 @@ import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import {useFetchFunds} from '../../Fund/hooks/useFetchFunds'
+import {useFetchTypeDepense} from '../hooks/useFetchTypeDepense'
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {Loader} from 'lucide-react'
+import {Loader , Plus} from 'lucide-react'
 
 
 
@@ -44,6 +45,10 @@ const operationSchema = z.object({
         .nullable()
         .optional(),
 
+    expenseTypeId : z
+        .string()
+        .nonempty({ message: "Le type est obligatoire." }),
+
 });
 
 
@@ -51,13 +56,42 @@ export default function Component() {
 
     const navigate = useNavigate();
     const { funds, totalFunds, loading, error, fetchFunds } = useFetchFunds()
-
+    const {Types, totalTypes, fetchTypeDepense} = useFetchTypeDepense()
     
     const [alert, setAlert] = useState({ message: null, type: null });
+
+    const [isModalOpen, setIsModalOpen] = useState(false);
+
+    const [newExpenseTypeName, setNewExpenseTypeName] = useState('');
+    const [newExpenseTypeError, setNewExpenseTypeError] = useState('');
+    
+    const handleAddExpenseType = async () => {
+        if (!newExpenseTypeName) {
+            setNewExpenseTypeError('Le nom du type de dépense est obligatoire.');
+            return;
+        }
+        setNewExpenseTypeError('');
+
+        try {
+            const token = Cookies.get('access_token');
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/expense-types`, { name: newExpenseTypeName }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            fetchTypeDepense({fetchAll:true});
+            setNewExpenseTypeName('');
+            setIsModalOpen(false);
+            // toast.success(response.data.message || 'Type de dépense ajouté avec succès!');
+        } catch (error) {
+            console.error('Error adding expense type:', error.response?.data?.message || error.message);
+            const serverErrorMessage = error.response?.data?.message || 'Erreur lors de l\'ajout du type de dépense';
+            toast.error(serverErrorMessage); 
+        }
+    };
    
 
     useEffect(() => {
         fetchFunds ({fetchAll:true});
+        fetchTypeDepense({fetchAll:true});
     }, [fetchFunds]);
 
     
@@ -74,6 +108,7 @@ export default function Component() {
         reference : null,
         dateOperation:'',
         status:null,
+        expenseTypeId: '',
     });
 
     
@@ -106,9 +141,10 @@ export default function Component() {
                 amount: null,
                 fundId: '',
                 note:null,
-                reference: null,
+                reference : null,
                 dateOperation:'',
                 status:null,
+                expenseTypeId: '',
             });
             setErrors({});
             setAlert({
@@ -281,10 +317,44 @@ export default function Component() {
                                 <p className="text-xs text-red-500 mt-1">{errors.dateOperation}</p>
                             )}
                         </div>
+
+
+                        <div className="space-y-2">
+                            <Label htmlFor="expenseTypeId">Type de dépense <span className='text-red-500 text-base'>*</span></Label>
+                            <div className="flex items-center gap-2">
+                                <Select
+                                    id="expenseTypeId"
+                                    name="expenseTypeId"
+                                    value={formData.expenseTypeId || ""}
+                                    onValueChange={(value) => handleChange({ target: { name: 'expenseTypeId', value } })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionnez un type de dépense" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-48 overflow-y-auto">
+                                        {Types.length > 0 ? (
+                                            Types.map((et) => (
+                                                <SelectItem key={et.id} value={et.id}>
+                                                    {et.name}
+                                                </SelectItem>
+                                            ))
+                                        ) : (
+                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                <Button
+                                    type="button"
+                                    onClick={() => setIsModalOpen(true)}
+                                >
+                                    <Plus/>
+                                </Button>
+                            </div>
+                            {errors.expenseTypeId && (
+                                <p className="text-xs text-red-500 mt-1">{errors.expenseTypeId}</p>
+                            )}
+                        </div>
                       
-
-
-
                         <div className="space-y-2">
                             <Label htmlFor="note">Notes</Label>
                             <textarea
@@ -300,9 +370,7 @@ export default function Component() {
                             <p className="text-xs text-red-500 mt-1">{errors.note}</p>
                             )}
                         </div>
-                        
-                       
-
+                    
                         <div className="flex gap-4">
                             <Button type="button" onClick={() => navigate(`/dash/dépenses`)} className="w-full bg-[#f1f1f1] text-[#333] hover:bg-[#f1f1f1]">
                                 Annuler
@@ -322,6 +390,58 @@ export default function Component() {
                 </CardContent>
             </Card>
         </div>
+
+
+        {isModalOpen && (
+            <div 
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                role="dialog"
+                aria-modal="true"
+            >
+                <div 
+                    className="fixed inset-0 bg-black/50 transition-opacity"
+                    onClick={() => setIsModalOpen(false)}
+                />
+                
+                <div 
+                    className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="mb-4">
+                        <h2 className="text-lg font-bold mb-4">Ajouter un nouveau type de dépense</h2>
+                    </div>
+
+                    <form onSubmit={(e) => e.preventDefault()} className='space-y-4'>
+                        <div className="bg-white  rounded-lg space-y-2">
+                            <Label>Nom du Type <span className='text-red-500 text-base'>*</span></Label>
+                            <Input
+                                type="text"
+                                value={newExpenseTypeName}
+                                onChange={(e) => {
+                                    setNewExpenseTypeName(e.target.value);
+                                    setNewExpenseTypeError('');
+                                }}
+                                placeholder="Entrez le nom du type de dépense"
+                                className="mb-4"
+                            />
+                            {newExpenseTypeError && (
+                                <p className="text-xs text-red-500 mb-2">{newExpenseTypeError}</p>
+                            )}
+                        </div>
+
+                        <div className="flex justify-end gap-4">
+                            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                                Annuler
+                            </Button>
+                            <Button type="button" onClick={handleAddExpenseType}>
+                                Ajouter
+                            </Button>
+                        </div>
+
+                    </form>
+                </div>
+            </div>
+        )}
     </>
   );
 }
