@@ -10,11 +10,15 @@ import { FundOperationController } from './controllers/fund-operation.controller
 import { OperationsPermissionSeeder } from './seeders/operation.seeder';
 import { FundPermissionSeeder } from './seeders/fund.seeder';
 import { UserManagementModule } from 'src/user-management/user-management.module';
+import { ExpenseType } from './entities/expense-type.entity';
+import { ExpenseTypeService } from './services/expense-type.service';
+import { ExpenseTypeController } from './controllers/expense-type.controller';
 
 @Module({
-    imports: [TypeOrmModule.forFeature([Fund, FundOperationEntity]), forwardRef(() => UserManagementModule)],
-    controllers: [FundController, FundOperationController],
-    providers: [FundService, FundOperationService, OperationsPermissionSeeder, FundPermissionSeeder],
-    exports: [FundService, FundOperationService, OperationsPermissionSeeder, FundPermissionSeeder],
+    imports: [TypeOrmModule.forFeature([Fund, FundOperationEntity, ExpenseType]), forwardRef(() => UserManagementModule)],
+    controllers: [FundController, FundOperationController, ExpenseTypeController],
+    providers: [FundService, FundOperationService, ExpenseTypeService, OperationsPermissionSeeder, FundPermissionSeeder],
+    exports: [FundService, FundOperationService, ExpenseTypeService, OperationsPermissionSeeder, FundPermissionSeeder],
 })
 export class FundModule { }
+

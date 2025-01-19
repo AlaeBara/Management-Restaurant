@@ -14,6 +14,11 @@ export class CreateExpenseDto {
     @IsUUID()
     fundId: string;
 
+    @ApiProperty({ description: 'The expense type id of the operation', required: false, example: '123e4567-e89b-12d3-a456-426614174000' })
+    @IsNotEmpty()
+    @IsUUID()
+    expenseTypeId: string;
+
     @ApiProperty({ description: 'The note of the operation', required: false, example: 'Note de l\'operation' })
     @IsOptional()
     note: string;

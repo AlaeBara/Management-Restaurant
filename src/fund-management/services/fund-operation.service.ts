@@ -10,6 +10,7 @@ import { Fund } from "../entities/fund.entity";
 import { CreateExpenseDto } from "../dtos/fund-operation/create-expense.dto";
 import { CreateTransferOperationDto } from "../dtos/fund-operation/create-transfer-operation.dto";
 import { UserService } from "src/user-management/services/user/user.service";
+import { ExpenseTypeService } from "./expense-type.service";
 
 @Injectable()
 export class FundOperationService extends GenericService<FundOperationEntity> {
@@ -22,6 +23,8 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         private readonly fundService: FundService,
         @Inject(UserService)
         private readonly userService: UserService,
+        @Inject(ExpenseTypeService)
+        private readonly expenseTypeService: ExpenseTypeService,
     ) {
         super(dataSource, FundOperationEntity, 'fund_operations');
     }
@@ -136,6 +139,11 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
 
         if(operationData instanceof CreateExpenseDto){
             operationAction = getOperationAction(operationType);
+            if(!operationData.expenseTypeId){
+                throw new BadRequestException('Le type de dépense est requis');
+            }
+            const expenseType = await this.getExpenseType(operationData.expenseTypeId);
+            fundOperation.expenseType = expenseType;
         }
         
         fundOperation.operationAction = operationAction;
@@ -176,5 +184,10 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
         await this.adjustFundBalance(operation.fund, operation.amount, 'decrease');
         await this.adjustFundBalance(operation.transferToFund, operation.amount, 'increase');
         await this.AssignUserOperation(req['user'].sub, operation, 'approvedBy');
+    }
+
+    async getExpenseType(expenseTypeId: string) {
+        const expenseType = await this.expenseTypeService.findOneByIdWithOptions(expenseTypeId);
+        return expenseType;
     }
 }

@@ -3,6 +3,7 @@ import { BaseEntity } from 'src/common/entities/base.entity';
 import { FundOperation, FundOperationStatus, getOperationAction } from '../enums/fund-operation.enum';
 import { Fund } from './fund.entity';
 import { User } from 'src/user-management/entities/user.entity';
+import { ExpenseType } from './expense-type.entity';
 
 @Entity(process.env.DATASET_PREFIX + 'fund_operations')
 export class FundOperationEntity extends BaseEntity {
@@ -12,6 +13,10 @@ export class FundOperationEntity extends BaseEntity {
 
     @Column()
     operationAction: string;
+
+    @ManyToOne(() => ExpenseType, { eager: true , nullable: true })
+    @JoinColumn()
+    expenseType: ExpenseType;
 
     @Column({ default: 0, type: "decimal", precision: 10, scale: 2 })
     amount: number;
