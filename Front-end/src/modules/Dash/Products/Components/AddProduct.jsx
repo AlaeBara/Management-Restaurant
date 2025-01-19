@@ -124,7 +124,7 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Produit</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Ajouter un nouveau Produit en Stock</h1>
             <p className="text-base text-gray-600">
                 Remplissez les informations ci-dessous pour ajouter un nouveau Produit au système.
             </p>
@@ -154,7 +154,7 @@ export default function Component() {
                                 name="productSKU"
                                 value={formData.productSKU}
                                 onChange={handleChange}
-                                placeholder="SKU du produit"
+                                placeholder="Exemple: DIND-001"
                             />
                             {errors.productSKU && (
                             <p className="text-xs text-red-500 mt-1">{errors.productSKU}</p>
@@ -167,7 +167,7 @@ export default function Component() {
                                 name="productName"
                                 value={formData.productName}
                                 onChange={handleChange}
-                                placeholder="Nom du produit"
+                                placeholder="Exemple: Dinde"
                             />
                             {errors.productName && (
                             <p className="text-xs text-red-500 mt-1">{errors.productName}</p>

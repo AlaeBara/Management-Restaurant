@@ -86,7 +86,7 @@ export default function Component() {
                                 name="productSKU"
                                 value={formData.productSKU}
                                 onChange={handleChange}
-                                placeholder="SKU du produit"
+                                placeholder="Exemple: DIND-001"
                             />
                             {errors.productSKU && (
                             <p className="text-xs text-red-500 mt-1">{errors.productSKU}</p>
@@ -99,7 +99,7 @@ export default function Component() {
                                 name="productName"
                                 value={formData.productName}
                                 onChange={handleChange}
-                                placeholder="Nom du produit"
+                                placeholder="Exemple: Dinde"
                             />
                             {errors.productName && (
                             <p className="text-xs text-red-500 mt-1">{errors.productName}</p>
