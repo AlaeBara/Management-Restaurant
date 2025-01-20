@@ -176,7 +176,59 @@ export default function Component() {
         }
     };
 
+    const [selectedExpenseType, setSelectedExpenseType] = useState({ id: null, name: '' });
+
+    const handleUpdateExpenseType = async () => {
+        if (!selectedExpenseType.name) {
+            setNewExpenseTypeError('Le nom du type de dépense est obligatoire.');
+            return;
+        }
+        setNewExpenseTypeError('');
+        try {
+            const token = Cookies.get('access_token');
+            await axios.put(
+                `${import.meta.env.VITE_BACKEND_URL}/api/expense-types/${selectedExpenseType.id}`,
+                { name: selectedExpenseType.name },
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            fetchTypeDepense({ fetchAll: true });
+            setIsModalOpen(false);
+            setSelectedExpenseType({ id: null, name: '' });
+            toast.success('Type de dépense modifié avec succès!');
+        } catch (error) {
+            console.error('Error updating expense type:', error.response?.data?.message || error.message);
+            const serverErrorMessage = error.response?.data?.message || 'Erreur lors de la modification du type de dépense';
+            toast.error(serverErrorMessage);
+        }
+    };
+
+    const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+    const [expenseTypeToDelete, setExpenseTypeToDelete] = useState(null);
+    const handleDeleteExpenseType = async () => {
+        if (!expenseTypeToDelete) return;
     
+        try {
+            const token = Cookies.get('access_token');
+            await axios.delete(
+                `${import.meta.env.VITE_BACKEND_URL}/api/expense-types/${expenseTypeToDelete.id}`,
+                { headers: { Authorization: `Bearer ${token}` } }
+            );
+            fetchTypeDepense({ fetchAll: true });
+            setFormData((prevFormData) => ({
+                ...prevFormData,
+                expenseTypeId: '', 
+            }));
+            setIsDeleteModalOpen(false);
+            setExpenseTypeToDelete(null);
+            toast.success('Type de dépense supprimé avec succès!');
+        } catch (error) {
+            console.error('Error deleting expense type:', error.response?.data?.message || error.message);
+            const serverErrorMessage = error.response?.data?.message || 'Erreur lors de la suppression du type de dépense';
+            toast.error(serverErrorMessage);
+        }
+    };
+
+
    
   return (
     <>
@@ -334,7 +386,7 @@ export default function Component() {
                                         <SelectValue placeholder="Sélectionnez un type de dépense" />
                                     </SelectTrigger>
                                     <SelectContent className="max-h-48 overflow-y-auto">
-                                        <SelectItem value={null}>Annulé</SelectItem>
+                                        <SelectItem value={null} className="text-red-500" >Annulé</SelectItem>
                                         {Types.length > 0 ? (
                                             Types.map((et) => (
                                                 <SelectItem key={et.id} value={et.id}>
@@ -359,17 +411,29 @@ export default function Component() {
                                     <>
                                         <Button
                                             type="button"
-                                            onClick={() => setIsModalOpen(true)}
-                                            className="bg-transparent hover:bg-transparent p-2"
+                                            onClick={() => {
+                                                const selectedType = Types.find((et) => et.id === formData.expenseTypeId);
+                                                if (selectedType) {
+                                                    setExpenseTypeToDelete(selectedType); 
+                                                    setIsDeleteModalOpen(true); 
+                                                }
+                                            }}
+                                            className="bg-transparent hover:bg-transparent p-2 border border-black"
                                         >
-                                            <Trash className='text-red-500'/>
+                                            <Trash className='text-red-500' />
                                         </Button>
                                         <Button
                                             type="button"
-                                            onClick={() => setIsModalOpen(true)}
+                                            onClick={() => {
+                                                const selectedType = Types.find((et) => et.id === formData.expenseTypeId);
+                                                if (selectedType) {
+                                                    setSelectedExpenseType({ id: selectedType.id, name: selectedType.name });
+                                                    setIsModalOpen(true);
+                                                }
+                                            }}
                                             className='p-2'
                                         >
-                                            <Edit/>
+                                            <Edit />
                                         </Button>
                                     </>
                                 }
@@ -424,7 +488,10 @@ export default function Component() {
             >
                 <div 
                     className="fixed inset-0 bg-black/50 transition-opacity"
-                    onClick={() => setIsModalOpen(false)}
+                    onClick={() => {
+                        setIsModalOpen(false);
+                        setSelectedExpenseType({ id: null, name: '' }); 
+                    }}
                 />
                 
                 <div 
@@ -432,18 +499,24 @@ export default function Component() {
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="mb-4">
-                        <h2 className="text-lg font-bold mb-4">Ajouter un nouveau type de dépense</h2>
+                        <h2 className="text-lg font-bold mb-4">
+                            {selectedExpenseType.id ? "Modifier le type de dépense" : "Ajouter un nouveau type de dépense"}
+                        </h2>
                     </div>
 
                     <form onSubmit={(e) => e.preventDefault()} className='space-y-4'>
-                        <div className="bg-white  rounded-lg space-y-2">
+                        <div className="bg-white rounded-lg space-y-2">
                             <Label>Nom du Type <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 type="text"
-                                value={newExpenseTypeName}
+                                value={selectedExpenseType.id ? selectedExpenseType.name : newExpenseTypeName}
                                 onChange={(e) => {
-                                    setNewExpenseTypeName(e.target.value);
-                                    setNewExpenseTypeError('');
+                                    if (selectedExpenseType.id) {
+                                        setSelectedExpenseType({ ...selectedExpenseType, name: e.target.value });
+                                    } else {
+                                        setNewExpenseTypeName(e.target.value);
+                                        setNewExpenseTypeError('');
+                                    }
                                 }}
                                 placeholder="Entrez le nom du type de dépense"
                                 className="mb-4"
@@ -454,15 +527,51 @@ export default function Component() {
                         </div>
 
                         <div className="flex justify-end gap-4">
-                            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                            <Button type="button" variant="outline" onClick={() => {
+                                setIsModalOpen(false);
+                                setSelectedExpenseType({ id: null, name: '' });
+                            }}>
                                 Annuler
                             </Button>
-                            <Button type="button" onClick={handleAddExpenseType}>
-                                Ajouter
+                            <Button type="button" onClick={selectedExpenseType.id ? handleUpdateExpenseType : handleAddExpenseType}>
+                                {selectedExpenseType.id ? "Modifier" : "Ajouter"}
                             </Button>
                         </div>
-
                     </form>
+                </div>
+            </div>
+        )}
+
+        {isDeleteModalOpen && (
+            <div 
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                role="dialog"
+                aria-modal="true"
+            >
+                <div 
+                    className="fixed inset-0 bg-black/50 transition-opacity"
+                    onClick={() => setIsDeleteModalOpen(false)}
+                />
+                
+                <div 
+                    className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="mb-4">
+                        <h2 className="text-lg font-bold mb-4">Confirmer la suppression</h2>
+                        <p className="text-ms text-gray-600">
+                            Êtes-vous sûr de vouloir supprimer le type de dépense "{expenseTypeToDelete?.name}" ?
+                        </p>
+                    </div>
+
+                    <div className="flex justify-end gap-4">
+                        <Button type="button" variant="outline" onClick={() => setIsDeleteModalOpen(false)}>
+                            Annuler
+                        </Button>
+                        <Button type="button" onClick={handleDeleteExpenseType} className="bg-red-500 hover:bg-red-600">
+                            Supprimer
+                        </Button>
+                    </div>
                 </div>
             </div>
         )}
