@@ -13,7 +13,7 @@ import { useNavigate } from 'react-router-dom';
 import {useFetchFunds} from '../../Fund/hooks/useFetchFunds'
 import {useFetchTypeDepense} from '../hooks/useFetchTypeDepense'
 import { Alert, AlertDescription } from '@/components/ui/alert';
-import {Loader , Plus} from 'lucide-react'
+import {Loader , Plus , Trash , Edit } from 'lucide-react'
 
 
 
@@ -64,30 +64,16 @@ export default function Component() {
 
     const [newExpenseTypeName, setNewExpenseTypeName] = useState('');
     const [newExpenseTypeError, setNewExpenseTypeError] = useState('');
-    
-    const handleAddExpenseType = async () => {
-        if (!newExpenseTypeName) {
-            setNewExpenseTypeError('Le nom du type de dépense est obligatoire.');
-            return;
-        }
-        setNewExpenseTypeError('');
 
-        try {
-            const token = Cookies.get('access_token');
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/expense-types`, { name: newExpenseTypeName }, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-            fetchTypeDepense({fetchAll:true});
-            setNewExpenseTypeName('');
-            setIsModalOpen(false);
-            // toast.success(response.data.message || 'Type de dépense ajouté avec succès!');
-        } catch (error) {
-            console.error('Error adding expense type:', error.response?.data?.message || error.message);
-            const serverErrorMessage = error.response?.data?.message || 'Erreur lors de l\'ajout du type de dépense';
-            toast.error(serverErrorMessage); 
-        }
-    };
-   
+    const [formData, setFormData] = useState({
+        amount: null,
+        fundId: '',
+        note:null,
+        reference : null,
+        dateOperation:'',
+        status:null,
+        expenseTypeId: '',
+    });
 
     useEffect(() => {
         fetchFunds ({fetchAll:true});
@@ -100,18 +86,7 @@ export default function Component() {
         { value: 'approved', label: 'Approuvé' },
     ];
       
-    
-    const [formData, setFormData] = useState({
-        amount: null,
-        fundId: '',
-        note:null,
-        reference : null,
-        dateOperation:'',
-        status:null,
-        expenseTypeId: '',
-    });
-
-    
+        
 
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -177,6 +152,31 @@ export default function Component() {
         }
         }
     };
+
+
+    const handleAddExpenseType = async () => {
+        if (!newExpenseTypeName) {
+            setNewExpenseTypeError('Le nom du type de dépense est obligatoire.');
+            return;
+        }
+        setNewExpenseTypeError('');
+        try {
+            const token = Cookies.get('access_token');
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/expense-types`, { name: newExpenseTypeName }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            fetchTypeDepense({fetchAll:true});
+            formData.expenseTypeId = response.data.id;
+            setNewExpenseTypeName('');
+            setIsModalOpen(false);
+        } catch (error) {
+            console.error('Error adding expense type:', error.response?.data?.message || error.message);
+            const serverErrorMessage = error.response?.data?.message || 'Erreur lors de l\'ajout du type de dépense';
+            toast.error(serverErrorMessage); 
+        }
+    };
+
+    
    
   return (
     <>
@@ -192,7 +192,7 @@ export default function Component() {
         <div className="container p-0 max-w-2xl">
             <Card className="w-full border-none shadow-none">
 
-                <CardContent className="pt-6">
+                <CardContent className="pt-6 p-3 sm:p-6">
 
                     {alert?.message && (
                         <Alert
@@ -321,17 +321,20 @@ export default function Component() {
 
                         <div className="space-y-2">
                             <Label htmlFor="expenseTypeId">Type de dépense <span className='text-red-500 text-base'>*</span></Label>
-                            <div className="flex items-center gap-2">
+                            <div className="flex items-center gap-1">
                                 <Select
+                                    key={formData.expenseTypeId || "default"}
                                     id="expenseTypeId"
                                     name="expenseTypeId"
                                     value={formData.expenseTypeId || ""}
-                                    onValueChange={(value) => handleChange({ target: { name: 'expenseTypeId', value } })}
+                                    onValueChange={(value) => handleChange({ target: { name: 'expenseTypeId', value : value || '' } })}
+                                   defaultValue="annule"
                                 >
                                     <SelectTrigger>
                                         <SelectValue placeholder="Sélectionnez un type de dépense" />
                                     </SelectTrigger>
                                     <SelectContent className="max-h-48 overflow-y-auto">
+                                        <SelectItem value={null}>Annulé</SelectItem>
                                         {Types.length > 0 ? (
                                             Types.map((et) => (
                                                 <SelectItem key={et.id} value={et.id}>
@@ -343,12 +346,33 @@ export default function Component() {
                                         )}
                                     </SelectContent>
                                 </Select>
-                                <Button
-                                    type="button"
-                                    onClick={() => setIsModalOpen(true)}
-                                >
-                                    <Plus/>
-                                </Button>
+                                {!formData.expenseTypeId && 
+                                    <Button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(true)}
+                                    >
+                                        <Plus/>
+                                    </Button>
+                                }
+
+                                {formData.expenseTypeId && 
+                                    <>
+                                        <Button
+                                            type="button"
+                                            onClick={() => setIsModalOpen(true)}
+                                            className="bg-transparent hover:bg-transparent p-2"
+                                        >
+                                            <Trash className='text-red-500'/>
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            onClick={() => setIsModalOpen(true)}
+                                            className='p-2'
+                                        >
+                                            <Edit/>
+                                        </Button>
+                                    </>
+                                }
                             </div>
                             {errors.expenseTypeId && (
                                 <p className="text-xs text-red-500 mt-1">{errors.expenseTypeId}</p>
