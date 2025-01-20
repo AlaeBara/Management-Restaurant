@@ -56,13 +56,13 @@ export class MenuItemService extends GenericService<MenuItem> {
         return queryRunner;
     }
 
-    async createMenuItem(createMenuItemDto: CreateMenuItemDto) {
+    async createMenuItem(createMenuItemDto: CreateMenuItemDto, req: Request) {
         const queryRunner = await this.inizializeQueryRunner();
     
         try {
             await this.validateMenuItemData(createMenuItemDto);
 
-            const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner);
+            const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
             
             await queryRunner.commitTransaction();
@@ -84,7 +84,7 @@ export class MenuItemService extends GenericService<MenuItem> {
         }
     }
     
-    private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+    private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
         const menuItem = this.menuItemRepository.create({
             ...dto,
@@ -108,6 +108,8 @@ export class MenuItemService extends GenericService<MenuItem> {
             const tag = await this.TagService.findOneByIdWithOptions(tagId);
             menuItem.tags.push(tag);
         }));
+
+        await this.createImages(menuItem, dto, queryRunner, req);
     
         return await queryRunner.manager.save(MenuItem, menuItem);
     }

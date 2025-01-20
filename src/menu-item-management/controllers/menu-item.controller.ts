@@ -65,7 +65,7 @@ export class MenuItemController {
     @UseInterceptors(FilesInterceptor('images', 10))
     async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFiles() images: Array<Express.Multer.File>,@Req() req: Request) {
         createMenuItemDto.images = images;
-        await this.menuItemService.createMenuItem(createMenuItemDto); 
+        await this.menuItemService.createMenuItem(createMenuItemDto, req); 
         return { message: 'Super! Vot produit de menu a été créé avec succès', status: 201 };
     }
 
