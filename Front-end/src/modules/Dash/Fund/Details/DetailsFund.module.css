@@ -101,6 +101,13 @@
     }
     
 }
+@media (max-width: 513px) {
+    .ProduitInfo {
+        margin-top: 40px;
+    }
+    
+}
+
 
 
 

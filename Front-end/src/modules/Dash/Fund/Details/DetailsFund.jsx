@@ -13,6 +13,9 @@ import TableauOperation from './Components/TableauOpertion'
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
 import {useConfirmOperation} from './hooks/useConfirmOperation'
 import {useConfirmTansferOperation} from '../../Transfert-Operations/hooks/useConfirmTransferOperation'
+import {  ToggleRight , ToggleLeft } from 'lucide-react';
+
+
 
 const FundDetails = () => {
     const navigate = useNavigate()
@@ -66,6 +69,18 @@ const FundDetails = () => {
     const {ConfirmOperation: confirmTransferOperation}=useConfirmTansferOperation(fetchOperation ,currentPage, limit)
 
 
+    const getStatusBadgeClass = (status) => {
+        switch (status) {
+          case false:
+            return 'bg-red-500 text-white';
+          case true:
+            return 'bg-green-500 text-white';
+          default:
+            return 'bg-gray-500 text-white';
+        }
+    };
+
+
     return (
         <>
             <ToastContainer position="top-right" autoClose={3000} />
@@ -89,17 +104,13 @@ const FundDetails = () => {
                 ) : (
                     <>
                         <div className={styles.ProduitDetails}>
-                            <h1>Informations de la Caisse:</h1>
+                            <h1> <span className='font-normal'>Informations de la Caisse</span> "{fund?.name}":</h1>
                             <div className={styles.ProduitCart}>
                                 {fund && (
                                     <div className={styles.ProduitInfo}>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>SKU de la caisse :</span>
                                             <p>{fund.sku}</p>
-                                        </div>
-                                        <div className={styles.infoItem}>
-                                            <span className={styles.label}>Nom de la Caisse :</span>
-                                            <h2>{fund.name}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Type de la Caisse :</span>
@@ -115,7 +126,7 @@ const FundDetails = () => {
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Actif :</span>
-                                            <h2>{fund.isActive ? 'Oui' :'Non'}</h2>
+                                            <h2 className={`px-3 rounded-full flex whitespace-nowrap items-center ${getStatusBadgeClass(fund.isActive)}`}>{fund.isActive  ? <ToggleRight className='h-5 w-5 mr-2' />: <ToggleLeft  className='h-5 w-5 mr-2'/> } {fund.isActive ? 'Oui' :'Non'}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Date de création :</span>
