@@ -1,4 +1,4 @@
-import { Type } from 'class-transformer';
+import { Transform, Type } from 'class-transformer';
 import { 
   IsString, 
   IsNumber, 
@@ -29,7 +29,8 @@ export class CreateMenuItemDto {
   menuItemSku: string;
 
   @IsNumber()
-  @Min(0)
+  //@Min(0)
+  @Transform(({ value }) => Number(value))
   @ApiProperty({
     description: 'The quantity of the menu item',
     example: '10'
@@ -38,6 +39,7 @@ export class CreateMenuItemDto {
 
   @IsNumber()
   @Min(0)
+  @Transform(({ value }) => Number(value))
   @ApiProperty({
     description: 'The warning quantity of the menu item',
     example: '10'
@@ -45,6 +47,7 @@ export class CreateMenuItemDto {
   warningQuantity: number;
 
   @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   @ApiProperty({
     description: 'The published status of the menu item',
     example: 'true'
@@ -52,6 +55,7 @@ export class CreateMenuItemDto {
   isPublished: boolean;
 
   @IsBoolean()
+  @Transform(({ value }) => value === 'true')
   @ApiProperty({
     description: 'The draft status of the menu item',
     example: 'false'
@@ -92,17 +96,9 @@ export class CreateMenuItemDto {
   })
   price: CreateMenuItemPriceDto;
 
-  @ValidateNested()
-  @Type(() => CreateMenuItemFormulaDto)
-  @IsOptional()
-  @ApiProperty({
-    description: 'The formulas of the menu item',
-    example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', warningQuantity: 10, quantityFormula: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', quantityRequiredPerPortion: 10 }]
-  })
-  formulas: CreateMenuItemFormulaDto[];
-
   @IsNumber()
   @IsOptional()
+  @Transform(({ value }) => Number(value))
   @ApiProperty({
     description: 'The portion produced of the menu item',
     example: '10'
@@ -111,11 +107,21 @@ export class CreateMenuItemDto {
 
   @IsBoolean()
   @IsOptional()
+  @Transform(({ value }) => value === 'true')
   @ApiProperty({
     description: 'The has formulas status of the menu item',
     example: 'true'
   })
   hasFormulas: boolean;
+
+  @ValidateNested()
+  @Type(() => CreateMenuItemFormulaDto)
+  @IsOptional()
+  @ApiProperty({
+    description: 'The formulas of the menu item',
+    example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', warningQuantity: 10, quantityFormula: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', quantityRequiredPerPortion: 10 }]
+  })
+  formulas: CreateMenuItemFormulaDto[];
 
   @ValidateNested()
   @IsOptional()

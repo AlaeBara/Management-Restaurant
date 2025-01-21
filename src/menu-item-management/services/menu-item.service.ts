@@ -56,36 +56,128 @@ export class MenuItemService extends GenericService<MenuItem> {
         return queryRunner;
     }
 
+    /*  async createMenuItem(createMenuItemDto: CreateMenuItemDto, req: Request) {
+         const queryRunner = await this.inizializeQueryRunner();
+     
+         try {
+             await this.validateMenuItemData(createMenuItemDto);
+ 
+             const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
+             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
+             
+             await queryRunner.commitTransaction();
+             return menuItem;
+         } catch (error) {
+             await queryRunner.rollbackTransaction();
+             throw new BadRequestException(error.message);
+         } finally {
+             await queryRunner.release();
+         }
+     } */
+
+    /*  private async validateMenuItemData(createMenuItemDto: CreateMenuItemDto) {
+         await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
+         if (createMenuItemDto.hasFormulas) {
+             if (createMenuItemDto.formulas.length === 0) {
+                 throw new BadRequestException('Vous devez ajouter au moins une formule');
+             }
+         }
+     } */
+
+    /*  private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
+         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
+         const menuItem = this.menuItemRepository.create({
+             ...dto,
+             category: category,
+             tags: [],
+             translates: [],
+             formulas: [],
+             price: null,
+             images: [],
+         });
+ 
+         if(dto.portionProduced && dto.hasFormulas){
+             // has formulas instead of portionProduced
+             menuItem.portionProduced = dto.portionProduced;
+         }else{
+             delete menuItem.portionProduced;
+         }
+     
+         // Add tags
+         await Promise.all(dto.tagIds.map(async (tagId) => {
+             const tag = await this.TagService.findOneByIdWithOptions(tagId);
+             menuItem.tags.push(tag);
+         }));
+ 
+         //await this.createImages(menuItem, dto, queryRunner, req);
+     
+         return await queryRunner.manager.save(MenuItem, menuItem);
+     } */
+
+    /* private async createImages(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
+        await Promise.all(dto.images.map(async (image) => {
+            const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub);
+            menuItem.images.push(mediaLibrary);
+        }));
+    } */
+
+    /*  private async createRelatedEntities(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+         await Promise.all([
+             dto.formulas.map(async (formula) => {
+                 if (!dto.hasFormulas) return;
+                 await this.formulaService.createFormulas(menuItem, formula, queryRunner);
+             }),
+ 
+             dto.translates.map(async (translate) => {
+                 await this.translateService.createTranslation(menuItem, translate, queryRunner);
+             }),
+ 
+             this.priceHistoryService.createPriceAndHistory(menuItem, dto.price, queryRunner)
+         ]);
+     } */
+
     async createMenuItem(createMenuItemDto: CreateMenuItemDto, req: Request) {
+        console.log('Starting createMenuItem with dto:', createMenuItemDto);
         const queryRunner = await this.inizializeQueryRunner();
-    
+
         try {
+            console.log('Validating menu item data...');
             await this.validateMenuItemData(createMenuItemDto);
 
+            console.log('Creating base menu item...');
             const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
+
+            console.log('Creating related entities...');
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
-            
+
+            console.log('Committing transaction...');
             await queryRunner.commitTransaction();
+            console.log('MenuItem created successfully:', menuItem);
             return menuItem;
         } catch (error) {
+            console.error('Error in createMenuItem:', error);
             await queryRunner.rollbackTransaction();
             throw new BadRequestException(error.message);
         } finally {
             await queryRunner.release();
         }
     }
-    
+
     private async validateMenuItemData(createMenuItemDto: CreateMenuItemDto) {
+        console.log('Validating unique SKU:', createMenuItemDto.menuItemSku);
         await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
         if (createMenuItemDto.hasFormulas) {
+            console.log('Checking formulas:', createMenuItemDto.formulas);
             if (createMenuItemDto.formulas.length === 0) {
                 throw new BadRequestException('Vous devez ajouter au moins une formule');
             }
         }
     }
-    
+
     private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
+        console.log('Finding category with ID:', dto.categoryId);
         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
+        console.log('Creating menu item with category:', category);
         const menuItem = this.menuItemRepository.create({
             ...dto,
             category: category,
@@ -96,44 +188,49 @@ export class MenuItemService extends GenericService<MenuItem> {
             images: [],
         });
 
-        if(dto.portionProduced && dto.hasFormulas){
-            // has formulas instead of portionProduced
+        if (dto.portionProduced && dto.hasFormulas) {
+            console.log('Setting portionProduced:', dto.portionProduced);
             menuItem.portionProduced = dto.portionProduced;
-        }else{
+        } else {
+            console.log('Removing portionProduced field');
             delete menuItem.portionProduced;
         }
-    
-        // Add tags
-        await Promise.all(dto.tagIds.map(async (tagId) => {
-            const tag = await this.TagService.findOneByIdWithOptions(tagId);
-            menuItem.tags.push(tag);
-        }));
 
+        console.log('Creating images...');
         await this.createImages(menuItem, dto, queryRunner, req);
-    
+
+        console.log('Saving base menu item...');
         return await queryRunner.manager.save(MenuItem, menuItem);
     }
 
     private async createImages(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
+        console.log('Processing images:', dto.images);
         await Promise.all(dto.images.map(async (image) => {
+            console.log('Creating media library for image:', image);
             const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub);
             menuItem.images.push(mediaLibrary);
         }));
     }
-    
+
     private async createRelatedEntities(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        await Promise.all([
-            dto.formulas.map(async (formula) => {
-                if (!dto.hasFormulas) return;
-                await this.formulaService.createFormulas(menuItem, formula, queryRunner);
-            }),
+        console.log('Creating related entities for menu item:', menuItem.id);
+  
 
-            dto.translates.map(async (translate) => {
+            if(dto.hasFormulas){
+                await Promise.all(dto.formulas.map(async (formula) => {
+                    if (!dto.hasFormulas) return;
+                    console.log('Creating formula:', formula);
+                    await this.formulaService.createFormulas(menuItem, formula, queryRunner);
+                }));            }
+
+            await Promise.all(dto.translates.map(async (translate) => {
+                console.log('Creating translation:', translate);
                 await this.translateService.createTranslation(menuItem, translate, queryRunner);
-            }),
+            }));
 
-            this.priceHistoryService.createPriceAndHistory(menuItem, dto.price, queryRunner)
-        ]);
+           await this.priceHistoryService.createPriceAndHistory(menuItem, dto.price, queryRunner)
+   
+        console.log('Finished creating related entities');
     }
 
     async findOneByIdOrFail(id: string) {

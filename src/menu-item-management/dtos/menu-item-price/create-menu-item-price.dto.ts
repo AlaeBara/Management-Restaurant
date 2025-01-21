@@ -3,12 +3,14 @@ import { IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
 import { BadRequestException } from "@nestjs/common";
+import { Transform } from "class-transformer";
 
 
 export class CreateMenuItemPriceDto {
 
     @IsNotEmpty()
     @IsNumber()
+    @Transform(({ value }) => Number(value))
     @ApiProperty({
         description: 'The price of the menu item',
         example: '99.99'
