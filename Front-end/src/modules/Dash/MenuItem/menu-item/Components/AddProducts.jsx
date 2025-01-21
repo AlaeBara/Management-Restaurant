@@ -556,7 +556,11 @@ export default function AchatCreationForm() {
             appendArray('tagIds', preparedData.tagIds);
 
             // Append images array
-            appendArray('images', preparedData.images);
+            if (formData.images?.length > 0) {
+                formData.images.forEach(image => {
+                    formDataObject.append('images', image);
+                });
+            }
 
 
             for (const [key, value] of formDataObject.entries()) {
