@@ -79,7 +79,7 @@ const TableauExpense = ({ data , Confirm }) => {
         <td className="p-3 text-sm">{operation?.fund?.name}</td>
         
 
-        <td className="p-3 text-sm">{operation?.expenseType.name}</td>
+        <td className="p-3 text-sm">{operation?.expenseType?.name || '-'}</td>
 
         <td className="p-3 text-sm">
             <div className="flex items-center">
@@ -157,7 +157,7 @@ const TableauExpense = ({ data , Confirm }) => {
                 <div>{operation?.fund?.name}</div>
 
                 <div className="font-semibold">Type:</div>
-                <div>{operation?.expenseType.name}</div>
+                <div>{operation?.expenseType?.name || '-'}</div>
 
                 <div className="font-semibold">Montant:</div>
                 <div>{operation.amount} Dh</div>
