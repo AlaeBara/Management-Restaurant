@@ -129,6 +129,8 @@ export default function AchatCreationForm() {
     const { product, fetchProduct} = useFetchProduct()
     const { units , fetchUnits} = useFetchUnits()
     const { discounts,  fetchDiscounts } =useFetchDiscounts()
+    const [alert, setAlert] = useState({ message: null, type: null });
+    const [fileError, setFileError] = useState("");
 
     useEffect(() => {
         fetchTags({fetchAll: true });
@@ -140,7 +142,7 @@ export default function AchatCreationForm() {
     }, [fetchTags,fetchCategorie,fetchLangage,fetchProduct,fetchUnits]);
 
 
-    const [alert, setAlert] = useState({ message: null, type: null });
+  
 
     const [formData, setFormData] = useState({
         menuItemSku: '',
@@ -196,10 +198,12 @@ export default function AchatCreationForm() {
         });
     };
 
-    const [fileError, setFileError] = useState("");
+   
 
+
+    //for images 
     const handleImageChange = (e) => {
-        const files = Array.from(e.target.files); // Convert FileList to an array
+        const files = Array.from(e.target.files);
 
         // Validate file types
         const validImageTypes = ["image/jpeg", "image/png", "image/jpg"];
@@ -207,22 +211,21 @@ export default function AchatCreationForm() {
 
         if (invalidFiles.length > 0) {
             setFileError("Seuls les fichiers image (JPEG, PNG, JPG) sont acceptés.");
-            return; // Stop further processing if invalid files are found
+            return;
         }
 
         setFileError("");
 
-        // Append valid files to the images array
         setFormData((prev) => ({
             ...prev,
-            images: [...prev.images, ...files], // Append new files to the existing images array
+            images: [...prev.images, ...files],
         }));
     };
 
     const removeImage = (index) => {
         setFormData((prev) => ({
             ...prev,
-            images: prev.images.filter((_, i) => i !== index), // Remove the image at the specified index
+            images: prev.images.filter((_, i) => i !== index),
         }));
     };
     
@@ -232,6 +235,8 @@ export default function AchatCreationForm() {
         setFormData({ ...formData, [field]: value });
     };
 
+
+    //for translates
     const handleChangee = (value, index, field) => {
         const updatedItems = [...formData.translates];
         
@@ -247,7 +252,6 @@ export default function AchatCreationForm() {
     };
 
     const handleChangee2 = (value, index, field) => {
-        // Define numeric fields
         const numericFields = ['warningQuantity', 'quantityFormula', 'portionProduced'];
     
         // Process the value based on the field type
@@ -420,9 +424,6 @@ export default function AchatCreationForm() {
                 setErrors(allErrors);
                 return;
             }
-    
-
-            
             if (formData.price.discountId === "") {
                 formData.price.discountId = null;
             }
@@ -487,7 +488,6 @@ export default function AchatCreationForm() {
             //     });
             // }
 
-
             const formDataObject = new FormData();
 
             // Helper function to append fields if they exist and have a value
@@ -536,7 +536,10 @@ export default function AchatCreationForm() {
             appendIfValid('isDraft', preparedData.isDraft);
             appendIfValid('categoryId', preparedData.categoryId);
             appendIfValid('hasFormulas', preparedData.hasFormulas);
-            appendIfValid('portionProduced', preparedData.portionProduced);
+
+            if (preparedData.hasFormulas) {
+                appendIfValid('portionProduced', preparedData.portionProduced);
+            }
 
             // Append price fields
             if (preparedData.price) {
@@ -559,10 +562,10 @@ export default function AchatCreationForm() {
             for (const [key, value] of formDataObject.entries()) {
                 console.log(key, value);
             }
-    
+
             setIsLoading(true);
             const token = Cookies.get('access_token');
-            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`,  preparedData, {
+            const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`,  formDataObject, {
                 headers: { Authorization: `Bearer ${token}` , 'Content-Type': 'multipart/form-data',},
             });
     
@@ -595,7 +598,8 @@ export default function AchatCreationForm() {
                 price: {
                     basePrice: null,
                     discountId: ''
-                }
+                },
+                images: [] 
             });
             setErrors({});
             setAlert({
@@ -833,7 +837,7 @@ export default function AchatCreationForm() {
                                             </div>
                                            
                                             {formData.images.length > 0 && (
-                                                <div className="flex flex-wrap gap-2 mt-2">
+                                                <div className="flex flex-wrap gap-2 mt-2 justify-center">
                                                     {formData.images.map((file, index) => (
                                                         <div key={index} className="relative w-24 h-24">
                                                             <img
@@ -941,7 +945,7 @@ export default function AchatCreationForm() {
                                                     className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 border p-4 rounded-lg"
                                                 >
                                                     <div className="space-y-2">
-                                                        <Label>Ingrédient</Label>
+                                                        <Label>Ingrédient <span className='text-red-500 text-base'>*</span></Label>
                                                         <Select
                                                             name="productId"
                                                             value={formulas.productId || ""}
@@ -972,7 +976,7 @@ export default function AchatCreationForm() {
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label>Quantité nécessaire</Label>
+                                                        <Label>Quantité nécessaire <span className='text-red-500 text-base'>*</span></Label>
                                                         <div className="flex gap-2">
                                                             <Input
                                                                 type="number"
@@ -1063,7 +1067,7 @@ export default function AchatCreationForm() {
 
                                         <div className='flex justify-end'>
                                             <div className="space-y-2 w-full sm:w-1/2 md:w-1/3 lg:w-1/3">
-                                                <Label>Portion produite</Label>
+                                                <Label>Portion produite <span className='text-red-500 text-base'>*</span></Label>
                                                 <Input
                                                     type="number"
                                                     name="portionProduced"
