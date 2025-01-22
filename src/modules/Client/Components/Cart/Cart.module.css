@@ -1,0 +1,258 @@
+:root {
+  --primary-color: #0C5800;
+  --primary-hover-color: #059669;
+  --secondary-color: #f3f4f6;
+  --text-color: #374151;
+  --description-color: #666;
+  --shadow-color: rgba(0, 0, 0, 0.1);
+  --shadow-color-light: rgba(0, 0, 0, 0.06);
+}
+
+.container {
+  width: 100%;
+  max-width: 1200px;
+  margin: 5vh auto;
+  margin-bottom: 100px;
+  padding: 20px;
+  border-radius: 16px;
+  transition: all 0.3s ease;
+}
+
+.title {
+  font-size: 28px;
+  font-weight: 700;
+  color: var(--primary-color);
+  margin-bottom: 30px;
+}
+
+.cartItems {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  align-items: center;
+  gap: 20px;
+  padding-bottom: 20px;
+}
+.cartItem {
+  flex: 0 0 auto;
+  width: 300px;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  background-color: var(--secondary-color);
+  border-radius: 12px;
+  transition: all 0.3s ease;
+}
+.cartItem:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 12px var(--shadow-color-light);
+}
+.itemInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.imageWrapper {
+  width: 100%;
+  height: 200px;
+  overflow: hidden;
+  border-radius: 8px;
+}
+
+.itemImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.3s ease;
+}
+
+.itemImage:hover {
+  transform: scale(1.05);
+}
+
+.itemDetails {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.itemHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+}
+
+.itemCategory {
+  font-size: 14px;
+  color: var(--description-color);
+  text-transform: uppercase;
+}
+
+.itemPrice {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--primary-color);
+}
+
+.quantityWrapper {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.quantityLabel {
+  font-size: 14px;
+  color: var(--text-color);
+}
+
+.quantityValue {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-color);
+}
+
+.quantityControl {
+  display: flex;
+  align-items: center;
+  background-color: var(--secondary-color);
+  border-radius: 9999px;
+  padding: 0.25rem;
+  gap: 1rem;
+}
+
+.quantityButton {
+  border: none;
+  border-radius: 50%;
+  width: 1rem;
+  height: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+}
+
+.actions {
+  margin-top: 15px;
+}
+
+.deleteButton {
+  width: 100%;
+  background-color: var(--primary-color);
+  color: white;
+  border: none;
+  padding: 10px 16px;
+  border-radius: 8px;
+  cursor: pointer;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 14px;
+  font-weight: 600;
+  transition: all 0.3s ease;
+}
+
+.deleteButton:hover {
+  background-color: var(--primary-hover-color);
+  transform: translateY(-2px);
+}
+
+.icon {
+  margin-right: 8px;
+}
+
+.emptyCart {
+  text-align: center;
+  padding: 40px 0;
+}
+
+.emptyCartText {
+  font-size: 18px;
+  color: var(--description-color);
+}
+
+
+
+
+.btnBox {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  position: fixed;
+  width: 100%;
+  bottom: 0;
+  padding: 20px;
+  gap: 140px;
+  z-index: 10;
+  background-color: rgb(255, 255, 255);
+  box-shadow: 0 -6px 20px rgba(0, 0, 0, 0.05); 
+}
+
+
+.btn_next {
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-color: var(--primary-color);
+  transition: background-color 0.3s ease;
+}
+
+.btn_back{
+  display: flex;
+  padding: 10px 20px;
+  font-size: 1rem;
+  font-weight: bold;
+  color: #2c3e50;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  gap: 10px;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .container {
+    padding: 16px;
+  }
+
+  .title {
+    font-size: 24px;
+  }
+
+  .cartItem {
+    width: 250px;
+  }
+
+  .imageWrapper {
+    height: 150px;
+  }
+
+  .btnBox{
+    gap: 100px;
+  }
+}
+
+
+/* RTL Support */
+.container[dir="rtl"] {
+  text-align: right;
+}
+
+.container[dir="rtl"] .cartItems {
+  direction: rtl;
+}
+
+.container[dir="rtl"] .icon {
+  margin-right: 0;
+  margin-left: 8px;
+}
+
+.container[dir="rtl"] .btn_back svg {
+  margin-right: 0;
+  margin-left: 8px;
+}

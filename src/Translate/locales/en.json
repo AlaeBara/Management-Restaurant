@@ -1,0 +1,49 @@
+{
+    "choose_option": "Choose an Option",
+    "create_account": "Create Account",
+    "continue_as_guest": "Continue as Guest",
+    "Previous": "Previous"   ,
+    "Next":"Next",
+    
+    "select_menu_type": "Select Menu Type", 
+    "full_menu": "Full Menu",
+    "guided_menu": "Guided Menu",
+
+    "title": "Food Menu",
+    "description": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.",
+    "categories": {
+      "all": "All",
+      "breakfast": "Breakfast",
+      "lunch": "Lunch",
+      "dinner": "Dinner",
+      "desserts": "Desserts",
+      "beverage": "Beverage"
+    },
+    "items": {
+      "1": "Hamburger Street Food Seafood Fast Food",
+      "2": "Ham Fast Food Sausage European Cuisine",
+      "3": "Hyderabadi Biryani Indian Cuisine Dish Chicken Meat",
+      "4": "Grilled Steak Meal, Beefsteak Teppanyaki Taobao Frying Pan",
+      "5": "European Cuisine Ketogenic Diet Dos And Donts For Beginners",
+      "6": "Fried Chicken, Biryani, Fried Rice, Vegetarian Cuisine, Pilaf"
+    },
+    "addToCart": "Add to Cart",
+    "quantity": "Quantity",
+    "Starters Menu": "Starters Menu",
+    "Main Menu": "Main Menu",
+    "Dessert Menu": "Dessert Menu",
+
+    "Your Food Cart":"Your Food Cart",
+    "Quantity": "Quantity",
+    "Total": "Total",
+    "Delete": "Delete",
+    "Your cart is empty": "Your cart is empty",
+
+    "Order Summary":"Order Summary",
+
+    "Qty":"Qty",
+    "Item":"Item",
+    "Amount":"Amount",
+
+    "Place Order": "Order Now"
+}
