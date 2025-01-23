@@ -1,7 +1,8 @@
-import React, { useState } from 'react';
-import {Plus, Minus, ShoppingCart,ArrowLeft } from 'lucide-react';
+import React, { useState, useEffect, useRef } from 'react';
+import { Plus, Minus, ShoppingCart, ArrowLeft } from 'lucide-react';
 import styles from './FullMenu.module.css';
 import { useTranslation } from 'react-i18next';
+import {useFetchTags} from '../../../../../Hooks/Tags/useFetchTags'
 
 const menuItems = [
   { id: 1, price: 8.53, image: "https://images.deliveryhero.io/image/fd-th/LH/jb7y-listing.jpg", category: "Lunch" },
@@ -12,12 +13,42 @@ const menuItems = [
   { id: 6, price: 8.53, image: "https://www.quichentell.com/wp-content/uploads/2020/12/Fish-Pulao-3.1.jpg", category: "Dinner" }
 ];
 
-const categories = ["All", "Breakfast", "Lunch", "Dinner", "Desserts", "Beverage"];
 
-const Menu = ({previousStep, nextStep}) => {
+const Menu = ({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
+
+  const { tags, totalTags, Isloading, message, fetchTags } = useFetchTags();
+  useEffect(() => {
+    fetchTags({ fetchAll: true });
+  }, [fetchTags]);
+
+
+
   const [selectedCategory, setSelectedCategory] = useState("All");
   const [quantities, setQuantities] = useState({});
+  const categoriesRef = useRef(null);
+
+  useEffect(() => {
+    const categoriesContainer = categoriesRef.current;
+
+    const handleWheel = (event) => {
+      if (event.deltaY !== 0) {
+        event.preventDefault();
+        categoriesContainer.scrollBy({
+          left: event.deltaY < 0 ? -250 : 250, 
+          behavior: 'smooth',
+        });
+      }
+    };
+    if (categoriesContainer) {
+      categoriesContainer.addEventListener('wheel', handleWheel, { passive: false });
+    }
+    return () => {
+      if (categoriesContainer) {
+        categoriesContainer.removeEventListener('wheel', handleWheel);
+      }
+    };
+  }, []);
 
   const filteredItems = selectedCategory === "All"
     ? menuItems
@@ -39,28 +70,16 @@ const Menu = ({previousStep, nextStep}) => {
 
   const handleAddToCart = (item) => {
     const quantity = quantities[item.id] || 1;
-  
-    // Retrieve the cart from local storage or initialize an empty array if it doesn't exist
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-  
-    // Check if the item is already in the cart
     const existingItem = cart.find(cartItem => cartItem.id === item.id);
-    
     if (existingItem) {
-      // Update the quantity of the existing item
       existingItem.quantity += quantity;
     } else {
-      // Add the new item to the cart
-      cart.push({ id: item.id, quantity });  // Include the entire item, not just item.id
+      cart.push({ id: item.id, quantity });
     }
-  
-    // Store the updated cart in local storage
     localStorage.setItem('cart', JSON.stringify(cart));
-  
     console.log(`Added ${quantity} ${item.category}(s) to cart`);
   };
-  
-  
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 
@@ -72,19 +91,21 @@ const Menu = ({previousStep, nextStep}) => {
         <p className={styles.description}>
           {t('description')}
         </p>
-        
-        <div className={styles.categories}>
-          {categories.map((category, index) => (
+
+        {/* Categories Section */}
+        <div className={styles.categories} ref={categoriesRef}>
+          {tags.map((category) => (
             <button
-              key={index}
-              className={`${styles.categoryButton} ${selectedCategory === category ? styles.active : ''}`}
-              onClick={() => setSelectedCategory(category)}
+              key={category.id}
+              className={`${styles.categoryButton} ${selectedCategory === category.tag ? styles.active : ''}`}
+              onClick={() => setSelectedCategory(category.tag)}
             >
-              {t(`categories.${category.toLowerCase()}`)}
+              {category.tag}
             </button>
           ))}
         </div>
-        
+
+        {/* Menu Grid */}
         <div className={styles.menuGrid}>
           {filteredItems.map((item) => (
             <div key={item.id} className={styles.menuItem}>

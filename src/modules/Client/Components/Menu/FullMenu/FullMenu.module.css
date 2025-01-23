@@ -27,15 +27,23 @@
   color: var(--description-color);
   margin-bottom: 1.5rem;
 }
-
 .categories {
   display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
+  overflow-x: auto;
+  gap: 0.5rem; 
   margin-bottom: 1.5rem;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; 
+  
+}
+
+.categories::-webkit-scrollbar {
+  display: none; 
 }
 
 .categoryButton {
+  flex: 0 0 auto; 
   padding: 0.5rem 1rem;
   border-radius: 9999px;
   background-color: var(--secondary-color);
@@ -43,11 +51,16 @@
   border: none;
   cursor: pointer;
   transition: background-color 0.3s, color 0.3s;
+  white-space: nowrap;
 }
 
 .categoryButton.active {
   background-color: var(--primary-color);
   color: white;
+}
+
+.scrollButtons {
+  display: none; 
 }
 
 .menuGrid {
@@ -238,10 +251,9 @@
   }
 }
 
-
-
 .container[dir="rtl"] {
-  text-align: right; /* Align text to the right */
+  text-align: right; 
 }
+
 
 

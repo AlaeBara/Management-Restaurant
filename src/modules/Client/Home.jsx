@@ -62,8 +62,6 @@ const Home = () => {
   };
 
 
-  console.log(mainStep)
-
   return (
     <>
       {mainStep === 1 && (
