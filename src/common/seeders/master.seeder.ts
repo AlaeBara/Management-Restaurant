@@ -1,10 +1,9 @@
-// src/database/seeder.service.ts
 import { Injectable } from '@nestjs/common';
+
 import { ClientPermissionSeeder } from 'src/client-management/seeders/client-permission.seeder';
 import { SupplierPermissionsSeeder } from 'src/supplier-management/seeders/supplier-permissions.seeder';
 import { UnitPermissionsSeeder } from 'src/unit-management/seeders/unit-permissions.seeder';
 import { AccessRolePermissionSeeder } from 'src/user-management/seeders/access-role-permission.seeder';
-import { PermissionPermissionsSeeder } from 'src/user-management/seeders/permission-permissions.seeder';
 import { RolePermissionSeeder } from 'src/user-management/seeders/role-permission.seeder';
 import { RolesSeeder } from 'src/user-management/seeders/role.seeder';
 import { UserPermissionSeeder } from 'src/user-management/seeders/user-permission.seeder';
@@ -20,14 +19,15 @@ import { OperationsPermissionSeeder } from 'src/fund-management/seeders/operatio
 import { PurchasePermissionSeeder } from 'src/purchase-management/seeders/purchase.seeder';
 import { LanguageSeeder } from 'src/language-management/seeders/language.seeder';
 import { CategoryPermissionSeeder } from 'src/category-management/seeders/category-permission.seeder';
+import { TagSeeder } from 'src/menu-item-management/seeders/tag.seeder';
 
 @Injectable()
 export class MasterSeeder {
+
     constructor(
         private readonly accessRolePermissionSeeder: AccessRolePermissionSeeder,
         private readonly rolePermissionSeeder: RolePermissionSeeder,
         private readonly userPermissionSeeder: UserPermissionSeeder,
-        // private readonly permissionPermissionsSeeder: PermissionPermissionsSeeder,
         private readonly rolesSeeder: RolesSeeder,
         private readonly tablePermissionSeeder: TablePermissionSeeder,
         private readonly zonePermissionSeeder: ZonePermissionSeeder,
@@ -44,6 +44,7 @@ export class MasterSeeder {
         private readonly operationsPermissionSeeder: OperationsPermissionSeeder,
         private readonly purchasePermissionSeeder: PurchasePermissionSeeder,
         private readonly languageSeeder: LanguageSeeder,
+        private readonly tagSeeder: TagSeeder
 
     ) { }
 
@@ -51,7 +52,6 @@ export class MasterSeeder {
         await this.rolesSeeder.seed();
         await this.rolePermissionSeeder.seed();
         await this.userPermissionSeeder.seed();
-        // await this.permissionPermissionsSeeder.seed();
         await this.accessRolePermissionSeeder.seed();
         await this.tablePermissionSeeder.seed();
         await this.zonePermissionSeeder.seed();
@@ -68,6 +68,7 @@ export class MasterSeeder {
         await this.operationsPermissionSeeder.seed();
         await this.purchasePermissionSeeder.seed();
         await this.languageSeeder.seed();
+        await this.tagSeeder.seed();
         console.log('All seeders executed');
     }
 }

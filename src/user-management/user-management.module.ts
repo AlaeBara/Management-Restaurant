@@ -1,4 +1,5 @@
 import { forwardRef, Module } from '@nestjs/common';
+
 import { RoleService } from './services/role/role.service';
 import { UserService } from './services/user/user.service';
 import { PermissionService } from './services/permission/permission.service';
@@ -70,4 +71,5 @@ import { MediaLibraryModule } from 'src/media-library-management/media-library.m
     UserService,
   ],
 })
+
 export class UserManagementModule { }

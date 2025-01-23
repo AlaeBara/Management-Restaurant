@@ -1,5 +1,6 @@
 import { forwardRef, Module } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
+
 import { CategoryModule } from 'src/category-management/category.module';
 import { LanguageModule } from 'src/language-management/language.module';
 import { ProductManagementModule } from 'src/product-management/product.module';
@@ -24,18 +25,43 @@ import { MenuItemPriceService } from './services/menu-item-price.service';
 import { MenuItemPriceHistoryService } from './services/menu-item-price-history.service';
 import { MenuItemFormulaService } from './services/menu-item-formulas.service';
 import { MediaLibraryModule } from 'src/media-library-management/media-library.module';
+import { TagSeeder } from './seeders/tag.seeder';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([MenuItemTag, MenuItem, MenuItemFormula, MenuItemPrice, MenuItemPriceHistory,
-    MenuItemDiscount, MenuItemTranslate, MenuItemAllocationMovement]),
-  forwardRef(() => LanguageModule),
-  forwardRef(() => CategoryModule),
-  forwardRef(() => ProductManagementModule),
-  forwardRef(() => UnitModule),
-  forwardRef(() => InventoryModule),
-  forwardRef(() => MediaLibraryModule)],
-  controllers: [MenuItemTagController, MenuItemController, MenuItemDiscountController],
-  providers: [MenuItemTagService, MenuItemService, MenuItemDiscountService, MenuItemTranslationService, MenuItemPriceService, MenuItemPriceHistoryService, MenuItemFormulaService],
-  exports: [],
+  imports: [
+    TypeOrmModule.forFeature([
+        MenuItemTag,
+        MenuItem,
+        MenuItemFormula,
+        MenuItemPrice,
+        MenuItemPriceHistory,
+        MenuItemDiscount,
+        MenuItemTranslate,
+        MenuItemAllocationMovement
+      ]),
+    forwardRef(() => LanguageModule),
+    forwardRef(() => CategoryModule),
+    forwardRef(() => ProductManagementModule),
+    forwardRef(() => UnitModule),
+    forwardRef(() => InventoryModule),
+    forwardRef(() => MediaLibraryModule)],
+  controllers: [
+    MenuItemTagController,
+    MenuItemController,
+    MenuItemDiscountController
+  ],
+  providers: [
+    MenuItemTagService,
+    MenuItemService,
+    MenuItemDiscountService,
+    MenuItemTranslationService,
+    MenuItemPriceService,
+    MenuItemPriceHistoryService,
+    MenuItemFormulaService,
+    TagSeeder
+  ],
+  exports: [
+    TagSeeder
+  ],
 })
 export class MenuItemModule { }

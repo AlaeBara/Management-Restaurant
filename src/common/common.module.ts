@@ -1,4 +1,5 @@
 import { forwardRef, Global, Module } from '@nestjs/common';
+
 import { MailService } from './services/mail.service';
 import { MasterSeeder } from './seeders/master.seeder';
 import { UserManagementModule } from 'src/user-management/user-management.module';
@@ -14,6 +15,7 @@ import { FundModule } from 'src/fund-management/fund.module';
 import { PurchaseManagementModule } from 'src/purchase-management/purchase-management.module';
 import { LanguageModule } from 'src/language-management/language.module';
 import { CategoryModule } from 'src/category-management/category.module';
+import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
 
 @Global()
 @Module({
@@ -30,9 +32,17 @@ import { CategoryModule } from 'src/category-management/category.module';
     forwardRef(() => FundModule),
     forwardRef(() => PurchaseManagementModule),
     forwardRef(() => LanguageModule),
-    forwardRef(() => CategoryModule)],
+    forwardRef(() => CategoryModule),
+    forwardRef(() => MenuItemModule)
+  ],
   controllers: [],
-  providers: [MailService, MasterSeeder],
-  exports: [MailService],
+  providers: [
+    MailService,
+    MasterSeeder,
+  ],
+  exports: [
+    MailService
+  ],
 })
+
 export class CommonModule { }
