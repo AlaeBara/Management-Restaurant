@@ -75,15 +75,24 @@ const Menu = ({ previousStep, nextStep }) => {
   };
 
   const handleAddToCart = (item) => {
-    const quantity = quantities[item.id] || 1;
+    const quantity = quantities[item.id] || 1; 
     const cart = JSON.parse(localStorage.getItem('cart')) || [];
-    const existingItem = cart.find(cartItem => cartItem.id === item.id);
+  
+    const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+  
     if (existingItem) {
       existingItem.quantity += quantity;
     } else {
-      cart.push({ id: item.id, quantity });
+      cart.push({
+        id: item.id,
+        quantity: quantity,
+        finalPrice: item.price?.finalPrice || 0,
+      });
     }
+  
+    // Save the updated cart back to localStorage
     localStorage.setItem('cart', JSON.stringify(cart));
+  
     console.log(`Added ${quantity} ${item.category}(s) to cart`);
   };
 

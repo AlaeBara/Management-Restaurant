@@ -1,21 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import styles from './Cart.module.css';
 import { useTranslation } from 'react-i18next';
-import { Trash, ArrowLeft,Plus, Minus } from 'lucide-react';
+import { Trash, ArrowLeft, Plus, Minus } from 'lucide-react';
+import { useClientPreferences } from '../../../../context/OrderFlowContext';
 
-const Cart = ({ previousStep , nextStep }) => {
+const Cart = ({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
+  const { language } = useClientPreferences();
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  const menuItems = [
-    { id: 1, price: 8.53, image: "https://images.deliveryhero.io/image/fd-th/LH/jb7y-listing.jpg", category: "Lunch" },
-    { id: 2, price: 8.53, image: "https://w7.pngwing.com/pngs/319/731/png-transparent-cafe-food-barbecue-grill-chicken-dish-grilled-food-animals-seafood-recipe-thumbnail.png", category: "Breakfast" },
-    { id: 3, price: 8.53, image: "https://veenaazmanov.com/wp-content/uploads/2017/03/Hyderabad-Chicken-Biryani-Dum-Biryani-Kachi-Biryani4.jpg", category: "Dinner" },
-    { id: 4, price: 8.53, image: "https://t3.ftcdn.net/jpg/06/13/11/24/360_F_613112498_iv3eiTNveuJpXjHFGDnClADBmBNGMTVD.jpg", category: "Dinner" },
-    { id: 5, price: 8.53, image: "https://www.thespruceeats.com/thmb/9Clboupu2hvMEXks_u3HcNkkNlg=/450x300/filters:no_upscale():max_bytes(150000):strip_icc()/SES-classic-steak-diane-recipe-7503150-hero-01-b33a018d76c24f40a7315efb3b02025c.jpg", category: "Lunch" },
-    { id: 6, price: 8.53, image: "https://www.quichentell.com/wp-content/uploads/2020/12/Fish-Pulao-3.1.jpg", category: "Dinner" }
-  ];
 
   useEffect(() => {
     const loadCart = async () => {
@@ -32,13 +25,13 @@ const Cart = ({ previousStep , nextStep }) => {
   }, []);
 
   const handleDelete = (itemId) => {
-    const updatedCart = cart.filter(item => item.id !== itemId);
+    const updatedCart = cart.filter((item) => item.id !== itemId);
     setCart(updatedCart);
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
   const handleQuantityChange = (itemId, change) => {
-    const updatedCart = cart.map(item => {
+    const updatedCart = cart.map((item) => {
       if (item.id === itemId) {
         return { ...item, quantity: Math.max(1, item.quantity + change) };
       }
@@ -48,6 +41,10 @@ const Cart = ({ previousStep , nextStep }) => {
     localStorage.setItem('cart', JSON.stringify(updatedCart));
   };
 
+  const calculateTotal = (item) => {
+    return (item.quantity * item.finalPrice).toFixed(2); 
+  };
+
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 
   return (
@@ -55,67 +52,66 @@ const Cart = ({ previousStep , nextStep }) => {
       <div className={styles.container} dir={dir}>
         <h1 className={styles.title}>{t('Your Food Cart')}</h1>
         <div className={styles.cartItems}>
-          {cart.length > 0 ? (
+          {isLoading ? (
+            <div className={styles.loading}>
+              <p>{t('loading_cart')}</p>
+            </div>
+          ) : cart.length > 0 ? (
             cart.map((item) => (
               <div key={item.id} className={styles.cartItem}>
                 <div className={styles.itemInfo}>
                   <div className={styles.imageWrapper}>
-                    <img 
-                      src={menuItems[item.id - 1].image} 
-                      alt={`Item ${item.id}`}
+                    <img
+                      src={item.image} // Use the actual image URL from the item
+                      alt={item.name || 'Item'}
                       className={styles.itemImage}
                     />
                   </div>
                   <div className={styles.itemDetails}>
-
-
-                    {/* name and price */}
+                    {/* Name and Price */}
                     <div className={styles.itemHeader}>
-                      <span className={styles.itemCategory}>
-                        {menuItems[item.id - 1].category}
+                      <span className={styles.itemName}>
+                        {item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name'}
                       </span>
                       <span className={styles.itemPrice}>
-                        ${menuItems[item.id - 1].price.toFixed(2)}
+                        ${item.finalPrice}
                       </span>
                     </div>
 
-                    {/* Qty */}
-
+                    {/* Quantity */}
                     <div className={styles.itemHeader}>
-                      <span className={styles.itemCategory}>
-                        <span className={styles.quantityLabel}>{t('Quantity')}:</span>
+                      <span className={styles.quantityLabel}>
+                        {t('Quantity')}:
                       </span>
-                      <span className={styles.itemPrice}>
-                        {/* Quantity controls */}
-                        <div className={styles.quantityControl}>
-                          <button 
-                            className={styles.quantityButton} 
-                            onClick={() => handleQuantityChange(item.id, -1)}
-                            disabled={item.quantity <= 1}
-                          >
-                            <Minus className={styles.iconn} />
-                          </button>
-                          <span className={styles.quantityValue}>{item.quantity}</span>
-                          <button 
-                            className={styles.quantityButton} 
-                            onClick={() => handleQuantityChange(item.id, 1)}
-                          >
-                            <Plus className={styles.iconn} />
-                          </button>
-                        </div>
-                      </span>
+                      <div className={styles.quantityControl}>
+                        <button
+                          className={styles.quantityButton}
+                          onClick={() => handleQuantityChange(item.id, -1)}
+                          disabled={item.quantity <= 1}
+                        >
+                          <Minus className={styles.iconn} />
+                        </button>
+                        <span className={styles.quantityValue}>
+                          {item.quantity}
+                        </span>
+                        <button
+                          className={styles.quantityButton}
+                          onClick={() => handleQuantityChange(item.id, 1)}
+                        >
+                          <Plus className={styles.iconn} />
+                        </button>
+                      </div>
                     </div>
 
-                    {/* price *Qty */}
+                    {/* Total */}
                     <div className={styles.itemHeader}>
-                      <span className={styles.itemCategory}>
-                        <span className={styles.quantityLabel}>{t('Total')}:</span>
+                      <span className={styles.quantityLabel}>
+                        {t('Total')}:
                       </span>
                       <span className={styles.itemPrice}>
-                        <span className={styles.quantityValue}>${item.quantity*menuItems[item.id - 1].price.toFixed(1)}</span>
+                        ${calculateTotal(item)}
                       </span>
                     </div>
-
                   </div>
                 </div>
                 <div className={styles.actions}>
@@ -137,15 +133,15 @@ const Cart = ({ previousStep , nextStep }) => {
         </div>
       </div>
 
+      {/* Fixed Navigation Buttons */}
       <div className={styles.btnBox}>
         <button className={styles.btn_back} onClick={previousStep}>
-          <ArrowLeft />
-          {t('Previous')}
+          <ArrowLeft /> {t('Previous')}
         </button>
-        
         <button
           className={`${styles.btn_next}`}
           onClick={nextStep}
+          disabled={cart.length === 0} // Disable if cart is empty
         >
           {t('Next')}
         </button>
