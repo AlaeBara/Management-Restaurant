@@ -2,23 +2,23 @@ import { useState, useCallback } from "react";
 import axios from "axios";
 import Cookies from "js-cookie";
 
-export const useFetchTags = () => {
-  const [tags, setTags] = useState([]);
-  const [totalTags, setTotalTags] = useState(0);
+export const useFetchProduits = () => {
+  const [produits, setProduits] = useState([]);
+  const [totalProduits, setTotalProduits] = useState(0);
   const [Isloading, setIsloading] = useState(false);
   const [message,  setMessage] = useState(null);
 
-  const fetchTags= useCallback(
+  const fetchProduits= useCallback(
     async ({ page = 1, limit = 10, fetchAll = false } = {}) => {
       setIsloading(true);
       setMessage(null);
 
       const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoic3VwZXJhZG1pbiIsImVtYWlsIjoic3VwZXJhZG1pbkBhZG1pbi5jb20iLCJyb2xlIjoic3VwZXJhZG1pbiIsInJvbGVzIjpbInN1cGVyYWRtaW4iXSwicGVybWlzc2lvbnMiOlsiYWNjZXNzLWdyYW50ZWQiXSwiaWF0IjoxNzM3ODI2Njg1LCJleHAiOjE3Mzc5MTMwODV9.3r3_Q9QiBDvxdg71A_cUh02MoDETqYswuf7pddXxVFo";
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/menu-item-tags`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/menu-items`;
 
       try {
         if (fetchAll) {
-          const allTags = [];
+          const allProduits = [];
           let currentPage = page;
 
           while (true) {
@@ -28,14 +28,14 @@ export const useFetchTags = () => {
             });
 
             const { data, total } = response.data;
-            allTags.push(...data);
+            allProduits.push(...data);
 
-            if (allTags.length >= total) break;
+            if (allProduits.length >= total) break;
             currentPage++;
           }
 
-          setTags(allTags);
-          setTotalTags(allTags.length);
+          setProduits(allProduits);
+          setTotalProduits(allProduits.length);
         } else {
           const response = await axios.get(url, {
             params: { page, limit, sort: "createdAt:desc" },
@@ -43,12 +43,12 @@ export const useFetchTags = () => {
           });
 
           const { data, total } = response.data;
-          setTags(data);
-          setTotalTags(total);
+          setProduits(data);
+          setTotalProduits(total);
         }
       } catch (err) {
-        console.error("Failed to fetch tags:", err);
-        setMessage("Une erreur s'est produite lors du chargement des catégories");
+        console.error("Failed to fetch produits menu:", err);
+        setMessage("Une erreur s'est produite lors du chargement des Produits menu");
       } finally {
         setIsloading(false);
       }
@@ -56,5 +56,5 @@ export const useFetchTags = () => {
     []
   );
 
-  return { tags, totalTags, Isloading, message, fetchTags };
+  return { produits, totalProduits, Isloading, message, fetchProduits };
 };

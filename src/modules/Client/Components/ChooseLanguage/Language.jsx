@@ -43,7 +43,7 @@ const LanguageSelector = ({ nextStep }) => {
         className={`${style.btn_next} ${language ? style.btn_next_Active : style.btn_next_Disable}`}
         disabled={!language}
       >
-        Next
+        Suivant
       </button>
     </div>
   );
