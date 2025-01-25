@@ -6,7 +6,7 @@ import {
 
 import { UlidBaseEntity } from "src/common/entities/ulid-base.entity";
 
-@Entity(`${process.env.DATASET_PREFIX || ''}payment_method`)
+@Entity(`${process.env.DATASET_PREFIX || ''}payment_methods`)
 @Index(['id', 'name'])
 export class PaymentMethod extends UlidBaseEntity {
 
