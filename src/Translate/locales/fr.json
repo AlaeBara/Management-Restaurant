@@ -9,24 +9,9 @@
     "full_menu": "Menu Complet",
     "guided_menu": "Menu Guidé",
     
-    "title": "Menu de nourriture",
-    "description": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.",
-    "categories": {
-        "all": "Tout",
-        "breakfast": "Petit-déjeuner",
-        "lunch": "Déjeuner",
-        "dinner": "Dîner",
-        "desserts": "Desserts",
-        "beverage": "Boissons"
-    },
-    "items": {
-        "1": "Hamburger Street Food Fruits de mer Fast Food",
-        "2": "Jambon Fast Food Saucisse Cuisine Européenne",
-        "3": "Biryani Hyderabadi Cuisine Indienne Plat Poulet",
-        "4": "Repas de steak grillé, boeuf Teppanyaki",
-        "5": "Cuisine Européenne Régime Cétogène Conseils",
-        "6": "Poulet Frit, Biryani, Riz Frit, Cuisine Végétarienne"
-    },
+    "full_menu_title": "Explorez Notre Menu Complet",
+    "full_menu_description": "Parcourez toutes nos délicieuses offres et trouvez vos favoris. Utilisez les catégories pour filtrer et découvrir de nouveaux plats.",
+    "all": "Tout",
     "addToCart": "Ajouter au panier",
     "quantity": "Quantité",
     "Starters Menu": "Menu des Entrées",
@@ -46,6 +31,18 @@
     "Item":"Article",
     "Amount":"Montant",
 
-    "Place Order": "Commander"
+    "Place Order": "Commander",
+
+
+    "CategorieVide":  "Aucun article trouvé pour cette catégorie.",
+
+    "connect_description": "Créez un compte pour enregistrer vos préférences, suivre vos commandes et profiter d'avantages exclusifs comme des réductions et des récompenses. Continuez en tant qu'invité pour un paiement rapide sans enregistrer vos informations.",
+    
+    "Typemenu_description": "Explorez notre menu complet pour toutes les options disponibles ou utilisez le menu guidé pour naviguer entre les catégories et trouver ce dont vous avez besoin plus facilement.",
+
+    "loading_categories": "Chargement des catégories...",
+    "error_loading_categories": "Erreur lors du chargement des catégories",
+    "error_loading_menu_items": "Une erreur s'est produite lors du chargement des articles du menu",
+    "loading_menu_items": "Chargement des articles du menu..."
 }
   

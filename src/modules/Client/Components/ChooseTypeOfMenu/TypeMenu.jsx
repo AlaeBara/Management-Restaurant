@@ -16,6 +16,10 @@ const TypeMenu = ({ previousStep, nextStep }) => {
     <div className={style.container}>
       <h1 className={style.title}>{t('select_menu_type')}</h1>
 
+      <p className={style.sousTitle}>
+        {t('Typemenu_description')}
+      </p>
+
       <div className={style.ConnectBox}>
         <div
           className={`${style.box} ${typemenu === 'full_menu' ? style.selected : ''}`}

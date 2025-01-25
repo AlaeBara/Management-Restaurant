@@ -11,6 +11,9 @@ const Connect = ({ previousStep, nextStep }) => {
   return (
     <div className={style.container}>
       <h1 className={style.title}>{t('choose_option')}</h1>
+      <p className={style.sousTitle}>
+        {t('connect_description')} 
+      </p>
 
       <div className={style.ConnectBox}>
         <div

@@ -21,10 +21,19 @@
   
 .title {
   font-size: 2.5rem;
-  margin-bottom: 40px;
   color: #2c3e50;
   text-align: center;
   transition: font-size 0.3s ease;
+}
+
+.sousTitle {
+  max-width: 50vw; 
+  width: 100%; 
+  text-align: center; 
+  color: #4b5563;
+  margin: 0 auto 1.5rem; 
+  padding: 0 20px; 
+  box-sizing: border-box; 
 }
   
 .ConnectBox {
@@ -121,6 +130,9 @@
   .title {
     font-size: 2rem;
   }
+  .sousTitle {
+    max-width: 80vw; 
+  }
 
   .ConnectBox {
     gap: 20px;
@@ -146,6 +158,10 @@
 @media (max-width: 480px) {
   .title {
     font-size: 1.8rem;
+  }
+
+  .sousTitle {
+    max-width: 90vw;
   }
 
   .box {

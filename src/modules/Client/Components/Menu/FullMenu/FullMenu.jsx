@@ -2,11 +2,13 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Minus, ShoppingCart, ArrowLeft } from 'lucide-react';
 import styles from './FullMenu.module.css';
 import { useTranslation } from 'react-i18next';
-import { Loader,AlertCircle } from "lucide-react";
+import { Loader,AlertCircle,AlertTriangle } from "lucide-react";
 import { useClientPreferences } from '../../../../../context/OrderFlowContext';
 //hooks
 import {useFetchTags} from '../../../../../Hooks/Tags/useFetchTags'
 import {useFetchProduits} from '../../../../../Hooks/Products/useFetchProducts'
+
+import ImageSlider from '../../../../../components/imageSlider/ImageSlider'
 
 const Menu = ({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
@@ -53,8 +55,8 @@ const Menu = ({ previousStep, nextStep }) => {
 
   //filter using tags
   const filteredItems = selectedCategory === "All"
-    ? produits
-    : produits.filter(item => item.tags[0] === selectedCategory);
+  ? produits
+  : produits.filter(item => item.tags?.some(tag => tag.tag === selectedCategory));
 
 
 
@@ -90,27 +92,27 @@ const Menu = ({ previousStep, nextStep }) => {
   return (
     <>
       <div className={styles.container} dir={dir}>
-        <h1 className={styles.title}>{t('title')}</h1>
+        <h1 className={styles.title}>{t('full_menu_title')}</h1>
 
         <p className={styles.description}>
-          {t('description')}
+          {t('full_menu_description')}
         </p>
 
         {/* Categories Section */}
         {Isloading ? (
           <div className="mb-9 flex flex-col justify-center items-center">
             <Loader className="h-6 w-6 animate-spin" />
-            <span className="ml-2">Chargement des Catégories...</span>
+            <span className="ml-2">{t('loading_categories')}</span>
           </div>
         ) : message ? (
-          <div className="mb-9 text-red-500 text-center">Error : {message}</div>
+          <div className="mb-9 text-red-500 text-center">{t('error_loading_categories')}</div>
         ) : (
           <div className={styles.categories} ref={categoriesRef}>
             <button
                 className={`${styles.categoryButton} ${selectedCategory === 'All' ? styles.active : ''}`}
                 onClick={() => setSelectedCategory("All")}
               >
-                All
+               {t('all')}
             </button>
             {tags.map((category) => (
               <button
@@ -126,66 +128,66 @@ const Menu = ({ previousStep, nextStep }) => {
 
 
         {/* Menu Grid */}
-
         {laoding_Produits ? (
           <div className="mt-[20vh] flex flex-col justify-center items-center">
             <Loader className="h-6 w-6 animate-spin" />
-            <span className="ml-2">Chargement des articles du menu...</span>
+            <span className="ml-2">{t('loading_menu_items')}</span>
           </div>
         ) : msg_Prouits ? (
           <div className="mt-[20vh] flex flex-col items-center justify-center text-red-500 text-center">
             <AlertCircle className="h-8 w-8 mb-2" />
-            {msg_Prouits}
+            {t('error_loading_menu_items')}
           </div>
         ) : (
-        <div className={styles.menuGrid}>
-          {filteredItems.map((item) => (
-            <div key={item.id} className={styles.menuItem}>
-             <img
-                src={
-                  item.images[0]?.localPath
-                    ? `http://localhost:3000${item.images[0].localPath}`
-                    : "https://cdn-icons-png.flaticon.com/512/1046/1046874.png"
-                }
-                alt={item.translates.find((t) => t.languageValue === 'fr')?.name || 'No Name'}
-                className={styles.itemImage}
-              />
+        <div>
+          {filteredItems.length === 0 ? (
+            <div className="mt-[20vh] flex flex-col items-center justify-center text-red-500 text-center">
+              <AlertTriangle className="h-12 w-12 mb-4 text-red-500" />
+              {t('CategorieVide')}
+            </div>
+          ) : (
+            <div className={styles.menuGrid} >
+              {filteredItems.map((item) => (
+              <div key={item.id} className={styles.menuItem}>
+                <ImageSlider item={item} language={language} />
 
-              <div className={styles.itemInfo}>
-                <h3 className={styles.itemName}>
-                  {item.translates.find((t) => t.languageValue === language )?.name || 'No Name'}
-                </h3>
+                <div className={styles.itemInfo}>
+                  <h3 className={styles.itemName}>
+                    {item.translates.find((t) => t.languageValue === language )?.name || 'No Name'}
+                  </h3>
 
-                <div className={styles.ratingContainer}>
-                  <p> {item.translates.find((t) => t.languageValue === 'fr')?.description || 'No Description'}</p>
-                </div>
+                  <div className={styles.ratingContainer}>
+                    <p> {item.translates.find((t) => t.languageValue === 'fr')?.description || 'No Description'}</p>
+                  </div>
 
-                <div className={styles.priceAndCart}>
-                  <span className={styles.price}>${item.price.finalPrice}</span>
+                  <div className={styles.priceAndCart}>
+                    <span className={styles.price}>${item.price.finalPrice}</span>
 
-                  <div className={styles.quantityAndCart}>
-                    <div className={styles.quantityControl}>
-                      <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
-                        <Minus className={styles.icon} />
-                      </button>
+                    <div className={styles.quantityAndCart}>
+                      <div className={styles.quantityControl}>
+                        <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
+                          <Minus className={styles.icon} />
+                        </button>
 
-                      <span className={styles.quantityDisplay}>
-                        {quantities[item.id] || 1}
-                      </span>
+                        <span className={styles.quantityDisplay}>
+                          {quantities[item.id] || 1}
+                        </span>
 
-                      <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
-                        <Plus className={styles.icon} />
+                        <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
+                          <Plus className={styles.icon} />
+                        </button>
+                      </div>
+
+                      <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
+                        <ShoppingCart className={styles.icon} />
                       </button>
                     </div>
-
-                    <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
-                      <ShoppingCart className={styles.icon} />
-                    </button>
                   </div>
                 </div>
               </div>
-            </div>
-          ))}
+           ))}
+          </div>
+          )}
         </div>
         )}
       </div>

@@ -9,24 +9,9 @@
     "full_menu": "Full Menu",
     "guided_menu": "Guided Menu",
 
-    "title": "Food Menu",
-    "description": "Lorem Ipsum Dolor Sit Amet, Consectetur Adipiscing Elit.",
-    "categories": {
-      "all": "All",
-      "breakfast": "Breakfast",
-      "lunch": "Lunch",
-      "dinner": "Dinner",
-      "desserts": "Desserts",
-      "beverage": "Beverage"
-    },
-    "items": {
-      "1": "Hamburger Street Food Seafood Fast Food",
-      "2": "Ham Fast Food Sausage European Cuisine",
-      "3": "Hyderabadi Biryani Indian Cuisine Dish Chicken Meat",
-      "4": "Grilled Steak Meal, Beefsteak Teppanyaki Taobao Frying Pan",
-      "5": "European Cuisine Ketogenic Diet Dos And Donts For Beginners",
-      "6": "Fried Chicken, Biryani, Fried Rice, Vegetarian Cuisine, Pilaf"
-    },
+    "full_menu_title": "Explore Our Full Menu",
+    "full_menu_description": "Browse through all our delicious offerings and find your favorites. Use the categories to filter and discover new dishes.",
+    "all": "All",
     "addToCart": "Add to Cart",
     "quantity": "Quantity",
     "Starters Menu": "Starters Menu",
@@ -45,5 +30,18 @@
     "Item":"Item",
     "Amount":"Amount",
 
-    "Place Order": "Order Now"
+    "Place Order": "Order Now",
+
+    "CategorieVide":  "No items found for this category.",
+
+
+    "connect_description": "Create an account to save your preferences, track orders, and enjoy exclusive benefits like discounts and rewards. Continue as a guest for a quick checkout without saving your information.",
+
+    "Typemenu_description": "Explore our full menu for all available options or use the guided menu to navigate categories and find what you need more easily.",
+
+
+    "loading_categories": "Loading categories...",
+    "error_loading_categories": "Error loading categories",
+    "error_loading_menu_items": "Error loading menu items",
+    "loading_menu_items": "Loading menu items..."
 }
