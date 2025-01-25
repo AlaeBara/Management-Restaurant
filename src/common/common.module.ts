@@ -16,6 +16,8 @@ import { PurchaseManagementModule } from 'src/purchase-management/purchase-manag
 import { LanguageModule } from 'src/language-management/language.module';
 import { CategoryModule } from 'src/category-management/category.module';
 import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
+import { IsULID } from './decorators/is-ulid.decorator';
+import { PaymentModule } from 'src/payment-management/payment.module';
 
 @Global()
 @Module({
@@ -33,15 +35,20 @@ import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
     forwardRef(() => PurchaseManagementModule),
     forwardRef(() => LanguageModule),
     forwardRef(() => CategoryModule),
-    forwardRef(() => MenuItemModule)
+    forwardRef(() => MenuItemModule),
+    forwardRef(() => PaymentModule)
   ],
   controllers: [],
   providers: [
     MailService,
     MasterSeeder,
+    {
+      provide: IsULID,
+      useValue: IsULID
+    }
   ],
   exports: [
-    MailService
+    MailService,
   ],
 })
 

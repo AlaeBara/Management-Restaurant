@@ -4,13 +4,15 @@ import {
     BeforeUpdate,
     CreateDateColumn,
     DeleteDateColumn,
-    PrimaryGeneratedColumn,
+    PrimaryColumn,
     UpdateDateColumn
 } from "typeorm";
+import { ulid } from 'ulid';
 
-export abstract class BaseEntity {
-    @PrimaryGeneratedColumn('uuid')
-    id: string;
+export abstract class UlidBaseEntity {
+
+    @PrimaryColumn('char', { length: 26 })
+    id: string = ulid();
 
     @CreateDateColumn()
     createdAt: Date;
@@ -36,4 +38,5 @@ export abstract class BaseEntity {
     adjustToDeleteTime() {
         this.deletedAt = new Date();
     }
+
 }   

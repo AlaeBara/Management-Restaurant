@@ -57,7 +57,6 @@ export class InvetoryMovementController {
         @Query('select') select?: string[],
         @Query() query?: any,
     ): Promise<{ data: InventoryMovement[]; total: number; page: number; limit: number }> {
-        console.log('Search:', query);
         return await this.inventoryMovementService.findAll(
             page,
             limit,

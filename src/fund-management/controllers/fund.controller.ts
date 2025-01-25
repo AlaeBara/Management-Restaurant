@@ -119,7 +119,6 @@ export class FundController {
         @Query('select') select?: string[],
         @Query() query?: any,
     ): Promise<{ data: FundOperationEntity[]; total: number; page: number; limit: number }> {
-        console.log('Search:', query);
         return await this.fundOperationService.findAll(
             page,
             limit,

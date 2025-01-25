@@ -24,6 +24,8 @@ import { CategoryModule } from './category-management/category.module';
 import { MenuItemModule } from './menu-item-management/menu-item.module';
 import { UploadModule } from './upload-management/upload.module';
 import { MediaLibraryModule } from './media-library-management/media-library.module';
+import { PaymentModule } from './payment-management/payment.module';
+
 @Module({
   imports: [
     ConfigModule.forRoot({
@@ -52,6 +54,7 @@ import { MediaLibraryModule } from './media-library-management/media-library.mod
     MenuItemModule,
     UploadModule,
     MediaLibraryModule,
+    PaymentModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

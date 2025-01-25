@@ -20,7 +20,7 @@ import { PurchasePermissionSeeder } from 'src/purchase-management/seeders/purcha
 import { LanguageSeeder } from 'src/language-management/seeders/language.seeder';
 import { CategoryPermissionSeeder } from 'src/category-management/seeders/category-permission.seeder';
 import { TagSeeder } from 'src/menu-item-management/seeders/tag.seeder';
-
+import { PaymentMethodSeeder } from 'src/payment-management/seeders/payment-method.seeder';
 @Injectable()
 export class MasterSeeder {
 
@@ -44,7 +44,8 @@ export class MasterSeeder {
         private readonly operationsPermissionSeeder: OperationsPermissionSeeder,
         private readonly purchasePermissionSeeder: PurchasePermissionSeeder,
         private readonly languageSeeder: LanguageSeeder,
-        private readonly tagSeeder: TagSeeder
+        private readonly tagSeeder: TagSeeder,
+        private readonly paymentMethodSeeder: PaymentMethodSeeder
 
     ) { }
 
@@ -69,6 +70,7 @@ export class MasterSeeder {
         await this.purchasePermissionSeeder.seed();
         await this.languageSeeder.seed();
         await this.tagSeeder.seed();
+        await this.paymentMethodSeeder.seed();
         console.log('All seeders executed');
     }
 }
