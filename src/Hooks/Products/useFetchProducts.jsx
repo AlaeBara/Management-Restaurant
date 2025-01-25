@@ -48,7 +48,7 @@ export const useFetchProduits = () => {
         }
       } catch (err) {
         console.error("Failed to fetch produits menu:", err);
-        setMessage("Une erreur s'est produite lors du chargement des Produits menu");
+        setMessage("Une erreur s'est produite lors du chargement des articles du menu.");
       } finally {
         setIsloading(false);
       }

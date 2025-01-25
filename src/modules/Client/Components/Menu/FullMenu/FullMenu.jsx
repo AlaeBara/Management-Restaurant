@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { Plus, Minus, ShoppingCart, ArrowLeft } from 'lucide-react';
 import styles from './FullMenu.module.css';
 import { useTranslation } from 'react-i18next';
-import { Loader } from "lucide-react";
+import { Loader,AlertCircle } from "lucide-react";
 import { useClientPreferences } from '../../../../../context/OrderFlowContext';
 //hooks
 import {useFetchTags} from '../../../../../Hooks/Tags/useFetchTags'
@@ -12,7 +12,6 @@ const Menu = ({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
   const { language } = useClientPreferences();
 
-  console.log(language )
   const { tags, totalTags, Isloading, message, fetchTags } = useFetchTags();
 
   const { produits, totalProduits, Isloading:laoding_Produits, message:msg_Prouits, fetchProduits }= useFetchProduits()
@@ -56,9 +55,6 @@ const Menu = ({ previousStep, nextStep }) => {
   const filteredItems = selectedCategory === "All"
     ? produits
     : produits.filter(item => item.tags[0] === selectedCategory);
-
-
-
 
 
 
@@ -129,12 +125,19 @@ const Menu = ({ previousStep, nextStep }) => {
         )}
 
 
-
-
-
-
-
         {/* Menu Grid */}
+
+        {laoding_Produits ? (
+          <div className="mt-[20vh] flex flex-col justify-center items-center">
+            <Loader className="h-6 w-6 animate-spin" />
+            <span className="ml-2">Chargement des articles du menu...</span>
+          </div>
+        ) : msg_Prouits ? (
+          <div className="mt-[20vh] flex flex-col items-center justify-center text-red-500 text-center">
+            <AlertCircle className="h-8 w-8 mb-2" />
+            {msg_Prouits}
+          </div>
+        ) : (
         <div className={styles.menuGrid}>
           {filteredItems.map((item) => (
             <div key={item.id} className={styles.menuItem}>
@@ -184,11 +187,8 @@ const Menu = ({ previousStep, nextStep }) => {
             </div>
           ))}
         </div>
+        )}
       </div>
-
-
-
-
 
 
       {/* Fixed Navigation Buttons */}
