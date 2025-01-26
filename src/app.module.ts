@@ -25,6 +25,7 @@ import { MenuItemModule } from './menu-item-management/menu-item.module';
 import { UploadModule } from './upload-management/upload.module';
 import { MediaLibraryModule } from './media-library-management/media-library.module';
 import { PaymentModule } from './payment-management/payment.module';
+import { OrderManagementModule } from './order-management/order-management.module';
 
 @Module({
   imports: [
@@ -55,6 +56,7 @@ import { PaymentModule } from './payment-management/payment.module';
     UploadModule,
     MediaLibraryModule,
     PaymentModule,
+    OrderManagementModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,

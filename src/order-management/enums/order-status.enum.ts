@@ -1,4 +1,4 @@
-export enum OrderStatusHistory {
+export enum OrderStatusHistoryEnum {
     //Created Statuses
     CREATED_BY_WAITER = 100,
     CREATED_BY_CLIENT = 101,
@@ -8,7 +8,7 @@ export enum OrderStatusHistory {
     SENT_TO_PREPARATION = 200,
 
     //In preparation Statuses
-    IN_PREPARATION = 300,
+    IN_PREPARATION_BY_KITCHEN = 300,
 
     //Ready to serve Statuses
     READY_TO_SERVE = 400,
