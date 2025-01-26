@@ -439,6 +439,8 @@ export default function AchatCreationForm() {
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
 
+            console.log(preparedData)
+
             // const formDataObject = new FormData();
 
             // // Append simple fields if they exist and have a value
@@ -530,7 +532,9 @@ export default function AchatCreationForm() {
 
             // Step 2: Append fields to FormData
             appendIfValid('menuItemSku', preparedData.menuItemSku);
-            appendIfValid('quantity', preparedData.quantity);
+            if (!preparedData.hasFormulas) {
+                appendIfValid('quantity', preparedData.quantity);
+            }
             appendIfValid('warningQuantity', preparedData.warningQuantity);
             appendIfValid('isPublished', preparedData.isPublished);
             appendIfValid('isDraft', preparedData.isDraft);
