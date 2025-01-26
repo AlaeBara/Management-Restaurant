@@ -1,10 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo } from 'react';
 import styles from './Cart.module.css';
 import { useTranslation } from 'react-i18next';
 import { Trash, ArrowLeft, Plus, Minus } from 'lucide-react';
 import { useClientPreferences } from '../../../../context/OrderFlowContext';
 
-const Cart = ({ previousStep, nextStep }) => {
+const Cart = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
   const { language } = useClientPreferences();
   const [cart, setCart] = useState([]);
@@ -141,13 +141,13 @@ const Cart = ({ previousStep, nextStep }) => {
         <button
           className={`${styles.btn_next}`}
           onClick={nextStep}
-          disabled={cart.length === 0} // Disable if cart is empty
+          disabled={cart.length === 0} 
         >
           {t('Next')}
         </button>
       </div>
     </>
   );
-};
+});
 
 export default Cart;

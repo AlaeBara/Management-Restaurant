@@ -1,9 +1,9 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect , memo } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import styles from './SendCommande.module.css';
 import { useTranslation } from 'react-i18next';
 
-const SendCommande = ({ previousStep }) => {
+const SendCommande = memo(({ previousStep }) => {
   const [cart, setCart] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const { t, i18n } = useTranslation();
@@ -100,6 +100,6 @@ const SendCommande = ({ previousStep }) => {
       </div>
     </>
   );
-};
+});
 
 export default SendCommande;

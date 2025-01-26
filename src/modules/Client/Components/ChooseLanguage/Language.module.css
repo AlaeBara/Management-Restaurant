@@ -146,6 +146,9 @@
 }
   
 @media (max-width: 480px) {
+  .btn_next {
+    margin-top: 35px;
+  }
   .title {
     font-size: 1.5rem;
   }

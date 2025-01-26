@@ -158,10 +158,12 @@
     .title {
       font-size: 24px;
     }
-  
     .btnBox {
-      gap: 100px;
+        display: flex;
+        justify-content: space-between;
+        gap: 0;
     }
+  
 }
 
 /* RTL Support */

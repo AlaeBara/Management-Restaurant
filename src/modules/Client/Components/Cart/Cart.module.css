@@ -232,8 +232,10 @@
     height: 150px;
   }
 
-  .btnBox{
-    gap: 100px;
+  .btnBox {
+    display: flex;
+    justify-content: space-between;
+    gap: 0;
   }
 }
 

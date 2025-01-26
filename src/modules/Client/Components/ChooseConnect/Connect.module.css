@@ -150,8 +150,10 @@
   .langText {
     font-size: 1rem;
   }
-  .btnBox{
-    gap: 100px;
+  .btnBox {
+    display: flex;
+    justify-content: space-between;
+    gap: 15vw;
   }
 }
   

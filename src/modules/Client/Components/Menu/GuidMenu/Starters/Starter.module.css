@@ -235,8 +235,10 @@
 }
 
 @media (max-width: 768px) {
-  .btnBox{
-    gap: 100px;
+  .btnBox {
+    display: flex;
+    justify-content: space-between;
+    gap: 0;
   }
 }
 
