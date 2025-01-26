@@ -8,15 +8,6 @@ const SendCommande = ({ previousStep }) => {
   const [isLoading, setIsLoading] = useState(true);
   const { t, i18n } = useTranslation();
 
-  const menuItems = [
-    { id: 1, price: 8.53, name: "Chicken Dish", category: "Lunch" },
-    { id: 2, price: 8.53, name: "Breakfast Special", category: "Breakfast" },
-    { id: 3, price: 8.53, name: "Biryani", category: "Dinner" },
-    { id: 4, price: 8.53, name: "Grilled Fish", category: "Dinner" },
-    { id: 5, price: 8.53, name: "Steak Diane", category: "Lunch" },
-    { id: 6, price: 8.53, name: "Fish Pulao", category: "Dinner" }
-  ];
-
   useEffect(() => {
     const loadCart = async () => {
       try {
@@ -33,7 +24,7 @@ const SendCommande = ({ previousStep }) => {
 
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
-      return total + (menuItems[item.id - 1].price * item.quantity);
+      return total + (item.finalPrice * item.quantity); // Use finalPrice from cart
     }, 0);
   };
 
@@ -44,7 +35,7 @@ const SendCommande = ({ previousStep }) => {
       <div className={styles.pageContainer} dir={dir}>
         <div className={styles.invoiceContainer}>
           <h1 className={styles.title}>{t('Order Summary')}</h1>
-          
+
           {/* Invoice Header */}
           <div className={styles.invoiceHeader}>
             <div className={styles.invoiceRow}>
@@ -56,15 +47,27 @@ const SendCommande = ({ previousStep }) => {
 
           {/* Invoice Items */}
           <div className={styles.invoiceItems}>
-            {cart.map((item) => (
-              <div key={item.id} className={styles.invoiceRow}>
-                <div className={styles.qty}>{item.quantity}x</div>
-                <div className={styles.item}>{menuItems[item.id - 1].name}</div>
-                <div className={styles.amount}>
-                  ${(item.quantity * menuItems[item.id - 1].price).toFixed(2)}
-                </div>
+            {isLoading ? (
+              <div className={styles.loading}>
+                <p>{t('loading_cart')}</p>
               </div>
-            ))}
+            ) : cart.length > 0 ? (
+              cart.map((item) => (
+                <div key={item.id} className={styles.invoiceRow}>
+                  <div className={styles.qty}>{item.quantity}x</div>
+                  <div className={styles.item}>
+                    {item.name || `Item ${item.id}`} {/* Use item name or fallback */}
+                  </div>
+                  <div className={styles.amount}>
+                    ${(item.quantity * item.finalPrice).toFixed(2)} {/* Use finalPrice */}
+                  </div>
+                </div>
+              ))
+            ) : (
+              <div className={styles.emptyCart}>
+                <p className={styles.emptyCartText}>{t('Your cart is empty')}</p>
+              </div>
+            )}
           </div>
 
           {/* Total */}
@@ -72,14 +75,14 @@ const SendCommande = ({ previousStep }) => {
             <div className={styles.invoiceRow}>
               <div className={styles.totalLabel}>{t('Total')}</div>
               <div className={styles.totalAmount}>
-                ${calculateTotal().toFixed(2)}
+                ${calculateTotal().toFixed(2)} {/* Display total */}
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Buttons - Keeping original styling */}
+      {/* Navigation Buttons */}
       <div className={styles.btnBox}>
         <button className={styles.btn_back} onClick={previousStep}>
           <ArrowLeft /> {t('Previous')}
@@ -87,7 +90,10 @@ const SendCommande = ({ previousStep }) => {
 
         <button
           className={`${styles.btn_next}`}
-          onClick={()=>{alert("WA Khelsna AZABI")}}
+          onClick={() => {
+            alert('WA Khelsna AZABI');
+          }}
+          disabled={cart.length === 0} // Disable if cart is empty
         >
           {t('Place Order')}
         </button>

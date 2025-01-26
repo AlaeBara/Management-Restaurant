@@ -84,6 +84,7 @@ const Menu = ({ previousStep, nextStep }) => {
       existingItem.quantity += quantity;
     } else {
       cart.push({
+        name: item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name',
         id: item.id,
         quantity: quantity,
         finalPrice: item.price?.finalPrice || 0,
@@ -161,6 +162,14 @@ const Menu = ({ previousStep, nextStep }) => {
                 <ImageSlider item={item} language={language} />
 
                 <div className={styles.itemInfo}>
+
+                  {item.price.finalPrice !== item.price.basePrice ? (
+                    <span className={styles.promo}>
+                      - {Math.round(((item.price.basePrice - item.price.finalPrice) / item.price.basePrice) * 100)}%
+                    </span>
+                  ) : (
+                    <span aria-hidden="true">&nbsp;</span>
+                  )}
                   <h3 className={styles.itemName}>
                     {item.translates.find((t) => t.languageValue === language )?.name || 'No Name'}
                   </h3>
@@ -169,28 +178,32 @@ const Menu = ({ previousStep, nextStep }) => {
                     <p> {item.translates.find((t) => t.languageValue === 'fr')?.description || 'No Description'}</p>
                   </div>
 
+                  <div>
+                    <span className={styles.price}>
+                      {item.price.finalPrice}Dh
+                      {item.price.finalPrice !== item.price.basePrice && (
+                        <span className={styles.oldPrice}>{item.price.basePrice} Dh</span>
+                      )}
+                    </span>
+                  </div>
                   <div className={styles.priceAndCart}>
-                    <span className={styles.price}>${item.price.finalPrice}</span>
+                    <div className={styles.quantityControl}>
+                      <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
+                        <Minus className={styles.icon} />
+                      </button>
 
-                    <div className={styles.quantityAndCart}>
-                      <div className={styles.quantityControl}>
-                        <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
-                          <Minus className={styles.icon} />
-                        </button>
+                      <span className={styles.quantityDisplay}>
+                        {quantities[item.id] || 1}
+                      </span>
 
-                        <span className={styles.quantityDisplay}>
-                          {quantities[item.id] || 1}
-                        </span>
-
-                        <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
-                          <Plus className={styles.icon} />
-                        </button>
-                      </div>
-
-                      <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
-                        <ShoppingCart className={styles.icon} />
+                      <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
+                        <Plus className={styles.icon} />
                       </button>
                     </div>
+
+                    <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
+                      <ShoppingCart className={styles.icon} />
+                    </button>
                   </div>
                 </div>
               </div>

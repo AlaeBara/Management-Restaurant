@@ -44,6 +44,9 @@
     "loading_categories": "جارٍ تحميل الفئات...",
     "error_loading_categories": "حدث خطأ أثناء تحميل الفئات",
     "error_loading_menu_items": "حدث خطأ أثناء تحميل عناصر القائمة",
-    "loading_menu_items": "جارٍ تحميل عناصر القائمة..."
+    "loading_menu_items": "جارٍ تحميل عناصر القائمة...",
+
+    
+    "loading_cart": "جارٍ تحميل السلة..."
 }
   

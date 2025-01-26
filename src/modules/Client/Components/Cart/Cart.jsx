@@ -60,13 +60,13 @@ const Cart = ({ previousStep, nextStep }) => {
             cart.map((item) => (
               <div key={item.id} className={styles.cartItem}>
                 <div className={styles.itemInfo}>
-                  <div className={styles.imageWrapper}>
+                  {/* <div className={styles.imageWrapper}>
                     <img
-                      src={item.image} // Use the actual image URL from the item
+                      src={item.image} 
                       alt={item.name || 'Item'}
                       className={styles.itemImage}
                     />
-                  </div>
+                  </div> */}
                   <div className={styles.itemDetails}>
                     {/* Name and Price */}
                     <div className={styles.itemHeader}>

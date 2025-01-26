@@ -43,6 +43,9 @@
     "loading_categories": "Chargement des catégories...",
     "error_loading_categories": "Erreur lors du chargement des catégories",
     "error_loading_menu_items": "Une erreur s'est produite lors du chargement des articles du menu",
-    "loading_menu_items": "Chargement des articles du menu..."
+    "loading_menu_items": "Chargement des articles du menu...",
+
+
+    "loading_cart": "Chargement du panier..."
 }
   

@@ -13,7 +13,7 @@ export const useFetchProduits = () => {
       setIsloading(true);
       setMessage(null);
 
-      const token = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJzdWIiOjEsInVzZXJuYW1lIjoic3VwZXJhZG1pbiIsImVtYWlsIjoic3VwZXJhZG1pbkBhZG1pbi5jb20iLCJyb2xlIjoic3VwZXJhZG1pbiIsInJvbGVzIjpbInN1cGVyYWRtaW4iXSwicGVybWlzc2lvbnMiOlsiYWNjZXNzLWdyYW50ZWQiXSwiaWF0IjoxNzM3ODI2Njg1LCJleHAiOjE3Mzc5MTMwODV9.3r3_Q9QiBDvxdg71A_cUh02MoDETqYswuf7pddXxVFo";
+      const token = import.meta.env.VITE_TOKEN
       const url = `${import.meta.env.VITE_BACKEND_URL}/api/menu-items`;
 
       try {

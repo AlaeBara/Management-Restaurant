@@ -43,5 +43,9 @@
     "loading_categories": "Loading categories...",
     "error_loading_categories": "Error loading categories",
     "error_loading_menu_items": "Error loading menu items",
-    "loading_menu_items": "Loading menu items..."
+    "loading_menu_items": "Loading menu items...",
+
+
+    "loading_cart": "Loading cart..."
+    
 }
