@@ -1,10 +1,10 @@
-import React, { useState } from 'react';
+import React, { memo } from 'react';
 import {  List, HelpCircle, ArrowLeft  } from 'lucide-react';
 import style from './TypeMenu.module.css';
 import { useClientPreferences } from '../../../../context/OrderFlowContext';
 import { useTranslation } from 'react-i18next';
 
-const TypeMenu = ({ previousStep, nextStep }) => {
+const TypeMenu = memo(({ previousStep, nextStep }) => {
   const { typemenu, settypemenu } = useClientPreferences();
   const { t } = useTranslation();
 
@@ -56,6 +56,6 @@ const TypeMenu = ({ previousStep, nextStep }) => {
       </div>
     </div>
   );
-};
+});
 
 export default TypeMenu;

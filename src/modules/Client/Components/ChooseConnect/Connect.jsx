@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { UserPlus, UserMinus , ArrowLeft } from 'lucide-react';
 import style from './Connect.module.css';
 import { useClientPreferences } from '../../../../context/OrderFlowContext';
 import { useTranslation } from 'react-i18next';
 
-const Connect = ({ previousStep, nextStep }) => {
+const Connect = memo(({ previousStep, nextStep }) => {
   const { connect, setconnect } = useClientPreferences();
   const { t } = useTranslation();
 
@@ -47,6 +47,6 @@ const Connect = ({ previousStep, nextStep }) => {
       </div>
     </div>
   );
-};
+});
 
 export default Connect;

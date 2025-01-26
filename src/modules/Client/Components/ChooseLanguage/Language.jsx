@@ -1,9 +1,9 @@
-import React from 'react';
+import React, { memo } from 'react';
 import { Flag, Globe, Languages } from 'lucide-react';
 import style from './language.module.css';
 import { useClientPreferences } from '../../../../context/OrderFlowContext';
 
-const LanguageSelector = ({ nextStep }) => {
+const LanguageSelector =  memo(({ nextStep }) => {
   const { language, setLanguage } = useClientPreferences();
 
   const handleLanguageChange = (lang) => {
@@ -56,6 +56,6 @@ const LanguageSelector = ({ nextStep }) => {
       </div>
     </div>
   );
-};
+});
 
 export default LanguageSelector;
