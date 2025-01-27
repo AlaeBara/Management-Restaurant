@@ -6,7 +6,7 @@ import 'swiper/css/navigation';
 import styles from './ImageSlider.module.css';
 
 
-const ImageSlider = memo(({ item, language }) => {
+const ImageSlider = memo(({ item}) => {
   const [currentSlide, setCurrentSlide] = useState(1); 
   const imageLinks = [
     "https://images.deliveryhero.io/image/fd-th/LH/jb7y-listing.jpg",
@@ -23,7 +23,6 @@ const ImageSlider = memo(({ item, language }) => {
     return (
       <img
         src={randomImage}
-        alt={item.translates.find((t) => t.languageValue === language)?.name || 'No Name'}
         className={styles.itemImage}
       />
     );
@@ -47,7 +46,6 @@ const ImageSlider = memo(({ item, language }) => {
           <SwiperSlide key={index}>
             <img
               src={`http://localhost:3000${image.localPath}`}
-              alt={item.translates.find((t) => t.languageValue === language)?.name || 'No Name'}
               className={styles.itemImage}
             />
           </SwiperSlide>

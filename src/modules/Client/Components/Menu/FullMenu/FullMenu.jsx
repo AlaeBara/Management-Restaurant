@@ -7,6 +7,8 @@ import { useClientPreferences } from '../../../../../context/OrderFlowContext';
 import { useFetchTags } from '../../../../../Hooks/Tags/useFetchTags';
 import { useFetchProduits } from '../../../../../Hooks/Products/useFetchProducts';
 import ImageSlider from '../../../../../components/imageSlider/ImageSlider';
+import PopUpProduct from '../../../../../components/PopUpProducts/PopUpProduct';
+
 
 const Menu = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
@@ -95,6 +97,17 @@ const Menu = memo(({ previousStep, nextStep }) => {
     [quantities, language]
   );
 
+  const [selectedProduct, setSelectedProduct] = useState(null);
+
+  const handleProductClick = (product) => {
+    setSelectedProduct(product);
+  };
+
+  const handleClosePopup = () => {
+    setSelectedProduct(null);
+  };
+
+
   // Memoized rendered tags
   const renderedTags = useMemo(() => {
     return tags.map((category) => (
@@ -111,8 +124,8 @@ const Menu = memo(({ previousStep, nextStep }) => {
   // Memoized rendered menu items
   const renderedMenuItems = useMemo(() => {
     return filteredItems.map((item) => (
-      <div key={item.id} className={styles.menuItem}>
-        <ImageSlider item={item} language={language} />
+      <div key={item.id} className={styles.menuItem} onClick={() => handleProductClick(item)}>
+        <ImageSlider item={item} />
         <div className={styles.itemInfo}>
           {item.price.finalPrice !== item.price.basePrice ? (
             <span className={styles.promo}>
@@ -137,15 +150,15 @@ const Menu = memo(({ previousStep, nextStep }) => {
           </div>
           <div className={styles.priceAndCart}>
             <div className={styles.quantityControl}>
-              <button className={styles.quantityButton} onClick={() => handleDecrement(item.id)}>
+              <button className={styles.quantityButton} onClick={(e) => { e.stopPropagation(); handleDecrement(item.id); }}>
                 <Minus className={styles.icon} />
               </button>
               <span className={styles.quantityDisplay}>{quantities[item.id] || 1}</span>
-              <button className={styles.quantityButton} onClick={() => handleIncrement(item.id)}>
+              <button className={styles.quantityButton} onClick={(e) => { e.stopPropagation(); handleIncrement(item.id); }}>
                 <Plus className={styles.icon} />
               </button>
             </div>
-            <button className={styles.addToCartButton} onClick={() => handleAddToCart(item)}>
+            <button className={styles.addToCartButton} onClick={(e) => { e.stopPropagation(); handleAddToCart(item); }}>
               <ShoppingCart className={styles.icon} />
             </button>
           </div>
@@ -156,6 +169,8 @@ const Menu = memo(({ previousStep, nextStep }) => {
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 
+
+  
   return (
     <>
       <div className={styles.container} dir={dir}>
@@ -206,6 +221,10 @@ const Menu = memo(({ previousStep, nextStep }) => {
           </div>
         )}
       </div>
+
+      {selectedProduct && (
+        <PopUpProduct product={selectedProduct} onClose={handleClosePopup}  language={language} />
+      )}
 
       {/* Fixed Navigation Buttons */}
       <div className={styles.btnBox}>

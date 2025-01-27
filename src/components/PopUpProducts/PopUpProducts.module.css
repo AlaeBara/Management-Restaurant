@@ -1,0 +1,16 @@
+/* Custom scrollbar styles */
+.scrollbarcustom::-webkit-scrollbar {
+    width: 0px; /* Make the scrollbar thinner */
+    height: 6px; /* For horizontal scrollbars */
+  }
+  
+  .scrollbarcustom::-webkit-scrollbar-track {
+    background: #f1f1f1; /* Light gray track */
+    border-radius: 4px; /* Rounded corners */
+  }
+  
+  .scrollbarcustom::-webkit-scrollbar-thumb {
+    background: #888; /* Darker gray thumb */
+    border-radius: 4px; /* Rounded corners */
+  }
+  
