@@ -29,7 +29,7 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
             .nullable()
             .optional(),
 
-        inventoryId:  z
+        inventoryId: z
             .string()
             .nullable()
             .optional(),
@@ -40,11 +40,11 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
                 invalid_type_error: "Le Quantité dans la formule doit être un nombre.",
             })
             .nonnegative({ message: "Le Quantité dans la formule doit être un nombre positif." }).optional(),
+            
         unitId:z
             .string()
             .nullable()
             .optional(),
-
     });
 
 
@@ -384,6 +384,11 @@ export default function AchatCreationForm() {
                             customErrors.formulas[index] = customErrors.formulas[index] || {};
                             customErrors.formulas[index].unitId = "L'unité est obligatoire.";
                         }
+                        if (!formula.inventoryId) {
+                            customErrors.formulas = customErrors.formulas || [];
+                            customErrors.formulas[index] = customErrors.formulas[index] || {};
+                            customErrors.formulas[index].inventoryId = "L'inventaire est obligatoire.";
+                        }
                         if (!formData.portionProduced) {
                             customErrors.portionProduced = "Le Portion produite est obligatoire.";
                         }
@@ -428,6 +433,7 @@ export default function AchatCreationForm() {
     
             if (Object.keys(allErrors).length > 0) {
                 setErrors(allErrors);
+                console.log(allErrors)
                 return;
             }
             if (formData.price.discountId === "") {
@@ -549,6 +555,8 @@ export default function AchatCreationForm() {
 
             if (preparedData.hasFormulas) {
                 appendIfValid('portionProduced', preparedData.portionProduced);
+                // Append formulas array
+                appendArray('formulas', preparedData.formulas);
             }
 
             // Append price fields
@@ -556,9 +564,7 @@ export default function AchatCreationForm() {
                 appendNestedObject('price', preparedData.price);
             }
 
-            // Append formulas array
-            appendArray('formulas', preparedData.formulas);
-
+    
             // Append translates array
             appendArray('translates', preparedData.translates);
 
@@ -676,7 +682,7 @@ export default function AchatCreationForm() {
                                     <TabsTrigger value="basic" className="text-sm h-full py-2">Informations</TabsTrigger>
                                     <TabsTrigger value="translations" className="text-sm h-full py-2">Titre</TabsTrigger>
                                     <TabsTrigger value="price" className="text-sm h-full py-2">Prix</TabsTrigger>
-                                    <TabsTrigger value="fermola" className="text-sm h-full py-2">Recettes</TabsTrigger>
+                                    <TabsTrigger value="fermola" className="text-sm h-full py-2">Recette</TabsTrigger>
                                 </TabsList>
 
 
@@ -898,7 +904,7 @@ export default function AchatCreationForm() {
 
                                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                             <div className="space-y-2">
-                                                <Label>Contient des Recettes <span className='text-red-500 text-base'>*</span></Label>
+                                                <Label>Type de suivi <span className='text-red-500 text-base'>*</span></Label>
                                                 <Select
                                                     name="hasFormulas"
                                                     value={formData.hasFormulas === null ? "" : String(formData.hasFormulas)}
@@ -908,8 +914,8 @@ export default function AchatCreationForm() {
                                                         <SelectValue placeholder="Sélectionner une Choix" />
                                                     </SelectTrigger>
                                                     <SelectContent>
-                                                        <SelectItem value="true">Oui</SelectItem>
-                                                        <SelectItem value="false">Non</SelectItem>
+                                                        <SelectItem value="true">Suivi basé sur le stock</SelectItem>
+                                                        <SelectItem value="false">Suivi basé sur la quantité</SelectItem>
                                                     </SelectContent>
                                                 </Select>
                                                 
@@ -917,7 +923,12 @@ export default function AchatCreationForm() {
                                                     <p className="text-xs text-red-500 mt-1">{errors.hasFormulas}</p>
                                                 )}
                                             </div>
+                                        </div> 
 
+                                        {!formData.hasFormulas ? 
+
+                                        // grid grid-cols-1 sm:grid-cols-2 gap-4
+                                        <div className="">
                                             <div className="space-y-2">
                                                 <Label>Quantité</Label>
                                                 <Input
@@ -936,10 +947,15 @@ export default function AchatCreationForm() {
                                                     <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
                                                 )}
                                             </div>
-                                        </div> 
+                                        </div>
+
+
+                                        :
+
+                                        <>
 
                                         <div className="flex justify-between items-center">
-                                            <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">Les Formule</h2>
+                                            <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">La Recette</h2>
                                             <Button 
                                                 type="button" 
                                                 variant="outline" 
@@ -1004,7 +1020,7 @@ export default function AchatCreationForm() {
                                                         </div>
 
                                                         <div className="space-y-2">
-                                                            <Label>Quantité nécessaire <span className='text-red-500 text-base'>*</span></Label>
+                                                            <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
                                                             <div className="flex gap-2">
                                                                 <Input
                                                                     type="number"
@@ -1059,7 +1075,7 @@ export default function AchatCreationForm() {
                                                         </div>
 
                                                         <div className="space-y-2">
-                                                            <Label>Inventaire</Label>
+                                                            <Label>Inventaire <span className='text-red-500 text-base'>*</span></Label>
                                                             <Select
                                                                 name="inventoryId"
                                                                 value={formulas.inventoryId || ""}
@@ -1093,9 +1109,9 @@ export default function AchatCreationForm() {
                                                                     )}
                                                                 </SelectContent>
                                                             </Select>
-                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].warningQuantity && (
+                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].inventoryId && (
                                                                 <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.formulas[index].warningQuantity}
+                                                                    {errors.formulas[index].inventoryId}
                                                                 </p>
                                                             )}
                                                         </div>
@@ -1124,6 +1140,10 @@ export default function AchatCreationForm() {
                                                 )}
                                             </div>
                                         </div>
+
+                                        </>}
+
+                                        
                                     </div>
                                 </TabsContent>
 
