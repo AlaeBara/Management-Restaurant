@@ -930,7 +930,7 @@ export default function AchatCreationForm() {
                                         // grid grid-cols-1 sm:grid-cols-2 gap-4
                                         <div className="">
                                             <div className="space-y-2">
-                                                <Label>Quantité</Label>
+                                                <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
                                                 <Input
                                                     type="number"
                                                     name="quantity"
