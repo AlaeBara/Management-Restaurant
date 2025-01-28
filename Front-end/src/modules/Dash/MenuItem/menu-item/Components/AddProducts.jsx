@@ -21,6 +21,7 @@ import {useFetchUnits} from '../../../Units/Hooks/useFetchUnits'
 import {useFetchDiscounts} from '../../../MenuItem/Discount/Hooks/useFetchDiscounts'
 import ReactSelect from 'react-select';
 import {X} from 'lucide-react'
+import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
     const fomulastemSchema = z.object({
         productId: z
@@ -28,12 +29,10 @@ import {X} from 'lucide-react'
             .nullable()
             .optional(),
 
-        warningQuantity: z.coerce
-            .number({
-                required_error: "Le Quantité d'alerte est obligatoire.",
-                invalid_type_error: "Le Quantité d'alerte doit être un nombre.",
-            })
-            .nonnegative({ message: "Le Quantité d'alerte doit être un nombre positif." }).optional(),
+        inventoryId:  z
+            .string()
+            .nullable()
+            .optional(),
 
         quantityFormula:z.coerce
             .number({
@@ -132,6 +131,12 @@ export default function AchatCreationForm() {
     const [alert, setAlert] = useState({ message: null, type: null });
     const [fileError, setFileError] = useState("");
 
+    //api for get All inventaire of product
+    const {inventorys, totalIventory, loading, error, fetchIventory}=useFetchIventory()
+
+
+    
+
     useEffect(() => {
         fetchTags({fetchAll: true });
         fetchCategorie({fetchAll: true });
@@ -139,7 +144,8 @@ export default function AchatCreationForm() {
         fetchProduct({fetchAll: true });
         fetchUnits({fetchAll: true })
         fetchDiscounts({fetchAll: true })
-    }, [fetchTags,fetchCategorie,fetchLangage,fetchProduct,fetchUnits]);
+        fetchIventory({fetchAll: true })
+    }, [fetchTags,fetchCategorie,fetchLangage,fetchProduct,fetchUnits,fetchIventory]);
 
 
   
@@ -156,7 +162,7 @@ export default function AchatCreationForm() {
         formulas: [
             {
                 productId: '',
-                warningQuantity:  null,
+                inventoryId:  '',
                 quantityFormula: null,
                 unitId: ''
             }
@@ -252,7 +258,7 @@ export default function AchatCreationForm() {
     };
 
     const handleChangee2 = (value, index, field) => {
-        const numericFields = ['warningQuantity', 'quantityFormula', 'portionProduced'];
+        const numericFields = ['quantityFormula', 'portionProduced'];
     
         // Process the value based on the field type
         let processedValue;
@@ -302,7 +308,7 @@ export default function AchatCreationForm() {
             ...formData,
             formulas: [...formData.formulas, {
                 productId: '',
-                warningQuantity:  null,
+                inventoryId: '',
                 quantityFormula: null,
                 unitId: ''
             }]
@@ -590,7 +596,7 @@ export default function AchatCreationForm() {
                 formulas: [
                     {
                         productId: '',
-                        warningQuantity: '',
+                        inventoryId: '',
                         quantityFormula: '',
                         unitId: ''
                     }
@@ -946,117 +952,13 @@ export default function AchatCreationForm() {
                                         </div>
 
                                         <div className="grid gap-4">
-
                                             {formData.formulas.map((formulas, index) => (
                                                 <div 
                                                     key={index} 
-                                                    className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 border p-4 rounded-lg"
+                                                    className="border p-4 rounded-lg"
                                                 >
-                                                    <div className="space-y-2">
-                                                        <Label>Ingrédient <span className='text-red-500 text-base'>*</span></Label>
-                                                        <Select
-                                                            name="productId"
-                                                            value={formulas.productId || ""}
-                                                            onValueChange={(value) => handleChangee2(value, index, 'productId')}
-                                                            disabled={!formData.hasFormulas}
-                                                        >
-                                                            <SelectTrigger>
-                                                                <SelectValue placeholder="Sélectionner une Ingrédient" />
-                                                            </SelectTrigger>
-                                                            <SelectContent>
-                                                                {product.length > 0 ? (
-                                                                    product
-                                                                        .map((product) => (
-                                                                            <SelectItem key={product.id} value={product.id}>
-                                                                                {product.productName}
-                                                                            </SelectItem>
-                                                                        ))
-                                                                ) : (
-                                                                    <p className='text-sm'>Aucune donnée disponible</p>
-                                                                )}
-                                                            </SelectContent>
-                                                        </Select>
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].productId && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].productId}
-                                                            </p>
-                                                        )}
-                                                    </div>
 
-                                                    <div className="space-y-2">
-                                                        <Label>Quantité nécessaire <span className='text-red-500 text-base'>*</span></Label>
-                                                        <div className="flex gap-2">
-                                                            <Input
-                                                                type="number"
-                                                                name="quantityFormula"
-                                                                value={formulas.quantityFormula !== null && formulas.quantityFormula !== undefined ? formulas.quantityFormula : ""}
-                                                                onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
-                                                                placeholder='Quantité nécessaire'
-                                                                disabled={!formData.hasFormulas}
-                                                                step='any'
-                                                                min="0"
-                                                                className="flex-1"
-                                                            />
-                                                            
-                                                            <Select
-                                                                name="unitId"
-                                                                value={formulas.unitId || ""}
-                                                                onValueChange={(value) => handleChangee2(value, index, 'unitId')}
-                                                                disabled={!formData.hasFormulas}
-                                                            >
-                                                                <SelectTrigger
-                                                                    className={`w-[100px] ${
-                                                                        !formulas.unitId && errors.formulas?.[index]?.unitId
-                                                                            ? " border-solid border-2 border-red-500"
-                                                                            : ""
-                                                                    }`}
-                                                                >
-                                                                    <SelectValue placeholder="Unité" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {units.length > 0 ? (
-                                                                        units.map((unit) => (
-                                                                            <SelectItem key={unit.id} value={unit.id}>
-                                                                                {unit.unit}
-                                                                            </SelectItem>
-                                                                        ))
-                                                                    ) : (
-                                                                        <p className='text-sm'>Aucune donnée disponible</p>
-                                                                    )}
-                                                                </SelectContent>
-                                                            </Select>
-                                                        </div>
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].quantityFormula}
-                                                            </p>
-                                                        )}
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].unitId && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].unitId}
-                                                            </p>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="space-y-2">
-                                                        <Label>Quantité d'alerte</Label>
-                                                        <Input
-                                                            type="number"
-                                                            name="warningQuantity"
-                                                            value={formulas.warningQuantity !== null && formulas.warningQuantity !== undefined ? formulas.warningQuantity : ""}
-                                                            onChange={(e) => handleChangee2(e.target.value, index, 'warningQuantity')}
-                                                            placeholder="Quantité d'alerte"
-                                                            disabled={!formData.hasFormulas}
-                                                            min="0"
-                                                        />
-                                                        {errors.formulas && errors.formulas[index] && errors.formulas[index].warningQuantity && (
-                                                            <p className="text-xs text-red-500 mt-1">
-                                                                {errors.formulas[index].warningQuantity}
-                                                            </p>
-                                                        )}
-                                                    </div>
-
-                                                    <div className="flex items-end justify-center h-full">
+                                                    <div className="flex justify-end">
                                                         {formData.formulas.length > 1 && (
                                                             <Button 
                                                                 type="button" 
@@ -1069,7 +971,137 @@ export default function AchatCreationForm() {
                                                         )}
                                                     </div>
 
+                                                    <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4'>
+                                                        <div className="space-y-2">
+                                                            <Label>Ingrédient <span className='text-red-500 text-base'>*</span></Label>
+                                                            <Select
+                                                                name="productId"
+                                                                value={formulas.productId || ""}
+                                                                onValueChange={(value) => handleChangee2(value, index, 'productId')}
+                                                                disabled={!formData.hasFormulas}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Sélectionner une Ingrédient" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {product.length > 0 ? (
+                                                                        product
+                                                                            .map((product) => (
+                                                                                <SelectItem key={product.id} value={product.id}>
+                                                                                    {product.productName}
+                                                                                </SelectItem>
+                                                                            ))
+                                                                    ) : (
+                                                                        <p className='text-sm'>Aucune donnée disponible</p>
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].productId && (
+                                                                <p className="text-xs text-red-500 mt-1">
+                                                                    {errors.formulas[index].productId}
+                                                                </p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label>Quantité nécessaire <span className='text-red-500 text-base'>*</span></Label>
+                                                            <div className="flex gap-2">
+                                                                <Input
+                                                                    type="number"
+                                                                    name="quantityFormula"
+                                                                    value={formulas.quantityFormula !== null && formulas.quantityFormula !== undefined ? formulas.quantityFormula : ""}
+                                                                    onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
+                                                                    placeholder='Quantité nécessaire'
+                                                                    disabled={!formData.hasFormulas}
+                                                                    step='any'
+                                                                    min="0"
+                                                                    className="flex-1"
+                                                                />
+                                                                
+                                                                <Select
+                                                                    name="unitId"
+                                                                    value={formulas.unitId || ""}
+                                                                    onValueChange={(value) => handleChangee2(value, index, 'unitId')}
+                                                                    disabled={!formData.hasFormulas}
+                                                                >
+                                                                    <SelectTrigger
+                                                                        className={`w-[100px] ${
+                                                                            !formulas.unitId && errors.formulas?.[index]?.unitId
+                                                                                ? " border-solid border-2 border-red-500"
+                                                                                : ""
+                                                                        }`}
+                                                                    >
+                                                                        <SelectValue placeholder="Unité" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        {units.length > 0 ? (
+                                                                            units.map((unit) => (
+                                                                                <SelectItem key={unit.id} value={unit.id}>
+                                                                                    {unit.unit}
+                                                                                </SelectItem>
+                                                                            ))
+                                                                        ) : (
+                                                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                                                        )}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                            </div>
+                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
+                                                                <p className="text-xs text-red-500 mt-1">
+                                                                    {errors.formulas[index].quantityFormula}
+                                                                </p>
+                                                            )}
+                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].unitId && (
+                                                                <p className="text-xs text-red-500 mt-1">
+                                                                    {errors.formulas[index].unitId}
+                                                                </p>
+                                                            )}
+                                                        </div>
+
+                                                        <div className="space-y-2">
+                                                            <Label>Inventaire</Label>
+                                                            <Select
+                                                                name="inventoryId"
+                                                                value={formulas.inventoryId || ""}
+                                                                onValueChange={(value) => handleChangee2(value, index, 'inventoryId')}
+                                                                disabled={!formulas.productId}
+                                                            >
+                                                                <SelectTrigger>
+                                                                    <SelectValue placeholder="Sélectionner un inventaire" />
+                                                                </SelectTrigger>
+                                                                <SelectContent>
+                                                                    {inventorys.length > 0 ? (
+                                                                        inventorys
+                                                                            .filter((inventory) => inventory.productId === formulas.productId)
+                                                                            .map((inventory) => (
+                                                                                <SelectItem key={inventory.id} value={inventory.id}>
+                                                                                    {inventory.sku} 
+                                                                                </SelectItem>
+                                                                            )).length > 0 ? (
+                                                                                inventorys
+                                                                                    .filter((inventory) => inventory.productId === formulas.productId)
+                                                                                    .map((inventory) => (
+                                                                                        <SelectItem key={inventory.id} value={inventory.id}>
+                                                                                            {inventory.sku} 
+                                                                                        </SelectItem>
+                                                                                    ))
+                                                                            ) : (
+                                                                                <p className='text-sm'>Aucune donnée disponible</p>
+                                                                            )
+                                                                    ) : (
+                                                                        <p className='text-sm'>Aucune donnée disponible</p>
+                                                                    )}
+                                                                </SelectContent>
+                                                            </Select>
+                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].warningQuantity && (
+                                                                <p className="text-xs text-red-500 mt-1">
+                                                                    {errors.formulas[index].warningQuantity}
+                                                                </p>
+                                                            )}
+                                                        </div>
+                                                    </div>
                                                 </div>
+                                                
                                             ))}
                                         </div>
 
@@ -1160,7 +1192,6 @@ export default function AchatCreationForm() {
                                                 <p className="text-xs text-red-500 mt-1">{errors.price?.discountId}</p>
                                             )}
                                         </div>
-
                                     </div>
                                 </TabsContent>
 
