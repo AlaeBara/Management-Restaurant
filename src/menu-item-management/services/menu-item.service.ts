@@ -59,7 +59,9 @@ export class MenuItemService extends GenericService<MenuItem> {
             const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
 
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
-
+            await this.createImages(menuItem, createMenuItemDto, queryRunner, req);
+            await this.setSimpleDiscount(menuItem, createMenuItemDto, queryRunner);
+            
             await queryRunner.commitTransaction();
 
             return menuItem;
@@ -91,6 +93,7 @@ export class MenuItemService extends GenericService<MenuItem> {
 
     private async validateMenuItemData(createMenuItemDto: CreateMenuItemDto) {
         await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
+        
         if (createMenuItemDto.hasRecipe) {
             if (createMenuItemDto.formulas.length === 0) {
                 throw new BadRequestException('Vous devez ajouter au moins un ingrédient');
@@ -117,8 +120,6 @@ export class MenuItemService extends GenericService<MenuItem> {
             delete menuItem.portionProduced;
         }
 
-        await this.createImages(menuItem, dto, queryRunner, req);
-
         return await queryRunner.manager.save(MenuItem, menuItem);
     }
 
@@ -135,7 +136,6 @@ export class MenuItemService extends GenericService<MenuItem> {
 
         if (dto.hasRecipe) {
             await Promise.all(dto.formulas.map(async (formula) => {
-                if (!dto.hasRecipe) return;
                 await this.formulaService.createFormulas(menuItem, formula, queryRunner);
             }));
         }
@@ -144,6 +144,18 @@ export class MenuItemService extends GenericService<MenuItem> {
             await this.translateService.createTranslation(menuItem, translate, queryRunner);
         }));
 
+        await Promise.all(dto.tagIds.map(async (tagId) => {
+            await this.TagService.addTagToMenuItem(menuItem, tagId, queryRunner);
+        }));
+
+    }
+
+    private async setSimpleDiscount(menuItem: MenuItem , dto: CreateMenuItemDto , queryRunner: QueryRunner) {
+        if (dto.discountMethod && dto.discountValue) {
+            menuItem.discountMethod = dto.discountMethod;
+            menuItem.discountValue = dto.discountValue;
+            await queryRunner.manager.save(MenuItem, menuItem);
+        }
     }
 
     async findOneByIdOrFail(id: string) {
@@ -157,17 +169,10 @@ export class MenuItemService extends GenericService<MenuItem> {
         return menuItem;
     }
 
-    async validateMenuItemDeletion(menuItem: MenuItem) {
-        if (menuItem.hasRecipe && menuItem.quantity > 0) {
-            throw new BadRequestException('Le produit de menu ne peut être supprimé car il a une quantité supérieure à 0 . Vous devez d\'abord libérer les quantités en stock.');
-        }
-    }
-
     async deleteMenuItem(id: string) {
         const queryRunner = await this.inizializeQueryRunner();
         try {
             const menuItem = await this.findOneByIdOrFail(id);
-            await this.validateMenuItemDeletion(menuItem);
             await this.translateService.softDeleteTranslations(menuItem, queryRunner);
             await this.formulaService.softDeleteFormulas(menuItem, queryRunner);
             await queryRunner.manager.softDelete(MenuItem, { id: menuItem.id });

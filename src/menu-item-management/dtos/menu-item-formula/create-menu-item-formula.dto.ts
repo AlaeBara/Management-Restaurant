@@ -1,7 +1,6 @@
 import {
     IsNotEmpty,
     IsNumber,
-    IsOptional,
     IsUUID
 } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
@@ -18,7 +17,7 @@ export class CreateMenuItemFormulaDto {
     })
     productId: string;
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsNumber()
     @Transform(({ value }) => Number(value))
     @ApiProperty({
@@ -27,7 +26,7 @@ export class CreateMenuItemFormulaDto {
     })
     quantityFormula: number;
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsUUID()
     @ApiProperty({
         description: 'The unit id used in the formula of the menu item',
@@ -35,7 +34,7 @@ export class CreateMenuItemFormulaDto {
     })
     unitId: string;
 
-    @IsOptional()
+    @IsNotEmpty()
     @IsUUID()
     @ApiProperty({
         description: 'The inventory id used in the formula of the menu item',

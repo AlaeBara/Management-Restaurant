@@ -3,8 +3,7 @@ import {
   IsString, 
   IsNumber, 
   IsBoolean, 
-  IsUUID, 
-  IsUrl, 
+  IsUUID,
   IsOptional, 
   ValidateNested, 
   ArrayMinSize,
@@ -17,6 +16,7 @@ import { ApiProperty } from '@nestjs/swagger';
 
 import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
 import { CreateMenuItemFormulaDto } from '../menu-item-formula/create-menu-item-formula.dto';
+import { DiscountMethod } from 'src/menu-item-management/enums/discount-method';
 
 export class CreateMenuItemDto {
 
@@ -133,6 +133,25 @@ export class CreateMenuItemDto {
       example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
   })
   discountId: string;
+
+  @IsOptional()
+  @IsString()
+  @ApiProperty({
+    description: 'The discount method of the menu item',
+    example: 'PERCENTAGE',
+    required: false,
+  })
+  discountMethod: DiscountMethod;
+
+  @IsOptional()
+  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  @ApiProperty({
+    description: 'The discount value of the menu item',
+    example: '99.99',
+    required: false,
+  })
+  discountValue: number;
 
   @ValidateNested()
   @IsOptional()

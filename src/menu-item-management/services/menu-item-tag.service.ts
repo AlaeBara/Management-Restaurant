@@ -1,4 +1,4 @@
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
 
@@ -32,7 +32,7 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
         await this.validateUniqueExcludingSelf({ tag: updateMenuItemTagDto.tag.toLowerCase() }, id);
         await this.isTagInUse(id, 'update', updateMenuItemTagDto); // check if the tag is in use in the menu item
         const menuItemTag = await this.findOneByIdWithOptions(id);
-        Object.assign(menuItemTag, {...updateMenuItemTagDto, tag: updateMenuItemTagDto.tag.toLowerCase()});
+        Object.assign(menuItemTag, { ...updateMenuItemTagDto, tag: updateMenuItemTagDto.tag.toLowerCase() });
         return this.tagRepository.save(menuItemTag);
     }
 
@@ -74,14 +74,37 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
                 throw new ConflictException('Impossible de supprimer un tag qui est utilisé par des éléments du menu');
             case 'update':
                 // Allow update if validate=true is provided, otherwise warn about impacts
-                if(updateMenuItemTagDto.validate) return;
+                if (updateMenuItemTagDto.validate) return;
                 throw new BadRequestException(
                     `Ce tag est actuellement utilisé par des éléments du menu. ` +
-                    `La modification du nom du tag à "${updateMenuItemTagDto.tag}" ` + 
+                    `La modification du nom du tag à "${updateMenuItemTagDto.tag}" ` +
                     `affectera tous les éléments qui l'utilisent. ` +
                     `Pour confirmer cette modification, veuillez inclure validate=true.`
                 );
         }
+    }
+
+    /**
+     * Adds a tag to a menu item if it doesn't already exist
+     * 
+     * @param menuItem The menu item to add the tag to
+     * @param tagId The ID of the tag to add
+     * @param queryRunner The query runner for transaction management
+     * @returns true if the tag was added, undefined if the tag already exists
+     * @throws NotFoundException if the tag with the given ID is not found
+     */
+    async addTagToMenuItem(menuItem: MenuItem, tagId: string, queryRunner: QueryRunner): Promise<boolean> {
+        // Check if tag already exists on the menu item
+        if (menuItem.tags.some(tag => tag.id === tagId)) {
+            return;
+        }
+
+        const menuItemTag = await this.findOneByIdWithOptions(tagId);
+
+        menuItem.tags.push(menuItemTag);
+        await queryRunner.manager.save(MenuItem, menuItem);
+
+        return true;
     }
 
 }

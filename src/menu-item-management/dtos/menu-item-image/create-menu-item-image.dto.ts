@@ -1,7 +1,7 @@
-import { IsOptional } from "class-validator";
+import { IsNotEmpty } from "class-validator";
 
 
 export class CreateMenuItemImageDto {
-    @IsOptional()
+    @IsNotEmpty()
     images: Express.Multer.File;
 }

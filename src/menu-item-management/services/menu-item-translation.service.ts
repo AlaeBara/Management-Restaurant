@@ -20,15 +20,16 @@ export class MenuItemTranslationService extends GenericService<MenuItemTranslate
         super(dataSource, MenuItemTranslate, 'translate menu item');
     }
 
-     async createTranslation(menuItem: MenuItem, dto: CreateMenuItemTranslate, queryRunner: QueryRunner) {
+    async createTranslation(menuItem: MenuItem, dto: CreateMenuItemTranslate, queryRunner: QueryRunner) {
         const language = await this.languageService.getLanguageByCode(dto.languageId);
+
         const translation = this.translationRepository.create({
-                menuItem: menuItem,
-                language: language,
-                name: dto.name,
+            menuItem: menuItem,
+            language: language,
+            name: dto.name,
             description: dto.description,
         });
-    
+
         await queryRunner.manager.save(MenuItemTranslate, translation);
     }
 

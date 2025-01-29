@@ -17,6 +17,7 @@ import { MenuItemTranslate } from "./menu-item-translation.enity";
 import { MediaLibrary } from "src/media-library-management/entities/media-library.entity";
 import { DiscountStatus } from "../enums/discount-status.enum";
 import { MenuItemDiscount } from "./menu-item-discount.entity";
+import { DiscountMethod } from "../enums/discount-method";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu`)
 @Index(['menuItemSku'])
@@ -72,6 +73,12 @@ export class MenuItem extends BaseEntity {
 
     @ManyToOne(() => MenuItemDiscount, (discount) => discount.id, { nullable: true, eager: true })
     discount: MenuItemDiscount;
+
+    @Column({ type: 'varchar', enum: DiscountMethod, default: null, nullable: true })
+    discountMethod: DiscountMethod | null;
+
+    @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true, default: null })
+    discountValue: number | null;
 
     finalPrice: number;
 

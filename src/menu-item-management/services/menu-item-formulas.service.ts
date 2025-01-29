@@ -26,18 +26,19 @@ export class MenuItemFormulaService extends GenericService<MenuItemFormula> {
 
     async createFormulas(menuItem: MenuItem, dto: CreateMenuItemFormulaDto, queryRunner: QueryRunner) {
         if (dto.quantityFormula <= 0) throw new BadRequestException('La quantité de la recette ne peut être inférieure ou égale à 0');
+        if (menuItem.portionProduced <= 0) throw new BadRequestException('Le nombre de portion produite par recette ne peut être inférieur ou égale à 0');
+        if (!menuItem) throw new BadRequestException('Le produit de menu indéfini');
 
-        const inventory = await this.inventoryService.findOneByIdWithOptions(dto.inventoryId);
-
-        const [product, unit] = await Promise.all([
+        const [product, unit, inventory] = await Promise.all([
             this.productService.findOneByIdWithOptions(dto.productId),
-            this.unitService.findOneByIdWithOptions(dto.unitId)
+            this.unitService.findOneByIdWithOptions(dto.unitId),
+            this.inventoryService.findOneByIdWithOptions(dto.inventoryId)
         ]);
 
         const formula = this.formulaRepository.create({
             menuItem: menuItem,
-            product: product,
             quantityFormula: dto.quantityFormula,
+            product: product,
             inventory: inventory,
             unit: unit,
             quantityRequiredPerPortion: dto.quantityFormula / menuItem.portionProduced,
@@ -59,8 +60,6 @@ export class MenuItemFormulaService extends GenericService<MenuItemFormula> {
             let minQuantity = [];
 
             const formulas = await this.formulaRepository.find({ where: { menuItem: { id: id } }, relations: ['inventory', 'unit', 'product'] });
-
-            console.log('formulas', formulas);
 
             formulas.forEach(async formula => {
                 let quantity = 0;

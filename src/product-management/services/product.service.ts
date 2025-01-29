@@ -29,12 +29,13 @@ export class ProductService extends GenericService<Product> {
             productSKU: createProductDto.productSKU,
             productName: createProductDto.productName
         });
-        console.log(createProductDto);
+
         const product = await this.productRepository.create(createProductDto);
         if (createProductDto.unitId) {
             const unit = await this.unitService.findOneByIdWithOptions(createProductDto.unitId);
             await this.assignUnit(product, unit);
         }
+        
         return this.productRepository.save(product);
     }
 

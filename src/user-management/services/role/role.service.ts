@@ -52,7 +52,6 @@ export class RoleService extends GenericService<Role> {
 
   async findAndGroupPermissionsWithRoleAccess(role: Role) {
     const rolePermissionIds = role.permissions.map((p) => p.id);
-    console.log(rolePermissionIds);
 
     return this.permissionRepository
       .createQueryBuilder('permission')
