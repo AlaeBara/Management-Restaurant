@@ -12,17 +12,12 @@ import { MenuItemService } from './services/menu-item.service';
 import { MenuItemController } from './controllers/menu-item.controller';
 import { UnitModule } from 'src/unit-management/unit.module';
 import { MenuItemFormula } from './entities/menu-item-formula.entity';
-import { MenuItemPrice } from './entities/menu-item-price.entityt';
-import { MenuItemPriceHistory } from './entities/menu-item-price-history.entity';
 import { MenuItemDiscount } from './entities/menu-item-discount.entity';
 import { MenuItemTranslate } from './entities/menu-item-translation.enity';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
-import { MenuItemAllocationMovement } from './entities/menu-item-allocation.entity';
 import { MenuItemDiscountService } from './services/menu-item-discount.service';
 import { MenuItemDiscountController } from './controllers/menu-item-discount.controller';
 import { MenuItemTranslationService } from './services/menu-item-translation.service';
-import { MenuItemPriceService } from './services/menu-item-price.service';
-import { MenuItemPriceHistoryService } from './services/menu-item-price-history.service';
 import { MenuItemFormulaService } from './services/menu-item-formulas.service';
 import { MediaLibraryModule } from 'src/media-library-management/media-library.module';
 import { TagSeeder } from './seeders/tag.seeder';
@@ -33,11 +28,8 @@ import { TagSeeder } from './seeders/tag.seeder';
         MenuItemTag,
         MenuItem,
         MenuItemFormula,
-        MenuItemPrice,
-        MenuItemPriceHistory,
         MenuItemDiscount,
-        MenuItemTranslate,
-        MenuItemAllocationMovement
+        MenuItemTranslate
       ]),
     forwardRef(() => LanguageModule),
     forwardRef(() => CategoryModule),
@@ -55,10 +47,8 @@ import { TagSeeder } from './seeders/tag.seeder';
     MenuItemService,
     MenuItemDiscountService,
     MenuItemTranslationService,
-    MenuItemPriceService,
-    MenuItemPriceHistoryService,
     MenuItemFormulaService,
-    TagSeeder
+    TagSeeder,
   ],
   exports: [
     TagSeeder

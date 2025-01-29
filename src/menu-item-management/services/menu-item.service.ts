@@ -1,5 +1,4 @@
 import { DataSource, IsNull, Not, QueryRunner, Repository } from "typeorm";
-import { MenuItemTag } from "../entities/menu-item-tag.entity";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
@@ -9,9 +8,7 @@ import { CategoryService } from "src/category-management/services/category.servi
 import { MenuItemTagService } from "./menu-item-tag.service";
 import { MenuItemTranslationService } from "./menu-item-translation.service";
 import { LanguageService } from "src/language-management/services/langague.service";
-import { MenuItemPriceService } from "./menu-item-price.service";
 import { MenuItemDiscountService } from "./menu-item-discount.service";
-import { MenuItemPriceHistoryService } from "./menu-item-price-history.service";
 import { ProductService } from "src/product-management/services/product.service";
 import { UnitService } from "src/unit-management/services/unit.service";
 import { MenuItemFormulaService } from "./menu-item-formulas.service";
@@ -19,6 +16,7 @@ import { MediaLibraryService } from "src/media-library-management/services/media
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
+
     constructor(
         @InjectDataSource() public dataSource: DataSource,
         @InjectRepository(MenuItem)
@@ -31,12 +29,8 @@ export class MenuItemService extends GenericService<MenuItem> {
         readonly translateService: MenuItemTranslationService,
         @Inject(forwardRef(() => LanguageService))
         readonly languageService: LanguageService,
-        @Inject(forwardRef(() => MenuItemPriceService))
-        readonly PriceService: MenuItemPriceService,
         @Inject(forwardRef(() => MenuItemDiscountService))
         readonly discountService: MenuItemDiscountService,
-        @Inject(forwardRef(() => MenuItemPriceHistoryService))
-        readonly priceHistoryService: MenuItemPriceHistoryService,
         @Inject(forwardRef(() => ProductService))
         readonly productService: ProductService,
         @Inject(forwardRef(() => UnitService))
@@ -56,106 +50,20 @@ export class MenuItemService extends GenericService<MenuItem> {
         return queryRunner;
     }
 
-    /*  async createMenuItem(createMenuItemDto: CreateMenuItemDto, req: Request) {
-         const queryRunner = await this.inizializeQueryRunner();
-     
-         try {
-             await this.validateMenuItemData(createMenuItemDto);
- 
-             const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
-             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
-             
-             await queryRunner.commitTransaction();
-             return menuItem;
-         } catch (error) {
-             await queryRunner.rollbackTransaction();
-             throw new BadRequestException(error.message);
-         } finally {
-             await queryRunner.release();
-         }
-     } */
-
-    /*  private async validateMenuItemData(createMenuItemDto: CreateMenuItemDto) {
-         await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
-         if (createMenuItemDto.hasFormulas) {
-             if (createMenuItemDto.formulas.length === 0) {
-                 throw new BadRequestException('Vous devez ajouter au moins une formule');
-             }
-         }
-     } */
-
-    /*  private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
-         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
-         const menuItem = this.menuItemRepository.create({
-             ...dto,
-             category: category,
-             tags: [],
-             translates: [],
-             formulas: [],
-             price: null,
-             images: [],
-         });
- 
-         if(dto.portionProduced && dto.hasFormulas){
-             // has formulas instead of portionProduced
-             menuItem.portionProduced = dto.portionProduced;
-         }else{
-             delete menuItem.portionProduced;
-         }
-     
-         // Add tags
-         await Promise.all(dto.tagIds.map(async (tagId) => {
-             const tag = await this.TagService.findOneByIdWithOptions(tagId);
-             menuItem.tags.push(tag);
-         }));
- 
-         //await this.createImages(menuItem, dto, queryRunner, req);
-     
-         return await queryRunner.manager.save(MenuItem, menuItem);
-     } */
-
-    /* private async createImages(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
-        await Promise.all(dto.images.map(async (image) => {
-            const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub);
-            menuItem.images.push(mediaLibrary);
-        }));
-    } */
-
-    /*  private async createRelatedEntities(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-         await Promise.all([
-             dto.formulas.map(async (formula) => {
-                 if (!dto.hasFormulas) return;
-                 await this.formulaService.createFormulas(menuItem, formula, queryRunner);
-             }),
- 
-             dto.translates.map(async (translate) => {
-                 await this.translateService.createTranslation(menuItem, translate, queryRunner);
-             }),
- 
-             this.priceHistoryService.createPriceAndHistory(menuItem, dto.price, queryRunner)
-         ]);
-     } */
-
     async createMenuItem(createMenuItemDto: CreateMenuItemDto, req: Request) {
-        console.log('Starting createMenuItem with dto:', createMenuItemDto);
         const queryRunner = await this.inizializeQueryRunner();
 
         try {
-            console.log('Validating menu item data...');
             await this.validateMenuItemData(createMenuItemDto);
 
-            console.log('Creating base menu item...');
             const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
 
-            console.log('Creating related entities...');
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
 
-            console.log('Committing transaction...');
             await queryRunner.commitTransaction();
-            console.log('MenuItem created successfully:', menuItem);
+
             return menuItem;
         } catch (error) {
-            console.error('Error in createMenuItem:', error);
             await queryRunner.rollbackTransaction();
             throw new BadRequestException(error.message);
         } finally {
@@ -163,74 +71,79 @@ export class MenuItemService extends GenericService<MenuItem> {
         }
     }
 
+    async recalculateQuantityBasedOnStock(menuItem: MenuItem) {
+        return this.formulaService.recalculateQuantityBasedOnStock(menuItem.id);
+    }
+
+    async refreshQuantity(id: string) {
+        const menuItem = await this.findOneByIdWithOptions(id,
+            {
+                findOrThrow: false
+            }
+        );
+
+        if (!menuItem.hasRecipe) {
+            throw new BadRequestException('Le produit de menu ne contient pas de recette avec des ingrédients, vous ne pouvez pas recalculer la quantité');
+        }
+
+        return this.formulaService.recalculateQuantityBasedOnStock(id);
+    }
+
     private async validateMenuItemData(createMenuItemDto: CreateMenuItemDto) {
-        console.log('Validating unique SKU:', createMenuItemDto.menuItemSku);
         await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
-        if (createMenuItemDto.hasFormulas) {
-            console.log('Checking formulas:', createMenuItemDto.formulas);
+        if (createMenuItemDto.hasRecipe) {
             if (createMenuItemDto.formulas.length === 0) {
-                throw new BadRequestException('Vous devez ajouter au moins une formule');
+                throw new BadRequestException('Vous devez ajouter au moins un ingrédient');
             }
         }
     }
 
     private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
-        console.log('Finding category with ID:', dto.categoryId);
+
         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
-        console.log('Creating menu item with category:', category);
+
         const menuItem = this.menuItemRepository.create({
             ...dto,
             category: category,
             tags: [],
             translates: [],
             formulas: [],
-            price: null,
             images: [],
         });
 
-        if (dto.portionProduced && dto.hasFormulas) {
-            console.log('Setting portionProduced:', dto.portionProduced);
+        if (dto.portionProduced && dto.hasRecipe) {
             menuItem.portionProduced = dto.portionProduced;
         } else {
-            console.log('Removing portionProduced field');
             delete menuItem.portionProduced;
         }
 
-        console.log('Creating images...');
         await this.createImages(menuItem, dto, queryRunner, req);
 
-        console.log('Saving base menu item...');
         return await queryRunner.manager.save(MenuItem, menuItem);
     }
 
     private async createImages(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
-        console.log('Processing images:', dto.images);
+
         await Promise.all(dto.images.map(async (image) => {
-            console.log('Creating media library for image:', image);
-            const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub);
+            const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub, queryRunner);
             menuItem.images.push(mediaLibrary);
         }));
+
     }
 
     private async createRelatedEntities(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        console.log('Creating related entities for menu item:', menuItem.id);
-  
 
-            if(dto.hasFormulas){
-                await Promise.all(dto.formulas.map(async (formula) => {
-                    if (!dto.hasFormulas) return;
-                    console.log('Creating formula:', formula);
-                    await this.formulaService.createFormulas(menuItem, formula, queryRunner);
-                }));            }
-
-            await Promise.all(dto.translates.map(async (translate) => {
-                console.log('Creating translation:', translate);
-                await this.translateService.createTranslation(menuItem, translate, queryRunner);
+        if (dto.hasRecipe) {
+            await Promise.all(dto.formulas.map(async (formula) => {
+                if (!dto.hasRecipe) return;
+                await this.formulaService.createFormulas(menuItem, formula, queryRunner);
             }));
+        }
 
-           await this.priceHistoryService.createPriceAndHistory(menuItem, dto.price, queryRunner)
-   
-        console.log('Finished creating related entities');
+        await Promise.all(dto.translates.map(async (translate) => {
+            await this.translateService.createTranslation(menuItem, translate, queryRunner);
+        }));
+
     }
 
     async findOneByIdOrFail(id: string) {
@@ -245,7 +158,7 @@ export class MenuItemService extends GenericService<MenuItem> {
     }
 
     async validateMenuItemDeletion(menuItem: MenuItem) {
-        if (menuItem.hasFormulas && menuItem.quantity > 0) {
+        if (menuItem.hasRecipe && menuItem.quantity > 0) {
             throw new BadRequestException('Le produit de menu ne peut être supprimé car il a une quantité supérieure à 0 . Vous devez d\'abord libérer les quantités en stock.');
         }
     }
@@ -257,7 +170,6 @@ export class MenuItemService extends GenericService<MenuItem> {
             await this.validateMenuItemDeletion(menuItem);
             await this.translateService.softDeleteTranslations(menuItem, queryRunner);
             await this.formulaService.softDeleteFormulas(menuItem, queryRunner);
-            await this.PriceService.softDeletePrice(menuItem, queryRunner);
             await queryRunner.manager.softDelete(MenuItem, { id: menuItem.id });
             await queryRunner.commitTransaction();
         } catch (error) {
@@ -269,7 +181,6 @@ export class MenuItemService extends GenericService<MenuItem> {
     }
 
     async findDeletedOneByIdOrFail(id: string) {
-        console.log(id);
         const menuItem = await this.menuItemRepository.findOne({
             where: {
                 id,
@@ -277,15 +188,18 @@ export class MenuItemService extends GenericService<MenuItem> {
             },
             withDeleted: true
         });
-        console.log(menuItem);
+
         if (!menuItem) throw new BadRequestException('Le produit de menu supprimé n\'existe pas');
+
         const doubleSku = await this.menuItemRepository.findOne({
             where: {
                 menuItemSku: menuItem.menuItemSku
             },
             withDeleted: false
         });
+
         if (doubleSku) throw new BadRequestException('Un produit de menu avec le même SKU existe déjà');
+
         return menuItem;
     }
 
@@ -295,7 +209,6 @@ export class MenuItemService extends GenericService<MenuItem> {
             const menuItem = await this.findDeletedOneByIdOrFail(id);
             await this.translateService.restoreTranslations(menuItem, queryRunner);
             await this.formulaService.restoreFormulas(menuItem, queryRunner);
-            await this.PriceService.restorePrice(menuItem, queryRunner);
             await queryRunner.manager.restore(MenuItem, { id: id });
             await queryRunner.commitTransaction();
         } catch (error) {
@@ -305,4 +218,5 @@ export class MenuItemService extends GenericService<MenuItem> {
             await queryRunner.release();
         }
     }
+
 }

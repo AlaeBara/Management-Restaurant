@@ -3,20 +3,24 @@ import { AfterLoad, Column, Entity, Index, ManyToMany, ManyToOne } from "typeorm
 import { MenuItem } from "./menu-item.entity";
 import { Product } from "src/product-management/entities/product.entity";
 import { Unit } from "src/unit-management/entities/unit.entity";
+import { Inventory } from "src/inventory-managemet/entities/inventory.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_formula`)
 export class MenuItemFormula extends BaseEntity {
     @ManyToOne(() => Product, (product) => product.id, { nullable: false, eager: true })
     product: Product;
 
-    productName: string;
-    productId: string;
+    @ManyToOne(() => Inventory, (inventory) => inventory.id, { nullable: true, eager: true })
+    inventory: Inventory;
+
+    /* productName: string;
+    productId: string; */
 
     @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
     currentQuantity: number;
 
-    @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
-    warningQuantity: number;
+   /*  @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
+    warningQuantity: number; */
 
     @Column({ type: 'numeric', precision: 10, scale: 2 })
     quantityFormula: number;
@@ -24,7 +28,7 @@ export class MenuItemFormula extends BaseEntity {
     @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true })
     quantityRequiredPerPortion: number;
 
-    @ManyToOne(() => Unit, (unit) => unit.id, { nullable: true, eager: true })
+    @ManyToOne(() => Unit, (unit) => unit.id, { nullable: false, eager: true })
     unit: Unit;
 
     unitName: string;
@@ -39,7 +43,7 @@ export class MenuItemFormula extends BaseEntity {
     })
     menuItem: MenuItem;
 
-    @AfterLoad()
+    /* @AfterLoad()
     setNames() {
         console.log(this.unit);
         this.productName = this.product.productName;
@@ -48,5 +52,5 @@ export class MenuItemFormula extends BaseEntity {
         this.unitName = this.unit.unit;
         this.unitId = this.unit.id;
         delete this.unit;
-    }
+    } */
 }

@@ -1,8 +1,9 @@
 import { DataSource, Repository } from "typeorm";
-import { MenuItemTag } from "../entities/menu-item-tag.entity";
-import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { BadRequestException, ConflictException, Injectable } from "@nestjs/common";
+
+import { MenuItemTag } from "../entities/menu-item-tag.entity";
+import { GenericService } from "src/common/services/generic.service";
 import { CreateMenuItemTagDto } from "../dtos/menu-item-tag/create-menu-item-tag.dto";
 import { MenuItem } from "../entities/menu-item.entity";
 import { UpdateMenuItemTagDto } from "../dtos/menu-item-tag/update-menu-item-tag.dto";
@@ -82,4 +83,5 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
                 );
         }
     }
+
 }

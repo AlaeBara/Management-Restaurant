@@ -69,4 +69,8 @@ export class InventoryService extends GenericService<Inventory> {
     async deleteInventory(id: string): Promise<DeleteResult> {
         return this.inventoryRepository.softDelete(id);
     }
+
+    async getInventoryByProductId(productId: string): Promise<Inventory[]> {
+        return this.inventoryRepository.find({ where: { product: { id: productId } } });
+    }
 }

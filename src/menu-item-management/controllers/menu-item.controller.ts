@@ -1,4 +1,4 @@
-import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
+import { Body, Controller, Delete, forwardRef, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { MenuItemTagService } from "../services/menu-item-tag.service";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 import { Inventory } from "src/inventory-managemet/entities/inventory.entity";
@@ -9,6 +9,7 @@ import { MenuItemService } from "../services/menu-item.service";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
+import { MenuItemFormulaService } from "../services/menu-item-formulas.service";
 
 
 @Controller('api/menu-items')
@@ -16,8 +17,10 @@ import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
 @ApiBearerAuth()
 export class MenuItemController {
     constructor(
-        @Inject()
-        private readonly menuItemService: MenuItemService
+        @Inject(forwardRef(() => MenuItemService))
+        private readonly menuItemService: MenuItemService,
+        @Inject(forwardRef(() => MenuItemFormulaService))
+        private readonly menuItemFormulasService: MenuItemFormulaService
     ) {
     }
 
@@ -90,6 +93,15 @@ export class MenuItemController {
     async restoreMenuItem(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemService.restoreMenuItem(id);
         return { message: 'Super! Vot produit de menu a été restauré avec succès', status: 200 };
+    }
+
+
+    @Put(':id/refresh-quantity')
+    @Permissions('refresh-menu-item-quantity')
+    @ApiOperation({ summary: 'Refresh the quantity of a menu item' })
+    async refreshQuantity(@Param('id', ParseUUIDPipe) id: string) {
+        const quantity = await this.menuItemService.refreshQuantity(id);
+        return { message: 'Super! La quantité du produit de menu a été recalculée avec succès', quantity, status: 200 };
     }
 
 }

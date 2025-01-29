@@ -1,13 +1,12 @@
 import { DataSource, QueryRunner, Repository } from "typeorm";
-import { MenuItemTag } from "../entities/menu-item-tag.entity";
-import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { Injectable } from "@nestjs/common";
+
+import { GenericService } from "src/common/services/generic.service";
 import { MenuItemTranslate } from "../entities/menu-item-translation.enity";
 import { MenuItem } from "../entities/menu-item.entity";
 import { LanguageService } from "src/language-management/services/langague.service";
 import { CreateMenuItemTranslate } from "../dtos/menu-item-translate/create-menu-item-translation.dto";
-import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 
 @Injectable()
 export class MenuItemTranslationService extends GenericService<MenuItemTranslate> {
@@ -32,20 +31,6 @@ export class MenuItemTranslationService extends GenericService<MenuItemTranslate
     
         await queryRunner.manager.save(MenuItemTranslate, translation);
     }
-
- /*    private async createTranslations(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        const translations = await Promise.all(dto.translates.map(async (translate) => {
-            const language = await this.languageService.getLanguageByCode(translate.languageId);
-            return this.translateService.translationRepository.create({
-                menuItem: menuItem,
-                language: language,
-                name: translate.name,
-                description: translate.description,
-            });
-        }));
-    
-        await queryRunner.manager.save(MenuItemTranslate, translations);
-    } */
 
     async softDeleteTranslations(menuItem: MenuItem, queryRunner: QueryRunner) {
         await queryRunner.manager.softDelete(MenuItemTranslate, { menuItem: { id: menuItem.id } });

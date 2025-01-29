@@ -5,18 +5,19 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { MenuItemDiscount } from "../entities/menu-item-discount.entity";
 import { CreateDiscountDto } from "../dtos/menu-item-discount/create-discount.dto";
 import { UpdateDiscountDto } from "../dtos/menu-item-discount/update-discount.dto";
-import { MenuItemPrice } from "../entities/menu-item-price.entityt";
 import { DiscountMethod } from "../enums/discount-method";
 import { DiscountType } from "../enums/discount-type.enum";
+import { MenuItem } from "../entities/menu-item.entity";
 
 @Injectable()
 export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
+
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemDiscount)
         readonly discountRepository: Repository<MenuItemDiscount>,
-        @InjectRepository(MenuItemPrice)
-        readonly priceRepository: Repository<MenuItemPrice>,
+        @InjectRepository(MenuItem)
+        readonly menuItemRepository: Repository<MenuItem>,
     ) {
         super(dataSource, MenuItemDiscount, 'discount');
     }
@@ -89,7 +90,7 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     }
 
     async countDiscountInUse(discountId: string): Promise<boolean> {
-        const count = await this.priceRepository.count({
+        const count = await this.menuItemRepository.count({
             where: { discount: { id: discountId } },
             withDeleted: false
         });
@@ -106,4 +107,5 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
         }
         return price;
     }
+
 }

@@ -105,4 +105,11 @@ export class InventoryController {
         await this.inventoryService.restoreByUUID(id, true, ['sku']);
         return { message: 'Super! Votre stock a été restauré avec succès', status: 200 };
     }
+
+    @Get('product/:productId')
+    @Permissions('view-inventory')
+    @ApiOperation({ summary: 'Get an inventory by product id' })
+    async getInventoryByProductId(@Param('productId', ParseUUIDPipe) productId: string) {
+        return this.inventoryService.getInventoryByProductId(productId);
+    }
 }

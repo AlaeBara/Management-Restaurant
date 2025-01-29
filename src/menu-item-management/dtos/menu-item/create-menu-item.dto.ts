@@ -13,12 +13,13 @@ import {
   Min,
   IsArray
 } from 'class-validator';
-import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
-import { CreateMenuItemPriceDto } from '../menu-item-price/create-menu-item-price.dto';
-import { CreateMenuItemFormulaDto } from '../menu-item-formula/create-menu-item-formula.dto';
 import { ApiProperty } from '@nestjs/swagger';
 
+import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
+import { CreateMenuItemFormulaDto } from '../menu-item-formula/create-menu-item-formula.dto';
+
 export class CreateMenuItemDto {
+
   @IsString()
   @IsNotEmpty()
   @Length(3, 15)
@@ -29,7 +30,7 @@ export class CreateMenuItemDto {
   menuItemSku: string;
 
   @IsNumber()
-  //@Min(0)
+  @IsOptional()
   @Transform(({ value }) => Number(value))
   @ApiProperty({
     description: 'The quantity of the menu item',
@@ -38,6 +39,7 @@ export class CreateMenuItemDto {
   quantity: number;
 
   @IsNumber()
+  @IsOptional()
   @Min(0)
   @Transform(({ value }) => Number(value))
   @ApiProperty({
@@ -87,15 +89,6 @@ export class CreateMenuItemDto {
   })
   translates: CreateMenuItemTranslate[];
 
-  @ValidateNested()
-  @Type(() => CreateMenuItemPriceDto)
-  @IsNotEmpty()
-  @ApiProperty({
-    description: 'The price of the menu item',
-    example: { basePrice: 10, discountId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2' }
-  })
-  price: CreateMenuItemPriceDto;
-
   @IsNumber()
   @IsOptional()
   @Transform(({ value }) => Number(value))
@@ -112,7 +105,7 @@ export class CreateMenuItemDto {
     description: 'The has formulas status of the menu item',
     example: 'true'
   })
-  hasFormulas: boolean;
+  hasRecipe: boolean;
 
   @ValidateNested()
   @Type(() => CreateMenuItemFormulaDto)
@@ -123,8 +116,27 @@ export class CreateMenuItemDto {
   })
   formulas: CreateMenuItemFormulaDto[];
 
+  @IsNotEmpty()
+  @IsNumber()
+  @Transform(({ value }) => Number(value))
+  @ApiProperty({
+      description: 'The price of the menu item',
+      example: '99.99'
+  })
+  basePrice: number;
+
+  @IsOptional()
+  @IsUUID()
+  @IsString()
+  @ApiProperty({
+      description: 'The discount id of the menu item',
+      example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
+  })
+  discountId: string;
+
   @ValidateNested()
   @IsOptional()
   @IsArray()
   images?: Express.Multer.File[];
+
 }

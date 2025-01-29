@@ -1,8 +1,11 @@
-import { IsNotEmpty, IsNumber, IsOptional, IsUUID, ValidateIf } from "class-validator";
-import { IsString } from "class-validator";
+import {
+    IsNotEmpty,
+    IsNumber,
+    IsOptional,
+    IsUUID
+} from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
-import { MaxLength, MinLength } from "class-validator";
-import { BadRequestException } from "@nestjs/common";
+import { Transform } from "class-transformer";
 
 
 export class CreateMenuItemFormulaDto {
@@ -17,21 +20,12 @@ export class CreateMenuItemFormulaDto {
 
     @IsOptional()
     @IsNumber()
-    @ApiProperty({
-        description: 'The warning quantity of the menu item',
-        example: '10'
-    })
-    warningQuantity: number;
-
-    @IsOptional()
-    @IsNumber()
+    @Transform(({ value }) => Number(value))
     @ApiProperty({
         description: 'The quantity used in the formula of the menu item',
         example: '10'
     })
     quantityFormula: number;
-
-   
 
     @IsOptional()
     @IsUUID()
@@ -40,5 +34,13 @@ export class CreateMenuItemFormulaDto {
         example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
     })
     unitId: string;
-  
+
+    @IsOptional()
+    @IsUUID()
+    @ApiProperty({
+        description: 'The inventory id used in the formula of the menu item',
+        example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
+    })
+    inventoryId: string;
+
 }
