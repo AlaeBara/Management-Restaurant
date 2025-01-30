@@ -34,7 +34,7 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
             .nullable()
             .optional(),
 
-        quantityFormula:z.coerce
+        ingredientQuantity:z.coerce
             .number({
                 required_error: "Le Quantité dans la formule est obligatoire.",
                 invalid_type_error: "Le Quantité dans la formule doit être un nombre.",
@@ -65,7 +65,7 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
     const ProductSchema = z.object({
         //Formule
-        formulas: z.array(fomulastemSchema).nullable().optional(),
+        recipe: z.array(fomulastemSchema).nullable().optional(),
 
         //Tag  
         tagIds: z
@@ -101,7 +101,7 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
         isDraft: z.boolean().optional(),
 
-        hasFormulas: z.boolean().optional(),
+        hasRecipe: z.boolean().optional(),
 
         categoryId:  z
             .string()
@@ -115,8 +115,31 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
             })
             .nonnegative({ message: "Le Portion produite doit être un nombre positif." }).optional(),
 
-    });
+        basePrice: z.coerce
+            .number({
+                required_error: "Le prix de base est obligatoire.",
+                invalid_type_error: "Le prix de base doit être un nombre.",
+            })
+            .nonnegative({ message: "Le prix doit être un nombre positif." }),
 
+        discountId:z
+            .string()
+            .nullable()
+            .optional(),
+
+        discountMethod :z
+            .string()
+            .nullable()
+            .optional(),
+
+        discountValue: z.coerce
+            .number({
+                required_error: "Le valeur de remise est obligatoire.",
+                invalid_type_error: "Le valeur de remise doit être un nombre.",
+            })
+            .nonnegative({ message: "Le valeur de remise doit être un nombre positif." }).optional(),
+
+    });
 
 
 export default function AchatCreationForm() {
@@ -134,9 +157,6 @@ export default function AchatCreationForm() {
     //api for get All inventaire of product
     const {inventorys, totalIventory, loading, error, fetchIventory}=useFetchIventory()
 
-
-    
-
     useEffect(() => {
         fetchTags({fetchAll: true });
         fetchCategorie({fetchAll: true });
@@ -148,8 +168,6 @@ export default function AchatCreationForm() {
     }, [fetchTags,fetchCategorie,fetchLangage,fetchProduct,fetchUnits,fetchIventory]);
 
 
-  
-
     const [formData, setFormData] = useState({
         menuItemSku: '',
         quantity: '',
@@ -157,54 +175,58 @@ export default function AchatCreationForm() {
         isPublished: false,
         isDraft: false,
         categoryId: '',
-        hasFormulas: false,
+        hasRecipe: false,
         portionProduced:  null,
-        formulas: [
+        recipe: [
             {
                 productId: '',
                 inventoryId:  '',
-                quantityFormula: null,
+                ingredientQuantity: null,
                 unitId: ''
             }
         ],
         tagIds: [],
         translates: [
             {
-                languageId: '',
+                languageId:'',
                 name: '',
                 description: ''
             }
         ],
-        price: {
-            basePrice: null,
-            discountId: ''
-        },
-        images: [] 
+        images: [] ,
+        basePrice: null,
+        discountId: '',
+        typeDiscount : 'avancer',
+        discountValue: null,
+        discountMethod: ''
     });
+
+
+    useEffect(() => {
+        if (langages.length > 0) {
+            const frenchLangId = langages.find(lang => lang.label === "Français")?.id || "";
+            setFormData((prev) => ({
+                ...prev,
+                translates: [
+                    {
+                        ...prev.translates[0],
+                        languageId: frenchLangId,
+                    },
+                ],
+            }));
+        }
+    }, [langages]);
     
     
     const handleChange = (e) => {
         const { name, value } = e.target;
-    
         setFormData((prevFormData) => {
-            if (name === "basePrice" || name === "discountId") {
-                return {
-                    ...prevFormData,
-                    price: {
-                        ...prevFormData.price,
-                        [name]: value,
-                    },
-                };
-            }
-    
             return {
                 ...prevFormData,
                 [name]: value,
             };
         });
     };
-
-   
 
 
     //for images 
@@ -258,7 +280,7 @@ export default function AchatCreationForm() {
     };
 
     const handleChangee2 = (value, index, field) => {
-        const numericFields = ['quantityFormula', 'portionProduced'];
+        const numericFields = ['ingredientQuantity', 'portionProduced'];
     
         // Process the value based on the field type
         let processedValue;
@@ -271,7 +293,7 @@ export default function AchatCreationForm() {
         }
     
         // Update the specific formula in the formulas array
-        const updatedItems = [...formData.formulas];
+        const updatedItems = [...formData.recipe];
         updatedItems[index] = {
             ...updatedItems[index],
             [field]: processedValue
@@ -280,7 +302,7 @@ export default function AchatCreationForm() {
         // Update the formData state
         setFormData(prevFormData => ({
             ...prevFormData,
-            formulas: updatedItems
+            recipe: updatedItems
         }));
     };
 
@@ -306,10 +328,10 @@ export default function AchatCreationForm() {
     const addFormule = () => {
         setFormData({
             ...formData,
-            formulas: [...formData.formulas, {
+            recipe: [...formData.recipe, {
                 productId: '',
                 inventoryId: '',
-                quantityFormula: null,
+                ingredientQuantity: null,
                 unitId: ''
             }]
         });
@@ -317,9 +339,10 @@ export default function AchatCreationForm() {
 
     // Remove Formule row
     const removeFormule= (index) => {
-        const newFormulas = formData.formulas.filter((_, i) => i !== index);
-        setFormData({ ...formData, formulas: newFormulas });
+        const newFormulas = formData.recipe.filter((_, i) => i !== index);
+        setFormData({ ...formData, recipe: newFormulas });
     };
+
 
 
     // Submit handler
@@ -331,8 +354,11 @@ export default function AchatCreationForm() {
 
         try {
             // Parse numeric fields
-            if (formData.price.basePrice) {
-                formData.price.basePrice = parseFloat(formData.price.basePrice);
+            if (formData.basePrice) {
+                formData.basePrice = parseFloat(formData.basePrice);
+            }
+            if (formData.discountValue) {
+                formData.discountValue = parseFloat(formData.discountValue);
             }
 
             if(formData.quantity){
@@ -346,14 +372,19 @@ export default function AchatCreationForm() {
             }
             
 
-            // Custom validation for price.basePrice
+            // Custom validation price section
             let customErrors = {};
-            if (!formData.price.basePrice) {
-                customErrors.price = customErrors.price || {};
-                customErrors.price.basePrice = "Le prix de base est obligatoire.";
-            } else if (formData.price.basePrice < 0) {
-                customErrors.price = customErrors.price || {};
-                customErrors.price.basePrice = "Le prix doit être un nombre positif.";
+            if (formData.typeDiscount === 'avancer') {
+                if (!formData.discountId) {
+                    customErrors.discountId = "Le nom de la réduction est obligatoire.";
+                }
+            } else {
+                if (!formData.discountMethod) {
+                    customErrors.discountMethod = "Le type de remise est obligatoire.";
+                }
+                if (formData.discountValue === null || formData.discountValue === '') {
+                    customErrors.discountValue = "La valeur de remise est obligatoire.";
+                }
             }
 
             //Custom validation for warningQuantity
@@ -362,32 +393,39 @@ export default function AchatCreationForm() {
             } else if (formData.warningQuantity < 0) {
                 customErrors.warningQuantity = "Le Quantité d'alerte doit être un nombre positif.";
             }
+
+            //Custom validation for warningQuantity
+            if (formData.basePrice === null || formData.basePrice === undefined || formData.basePrice === "") {
+                customErrors.basePrice = "Le Quantité d'alerte est obligatoire.";
+            } else if (formData.basePrice < 0) {
+                customErrors.basePrice = "Le Quantité d'alerte doit être un nombre positif.";
+            }
     
-            // Validate formulas if hasFormulas is true
-            if (formData.hasFormulas) {
-                if (!formData.formulas || formData.formulas.length === 0) {
+            // Validate formulas if hasRecipe is true
+            if (formData.hasRecipe) {
+                if (!formData.recipe || formData.recipe.length === 0) {
                     customErrors.formulas = "Au moins une recette est requise.";
                 } else {
-                    formData.formulas.forEach((formula, index) => {
+                    formData.recipe.forEach((formula, index) => {
                         if (!formula.productId) {
-                            customErrors.formulas = customErrors.formulas || [];
-                            customErrors.formulas[index] = customErrors.formulas[index] || {};
-                            customErrors.formulas[index].productId = "L'ingrédient est obligatoire.";
+                            customErrors.recipe = customErrors.recipe || [];
+                            customErrors.recipe[index] = customErrors.recipe[index] || {};
+                            customErrors.recipe[index].productId = "L'ingrédient est obligatoire.";
                         }
-                        if (!formula.quantityFormula) {
-                            customErrors.formulas = customErrors.formulas || [];
-                            customErrors.formulas[index] = customErrors.formulas[index] || {};
-                            customErrors.formulas[index].quantityFormula = "La quantité nécessaire est obligatoire.";
+                        if (!formula.ingredientQuantity) {
+                            customErrors.recipe = customErrors.recipe || [];
+                            customErrors.recipe[index] = customErrors.recipe[index] || {};
+                            customErrors.recipe[index].ingredientQuantity = "La quantité nécessaire est obligatoire.";
                         }
                         if (!formula.unitId) {
-                            customErrors.formulas = customErrors.formulas || [];
-                            customErrors.formulas[index] = customErrors.formulas[index] || {};
-                            customErrors.formulas[index].unitId = "L'unité est obligatoire.";
+                            customErrors.recipe = customErrors.recipe || [];
+                            customErrors.recipe[index] = customErrors.recipe[index] || {};
+                            customErrors.recipe[index].unitId = "L'unité est obligatoire.";
                         }
                         if (!formula.inventoryId) {
-                            customErrors.formulas = customErrors.formulas || [];
-                            customErrors.formulas[index] = customErrors.formulas[index] || {};
-                            customErrors.formulas[index].inventoryId = "L'inventaire est obligatoire.";
+                            customErrors.recipe = customErrors.recipe || [];
+                            customErrors.recipe[index] = customErrors.recipe[index] || {};
+                            customErrors.recipe[index].inventoryId = "L'inventaire est obligatoire.";
                         }
                         if (!formData.portionProduced) {
                             customErrors.portionProduced = "Le Portion produite est obligatoire.";
@@ -396,12 +434,12 @@ export default function AchatCreationForm() {
                 }
             }
 
-            if (!formData.hasFormulas) {
+            if (!formData.hasRecipe) {
                 if (!formData.quantity) {
                     customErrors.quantity = "Le Quantité  est obligatoire.";
                 }
             }
-    
+
             // Validate the form data against the schema
             let schemaErrors = {};
             try {
@@ -413,7 +451,7 @@ export default function AchatCreationForm() {
     
                         if (path.length === 1) {
                             acc[path[0]] = message;
-                        } else if (path[0] === 'formulas' || path[0] === 'translates') {
+                        } else if (path[0] === 'recipe' || path[0] === 'translates') {
                             const [field, index, subfield] = path;
                             acc[field] = acc[field] || [];
                             acc[field][index] = acc[field][index] || {};
@@ -436,15 +474,18 @@ export default function AchatCreationForm() {
                 console.log(allErrors)
                 return;
             }
-            if (formData.price.discountId === "") {
-                formData.price.discountId = null;
+            if (!formData.hasRecipe) {
+                formData.recipe = [];
             }
-            if (!formData.hasFormulas) {
-                formData.formulas = [];
-            }
-
-            if (formData.hasFormulas) {
+            if (formData.hasRecipe) {
                 formData.quantity= null;
+            }
+            if (formData.typeDiscount === 'avancer') {
+                formData.discountMethod=null
+                formData.discountValue=null
+            }
+            else{
+                formData.discountId=null
             }
     
             const preparedData = Object.fromEntries(
@@ -452,55 +493,6 @@ export default function AchatCreationForm() {
             );
 
             console.log(preparedData)
-
-            // const formDataObject = new FormData();
-
-            // // Append simple fields if they exist and have a value
-            // if (preparedData.menuItemSku) formDataObject.append('menuItemSku', preparedData.menuItemSku);
-            // if (preparedData.quantity !== null && preparedData.quantity !== "") formDataObject.append('quantity', preparedData.quantity);
-            // if (preparedData.warningQuantity !== null && preparedData.warningQuantity !== "") formDataObject.append('warningQuantity', preparedData.warningQuantity);
-            // if (preparedData.isPublished !== null && preparedData.isPublished !== "") formDataObject.append('isPublished', preparedData.isPublished);
-            // if (preparedData.isDraft !== null && preparedData.isDraft !== "") formDataObject.append('isDraft', preparedData.isDraft);
-            // if (preparedData.categoryId) formDataObject.append('categoryId', preparedData.categoryId);
-            // if (preparedData.hasFormulas !== null && preparedData.hasFormulas !== "") formDataObject.append('hasFormulas', preparedData.hasFormulas);
-            // if (preparedData.portionProduced !== null && preparedData.portionProduced !== "") formDataObject.append('portionProduced', preparedData.portionProduced);
-
-            // // Append price fields if they exist and have a value
-            // if (preparedData.price?.basePrice !== null && preparedData.price?.basePrice !== "") formDataObject.append('price[basePrice]', preparedData.price.basePrice);
-            // if (preparedData.price?.discountId !== null && preparedData.price?.discountId !== "") formDataObject.append('price[discountId]', preparedData.price.discountId);
-
-            // // Append formulas array if it exists and has items
-            // if (preparedData.formulas && preparedData.formulas.length > 0) {
-            //     preparedData.formulas.forEach((formula, index) => {
-            //         if (formula.productId) formDataObject.append(`formulas[${index}][productId]`, formula.productId);
-            //         if (formula.warningQuantity !== null && formula.warningQuantity !== "") formDataObject.append(`formulas[${index}][warningQuantity]`, formula.warningQuantity);
-            //         if (formula.quantityFormula !== null && formula.quantityFormula !== "") formDataObject.append(`formulas[${index}][quantityFormula]`, formula.quantityFormula);
-            //         if (formula.unitId) formDataObject.append(`formulas[${index}][unitId]`, formula.unitId);
-            //     });
-            // }
-
-            // // Append translates array if it exists and has items
-            // if (preparedData.translates && preparedData.translates.length > 0) {
-            //     preparedData.translates.forEach((translate, index) => {
-            //         if (translate.languageId) formDataObject.append(`translates[${index}][languageId]`, translate.languageId);
-            //         if (translate.name) formDataObject.append(`translates[${index}][name]`, translate.name);
-            //         if (translate.description) formDataObject.append(`translates[${index}][description]`, translate.description);
-            //     });
-            // }
-
-            // // Append tagIds array if it exists and has items
-            // if (preparedData.tagIds && preparedData.tagIds.length > 0) {
-            //     preparedData.tagIds.forEach((tagId, index) => {
-            //         if (tagId) formDataObject.append(`tagIds[${index}]`, tagId);
-            //     });
-            // }
-
-            // // Append images array if it exists and has items
-            // if (preparedData.images && preparedData.images.length > 0) {
-            //     preparedData.images.forEach((image, index) => {
-            //         if (image) formDataObject.append(`images[${index}]`, image);
-            //     });
-            // }
 
             const formDataObject = new FormData();
 
@@ -544,30 +536,32 @@ export default function AchatCreationForm() {
 
             // Step 2: Append fields to FormData
             appendIfValid('menuItemSku', preparedData.menuItemSku);
-            if (!preparedData.hasFormulas) {
+            if (!preparedData.hasRecipe) {
                 appendIfValid('quantity', preparedData.quantity);
             }
             appendIfValid('warningQuantity', preparedData.warningQuantity);
             appendIfValid('isPublished', preparedData.isPublished);
             appendIfValid('isDraft', preparedData.isDraft);
             appendIfValid('categoryId', preparedData.categoryId);
-            appendIfValid('hasFormulas', preparedData.hasFormulas);
+            appendIfValid('hasRecipe', preparedData.hasRecipe);
 
-            if (preparedData.hasFormulas) {
+            appendIfValid('basePrice', preparedData.basePrice);
+
+            if (preparedData.hasRecipe) {
                 appendIfValid('portionProduced', preparedData.portionProduced);
-                // Append formulas array
-                appendArray('formulas', preparedData.formulas);
+                appendArray('recipe', preparedData.recipe);
             }
 
             // Append price fields
-            if (preparedData.price) {
-                appendNestedObject('price', preparedData.price);
+            if (preparedData.typeDiscount === 'avancer') {
+                appendIfValid('discountId', preparedData.discountId);
             }
-
-    
+            else{
+                appendIfValid('discountMethod', preparedData.discountMethod);
+                appendIfValid('discountValue', preparedData.discountValue);
+            }
             // Append translates array
             appendArray('translates', preparedData.translates);
-
             // Append tagIds array
             appendArray('tagIds', preparedData.tagIds);
 
@@ -597,20 +591,20 @@ export default function AchatCreationForm() {
                 isPublished: false,
                 isDraft: false,
                 categoryId: '',
-                hasFormulas: false,
+                hasRecipe: false,
                 portionProduced: null,
-                formulas: [
+                recipe: [
                     {
                         productId: '',
                         inventoryId: '',
-                        quantityFormula: '',
+                        ingredientQuantity: '',
                         unitId: ''
                     }
                 ],
                 tagIds: [],
                 translates: [
                     {
-                        languageId: '',
+                        languageId: langages.find(lang => lang.label === "Français")?.id || '',
                         name: '',
                         description: ''
                     }
@@ -619,7 +613,8 @@ export default function AchatCreationForm() {
                     basePrice: null,
                     discountId: ''
                 },
-                images: [] 
+                images: [] ,
+                typeDiscount : ''
             });
             setErrors({});
             setAlert({
@@ -644,6 +639,12 @@ export default function AchatCreationForm() {
             setIsLoading(false);
         }
     };
+
+
+    const statuses = [
+        { value: 'percentage', label: 'Pourcentage' },
+        { value: 'fixed', label: 'Montant fixe' },
+    ];
 
 
     return (
@@ -824,7 +825,7 @@ export default function AchatCreationForm() {
                                             }}
                                         />
                                         <p className="text-xs text-gray-600 mt-0">
-                                            Sélectionnez un ou plusieurs tags pour associer cet article à des catégories ou thèmes spécifiques. Ces tags aident à organiser et filtrer les articles. Par exemple, L'article "Pizza Margherita" peut être tagué "Italien", "Végétarien" et "Plat Principal". Lorsqu'un client choisit un tag, tous les articles correspondants s'affichent dans le menu.
+                                            Sélectionnez un ou plusieurs tags pour associer cet article à des catégories ou thèmes spécifiques. Ces tags aident à organiser et filtrer les articles. Par exemple, L'article "Pizza Margherita" peut être tagué <strong>"Italien"</strong> , <strong>"Végétarien"</strong>  et <strong>"Plat Principal"</strong> . Lorsqu'un client choisit un tag, tous les articles correspondants s'affichent dans le menu.
                                         </p>
                                         {errors.tagIds && (
                                             <p className="text-xs text-red-500 mt-1">{errors.tagIds}</p>
@@ -906,9 +907,9 @@ export default function AchatCreationForm() {
                                             <div className="space-y-2">
                                                 <Label>Type de suivi <span className='text-red-500 text-base'>*</span></Label>
                                                 <Select
-                                                    name="hasFormulas"
-                                                    value={formData.hasFormulas === null ? "" : String(formData.hasFormulas)}
-                                                    onValueChange={(value) => handleChange({ target: { name: 'hasFormulas',  value: value === 'true' } })}
+                                                    name="hasRecipe"
+                                                    value={formData.hasRecipe === null ? "" : String(formData.hasRecipe)}
+                                                    onValueChange={(value) => handleChange({ target: { name: 'hasRecipe',  value: value === 'true' } })}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Sélectionner une Choix" />
@@ -918,14 +919,17 @@ export default function AchatCreationForm() {
                                                         <SelectItem value="false">Suivi basé sur la quantité</SelectItem>
                                                     </SelectContent>
                                                 </Select>
+                                                <p className="text-xs text-gray-600 mt-0">
+                                                    Si "Type de suivi" est <strong>Suivi basé sur la quantité</strong>, la quantité du produit dans le menu sera directement liée à la quantité du produit en inventaire. Si <strong>Suivi basé sur le stock</strong>, la quantité sera déterminée par la <strong>Portion produite</strong>.
+                                                </p>
                                                 
-                                                {errors.hasFormulas && (
-                                                    <p className="text-xs text-red-500 mt-1">{errors.hasFormulas}</p>
+                                                {errors.hasRecipe && (
+                                                    <p className="text-xs text-red-500 mt-1">{errors.hasRecipe}</p>
                                                 )}
                                             </div>
                                         </div> 
 
-                                        {!formData.hasFormulas ? 
+                                        {!formData.hasRecipe ? 
 
                                         // grid grid-cols-1 sm:grid-cols-2 gap-4
                                         <div className="">
@@ -938,11 +942,8 @@ export default function AchatCreationForm() {
                                                     onChange={handleChange}
                                                     placeholder='Exemple : 30 portions'
                                                     min="0"
-                                                    disabled={formData.hasFormulas}
+                                                    disabled={formData.hasRecipe}
                                                 />
-                                                <p className="text-xs text-gray-600 mt-0">
-                                                    Si "Contient des Recettes" est <strong>Non</strong>, la quantité du produit dans le menu sera directement liée à la quantité du produit en inventaire. Si <strong>Oui</strong>, la quantité sera déterminée par la <strong>Portion produite</strong>.
-                                                </p>
                                                 {errors.quantity && (
                                                     <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
                                                 )}
@@ -968,14 +969,14 @@ export default function AchatCreationForm() {
                                         </div>
 
                                         <div className="grid gap-4">
-                                            {formData.formulas.map((formulas, index) => (
+                                            {formData.recipe.map((recipe, index) => (
                                                 <div 
                                                     key={index} 
                                                     className="border p-4 rounded-lg"
                                                 >
 
                                                     <div className="flex justify-end">
-                                                        {formData.formulas.length > 1 && (
+                                                        {formData.recipe.length > 1 && (
                                                             <Button 
                                                                 type="button" 
                                                                 variant="destructive" 
@@ -992,9 +993,9 @@ export default function AchatCreationForm() {
                                                             <Label>Ingrédient <span className='text-red-500 text-base'>*</span></Label>
                                                             <Select
                                                                 name="productId"
-                                                                value={formulas.productId || ""}
+                                                                value={recipe.productId || ""}
                                                                 onValueChange={(value) => handleChangee2(value, index, 'productId')}
-                                                                disabled={!formData.hasFormulas}
+                                                                disabled={!formData.hasRecipe}
                                                             >
                                                                 <SelectTrigger>
                                                                     <SelectValue placeholder="Sélectionner une Ingrédient" />
@@ -1012,9 +1013,9 @@ export default function AchatCreationForm() {
                                                                     )}
                                                                 </SelectContent>
                                                             </Select>
-                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].productId && (
+                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].productId && (
                                                                 <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.formulas[index].productId}
+                                                                    {errors.recipe[index].productId}
                                                                 </p>
                                                             )}
                                                         </div>
@@ -1024,11 +1025,11 @@ export default function AchatCreationForm() {
                                                             <div className="flex gap-2">
                                                                 <Input
                                                                     type="number"
-                                                                    name="quantityFormula"
-                                                                    value={formulas.quantityFormula !== null && formulas.quantityFormula !== undefined ? formulas.quantityFormula : ""}
-                                                                    onChange={(e) => handleChangee2(e.target.value, index, 'quantityFormula')}
+                                                                    name="ingredientQuantity"
+                                                                    value={recipe.ingredientQuantity !== null && recipe.ingredientQuantity !== undefined ? recipe.ingredientQuantity : ""}
+                                                                    onChange={(e) => handleChangee2(e.target.value, index, 'ingredientQuantity')}
                                                                     placeholder='Quantité nécessaire'
-                                                                    disabled={!formData.hasFormulas}
+                                                                    disabled={!formData.hasRecipe}
                                                                     step='any'
                                                                     min="0"
                                                                     className="flex-1"
@@ -1036,13 +1037,13 @@ export default function AchatCreationForm() {
                                                                 
                                                                 <Select
                                                                     name="unitId"
-                                                                    value={formulas.unitId || ""}
+                                                                    value={recipe.unitId || ""}
                                                                     onValueChange={(value) => handleChangee2(value, index, 'unitId')}
-                                                                    disabled={!formData.hasFormulas}
+                                                                    disabled={!formData.hasRecipe}
                                                                 >
                                                                     <SelectTrigger
                                                                         className={`w-[100px] ${
-                                                                            !formulas.unitId && errors.formulas?.[index]?.unitId
+                                                                            !recipe.unitId && errors.recipe?.[index]?.unitId
                                                                                 ? " border-solid border-2 border-red-500"
                                                                                 : ""
                                                                         }`}
@@ -1062,14 +1063,14 @@ export default function AchatCreationForm() {
                                                                     </SelectContent>
                                                                 </Select>
                                                             </div>
-                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].quantityFormula && (
+                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].ingredientQuantity && (
                                                                 <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.formulas[index].quantityFormula}
+                                                                    {errors.recipe[index].ingredientQuantity}
                                                                 </p>
                                                             )}
-                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].unitId && (
+                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].unitId && (
                                                                 <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.formulas[index].unitId}
+                                                                    {errors.recipe[index].unitId}
                                                                 </p>
                                                             )}
                                                         </div>
@@ -1078,9 +1079,9 @@ export default function AchatCreationForm() {
                                                             <Label>Inventaire <span className='text-red-500 text-base'>*</span></Label>
                                                             <Select
                                                                 name="inventoryId"
-                                                                value={formulas.inventoryId || ""}
+                                                                value={recipe.inventoryId || ""}
                                                                 onValueChange={(value) => handleChangee2(value, index, 'inventoryId')}
-                                                                disabled={!formulas.productId}
+                                                                disabled={!recipe.productId}
                                                             >
                                                                 <SelectTrigger>
                                                                     <SelectValue placeholder="Sélectionner un inventaire" />
@@ -1088,14 +1089,14 @@ export default function AchatCreationForm() {
                                                                 <SelectContent>
                                                                     {inventorys.length > 0 ? (
                                                                         inventorys
-                                                                            .filter((inventory) => inventory.productId === formulas.productId)
+                                                                            .filter((inventory) => inventory.productId === recipe.productId)
                                                                             .map((inventory) => (
                                                                                 <SelectItem key={inventory.id} value={inventory.id}>
                                                                                     {inventory.sku} 
                                                                                 </SelectItem>
                                                                             )).length > 0 ? (
                                                                                 inventorys
-                                                                                    .filter((inventory) => inventory.productId === formulas.productId)
+                                                                                    .filter((inventory) => inventory.productId === recipe.productId)
                                                                                     .map((inventory) => (
                                                                                         <SelectItem key={inventory.id} value={inventory.id}>
                                                                                             {inventory.sku} 
@@ -1109,9 +1110,9 @@ export default function AchatCreationForm() {
                                                                     )}
                                                                 </SelectContent>
                                                             </Select>
-                                                            {errors.formulas && errors.formulas[index] && errors.formulas[index].inventoryId && (
+                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].inventoryId && (
                                                                 <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.formulas[index].inventoryId}
+                                                                    {errors.recipe[index].inventoryId}
                                                                 </p>
                                                             )}
                                                         </div>
@@ -1130,7 +1131,7 @@ export default function AchatCreationForm() {
                                                     value={formData.portionProduced || ""}
                                                     onChange={handleChange}
                                                     placeholder='Exemple : 30 portions'
-                                                    disabled={!formData.hasFormulas}
+                                                    disabled={!formData.hasRecipe}
                                                     min="0"
                                                 />
                                                 {errors.portionProduced && (
@@ -1148,11 +1149,16 @@ export default function AchatCreationForm() {
                                 </TabsContent>
 
 
+
+
+
+
                                 <TabsContent value="price" className="space-y-4">
 
                                     <p className="text-ms mt-0">
                                         Définissez le <strong>prix de base</strong> de l'article et appliquez une <strong>réduction</strong> si nécessaire. Le prix de base est obligatoire, tandis que la réduction est facultative. Assurez-vous que le prix est cohérent avec votre stratégie tarifaire.
                                     </p>
+
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -1160,47 +1166,56 @@ export default function AchatCreationForm() {
                                             <Input
                                                 type="number"
                                                 name="basePrice"
-                                                value={formData.price.basePrice || ""}
+                                                value={formData.basePrice !== null && formData.basePrice !== undefined ? formData.basePrice : ""}
                                                 onChange={handleChange}
                                                 placeholder="Prix (ex: 100 DH)"
                                                 min="0"
                                             />
-                                            {errors.price?.basePrice  && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.price?.basePrice}</p>
+                                            {errors.basePrice && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.basePrice}</p>
                                             )}
                                         </div>
-
+                                        
                                         <div className="space-y-2">
-                                            <Label>Nom de Réduction </Label>
+                                            <Label>Type de discount <span className='text-red-500 text-base'>*</span></Label>
                                             <Select
-                                                name="discountId"
-                                                value={formData.price.discountId}
-                                                onValueChange={(value) => {
-                                                    setFormData((prevFormData) => ({
-                                                        ...prevFormData,
-                                                        price: {
-                                                            ...prevFormData.price,
-                                                            discountId: value, 
-                                                        },
-                                                    }));
-                                                }}
+                                                name="typeDiscount"
+                                                value={formData.typeDiscount || ""}
+                                                onValueChange={(value) => handleChange({ target: { name: 'typeDiscount',  value: value} })}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionner Réduction" />
+                                                    <SelectValue placeholder="Sélectionner une Choix" />
                                                 </SelectTrigger>
-                                                <SelectContent  position="popper" 
-                                                    side="bottom" 
-                                                    align="start"
-                                                    className="max-h-[300px] overflow-y-auto"
-                                                >
-                                                    <SelectItem value={null} className="font-semibold text-gray-400">
-                                                        Aucune réduction
-                                                    </SelectItem>
-                                                    {discounts.length > 0 ? (
-                                                        discounts
-                                                            .map((discount) => (
-                                                                <SelectItem key={discount.id} value={discount.id}>
-                                                                    {discount.discountSku} - {discount.discountValue} {discount.discountMethod === "percentage" ? '%' :"Dh" }
+                                                <SelectContent>
+                                                    <SelectItem value="avancer">Avancer</SelectItem>
+                                                    <SelectItem value="simple">Simple</SelectItem>
+                                                </SelectContent>
+                                            </Select>
+                                        </div>                                        
+                                    </div>
+
+
+                                    {formData.typeDiscount === 'simple' ? 
+
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        <div className="space-y-2">
+                                            <Label>Type de la remise  <span className='text-red-500 text-base'>*</span></Label>
+                                            <Select
+                                                id="discountMethod"
+                                                name="discountMethod"
+                                                value={formData.discountMethod  || ""}
+                                                onValueChange={(value) => handleChange({ target: { name: 'discountMethod', value } })}
+                                            >
+                                                <SelectTrigger>
+                                                    <SelectValue placeholder="Sélectionnez le type de remise" />
+                                                </SelectTrigger>
+                                                <SelectContent className="max-h-48 overflow-y-auto">
+                                                    {statuses.length > 0 ? (
+                                                        statuses
+                                                            .map((statuse) => (
+                                                                <SelectItem key={statuse.value} value={statuse.value}>
+                                                                    {statuse.label}
                                                                 </SelectItem>
                                                             ))
                                                     ) : (
@@ -1208,12 +1223,73 @@ export default function AchatCreationForm() {
                                                     )}
                                                 </SelectContent>
                                             </Select>
-                                            {errors.price?.discountId && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.price?.discountId}</p>
+                                            {errors.discountMethod && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.discountMethod}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>Valeur de la remise <span className='text-red-500 text-base'>*</span></Label>
+                                            <Input
+                                                type="number"
+                                                name="discountValue"
+                                                value={formData.discountValue !== null && formData.discountValue !== undefined ? formData.discountValue : ""}
+                                                onChange={handleChange}
+                                                placeholder='Exemple : 20'
+                                                min="0"
+                                                step="any"
+                                                disabled={!formData.discountMethod}
+                                                max={formData.discountMethod === 'percentage' ? '100' : undefined}
+                                            />
+                                            {errors.discountValue  && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.discountValue}</p>
                                             )}
                                         </div>
                                     </div>
+
+                                    :
+
+
+                                    <div className="space-y-2">
+                                        <Label>Nom de Réduction </Label>
+                                        <Select
+                                            name="discountId"
+                                            value={formData.discountId}
+                                            onValueChange={(value) => handleChange({ target: { name: 'discountId', value } })}
+                                        >
+                                            <SelectTrigger>
+                                                <SelectValue placeholder="Sélectionner Réduction" />
+                                            </SelectTrigger>
+                                            <SelectContent  position="popper" 
+                                                side="bottom" 
+                                                align="start"
+                                                className="max-h-[300px] overflow-y-auto"
+                                            >
+                                                <SelectItem value={null} className="font-semibold text-gray-400">
+                                                    Aucune réduction
+                                                </SelectItem>
+                                                {discounts.length > 0 ? (
+                                                    discounts
+                                                        .map((discount) => (
+                                                            <SelectItem key={discount.id} value={discount.id}>
+                                                                {discount.discountSku} - {discount.discountValue} {discount.discountMethod === "percentage" ? '%' :"Dh" }
+                                                            </SelectItem>
+                                                        ))
+                                                ) : (
+                                                    <p className='text-sm'>Aucune donnée disponible</p>
+                                                )}
+                                            </SelectContent>
+                                        </Select>
+                                        {errors.discountId && (
+                                            <p className="text-xs text-red-500 mt-1">{errors.discountId}</p>
+                                        )}
+                                    </div>
+                                    }
+
+
+                                    
                                 </TabsContent>
+
 
                                 <TabsContent value="translations" className="space-y-4">
                                     <div className="space-y-4">
@@ -1244,7 +1320,7 @@ export default function AchatCreationForm() {
                                                         <Label>Langue <span className='text-red-500 text-base'>*</span></Label>
                                                         <Select
                                                             name="languageId"
-                                                            value={translates.languageId || ""}
+                                                            value={translates.languageId}
                                                             onValueChange={(value) => handleChangee(value, index, 'languageId')}
                                                         >
                                                             <SelectTrigger>

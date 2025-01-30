@@ -46,7 +46,7 @@ const Tableau = ({produits}) => {
                                             <TableCell className="text-center p-4 border">
                                                 {produit?.price?.discount?.status === 'noDiscount' ? (
                                                     <div className="font-medium">
-                                                        {parseFloat(produit.price.finalPrice).toFixed(2)} Dh
+                                                        {parseFloat(produit?.price?.finalPrice).toFixed(2)} Dh
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center justify-center gap-2">
@@ -62,7 +62,7 @@ const Tableau = ({produits}) => {
                                                             </span>
                                                         )}
                                                         <span className="font-medium">
-                                                            {parseFloat(produit.price.finalPrice).toFixed(2)} Dh
+                                                            {parseFloat(produit?.price?.finalPrice).toFixed(2)} Dh
                                                         </span>
                                                     </div>
                                                 )}
