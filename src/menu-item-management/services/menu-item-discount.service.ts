@@ -111,17 +111,17 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     }
 
     async setDiscountToMenuItem(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        if (dto.discountLevel === DiscountLevel.BASIC) {
+        if (dto.discountLevel == DiscountLevel.BASIC) {
             await this.setSimpleDiscount(menuItem, dto, queryRunner);
             return;
         }
 
-        if (dto.discountLevel === DiscountLevel.ADVANCED) {
+        if (dto.discountLevel == DiscountLevel.ADVANCED) {
             await this.setAdvancedDiscount(menuItem, dto, queryRunner);
             return;
         }
 
-        if (dto.discountLevel === DiscountLevel.NO_DISCOUNT) {
+        if (dto.discountLevel == DiscountLevel.NO_DISCOUNT) {
             await this.setNoDiscount(menuItem, queryRunner);
             return;
         }
@@ -143,7 +143,7 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     }
 
     private async setAdvancedDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        if(!dto.discountId && menuItem.discountLevel === DiscountLevel.ADVANCED) {
+        if(!dto.discountId && menuItem.discountLevel == DiscountLevel.ADVANCED) {
             throw new BadRequestException('Le produit de menu ne peut pas avoir plus d\'une remise avancée');
         }
 
@@ -156,7 +156,7 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     private async setNoDiscount(menuItem: MenuItem, queryRunner: QueryRunner) {
         menuItem.discount = null;
         menuItem.discountLevel = DiscountLevel.NO_DISCOUNT;
-        
+
         await queryRunner.manager.save(MenuItem, menuItem);
     }
 
