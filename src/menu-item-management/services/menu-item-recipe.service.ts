@@ -7,7 +7,7 @@ import { MenuItem } from "../entities/menu-item.entity";
 import { ProductService } from "src/product-management/services/product.service";
 import { UnitService } from "src/unit-management/services/unit.service";
 import { InventoryService } from "src/inventory-managemet/services/inventory.service";
-import { CreateMenuItemIngredientRecipeDto } from "../dtos/menu-item-formula/create-menu-item-ingredient-recipe.dto";
+import { CreateMenuItemIngredientRecipeDto } from "../dtos/menu-item-recipe/create-menu-item-ingredient-recipe.dto";
 
 @Injectable()
 export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {

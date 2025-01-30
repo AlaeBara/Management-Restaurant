@@ -16,7 +16,7 @@ import {
 
 import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
 import { DiscountMethod } from 'src/menu-item-management/enums/discount-method';
-import { CreateMenuItemIngredientRecipeDto } from '../menu-item-formula/create-menu-item-ingredient-recipe.dto';
+import { CreateMenuItemIngredientRecipeDto } from '../menu-item-recipe/create-menu-item-ingredient-recipe.dto';
 
 export class CreateMenuItemDto {
 
@@ -102,7 +102,7 @@ export class CreateMenuItemDto {
   @IsOptional()
   @Transform(({ value }) => value === 'true' || value === true)
   @ApiProperty({
-    description: 'The has formulas status of the menu item',
+    description: 'The has recipe status of the menu item',
     example: 'true'
   })
   hasRecipe: boolean;
@@ -111,7 +111,7 @@ export class CreateMenuItemDto {
   @Type(() => CreateMenuItemIngredientRecipeDto)
   @IsOptional()
   @ApiProperty({
-    description: 'The formulas of the menu item',
+    description: 'The recipes of the menu item',
     example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', inventoryId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', ingredientQuantity: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2' }]
   })
   recipe: CreateMenuItemIngredientRecipeDto[];
