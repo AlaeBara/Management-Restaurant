@@ -92,10 +92,23 @@ export class MenuItem extends BaseEntity {
 
     @AfterLoad()
     async calculateFinalPrice() {
-        if (this.discount && this.discount.status === DiscountStatus.IN_DISCOUNT) {
+        if (this.discount && this.discountLevel === DiscountLevel.BASIC && this.discount.status === DiscountStatus.IN_DISCOUNT) {
             this.finalPrice = await this.discount.setDiscount(this.basePrice);
             return;
         }
+
+        if(this.discount && this.discountLevel === DiscountLevel.BASIC) {
+            this.finalPrice = await this.setSimpleDiscount();
+            return;
+        }
+
         this.finalPrice = this.basePrice;
+    }
+
+    private async setSimpleDiscount() {
+        if(this.discount && this.discountLevel === DiscountLevel.BASIC) return this.basePrice;
+       return this.discountMethod === DiscountMethod.PERCENTAGE
+        ? this.basePrice * (1 - this.discountValue / 100)
+        : this.basePrice - this.discountValue;
     }
 }

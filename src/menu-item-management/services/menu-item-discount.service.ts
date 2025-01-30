@@ -113,8 +113,8 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     async setDiscountToMenuItem(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
         if (dto.discountLevel === DiscountLevel.BASIC) {
             await this.setSimpleDiscount(menuItem, dto, queryRunner);
-        } 
-        
+        }
+
         if (dto.discountLevel === DiscountLevel.ADVANCED) {
             await this.setAdvancedDiscount(menuItem, dto, queryRunner);
         }
@@ -127,6 +127,12 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     }
 
     private async setSimpleDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+        if (menuItem.discountMethod == DiscountMethod.FIXED && menuItem.basePrice < menuItem.discountValue)
+            throw new BadRequestException('Le montant de la remise ne peut pas être supérieure au prix de base');
+
+        if (menuItem.discountMethod == DiscountMethod.PERCENTAGE && (dto.discountValue > 100 || dto.discountValue < 0))
+            throw new BadRequestException('Le pourcentage de la remise ne peut pas être supérieure à 100 ou inférieure à 0');
+
         menuItem.discountMethod = dto.discountMethod;
         menuItem.discountValue = dto.discountValue;
         await queryRunner.manager.save(MenuItem, menuItem);
