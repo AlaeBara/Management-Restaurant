@@ -2,32 +2,33 @@ import { DataSource, QueryRunner, Repository } from "typeorm";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import { MenuItemFormula } from "../entities/menu-item-formula.entity";
+import {  MenuItemRecipe } from "../entities/menu-item-recipe.entity";
 import { MenuItem } from "../entities/menu-item.entity";
 import { ProductService } from "src/product-management/services/product.service";
 import { UnitService } from "src/unit-management/services/unit.service";
-import { CreateMenuItemFormulaDto } from "../dtos/menu-item-formula/create-menu-item-formula.dto";
 import { InventoryService } from "src/inventory-managemet/services/inventory.service";
+import { CreateMenuItemIngredientRecipeDto } from "../dtos/menu-item-formula/create-menu-item-ingredient-recipe.dto";
 
 @Injectable()
-export class MenuItemFormulaService extends GenericService<MenuItemFormula> {
+export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
 
     constructor(
         @InjectDataSource() dataSource: DataSource,
-        @InjectRepository(MenuItemFormula)
-        readonly formulaRepository: Repository<MenuItemFormula>,
+        @InjectRepository(MenuItemRecipe)
+        readonly recipeRepository: Repository<MenuItemRecipe>,
         private readonly productService: ProductService,
         private readonly unitService: UnitService,
         private readonly inventoryService: InventoryService
 
     ) {
-        super(dataSource, MenuItemFormula, 'formule de l\'article menu');
+        super(dataSource, MenuItemRecipe, 'recette de l\'article menu');
     }
 
-    async createFormulas(menuItem: MenuItem, dto: CreateMenuItemFormulaDto, queryRunner: QueryRunner) {
-        if (dto.quantityFormula <= 0) throw new BadRequestException('La quantité de la recette ne peut être inférieure ou égale à 0');
+    async createRecipe(menuItem: MenuItem, dto: CreateMenuItemIngredientRecipeDto, queryRunner: QueryRunner) {
+       
+        if (!menuItem) throw new BadRequestException('Le produit de menu indéfini'); 
+        if (dto.ingredientQuantity <= 0) throw new BadRequestException('La quantité de l\'ingrédient ne peut être inférieure ou égale à 0');
         if (menuItem.portionProduced <= 0) throw new BadRequestException('Le nombre de portion produite par recette ne peut être inférieur ou égale à 0');
-        if (!menuItem) throw new BadRequestException('Le produit de menu indéfini');
 
         const [product, unit, inventory] = await Promise.all([
             this.productService.findOneByIdWithOptions(dto.productId),
@@ -35,40 +36,40 @@ export class MenuItemFormulaService extends GenericService<MenuItemFormula> {
             this.inventoryService.findOneByIdWithOptions(dto.inventoryId)
         ]);
 
-        const formula = this.formulaRepository.create({
+        const recipe = this.recipeRepository.create({
             menuItem: menuItem,
-            quantityFormula: dto.quantityFormula,
+            ingredientQuantity: dto.ingredientQuantity,
             product: product,
             inventory: inventory,
             unit: unit,
-            quantityRequiredPerPortion: dto.quantityFormula / menuItem.portionProduced,
+            quantityRequiredPerPortion: dto.ingredientQuantity / menuItem.portionProduced,
         });
 
-        await queryRunner.manager.save(MenuItemFormula, formula);
+        return await queryRunner.manager.save(MenuItemRecipe, recipe);
     }
 
-    async restoreFormulas(menuItem: MenuItem, queryRunner: QueryRunner) {
-        await queryRunner.manager.restore(MenuItemFormula, { menuItem: { id: menuItem.id } });
+    async restoreRecipes(menuItem: MenuItem, queryRunner: QueryRunner) {
+        await queryRunner.manager.restore(MenuItemRecipe, { menuItem: { id: menuItem.id } });
     }
 
-    async softDeleteFormulas(menuItem: MenuItem, queryRunner: QueryRunner) {
-        await queryRunner.manager.softDelete(MenuItemFormula, { menuItem: { id: menuItem.id } });
+    async softDeleteRecipes(menuItem: MenuItem, queryRunner: QueryRunner) {
+        await queryRunner.manager.softDelete(MenuItemRecipe, { menuItem: { id: menuItem.id } });
     }
 
     async recalculateQuantityBasedOnStock(id: string) {
         try {
             let minQuantity = [];
 
-            const formulas = await this.formulaRepository.find({ where: { menuItem: { id: id } }, relations: ['inventory', 'unit', 'product'] });
+            const recipes = await this.recipeRepository.find({ where: { menuItem: { id: id } }, relations: ['inventory', 'unit', 'product'] });
 
-            formulas.forEach(async formula => {
+            recipes.forEach(async recipe => {
                 let quantity = 0;
 
-                if (formula.inventory.productUnit != formula.unit.unit) {
-                    quantity = Number(formula.inventory.totalQuantity) / Number(formula.unit.conversionFactorToBaseUnit)
+                if (recipe.inventory.productUnit != recipe.unit.unit) {
+                    quantity = Number(recipe.inventory.totalQuantity) / Number(recipe.unit.conversionFactorToBaseUnit)
                 }
 
-                const calculePortion = Math.floor(Number(quantity) / Number(formula.quantityRequiredPerPortion))
+                const calculePortion = Math.floor(Number(quantity) / Number(recipe.quantityRequiredPerPortion))
 
                 minQuantity.push(calculePortion)
             });

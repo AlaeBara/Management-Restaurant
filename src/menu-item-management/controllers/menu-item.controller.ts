@@ -8,8 +8,8 @@ import { UpdateInventoryDto } from "src/inventory-managemet/dtos/inventory/updat
 import { MenuItemService } from "../services/menu-item.service";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
-import { FileInterceptor, FilesInterceptor } from "@nestjs/platform-express";
-import { MenuItemFormulaService } from "../services/menu-item-formulas.service";
+import { FilesInterceptor } from "@nestjs/platform-express";
+import { MenuItemRecipeService } from "../services/menu-item-recipe.service";
 
 
 @Controller('api/menu-items')
@@ -19,8 +19,8 @@ export class MenuItemController {
     constructor(
         @Inject(forwardRef(() => MenuItemService))
         private readonly menuItemService: MenuItemService,
-        @Inject(forwardRef(() => MenuItemFormulaService))
-        private readonly menuItemFormulasService: MenuItemFormulaService
+        @Inject(forwardRef(() => MenuItemRecipeService))
+        private readonly menuItemRecipeService: MenuItemRecipeService
     ) {
     }
 
@@ -48,19 +48,6 @@ export class MenuItemController {
             query,
         );
     }
-
-   /*  @Post()
-    @Permissions('create-menu-item')
-    @ApiOperation({ summary: 'Create a menu item' })
-    @UseInterceptors(FileInterceptor('images'))
-    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFile() images: Express.Multer.File[], @Req() req: Request) {
-        console.log(images);
-        return;
-        createMenuItemDto.images = images;
-        await this.menuItemService.createMenuItem(createMenuItemDto);
-        return { message: 'Super! Vot produit de menu a été créé avec succès', status: 201 };
-
-    } */
 
     @Post()
     @Permissions('create-menu-item')

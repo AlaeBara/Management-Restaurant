@@ -1,4 +1,4 @@
-import { DataSource, Repository, UpdateResult } from "typeorm";
+import { DataSource, QueryRunner, Repository, UpdateResult } from "typeorm";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { BadRequestException, Injectable } from "@nestjs/common";
@@ -8,6 +8,7 @@ import { UpdateDiscountDto } from "../dtos/menu-item-discount/update-discount.dt
 import { DiscountMethod } from "../enums/discount-method";
 import { DiscountType } from "../enums/discount-type.enum";
 import { MenuItem } from "../entities/menu-item.entity";
+import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 
 @Injectable()
 export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
@@ -22,16 +23,16 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
         super(dataSource, MenuItemDiscount, 'discount');
     }
 
-    async validateTime(startTime: string, endTime: string){
+    async validateTime(startTime: string, endTime: string) {
         const [startHours, startMinutes] = startTime.split(':').map(Number);
         const [endHours, endMinutes] = endTime.split(':').map(Number);
-        
+
         if (startHours > endHours || (startHours === endHours && startMinutes >= endMinutes)) {
             throw new BadRequestException('L\'heure de début doit être antérieure à l\'heure de fin');
         }
     }
 
-    async validateDate(startDate: Date, endDate: Date){
+    async validateDate(startDate: Date, endDate: Date) {
         const startDateFormatted = new Date(startDate.getFullYear(), startDate.getMonth(), startDate.getDate());
         const endDateFormatted = new Date(endDate.getFullYear(), endDate.getMonth(), endDate.getDate());
         if (startDateFormatted > endDateFormatted) {
@@ -106,6 +107,32 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
             return price - discount.discountValue;
         }
         return price;
+    }
+
+    async setDiscountToMenuItem(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+        if (dto.discountMethod && dto.discountValue && !dto.discountId) {
+            await this.setSimpleDiscount(menuItem, dto, queryRunner);
+        } 
+        
+        if (!dto.discountMethod && !dto.discountValue && dto.discountId) {
+            await this.setAdvancedDiscount(menuItem, dto, queryRunner);
+        }
+
+        if (dto.discountMethod && dto.discountValue && dto.discountId) {
+            throw new BadRequestException('Vous ne pouvez pas définir un discount simple et un discount avancé en même temps');
+        }
+    }
+
+    private async setSimpleDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+        menuItem.discountMethod = dto.discountMethod;
+        menuItem.discountValue = dto.discountValue;
+        await queryRunner.manager.save(MenuItem, menuItem);
+    }
+
+    private async setAdvancedDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+        const menuItemDiscount = await this.findOneByIdWithOptions(dto.discountId);
+        menuItem.discount = menuItemDiscount;
+        await queryRunner.manager.save(MenuItem, menuItem);
     }
 
 }

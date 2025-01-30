@@ -11,23 +11,23 @@ import { MenuItem } from './entities/menu-item.entity';
 import { MenuItemService } from './services/menu-item.service';
 import { MenuItemController } from './controllers/menu-item.controller';
 import { UnitModule } from 'src/unit-management/unit.module';
-import { MenuItemFormula } from './entities/menu-item-formula.entity';
 import { MenuItemDiscount } from './entities/menu-item-discount.entity';
 import { MenuItemTranslate } from './entities/menu-item-translation.enity';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { MenuItemDiscountService } from './services/menu-item-discount.service';
 import { MenuItemDiscountController } from './controllers/menu-item-discount.controller';
 import { MenuItemTranslationService } from './services/menu-item-translation.service';
-import { MenuItemFormulaService } from './services/menu-item-formulas.service';
 import { MediaLibraryModule } from 'src/media-library-management/media-library.module';
 import { TagSeeder } from './seeders/tag.seeder';
+import { MenuItemRecipe } from './entities/menu-item-recipe.entity';
+import { MenuItemRecipeService } from './services/menu-item-recipe.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
         MenuItemTag,
         MenuItem,
-        MenuItemFormula,
+        MenuItemRecipe,
         MenuItemDiscount,
         MenuItemTranslate
       ]),
@@ -47,7 +47,7 @@ import { TagSeeder } from './seeders/tag.seeder';
     MenuItemService,
     MenuItemDiscountService,
     MenuItemTranslationService,
-    MenuItemFormulaService,
+    MenuItemRecipeService,
     TagSeeder,
   ],
   exports: [

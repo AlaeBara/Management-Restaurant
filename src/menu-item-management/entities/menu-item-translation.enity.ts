@@ -1,18 +1,18 @@
+import { AfterLoad, Column, Entity, ManyToOne, Unique } from "typeorm";
+
 import { BaseEntity } from "src/common/entities/base.entity";
-import { AfterLoad, Column, Entity, ManyToOne, RelationId } from "typeorm";
 import { MenuItem } from "./menu-item.entity";
 import { Language } from "src/language-management/entities/language.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_translate`)
+@Unique(['menuItem', 'language'])
 export class MenuItemTranslate extends BaseEntity {
 
-    /* @ManyToOne(() => MenuItem, (menuItem) => menuItem.id, { eager: false })
-    menuItem: MenuItem; */
     @ManyToOne(() => MenuItem, (menuItem) => menuItem.translates, {
         eager: false,
-        onDelete: 'CASCADE', // Ensure this is explicitly set
-      })
-      menuItem: MenuItem;
+        onDelete: 'CASCADE',
+    })
+    menuItem: MenuItem;
 
     @ManyToOne(() => Language, (language) => language.id, { eager: true })
     language: Language;

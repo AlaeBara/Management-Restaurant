@@ -7,12 +7,12 @@ import { ApiProperty } from "@nestjs/swagger";
 import { Transform } from "class-transformer";
 
 
-export class CreateMenuItemFormulaDto {
+export class CreateMenuItemIngredientRecipeDto {
 
     @IsNotEmpty()
     @IsUUID()
     @ApiProperty({
-        description: 'The product id of the menu item',
+        description: 'The product id of the ingredient',
         example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
     })
     productId: string;
@@ -21,15 +21,15 @@ export class CreateMenuItemFormulaDto {
     @IsNumber()
     @Transform(({ value }) => Number(value))
     @ApiProperty({
-        description: 'The quantity used in the formula of the menu item',
+        description: 'The quantity of the ingredient used in the recipe of the menu item',
         example: '10'
     })
-    quantityFormula: number;
+    ingredientQuantity: number;
 
     @IsNotEmpty()
     @IsUUID()
     @ApiProperty({
-        description: 'The unit id used in the formula of the menu item',
+        description: 'The unit id used in the recipe of the menu item',
         example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
     })
     unitId: string;
@@ -37,7 +37,7 @@ export class CreateMenuItemFormulaDto {
     @IsNotEmpty()
     @IsUUID()
     @ApiProperty({
-        description: 'The inventory id used in the formula of the menu item',
+        description: 'The inventory id used in the recipe of the menu item',
         example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'
     })
     inventoryId: string;

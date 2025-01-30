@@ -12,7 +12,7 @@ import {
 import { BaseEntity } from "src/common/entities/base.entity";
 import { Category } from "src/category-management/entities/category.entity";
 import { MenuItemTag } from "./menu-item-tag.entity";
-import { MenuItemFormula } from "./menu-item-formula.entity";
+import { MenuItemRecipe } from "./menu-item-recipe.entity";
 import { MenuItemTranslate } from "./menu-item-translation.enity";
 import { MediaLibrary } from "src/media-library-management/entities/media-library.entity";
 import { DiscountStatus } from "../enums/discount-status.enum";
@@ -44,9 +44,6 @@ export class MenuItem extends BaseEntity {
     @ManyToOne(() => Category, (category) => category.id, { nullable: true, eager: false })
     category: Category
 
-    @Column({ type: 'boolean', default: false })
-    hasRecipe: boolean; // if the menu item has formulas to track the quantity of the product and handel inventory automatically
-
     @ManyToMany(() => MenuItemTag, { nullable: true, eager: true })
     @JoinTable({ name: `${process.env.DATASET_PREFIX || ''}item_menu_tag_relation` })
     tags: MenuItemTag[];
@@ -55,8 +52,15 @@ export class MenuItem extends BaseEntity {
     @JoinTable({ name: `${process.env.DATASET_PREFIX || ''}item_menu_image_relation` })
     images: MediaLibrary[];
 
-    @OneToMany(() => MenuItemFormula, (formula) => formula.menuItem, { nullable: true, eager: true, cascade: true, orphanedRowAction: 'delete' })
-    formulas: MenuItemFormula[];
+    @Column({ type: 'boolean', default: false })
+    hasRecipe: boolean; // if the menu item has formulas to track the quantity of the product and handel inventory automatically
+
+    @OneToMany(
+        () => MenuItemRecipe,
+        (recipe) => recipe.menuItem,
+        { cascade: true }
+    )
+    recipe: MenuItemRecipe[]; // the recipe of the menu item has ingredients
 
     @Column({ type: 'numeric', precision: 10, scale: 2, nullable: true, default: null })
     portionProduced: number;

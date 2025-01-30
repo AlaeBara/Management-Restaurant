@@ -1,7 +1,19 @@
-import { DataSource, IsNull, Not, QueryRunner, Repository } from "typeorm";
-import { GenericService } from "src/common/services/generic.service";
+import {
+    DataSource,
+    IsNull,
+    Not,
+    QueryRunner,
+    Repository
+} from "typeorm";
+import {
+    BadRequestException,
+    forwardRef,
+    Inject,
+    Injectable
+} from "@nestjs/common";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, forwardRef, Inject, Injectable } from "@nestjs/common";
+
+import { GenericService } from "src/common/services/generic.service";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 import { CategoryService } from "src/category-management/services/category.service";
@@ -11,8 +23,10 @@ import { LanguageService } from "src/language-management/services/langague.servi
 import { MenuItemDiscountService } from "./menu-item-discount.service";
 import { ProductService } from "src/product-management/services/product.service";
 import { UnitService } from "src/unit-management/services/unit.service";
-import { MenuItemFormulaService } from "./menu-item-formulas.service";
+import { MenuItemRecipeService } from "./menu-item-recipe.service";
 import { MediaLibraryService } from "src/media-library-management/services/media-library.service";
+import { InventoryService } from "src/inventory-managemet/services/inventory.service";
+import logger from "src/common/Loggers/logger";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -35,10 +49,12 @@ export class MenuItemService extends GenericService<MenuItem> {
         readonly productService: ProductService,
         @Inject(forwardRef(() => UnitService))
         readonly unitService: UnitService,
-        @Inject(forwardRef(() => MenuItemFormulaService))
-        readonly formulaService: MenuItemFormulaService,
+        @Inject(forwardRef(() => MenuItemRecipeService))
+        readonly recipeService: MenuItemRecipeService,
         @Inject(forwardRef(() => MediaLibraryService))
         readonly mediaLibraryService: MediaLibraryService,
+        @Inject(forwardRef(() => InventoryService))
+        readonly inventoryService: InventoryService,
     ) {
         super(dataSource, MenuItem, 'article menu');
     }
@@ -54,19 +70,19 @@ export class MenuItemService extends GenericService<MenuItem> {
         const queryRunner = await this.inizializeQueryRunner();
 
         try {
-            await this.validateMenuItemData(createMenuItemDto);
+            await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
 
             const menuItem = await this.createBaseMenuItem(createMenuItemDto, queryRunner, req);
 
-            await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner);
-            await this.createImages(menuItem, createMenuItemDto, queryRunner, req);
-            await this.setSimpleDiscount(menuItem, createMenuItemDto, queryRunner);
-            
+            await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner, req);
+            await this.discountService.setDiscountToMenuItem(menuItem, createMenuItemDto, queryRunner);
+
             await queryRunner.commitTransaction();
 
             return menuItem;
         } catch (error) {
             await queryRunner.rollbackTransaction();
+            logger.error('Error creating menu item:', { message: error.message, stack: error.stack });
             throw new BadRequestException(error.message);
         } finally {
             await queryRunner.release();
@@ -74,7 +90,7 @@ export class MenuItemService extends GenericService<MenuItem> {
     }
 
     async recalculateQuantityBasedOnStock(menuItem: MenuItem) {
-        return this.formulaService.recalculateQuantityBasedOnStock(menuItem.id);
+        return this.recipeService.recalculateQuantityBasedOnStock(menuItem.id);
     }
 
     async refreshQuantity(id: string) {
@@ -88,21 +104,10 @@ export class MenuItemService extends GenericService<MenuItem> {
             throw new BadRequestException('Le produit de menu ne contient pas de recette avec des ingrédients, vous ne pouvez pas recalculer la quantité');
         }
 
-        return this.formulaService.recalculateQuantityBasedOnStock(id);
-    }
-
-    private async validateMenuItemData(createMenuItemDto: CreateMenuItemDto) {
-        await this.validateUnique({ menuItemSku: createMenuItemDto.menuItemSku });
-        
-        if (createMenuItemDto.hasRecipe) {
-            if (createMenuItemDto.formulas.length === 0) {
-                throw new BadRequestException('Vous devez ajouter au moins un ingrédient');
-            }
-        }
+        return this.recipeService.recalculateQuantityBasedOnStock(id);
     }
 
     private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
-
         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
 
         const menuItem = this.menuItemRepository.create({
@@ -110,7 +115,7 @@ export class MenuItemService extends GenericService<MenuItem> {
             category: category,
             tags: [],
             translates: [],
-            formulas: [],
+            recipe: [],
             images: [],
         });
 
@@ -123,38 +128,30 @@ export class MenuItemService extends GenericService<MenuItem> {
         return await queryRunner.manager.save(MenuItem, menuItem);
     }
 
-    private async createImages(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
-
-        await Promise.all(dto.images.map(async (image) => {
-            const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub, queryRunner);
-            menuItem.images.push(mediaLibrary);
-        }));
-
-    }
-
-    private async createRelatedEntities(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-
+    private async createRelatedEntities(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
         if (dto.hasRecipe) {
-            await Promise.all(dto.formulas.map(async (formula) => {
-                await this.formulaService.createFormulas(menuItem, formula, queryRunner);
+            if (dto.recipe && dto.recipe.length === 0) {
+                throw new BadRequestException('Vous devez ajouter au moins un ingrédient');
+            }
+
+            menuItem.recipe = await Promise.all(dto.recipe.map(async (recipe) => {
+                return await this.recipeService.createRecipe(menuItem,recipe, queryRunner);
             }));
         }
 
-        await Promise.all(dto.translates.map(async (translate) => {
-            await this.translateService.createTranslation(menuItem, translate, queryRunner);
+        menuItem.translates = await Promise.all(dto.translates.map(async (translate) => {
+          return await this.translateService.createTranslation(menuItem, translate, queryRunner);
         }));
 
-        await Promise.all(dto.tagIds.map(async (tagId) => {
+        for (const tagId of dto.tagIds) {
             await this.TagService.addTagToMenuItem(menuItem, tagId, queryRunner);
-        }));
+        }
 
-    }
-
-    private async setSimpleDiscount(menuItem: MenuItem , dto: CreateMenuItemDto , queryRunner: QueryRunner) {
-        if (dto.discountMethod && dto.discountValue) {
-            menuItem.discountMethod = dto.discountMethod;
-            menuItem.discountValue = dto.discountValue;
-            await queryRunner.manager.save(MenuItem, menuItem);
+        if (dto.images && dto.images.length > 0) {
+            await Promise.all(dto.images.map(async (image) => {
+                const mediaLibrary = await this.mediaLibraryService.iniMediaLibrary(image, 'menu-items', req['user'].sub, queryRunner);
+                menuItem.images.push(mediaLibrary);
+            }));
         }
     }
 
@@ -174,7 +171,7 @@ export class MenuItemService extends GenericService<MenuItem> {
         try {
             const menuItem = await this.findOneByIdOrFail(id);
             await this.translateService.softDeleteTranslations(menuItem, queryRunner);
-            await this.formulaService.softDeleteFormulas(menuItem, queryRunner);
+            await this.recipeService.softDeleteRecipes(menuItem, queryRunner);
             await queryRunner.manager.softDelete(MenuItem, { id: menuItem.id });
             await queryRunner.commitTransaction();
         } catch (error) {
@@ -213,7 +210,7 @@ export class MenuItemService extends GenericService<MenuItem> {
         try {
             const menuItem = await this.findDeletedOneByIdOrFail(id);
             await this.translateService.restoreTranslations(menuItem, queryRunner);
-            await this.formulaService.restoreFormulas(menuItem, queryRunner);
+            await this.recipeService.restoreRecipes(menuItem, queryRunner);
             await queryRunner.manager.restore(MenuItem, { id: id });
             await queryRunner.commitTransaction();
         } catch (error) {

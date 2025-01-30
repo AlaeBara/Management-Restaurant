@@ -1,4 +1,5 @@
 import { Transform, Type } from 'class-transformer';
+import { ApiProperty } from '@nestjs/swagger';
 import { 
   IsString, 
   IsNumber, 
@@ -12,11 +13,10 @@ import {
   Min,
   IsArray
 } from 'class-validator';
-import { ApiProperty } from '@nestjs/swagger';
 
 import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
-import { CreateMenuItemFormulaDto } from '../menu-item-formula/create-menu-item-formula.dto';
 import { DiscountMethod } from 'src/menu-item-management/enums/discount-method';
+import { CreateMenuItemIngredientRecipeDto } from '../menu-item-formula/create-menu-item-ingredient-recipe.dto';
 
 export class CreateMenuItemDto {
 
@@ -49,7 +49,7 @@ export class CreateMenuItemDto {
   warningQuantity: number;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === 'true' || value === true)
   @ApiProperty({
     description: 'The published status of the menu item',
     example: 'true'
@@ -57,7 +57,7 @@ export class CreateMenuItemDto {
   isPublished: boolean;
 
   @IsBoolean()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === 'true' || value === true)
   @ApiProperty({
     description: 'The draft status of the menu item',
     example: 'false'
@@ -100,7 +100,7 @@ export class CreateMenuItemDto {
 
   @IsBoolean()
   @IsOptional()
-  @Transform(({ value }) => value === 'true')
+  @Transform(({ value }) => value === 'true' || value === true)
   @ApiProperty({
     description: 'The has formulas status of the menu item',
     example: 'true'
@@ -108,13 +108,13 @@ export class CreateMenuItemDto {
   hasRecipe: boolean;
 
   @ValidateNested()
-  @Type(() => CreateMenuItemFormulaDto)
+  @Type(() => CreateMenuItemIngredientRecipeDto)
   @IsOptional()
   @ApiProperty({
     description: 'The formulas of the menu item',
-    example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', warningQuantity: 10, quantityFormula: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', quantityRequiredPerPortion: 10 }]
+    example: [{ productId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', inventoryId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', ingredientQuantity: 10, unitId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2' }]
   })
-  formulas: CreateMenuItemFormulaDto[];
+  recipe: CreateMenuItemIngredientRecipeDto[];
 
   @IsNotEmpty()
   @IsNumber()

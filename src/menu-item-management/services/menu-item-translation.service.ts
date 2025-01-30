@@ -30,7 +30,7 @@ export class MenuItemTranslationService extends GenericService<MenuItemTranslate
             description: dto.description,
         });
 
-        await queryRunner.manager.save(MenuItemTranslate, translation);
+       return await queryRunner.manager.save(MenuItemTranslate, translation);
     }
 
     async softDeleteTranslations(menuItem: MenuItem, queryRunner: QueryRunner) {

@@ -96,14 +96,15 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
     async addTagToMenuItem(menuItem: MenuItem, tagId: string, queryRunner: QueryRunner): Promise<boolean> {
         // Check if tag already exists on the menu item
         if (menuItem.tags.some(tag => tag.id === tagId)) {
-            return;
+            // Return false instead of undefined for duplicate tags
+            return false;
         }
-
+    
         const menuItemTag = await this.findOneByIdWithOptions(tagId);
-
+        
         menuItem.tags.push(menuItemTag);
         await queryRunner.manager.save(MenuItem, menuItem);
-
+    
         return true;
     }
 

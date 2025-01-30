@@ -1,5 +1,6 @@
-import { BaseEntity } from "src/common/entities/base.entity";
 import { Column, Entity, Index } from "typeorm";
+
+import { BaseEntity } from "src/common/entities/base.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_tag`)
 @Index(['tag'])
