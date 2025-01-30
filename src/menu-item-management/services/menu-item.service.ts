@@ -27,6 +27,7 @@ import { MenuItemRecipeService } from "./menu-item-recipe.service";
 import { MediaLibraryService } from "src/media-library-management/services/media-library.service";
 import { InventoryService } from "src/inventory-managemet/services/inventory.service";
 import logger from "src/common/Loggers/logger";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -55,6 +56,7 @@ export class MenuItemService extends GenericService<MenuItem> {
         readonly mediaLibraryService: MediaLibraryService,
         @Inject(forwardRef(() => InventoryService))
         readonly inventoryService: InventoryService,
+        private eventEmitter: EventEmitter2
     ) {
         super(dataSource, MenuItem, 'article menu');
     }
@@ -79,6 +81,8 @@ export class MenuItemService extends GenericService<MenuItem> {
 
             await queryRunner.commitTransaction();
 
+            this.eventEmitter.emit('menu.item.created', { menuItem: menuItem });
+
             return menuItem;
         } catch (error) {
             await queryRunner.rollbackTransaction();
@@ -87,24 +91,6 @@ export class MenuItemService extends GenericService<MenuItem> {
         } finally {
             await queryRunner.release();
         }
-    }
-
-    async recalculateQuantityBasedOnStock(menuItem: MenuItem) {
-        return this.recipeService.recalculateQuantityBasedOnStock(menuItem.id);
-    }
-
-    async refreshQuantity(id: string) {
-        const menuItem = await this.findOneByIdWithOptions(id,
-            {
-                findOrThrow: false
-            }
-        );
-
-        if (!menuItem.hasRecipe) {
-            throw new BadRequestException('Le produit de menu ne contient pas de recette avec des ingrédients, vous ne pouvez pas recalculer la quantité');
-        }
-
-        return this.recipeService.recalculateQuantityBasedOnStock(id);
     }
 
     private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
@@ -135,12 +121,12 @@ export class MenuItemService extends GenericService<MenuItem> {
             }
 
             menuItem.recipe = await Promise.all(dto.recipe.map(async (recipe) => {
-                return await this.recipeService.createRecipe(menuItem,recipe, queryRunner);
+                return await this.recipeService.createRecipe(menuItem, recipe, queryRunner);
             }));
         }
 
         menuItem.translates = await Promise.all(dto.translates.map(async (translate) => {
-          return await this.translateService.createTranslation(menuItem, translate, queryRunner);
+            return await this.translateService.createTranslation(menuItem, translate, queryRunner);
         }));
 
         for (const tagId of dto.tagIds) {
@@ -219,6 +205,11 @@ export class MenuItemService extends GenericService<MenuItem> {
         } finally {
             await queryRunner.release();
         }
+    }
+
+    async setQuantityBasedOnStock(menuItem: MenuItem, quantity: number) {
+        menuItem.quantity = quantity;
+        return await this.menuItemRepository.save(menuItem);
     }
 
 }

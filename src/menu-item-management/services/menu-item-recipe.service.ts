@@ -1,13 +1,16 @@
 import { DataSource, QueryRunner, Repository } from "typeorm";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { BadRequestException, Injectable, InternalServerErrorException } from "@nestjs/common";
-import {  MenuItemRecipe } from "../entities/menu-item-recipe.entity";
+import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
+import { MenuItemRecipe } from "../entities/menu-item-recipe.entity";
 import { MenuItem } from "../entities/menu-item.entity";
 import { ProductService } from "src/product-management/services/product.service";
 import { UnitService } from "src/unit-management/services/unit.service";
 import { InventoryService } from "src/inventory-managemet/services/inventory.service";
 import { CreateMenuItemIngredientRecipeDto } from "../dtos/menu-item-recipe/create-menu-item-ingredient-recipe.dto";
+import { OnEvent } from "@nestjs/event-emitter";
+import logger from "src/common/Loggers/logger";
+import { MenuItemService } from "./menu-item.service";
 
 @Injectable()
 export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
@@ -16,17 +19,22 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(MenuItemRecipe)
         readonly recipeRepository: Repository<MenuItemRecipe>,
+        @Inject(forwardRef(() => ProductService))
         private readonly productService: ProductService,
+        @Inject(forwardRef(() => UnitService))
         private readonly unitService: UnitService,
-        private readonly inventoryService: InventoryService
+        @Inject(forwardRef(() => InventoryService))
+        private readonly inventoryService: InventoryService,
+        @Inject(forwardRef(() => MenuItemService))
+        private readonly menuItemService: MenuItemService
 
     ) {
         super(dataSource, MenuItemRecipe, 'recette de l\'article menu');
     }
 
     async createRecipe(menuItem: MenuItem, dto: CreateMenuItemIngredientRecipeDto, queryRunner: QueryRunner) {
-       
-        if (!menuItem) throw new BadRequestException('Le produit de menu indéfini'); 
+
+        if (!menuItem) throw new BadRequestException('Le produit de menu indéfini');
         if (dto.ingredientQuantity <= 0) throw new BadRequestException('La quantité de l\'ingrédient ne peut être inférieure ou égale à 0');
         if (menuItem.portionProduced <= 0) throw new BadRequestException('Le nombre de portion produite par recette ne peut être inférieur ou égale à 0');
 
@@ -56,27 +64,39 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
         await queryRunner.manager.softDelete(MenuItemRecipe, { menuItem: { id: menuItem.id } });
     }
 
-    async recalculateQuantityBasedOnStock(id: string) {
+    @OnEvent('menu.item.created')
+    async recalculateQuantityBasedOnStock({ menuItem }: { menuItem: MenuItem }) {
+
         try {
-            let minQuantity = [];
+            if (!menuItem.hasRecipe) return; // Early return if menu item has no recipe
 
-            const recipes = await this.recipeRepository.find({ where: { menuItem: { id: id } }, relations: ['inventory', 'unit', 'product'] });
+            const recipes = await this.recipeRepository.find({ where: { menuItem: { id: menuItem.id } }, relations: ['inventory', 'unit', 'product'] });
 
-            recipes.forEach(async recipe => {
-                let quantity = 0;
+            if (!recipes || recipes.length === 0) {
+                logger.warn('No recipes found for menu item:', { menuItem });
+                return;
+            }
 
-                if (recipe.inventory.productUnit != recipe.unit.unit) {
-                    quantity = Number(recipe.inventory.totalQuantity) / Number(recipe.unit.conversionFactorToBaseUnit)
+            const minQuantity = recipes.map(recipe => {
+                let quantity = recipe.inventory.totalQuantity;
+
+                if (recipe.inventory.productUnit !== recipe.unit.unit) {
+                    quantity = Number(quantity) / Number(recipe.unit.conversionFactorToBaseUnit);
                 }
 
-                const calculePortion = Math.floor(Number(quantity) / Number(recipe.quantityRequiredPerPortion))
-
-                minQuantity.push(calculePortion)
+                return Math.floor(Number(quantity) / Number(recipe.quantityRequiredPerPortion));
             });
 
-            return Math.min(...minQuantity);
+            const quantity = Math.min(...minQuantity);
+
+            if (!isFinite(quantity)) {
+                logger.warn('Invalid quantity calculated:', { menuItem, quantity });
+                return;
+            }
+
+            await this.menuItemService.setQuantityBasedOnStock(menuItem, quantity);
         } catch (error) {
-            console.error('Error in recalculateQuantityBasedOnStock:', error);
+            logger.error('Error in recalculate Quantity Based On Stock:', { message: error.message, stack: error.stack });
             throw new InternalServerErrorException('Une erreur est survenue lors du recalcul de la quantité');
         }
     }

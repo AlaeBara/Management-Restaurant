@@ -26,9 +26,11 @@ import { UploadModule } from './upload-management/upload.module';
 import { MediaLibraryModule } from './media-library-management/media-library.module';
 import { PaymentModule } from './payment-management/payment.module';
 import { OrderManagementModule } from './order-management/order-management.module';
+import { EventEmitterModule } from '@nestjs/event-emitter';
 
 @Module({
   imports: [
+    EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true, // makes env variables available throughout the app
       //envFilePath: '.env',

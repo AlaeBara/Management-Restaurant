@@ -82,13 +82,4 @@ export class MenuItemController {
         return { message: 'Super! Vot produit de menu a été restauré avec succès', status: 200 };
     }
 
-
-    @Put(':id/refresh-quantity')
-    @Permissions('refresh-menu-item-quantity')
-    @ApiOperation({ summary: 'Refresh the quantity of a menu item' })
-    async refreshQuantity(@Param('id', ParseUUIDPipe) id: string) {
-        const quantity = await this.menuItemService.refreshQuantity(id);
-        return { message: 'Super! La quantité du produit de menu a été recalculée avec succès', quantity, status: 200 };
-    }
-
 }
