@@ -196,7 +196,7 @@ export default function AchatCreationForm() {
         images: [] ,
         basePrice: null,
         discountId: '',
-        typeDiscount : 'avancer',
+        discountLevel : 'no-discount',
         discountValue: null,
         discountMethod: ''
     });
@@ -374,11 +374,11 @@ export default function AchatCreationForm() {
 
             // Custom validation price section
             let customErrors = {};
-            if (formData.typeDiscount === 'avancer') {
+            if (formData.discountLevel === 'advanced') {
                 if (!formData.discountId) {
                     customErrors.discountId = "Le nom de la réduction est obligatoire.";
                 }
-            } else {
+            } else if (formData.discountLevel === 'basic') {
                 if (!formData.discountMethod) {
                     customErrors.discountMethod = "Le type de remise est obligatoire.";
                 }
@@ -480,11 +480,9 @@ export default function AchatCreationForm() {
             if (formData.hasRecipe) {
                 formData.quantity= null;
             }
-            if (formData.typeDiscount === 'avancer') {
+            if (formData.discountLevel === 'no-discount') {
                 formData.discountMethod=null
                 formData.discountValue=null
-            }
-            else{
                 formData.discountId=null
             }
     
@@ -553,13 +551,16 @@ export default function AchatCreationForm() {
             }
 
             // Append price fields
-            if (preparedData.typeDiscount === 'avancer') {
+            if (preparedData.discountLevel === 'advanced') {
                 appendIfValid('discountId', preparedData.discountId);
             }
-            else{
+            else if((preparedData.discountLevel === 'basic')) {
                 appendIfValid('discountMethod', preparedData.discountMethod);
                 appendIfValid('discountValue', preparedData.discountValue);
             }
+
+            appendIfValid('discountLevel', preparedData.discountLevel);
+
             // Append translates array
             appendArray('translates', preparedData.translates);
             // Append tagIds array
@@ -587,34 +588,34 @@ export default function AchatCreationForm() {
             setFormData({
                 menuItemSku: '',
                 quantity: '',
-                warningQuantity: '',
+                warningQuantity: null,
                 isPublished: false,
                 isDraft: false,
                 categoryId: '',
                 hasRecipe: false,
-                portionProduced: null,
+                portionProduced:  null,
                 recipe: [
                     {
                         productId: '',
-                        inventoryId: '',
-                        ingredientQuantity: '',
+                        inventoryId:  '',
+                        ingredientQuantity: null,
                         unitId: ''
                     }
                 ],
                 tagIds: [],
                 translates: [
                     {
-                        languageId: langages.find(lang => lang.label === "Français")?.id || '',
+                        languageId:'',
                         name: '',
                         description: ''
                     }
                 ],
-                price: {
-                    basePrice: null,
-                    discountId: ''
-                },
                 images: [] ,
-                typeDiscount : ''
+                basePrice: null,
+                discountId: '',
+                discountLevel : 'no-discount',
+                discountValue: null,
+                discountMethod: ''
             });
             setErrors({});
             setAlert({
@@ -646,6 +647,11 @@ export default function AchatCreationForm() {
         { value: 'fixed', label: 'Montant fixe' },
     ];
 
+    const typeDiscounts = [
+        { value: 'advanced', label: 'advanced' },
+        { value: 'basic', label: 'basic' },
+        { value: 'no-discount', label: 'no-discount' }
+    ];
 
     return (
         <div className="w-full">
@@ -1179,26 +1185,34 @@ export default function AchatCreationForm() {
                                         <div className="space-y-2">
                                             <Label>Type de discount <span className='text-red-500 text-base'>*</span></Label>
                                             <Select
-                                                name="typeDiscount"
-                                                value={formData.typeDiscount || ""}
-                                                onValueChange={(value) => handleChange({ target: { name: 'typeDiscount',  value: value} })}
+                                                name="discountLevel"
+                                                value={formData.discountLevel || ""}
+                                                onValueChange={(value) => handleChange({ target: { name: 'discountLevel',  value: value} })}
                                             >
                                                 <SelectTrigger>
                                                     <SelectValue placeholder="Sélectionner une Choix" />
                                                 </SelectTrigger>
                                                 <SelectContent>
-                                                    <SelectItem value="avancer">Avancer</SelectItem>
-                                                    <SelectItem value="simple">Simple</SelectItem>
+                                                    {typeDiscounts.length > 0 ? (
+                                                        typeDiscounts
+                                                            .map((typeDiscounts) => (
+                                                                <SelectItem key={typeDiscounts.value} value={typeDiscounts.value}>
+                                                                    {typeDiscounts.label}
+                                                                </SelectItem>
+                                                            ))
+                                                    ) : (
+                                                        <p className='text-sm'>Aucune donnée disponible</p>
+                                                    )}
                                                 </SelectContent>
                                             </Select>
                                         </div>                                        
                                     </div>
 
 
-                                    {formData.typeDiscount === 'simple' ? 
+                                    {formData.discountLevel === 'basic' ? 
 
 
-                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    (<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
                                             <Label>Type de la remise  <span className='text-red-500 text-base'>*</span></Label>
                                             <Select
@@ -1245,10 +1259,9 @@ export default function AchatCreationForm() {
                                                 <p className="text-xs text-red-500 mt-1">{errors.discountValue}</p>
                                             )}
                                         </div>
-                                    </div>
+                                    </div>)
 
-                                    :
-
+                                    : formData.discountLevel === 'advanced' ? (
 
                                     <div className="space-y-2">
                                         <Label>Nom de Réduction </Label>
@@ -1283,9 +1296,10 @@ export default function AchatCreationForm() {
                                         {errors.discountId && (
                                             <p className="text-xs text-red-500 mt-1">{errors.discountId}</p>
                                         )}
-                                    </div>
-                                    }
-
+                                    </div>)
+                                    : (
+                                        null
+                                    )}
 
                                     
                                 </TabsContent>
