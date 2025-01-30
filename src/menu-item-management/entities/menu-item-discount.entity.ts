@@ -1,7 +1,7 @@
 import { BaseEntity } from "src/common/entities/base.entity";
 import { AfterLoad, Column, Entity } from "typeorm";
 import { DiscountType } from "../enums/discount-type.enum";
-import { DiscountMethod } from "../enums/discount-method";
+import { DiscountMethod } from "../enums/discount-method.enum";
 import { DiscountStatus } from "../enums/discount-status.enum";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu_discount`)

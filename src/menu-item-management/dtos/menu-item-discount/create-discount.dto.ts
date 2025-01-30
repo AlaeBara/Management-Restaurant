@@ -3,7 +3,7 @@ import { IsString } from "class-validator";
 import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
 import { BadRequestException } from "@nestjs/common";
-import { DiscountMethod } from "src/menu-item-management/enums/discount-method";
+import { DiscountMethod } from "src/menu-item-management/enums/discount-method.enum";
 import { Type } from "class-transformer";
 import { DiscountType } from "src/menu-item-management/enums/discount-type.enum";
 

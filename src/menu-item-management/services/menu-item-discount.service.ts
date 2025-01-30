@@ -5,10 +5,11 @@ import { BadRequestException, Injectable } from "@nestjs/common";
 import { MenuItemDiscount } from "../entities/menu-item-discount.entity";
 import { CreateDiscountDto } from "../dtos/menu-item-discount/create-discount.dto";
 import { UpdateDiscountDto } from "../dtos/menu-item-discount/update-discount.dto";
-import { DiscountMethod } from "../enums/discount-method";
+import { DiscountMethod } from "../enums/discount-method.enum";
 import { DiscountType } from "../enums/discount-type.enum";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
+import { DiscountLevel } from "../enums/discount-level.enum";
 
 @Injectable()
 export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
@@ -110,17 +111,19 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     }
 
     async setDiscountToMenuItem(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        if (dto.discountMethod && dto.discountValue && !dto.discountId) {
+        if (dto.discountLevel === DiscountLevel.BASIC) {
             await this.setSimpleDiscount(menuItem, dto, queryRunner);
         } 
         
-        if (!dto.discountMethod && !dto.discountValue && dto.discountId) {
+        if (dto.discountLevel === DiscountLevel.ADVANCED) {
             await this.setAdvancedDiscount(menuItem, dto, queryRunner);
         }
 
-        if (dto.discountMethod && dto.discountValue && dto.discountId) {
-            throw new BadRequestException('Vous ne pouvez pas définir un discount simple et un discount avancé en même temps');
+        if (dto.discountLevel === DiscountLevel.NO_DISCOUNT) {
+            await this.setNoDiscount(menuItem, queryRunner);
         }
+
+        throw new BadRequestException('Type de remise non trouvé');
     }
 
     private async setSimpleDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
@@ -132,6 +135,11 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     private async setAdvancedDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
         const menuItemDiscount = await this.findOneByIdWithOptions(dto.discountId);
         menuItem.discount = menuItemDiscount;
+        await queryRunner.manager.save(MenuItem, menuItem);
+    }
+
+    private async setNoDiscount(menuItem: MenuItem, queryRunner: QueryRunner) {
+        menuItem.discount = null;
         await queryRunner.manager.save(MenuItem, menuItem);
     }
 

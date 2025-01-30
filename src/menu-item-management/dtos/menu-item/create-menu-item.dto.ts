@@ -11,12 +11,14 @@ import {
   IsNotEmpty,
   Length,
   Min,
-  IsArray
+  IsArray,
+  IsEnum
 } from 'class-validator';
 
 import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item-translation.dto';
-import { DiscountMethod } from 'src/menu-item-management/enums/discount-method';
+import { DiscountMethod } from 'src/menu-item-management/enums/discount-method.enum';
 import { CreateMenuItemIngredientRecipeDto } from '../menu-item-recipe/create-menu-item-ingredient-recipe.dto';
+import { DiscountLevel } from 'src/menu-item-management/enums/discount-level.enum';
 
 export class CreateMenuItemDto {
 
@@ -124,6 +126,14 @@ export class CreateMenuItemDto {
       example: '99.99'
   })
   basePrice: number;
+
+  @IsEnum(DiscountLevel)
+  @IsNotEmpty()
+  @ApiProperty({
+    description: 'The discount level of the menu item',
+    example: 'advanced'
+  })
+  discountLevel: DiscountLevel;
 
   @IsOptional()
   @IsUUID()

@@ -4,7 +4,7 @@ import { ApiProperty } from "@nestjs/swagger";
 import { MaxLength, MinLength } from "class-validator";
 import { BadRequestException } from "@nestjs/common";
 import { Type } from "class-transformer";
-import { DiscountMethod } from "src/menu-item-management/enums/discount-method";
+import { DiscountMethod } from "src/menu-item-management/enums/discount-method.enum";
 
 export class UpdateDiscountDto {
     @IsOptional()
