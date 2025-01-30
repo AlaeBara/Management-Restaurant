@@ -92,7 +92,7 @@ export class MenuItem extends BaseEntity {
 
     @AfterLoad()
     async calculateFinalPrice() {
-        if (this.discount && this.discountLevel === DiscountLevel.BASIC && this.discount.status === DiscountStatus.IN_DISCOUNT) {
+        if (this.discount && this.discountLevel === DiscountLevel.ADVANCED && this.discount.status === DiscountStatus.IN_DISCOUNT) {
             this.finalPrice = await this.discount.setDiscount(this.basePrice);
             return;
         }

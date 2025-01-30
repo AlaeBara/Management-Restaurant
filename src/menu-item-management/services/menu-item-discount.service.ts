@@ -113,39 +113,50 @@ export class MenuItemDiscountService extends GenericService<MenuItemDiscount> {
     async setDiscountToMenuItem(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
         if (dto.discountLevel === DiscountLevel.BASIC) {
             await this.setSimpleDiscount(menuItem, dto, queryRunner);
+            return;
         }
 
         if (dto.discountLevel === DiscountLevel.ADVANCED) {
             await this.setAdvancedDiscount(menuItem, dto, queryRunner);
+            return;
         }
 
         if (dto.discountLevel === DiscountLevel.NO_DISCOUNT) {
             await this.setNoDiscount(menuItem, queryRunner);
+            return;
         }
 
         throw new BadRequestException('Type de remise non trouvé');
     }
 
     private async setSimpleDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
-        if (menuItem.discountMethod == DiscountMethod.FIXED && menuItem.basePrice < menuItem.discountValue)
+        if (dto.discountMethod == DiscountMethod.FIXED && dto.basePrice < dto.discountValue)
             throw new BadRequestException('Le montant de la remise ne peut pas être supérieure au prix de base');
 
-        if (menuItem.discountMethod == DiscountMethod.PERCENTAGE && (dto.discountValue > 100 || dto.discountValue < 0))
+        if (dto.discountMethod == DiscountMethod.PERCENTAGE && (dto.discountValue > 100 || dto.discountValue < 0))
             throw new BadRequestException('Le pourcentage de la remise ne peut pas être supérieure à 100 ou inférieure à 0');
 
         menuItem.discountMethod = dto.discountMethod;
         menuItem.discountValue = dto.discountValue;
+
         await queryRunner.manager.save(MenuItem, menuItem);
     }
 
     private async setAdvancedDiscount(menuItem: MenuItem, dto: CreateMenuItemDto, queryRunner: QueryRunner) {
+        if(!dto.discountId && menuItem.discountLevel === DiscountLevel.ADVANCED) {
+            throw new BadRequestException('Le produit de menu ne peut pas avoir plus d\'une remise avancée');
+        }
+
         const menuItemDiscount = await this.findOneByIdWithOptions(dto.discountId);
         menuItem.discount = menuItemDiscount;
+
         await queryRunner.manager.save(MenuItem, menuItem);
     }
 
     private async setNoDiscount(menuItem: MenuItem, queryRunner: QueryRunner) {
         menuItem.discount = null;
+        menuItem.discountLevel = DiscountLevel.NO_DISCOUNT;
+        
         await queryRunner.manager.save(MenuItem, menuItem);
     }
 
