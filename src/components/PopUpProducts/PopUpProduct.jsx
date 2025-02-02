@@ -65,7 +65,7 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
         </div>
 
         {/* Product Details */}
-        <div className="p-6 flex-1">
+        <div className="px-6 flex-1">
           <h2 className="text-xl font-bold mb-4">
             {product.translates.find((t) => t.languageValue === language)?.name || 'No Name'}
           </h2>
@@ -74,11 +74,11 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <span className="text-lg font-semibold">
-              {product.price.finalPrice} Dh
+              {product.finalPrice} Dh
             </span>
-            {product.price.finalPrice !== product.price.basePrice && (
+            {product.finalPrice !== product.basePrice && (
               <span className="text-sm text-gray-500 line-through">
-                {product.price.basePrice} Dh
+                {product.basePrice} Dh
               </span>
             )}
           </div>
@@ -114,7 +114,7 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
                       type="checkbox"
                       checked={selectedSupplements.includes(supplement.id)}
                       onChange={() => handleSupplementChange(supplement.id)}
-                      className="w-4 h-4"
+                      className={`w-4 h-4 ${style.radioInput}`}
                     />
                     <span>{supplement.name}</span>
                   </div>

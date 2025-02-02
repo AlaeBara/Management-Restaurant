@@ -127,9 +127,9 @@ const Menu = memo(({ previousStep, nextStep }) => {
       <div key={item.id} className={styles.menuItem} onClick={() => handleProductClick(item)}>
         <ImageSlider item={item} />
         <div className={styles.itemInfo}>
-          {item.price.finalPrice !== item.price.basePrice ? (
+          {item.finalPrice !== item.basePrice ? (
             <span className={styles.promo}>
-              - {Math.round(((item.price.basePrice - item.price.finalPrice) / item.price.basePrice) * 100)}%
+              - {Math.round(((item.basePrice - item.finalPrice) / item.basePrice) * 100)}%
             </span>
           ) : (
             <span aria-hidden="true">&nbsp;</span>
@@ -142,9 +142,9 @@ const Menu = memo(({ previousStep, nextStep }) => {
           </div>
           <div>
             <span className={styles.price}>
-              {item.price.finalPrice}Dh
-              {item.price.finalPrice !== item.price.basePrice && (
-                <span className={styles.oldPrice}>{item.price.basePrice} Dh</span>
+              {item.finalPrice}Dh
+              {item.finalPrice !== item.basePrice && (
+                <span className={styles.oldPrice}>{item.basePrice} Dh</span>
               )}
             </span>
           </div>
