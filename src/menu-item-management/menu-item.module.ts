@@ -23,6 +23,11 @@ import { MenuItemRecipe } from './entities/menu-item-recipe.entity';
 import { MenuItemRecipeService } from './services/menu-item-recipe.service';
 import { MenuItemPublicController } from './controllers/public/menu-item.public.controller';
 import { MenuItemPublicService } from './services/public/menu-item.public.service';
+import { MenuItemChoices } from './entities/choices/menu-item-choices.entity';
+import { ChoiceAttribute } from './entities/choices/choice-attribute.entity';
+import { Choice } from './entities/choices/choice.entity';
+import { ChoiceAttributeService } from './services/choice/choice-attribute.service';
+import { ChoiceAttributeController } from './controllers/choice-attribute.controller';
 
 @Module({
   imports: [
@@ -31,7 +36,10 @@ import { MenuItemPublicService } from './services/public/menu-item.public.servic
         MenuItem,
         MenuItemRecipe,
         MenuItemDiscount,
-        MenuItemTranslate
+        MenuItemTranslate,
+        MenuItemChoices,
+        ChoiceAttribute,
+        Choice
       ]),
     forwardRef(() => LanguageModule),
     forwardRef(() => CategoryModule),
@@ -43,7 +51,8 @@ import { MenuItemPublicService } from './services/public/menu-item.public.servic
     MenuItemTagController,
     MenuItemController,
     MenuItemDiscountController,
-    MenuItemPublicController
+    MenuItemPublicController,
+    ChoiceAttributeController
   ],
   providers: [
     MenuItemTagService,
@@ -52,10 +61,12 @@ import { MenuItemPublicService } from './services/public/menu-item.public.servic
     MenuItemTranslationService,
     MenuItemRecipeService,
     TagSeeder,
-    MenuItemPublicService
+    MenuItemPublicService,
+    ChoiceAttributeService
   ],
   exports: [
-    TagSeeder
+    TagSeeder,
+    MenuItemService
   ],
 })
 export class MenuItemModule { }

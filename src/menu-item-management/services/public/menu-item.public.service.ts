@@ -26,7 +26,13 @@ export class MenuItemPublicService {
     async getMenuItemByTag(tag: string) {
         const menuItems = await this.menuItemRepository.createQueryBuilder('menuItem')
         .leftJoinAndSelect('menuItem.tags', 'tag') // Join the tags relation
-        .where('tag.id = :tagId', { tagId:tag }) // Filter by tag ID
+        .leftJoinAndSelect('menuItem.translates', 'translates') // Join the choices relation
+        .leftJoinAndSelect('translates.language', 'language') // Join the choices relation
+        .leftJoinAndSelect('menuItem.discount', 'discount') // Join the choices relationç
+        .leftJoinAndSelect('menuItem.images', 'images') // Join the choices relation
+        .leftJoinAndSelect('menuItem.recipe', 'recipe') // Join the choices relation
+        .leftJoinAndSelect('menuItem.category', 'category') // Join the choices relation
+        .where('tag.id = :tagId', { tagId: tag }) // Filter by tag ID
         .getMany();
 
         return plainToInstance(MenuItemResponseDto, menuItems, {
@@ -36,7 +42,7 @@ export class MenuItemPublicService {
 
     async fetchAllTags() {
         const tags = await this.menuItemTagRepository.find();
-        
+
         return plainToInstance(MenuItemTagResponseDto, tags, {
             excludeExtraneousValues: true
         });

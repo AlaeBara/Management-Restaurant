@@ -67,7 +67,7 @@ export class CreateMenuItemDto {
   isDraft: boolean;
 
   @IsUUID()
-  @IsNotEmpty()
+  @IsOptional()
   @ApiProperty({
     description: 'The category id of the menu item',
     example: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2'

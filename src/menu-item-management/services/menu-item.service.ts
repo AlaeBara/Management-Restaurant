@@ -212,4 +212,9 @@ export class MenuItemService extends GenericService<MenuItem> {
         return await this.menuItemRepository.save(menuItem);
     }
 
+    async isCategoryUsed(id: string) {
+        const menuItems = await this.menuItemRepository.find({ where: { category: { id } } });
+        return menuItems.length > 0;
+    }
+
 }

@@ -37,6 +37,9 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
     }
 
     async deleteMenuItemTag(id: string) {
+        const tag = await this.findOneByIdWithOptions(id);
+        if (tag.isProtected)
+            throw new BadRequestException('Impossible de supprimer le tag protégé');
         await this.isTagInUse(id, 'delete');
         return this.softDelete(id, true);
     }
@@ -99,12 +102,12 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
             // Return false instead of undefined for duplicate tags
             return false;
         }
-    
+
         const menuItemTag = await this.findOneByIdWithOptions(tagId);
-        
+
         menuItem.tags.push(menuItemTag);
         await queryRunner.manager.save(MenuItem, menuItem);
-    
+
         return true;
     }
 

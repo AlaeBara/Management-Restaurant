@@ -5,7 +5,9 @@ import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { CreateCategoryDto } from "../dtos/category/create-category.dto";
 import { UpdateCategoryDto } from "../dtos/category/update-category.dto";
 import { CategoryStatus } from "../enums/category-status.enum";
-import { BadRequestException, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, NotFoundException } from "@nestjs/common";
+import { MenuItem } from "src/menu-item-management/entities/menu-item.entity";
+import { MenuItemService } from "src/menu-item-management/services/menu-item.service";
 
 
 export class CategoryService extends GenericService<Category> {
@@ -14,6 +16,8 @@ export class CategoryService extends GenericService<Category> {
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(Category)
         private readonly categoryRepository: Repository<Category>,
+        @Inject(forwardRef(() => MenuItemService))
+        private readonly menuItemService: MenuItemService,
     ) {
         super(dataSource, Category, 'category');
     }
@@ -124,6 +128,13 @@ export class CategoryService extends GenericService<Category> {
         if (await this.countByAttribute({ parentCategoryId: id })) {
             throw new BadRequestException('La catégorie a des sous-catégories et ne peut être supprimée');
         }
+        if (await this.isCategoryUsed(id)) {
+            throw new BadRequestException('La catégorie est utilisée par un menu item et ne peut être supprimée');
+        }
         return await this.categoryRepository.softDelete(id);
+    }
+
+    async isCategoryUsed(id: string) {
+        return await this.menuItemService.isCategoryUsed(id);
     }
 }

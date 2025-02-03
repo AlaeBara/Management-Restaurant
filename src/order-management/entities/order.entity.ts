@@ -78,6 +78,8 @@ export class Order extends UlidBaseEntity {
     totalPaidAmount: number;
 
     @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
+    totalAditionalPrice: number;
+    @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     totalRefundedAmount: number;
 
     @Column({ type: 'int', enum: PaymentStatus, default: PaymentStatus.PENDING })

@@ -43,7 +43,7 @@ export class MenuItem extends BaseEntity {
     @Column({ type: 'boolean' })
     isDraft: boolean;
 
-    @ManyToOne(() => Category, (category) => category.id, { nullable: true, eager: false })
+    @ManyToOne(() => Category, (category) => category.id, { nullable: true, eager: true })
     category: Category
 
     @ManyToMany(() => MenuItemTag, { nullable: true, eager: true })
@@ -91,8 +91,11 @@ export class MenuItem extends BaseEntity {
 
     finalPrice: number;
 
-    /* @OneToMany(() => MenuItemChoices, (menuItemChoices) => menuItemChoices.menuItem)
-    choices: MenuItemChoices[]; */
+    @OneToMany(() => MenuItemChoices, (menuItemChoices) => menuItemChoices.menuItem)
+    choices: MenuItemChoices[];
+
+    // aditional price for the menu item
+    aditionalPrice: number;
 
     @AfterLoad()
     async calculateFinalPrice() {
