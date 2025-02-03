@@ -21,6 +21,8 @@ import { MediaLibraryModule } from 'src/media-library-management/media-library.m
 import { TagSeeder } from './seeders/tag.seeder';
 import { MenuItemRecipe } from './entities/menu-item-recipe.entity';
 import { MenuItemRecipeService } from './services/menu-item-recipe.service';
+import { MenuItemPublicController } from './controllers/public/menu-item.public.controller';
+import { MenuItemPublicService } from './services/public/menu-item.public.service';
 
 @Module({
   imports: [
@@ -40,7 +42,8 @@ import { MenuItemRecipeService } from './services/menu-item-recipe.service';
   controllers: [
     MenuItemTagController,
     MenuItemController,
-    MenuItemDiscountController
+    MenuItemDiscountController,
+    MenuItemPublicController
   ],
   providers: [
     MenuItemTagService,
@@ -49,6 +52,7 @@ import { MenuItemRecipeService } from './services/menu-item-recipe.service';
     MenuItemTranslationService,
     MenuItemRecipeService,
     TagSeeder,
+    MenuItemPublicService
   ],
   exports: [
     TagSeeder

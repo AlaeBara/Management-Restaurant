@@ -19,6 +19,7 @@ import { DiscountStatus } from "../enums/discount-status.enum";
 import { MenuItemDiscount } from "./menu-item-discount.entity";
 import { DiscountMethod } from "../enums/discount-method.enum";
 import { DiscountLevel } from "../enums/discount-level.enum";
+import { MenuItemChoices } from "./choices/menu-item-choices.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu`)
 @Index(['menuItemSku'])
@@ -90,6 +91,9 @@ export class MenuItem extends BaseEntity {
 
     finalPrice: number;
 
+    /* @OneToMany(() => MenuItemChoices, (menuItemChoices) => menuItemChoices.menuItem)
+    choices: MenuItemChoices[]; */
+
     @AfterLoad()
     async calculateFinalPrice() {
         if (this.discount && this.discountLevel === DiscountLevel.ADVANCED && this.discount.status === DiscountStatus.IN_DISCOUNT) {
@@ -97,7 +101,7 @@ export class MenuItem extends BaseEntity {
             return;
         }
 
-        if(this.discount && this.discountLevel === DiscountLevel.BASIC) {
+        if (!this.discount && this.discountLevel === DiscountLevel.BASIC) {
             this.finalPrice = await this.setSimpleDiscount();
             return;
         }
@@ -106,9 +110,8 @@ export class MenuItem extends BaseEntity {
     }
 
     private async setSimpleDiscount() {
-        if(this.discount && this.discountLevel === DiscountLevel.BASIC) return this.basePrice;
-       return this.discountMethod === DiscountMethod.PERCENTAGE
-        ? this.basePrice * (1 - this.discountValue / 100)
-        : this.basePrice - this.discountValue;
+        return this.discountMethod === DiscountMethod.PERCENTAGE
+            ? this.basePrice * (1 - this.discountValue / 100)
+            : this.basePrice - this.discountValue;
     }
 }

@@ -59,7 +59,7 @@ async function bootstrap() {
 
   // Configure CORS to allow requests from frontend URL
   app.enableCors({
-    origin: process.env.FRONTEND_URL, // Allow only this origin
+    origin: [process.env.FRONTEND_URL, process.env.CLIENT_URL], // Allow only this origin
     methods: 'GET,HEAD,PUT,PATCH,POST,DELETE', // Allowed HTTP methods
     credentials: true, // Allow cookies and credentials
     allowedHeaders: 'Content-Type, Authorization', // Allowed headers
