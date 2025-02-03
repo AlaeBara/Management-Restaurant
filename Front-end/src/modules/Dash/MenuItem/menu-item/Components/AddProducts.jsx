@@ -648,9 +648,9 @@ export default function AchatCreationForm() {
     ];
 
     const typeDiscounts = [
-        { value: 'advanced', label: 'advanced' },
-        { value: 'basic', label: 'basic' },
-        { value: 'no-discount', label: 'no-discount' }
+        { value: 'advanced', label: 'Avancé' },
+        { value: 'basic', label: 'Basique' },
+        { value: 'no-discount', label: 'Aucune remise' }
     ];
 
     return (
@@ -1183,7 +1183,7 @@ export default function AchatCreationForm() {
                                         </div>
                                         
                                         <div className="space-y-2">
-                                            <Label>Type de discount <span className='text-red-500 text-base'>*</span></Label>
+                                            <Label>Catégorie de remise <span className='text-red-500 text-base'>*</span></Label>
                                             <Select
                                                 name="discountLevel"
                                                 value={formData.discountLevel || ""}
