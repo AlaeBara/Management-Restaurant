@@ -34,7 +34,7 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
     const cartItem = {
       id: product.id,
       name: product.name,
-      finalPrice: product.price.finalPrice,
+      finalPrice: product.finalPrice,
       quantity,
     };
 
@@ -70,7 +70,7 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
             {product.translates.find((t) => t.languageValue === language)?.name || 'No Name'}
           </h2>
           <p className="text-gray-600 mb-4 ">
-            {product.translates.find((t) => t.languageValue === 'fr')?.description || 'No Description'}
+            {product.translates.find((t) => t.languageValue === language)?.description || 'No Description'}
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <span className="text-lg font-semibold">
