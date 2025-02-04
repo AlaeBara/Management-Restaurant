@@ -272,15 +272,11 @@
 }
 
 .promo p {
-  padding-top: 0.3rem;
-  padding-left: 0.3rem;
+  position: relative;
+  transform: translate(5%, 15%);
 }
 
-
-
-
 .oldPrice {
-
   font-size: 1rem;
   color: var(--old-price-color);
   text-decoration: line-through;

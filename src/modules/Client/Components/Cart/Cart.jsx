@@ -1,48 +1,38 @@
-import React, { useState, useEffect, memo } from 'react';
+import React, { useEffect, memo,useState } from 'react';
 import styles from './Cart.module.css';
 import { useTranslation } from 'react-i18next';
 import { Trash, ArrowLeft, Plus, Minus } from 'lucide-react';
 import { useClientPreferences } from '../../../../context/OrderFlowContext';
+import { useCart } from '../../../../context/CartContext'; // Import useCart from your CartContext
+import { Loader } from 'lucide-react';
+
 
 const Cart = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
   const { language } = useClientPreferences();
-  const [cart, setCart] = useState([]);
+  const { cart,  removeFromCart, updateCartItemQuantity } = useCart(); // Use the cart context
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadCart = async () => {
-      try {
-        const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCart(storedCart);
-      } catch (error) {
-        console.error('Error loading cart:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadCart();
-  }, []);
+    if (cart !== undefined) {
+      setIsLoading(false);
+    }
+  }, [cart]);
 
   const handleDelete = (itemId) => {
-    const updatedCart = cart.filter((item) => item.id !== itemId);
-    setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    removeFromCart(itemId); // Use the context function to remove an item
   };
 
   const handleQuantityChange = (itemId, change) => {
-    const updatedCart = cart.map((item) => {
-      if (item.id === itemId) {
-        return { ...item, quantity: Math.max(1, item.quantity + change) };
-      }
-      return item;
-    });
-    setCart(updatedCart);
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    const item = cart.find((item) => item.id === itemId);
+    if (item) {
+      const newQuantity = Math.max(1, item.quantity + change); // Ensure quantity is at least 1
+      updateCartItemQuantity(itemId, newQuantity); // Use the context function to update quantity
+    }
   };
 
   const calculateTotal = (item) => {
-    return (item.quantity * item.finalPrice).toFixed(2); 
+    return (item.quantity * item.finalPrice).toFixed(2);
   };
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
@@ -53,20 +43,14 @@ const Cart = memo(({ previousStep, nextStep }) => {
         <h1 className={styles.title}>{t('Your Food Cart')}</h1>
         <div className={styles.cartItems}>
           {isLoading ? (
-            <div className={styles.loading}>
+            <div className='mt-[20vh] flex flex-col justify-center items-center'>
+              <Loader className="h-6 w-6 animate-spin" />
               <p>{t('loading_cart')}</p>
             </div>
           ) : cart.length > 0 ? (
             cart.map((item) => (
               <div key={item.id} className={styles.cartItem}>
                 <div className={styles.itemInfo}>
-                  {/* <div className={styles.imageWrapper}>
-                    <img
-                      src={item.image} 
-                      alt={item.name || 'Item'}
-                      className={styles.itemImage}
-                    />
-                  </div> */}
                   <div className={styles.itemDetails}>
                     {/* Name and Price */}
                     <div className={styles.itemHeader}>
@@ -74,7 +58,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
                         {item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name'}
                       </span>
                       <span className={styles.itemPrice}>
-                        ${item.finalPrice}
+                        {item.finalPrice} Dh
                       </span>
                     </div>
 
@@ -109,7 +93,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
                         {t('Total')}:
                       </span>
                       <span className={styles.itemPrice}>
-                        ${calculateTotal(item)}
+                        {calculateTotal(item)} Dh
                       </span>
                     </div>
                   </div>
@@ -139,9 +123,9 @@ const Cart = memo(({ previousStep, nextStep }) => {
           <ArrowLeft /> {t('Previous')}
         </button>
         <button
-          className={`${styles.btn_next}`}
+          className={`${styles.btn_next} ${cart.length === 0 ? styles.btn_disabled : ''}`}
           onClick={nextStep}
-          disabled={cart.length === 0} 
+          disabled={cart.length === 0}
         >
           {t('Next')}
         </button>

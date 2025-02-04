@@ -1,11 +1,13 @@
 import React, { useState, memo } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import ImageSlider from '../imageSlider/ImageSlider';
-import style from './PopUpProducts.module.css'
+import style from './PopUpProducts.module.css';
+import { useCart } from '../../context/CartContext'; // Import useCart from your CartContext
 
 const PopUpProduct = memo(({ product, onClose, language }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSupplements, setSelectedSupplements] = useState([]);
+  const { addToCart } = useCart(); // Use the addToCart function from the context
 
   // Static data for supplements (replace with dynamic data later)
   const supplements = [
@@ -31,24 +33,30 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
   };
 
   const handleAddToCartClick = () => {
+    // Calculate the total price including supplements
+    // const supplementsTotal = selectedSupplements.reduce((total, supplementId) => {
+    //   const supplement = supplements.find((s) => s.id === supplementId);
+    //   return total + (supplement ? supplement.price : 0);
+    // }, 0);
+
+    // Create the cart item
     const cartItem = {
       id: product.id,
-      name: product.name,
+      name: product.translates.find((t) => t.languageValue === language)?.name || product.name || 'No Name',
       finalPrice: product.finalPrice,
       quantity,
     };
 
-    const currentCart = JSON.parse(localStorage.getItem('cart')) || [];
-    const updatedCart = [...currentCart, cartItem];
-    localStorage.setItem('cart', JSON.stringify(updatedCart));
+    // Add the item to the cart using the context function
+    addToCart(cartItem);
 
+    // Close the popup
     onClose();
   };
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4`}>
       <div className={`bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative flex flex-col shadow-2xl ${style.scrollbarcustom}`}>
-
         {/* Fixed close btn and Product Image */}
         <div className="sticky top-0 bg-white z-40">
           <button

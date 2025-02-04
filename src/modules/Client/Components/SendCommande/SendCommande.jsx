@@ -1,30 +1,25 @@
-import React, { useState, useEffect , memo } from 'react';
+import React, { useEffect, memo ,useState} from 'react';
 import { ArrowLeft } from 'lucide-react';
 import styles from './SendCommande.module.css';
 import { useTranslation } from 'react-i18next';
+import { useCart } from '../../../../context/CartContext'; // Import useCart from your CartContext
+
 
 const SendCommande = memo(({ previousStep }) => {
-  const [cart, setCart] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
   const { t, i18n } = useTranslation();
+  const { cart } = useCart(); // Use the cart state from the context
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const loadCart = async () => {
-      try {
-        const storedCart = JSON.parse(localStorage.getItem('cart')) || [];
-        setCart(storedCart);
-      } catch (error) {
-        console.error('Error loading cart:', error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    loadCart();
-  }, []);
+    if (cart !== undefined) {
+      setIsLoading(false);
+    }
+  }, [cart]);
 
+  // Calculate the total price of all items in the cart
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
-      return total + (item.finalPrice * item.quantity); // Use finalPrice from cart
+      return total + item.finalPrice * item.quantity;
     }, 0);
   };
 
@@ -59,7 +54,7 @@ const SendCommande = memo(({ previousStep }) => {
                     {item.name || `Item ${item.id}`} {/* Use item name or fallback */}
                   </div>
                   <div className={styles.amount}>
-                    ${(item.quantity * item.finalPrice).toFixed(2)} {/* Use finalPrice */}
+                    {(item.quantity * item.finalPrice).toFixed(2)} Dh{/* Use finalPrice */}
                   </div>
                 </div>
               ))
@@ -75,7 +70,7 @@ const SendCommande = memo(({ previousStep }) => {
             <div className={styles.invoiceRow}>
               <div className={styles.totalLabel}>{t('Total')}</div>
               <div className={styles.totalAmount}>
-                ${calculateTotal().toFixed(2)} {/* Display total */}
+                {calculateTotal().toFixed(2)} Dh
               </div>
             </div>
           </div>

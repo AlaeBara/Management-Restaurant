@@ -21,7 +21,7 @@
 .title {
   font-size: 28px;
   font-weight: 700;
-  color: var(--primary-color);
+  /* color: var(--primary-color); */
   margin-bottom: 30px;
 }
 
@@ -212,6 +212,12 @@
   border-radius: 8px;
   cursor: pointer;
   gap: 10px;
+}
+
+
+.btn_disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
 }
 
 /* Responsive styles */

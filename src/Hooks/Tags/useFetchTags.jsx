@@ -17,7 +17,6 @@ export const useFetchTags = () => {
 
       const { data } = response;
       setTags(data);
-      console.log(data);
     } catch (err) {
       console.error("Failed to fetch tags:", err);
       setMessage("Une erreur s'est produite lors du chargement des catégories.");

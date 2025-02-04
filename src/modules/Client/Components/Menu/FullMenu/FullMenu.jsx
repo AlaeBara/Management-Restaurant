@@ -9,6 +9,7 @@ import { useFetchProduits } from '../../../../../Hooks/Products/useFetchProducts
 import {useFetchProduitsByTag} from '../../../../../Hooks/Products/useFetchProductByTag';
 import PopUpProduct from '../../../../../components/PopUpProducts/PopUpProduct';
 import Produits from '../../../../../components/Produit/Produits';
+import { useCart } from '../../../../../context/CartContext'; // Adjust the import path as necessary
 
 const Menu = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
@@ -21,6 +22,10 @@ const Menu = memo(({ previousStep, nextStep }) => {
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [quantities, setQuantities] = useState({});
   const categoriesRef = useRef(null);
+
+  const { addToCart } = useCart();
+
+  const [selectedProduct, setSelectedProduct] = useState(null);
 
   //for fetch tags and produits
   useEffect(() => {
@@ -80,31 +85,21 @@ const Menu = memo(({ previousStep, nextStep }) => {
     }));
   }, []);
 
-  const handleAddToCart = useCallback(
-    (item) => {
-      const quantity = quantities[item.id] || 1;
-      const cart = JSON.parse(localStorage.getItem('cart')) || [];
+  
+   
+  const handleAddToCart = useCallback((item) => {
+    const quantity = quantities[item.id] || 1;
 
-      const existingItem = cart.find((cartItem) => cartItem.id === item.id);
+    const cartItem = {
+      name: item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name',
+      id: item.id,
+      quantity: quantity,
+      finalPrice: item.finalPrice || 0,
+    };
 
-      if (existingItem) {
-        existingItem.quantity += quantity;
-      } else {
-        cart.push({
-          name: item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name',
-          id: item.id,
-          quantity: quantity,
-          finalPrice: item.finalPrice || 0,
-        });
-      }
+    addToCart(cartItem); // Use the context function to add the item to the cart
+  }, [addToCart, quantities, language]);
 
-      localStorage.setItem('cart', JSON.stringify(cart));
-      console.log(`Added ${quantity} ${item.category}(s) to cart`);
-    },
-    [quantities, language]
-  );
-
-  const [selectedProduct, setSelectedProduct] = useState(null);
 
   const handleProductClick = (product) => {
     setSelectedProduct(product);
