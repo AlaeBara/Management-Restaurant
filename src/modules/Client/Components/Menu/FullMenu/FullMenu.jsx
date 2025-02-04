@@ -14,19 +14,19 @@ const Menu = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
   const { language } = useClientPreferences();
 
-  const { tags,Isloading, message, fetchTags } = useFetchTags();
-  const { produits,  Isloading: laoding_Produits, message: msg_Prouits, fetchProduits } = useFetchProduits();
-
+  const { tags , Isloading , message, fetchTags } = useFetchTags();
+  const { produits, laoding_Produits, msg_Prouits, fetchProduits } = useFetchProduits();
   const {produitsByTag,  isLoading, fetchProduitsByTag} = useFetchProduitsByTag();
-
-  useEffect(() => {
-    fetchTags({ fetchAll: true });
-    fetchProduits();
-  }, [fetchTags, fetchProduits]);
 
   const [selectedCategory, setSelectedCategory] = useState('All');
   const [quantities, setQuantities] = useState({});
   const categoriesRef = useRef(null);
+
+  //for fetch tags and produits
+  useEffect(() => {
+    fetchTags({ fetchAll: true });
+    fetchProduits();
+  }, [fetchTags, fetchProduits]);
 
   // Scroll in tags
   useEffect(() => {
@@ -65,6 +65,7 @@ const Menu = memo(({ previousStep, nextStep }) => {
     return selectedCategory === 'All' ? produits || [] : produitsByTag || [];
   }, [produits, produitsByTag, selectedCategory]);
 
+
   // Memoized event handlers
   const handleIncrement = useCallback((itemId) => {
     setQuantities((prevQuantities) => ({
@@ -72,7 +73,6 @@ const Menu = memo(({ previousStep, nextStep }) => {
       [itemId]: (prevQuantities[itemId] || 1) + 1,
     }));
   }, []);
-
   const handleDecrement = useCallback((itemId) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,

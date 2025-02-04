@@ -10,16 +10,14 @@ export const useFetchTags = () => {
     setIsLoading(true);
     setMessage(null);
 
-    const token = import.meta.env.VITE_TOKEN;
     const url = `${import.meta.env.VITE_BACKEND_URL}/api/public/menu-items/tags`;
 
     try {
-      const response = await axios.get(url, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
+      const response = await axios.get(url);
 
       const { data } = response;
       setTags(data);
+      console.log(data);
     } catch (err) {
       console.error("Failed to fetch tags:", err);
       setMessage("Une erreur s'est produite lors du chargement des catégories.");

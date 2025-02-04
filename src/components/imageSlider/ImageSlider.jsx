@@ -23,7 +23,7 @@ const ImageSlider = memo(({ item}) => {
     return (
       <img
         src={randomImage}
-        className={styles.itemImage}
+        className={styles.itemImage} loading='lazy'
       />
     );
   }
@@ -46,9 +46,10 @@ const ImageSlider = memo(({ item}) => {
           <SwiperSlide key={index}>
             <img
               src={`http://localhost:3000${image.localPath}`}
-              className={styles.itemImage}
+              className={styles.itemImage} loading='lazy'
             />
           </SwiperSlide>
+
         ))}
       </Swiper>
     </div>

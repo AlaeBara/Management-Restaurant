@@ -11,17 +11,17 @@ const Produits = memo(({ produits, language, quantities, handleIncrement, handle
         <div className={styles.itemInfo}>
 
             {item.discountLevel === "basic" && 
-                <span className={styles.promo}>
-                   {item.discountMethod === "percentage" ? <>-{Number(item.discountValue)}%</> :<>-{Number(item.discountValue)}DH</> }
-                </span>
+                <div className={styles.promo}>
+                   <p>{item.discountMethod === "percentage" ? <>-{Number(item.discountValue)}%</> :<>-{Number(item.discountValue)}DH</> }</p>
+                </div>
             }
             
             {
                 item.discountLevel === "advanced" &&
                 item.discount.status !== "noDiscount" && (
-                    <span className={styles.promo}>
-                       {item.discountMethod === "percentage" ? <>-{Number(item.discountValue)}%</> :<>-{Number(item.discountValue)}DH</> }
-                    </span>
+                    <div className={styles.promo}>
+                       <p>{item.discountMethod === "percentage" ? <>-{Number(item.discountValue)}%</> :<>-{Number(item.discountValue)}DH</> }</p>
+                    </div>
                 )
             }
 
