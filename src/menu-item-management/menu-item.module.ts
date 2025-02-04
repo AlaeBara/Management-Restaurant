@@ -28,6 +28,8 @@ import { ChoiceAttribute } from './entities/choices/choice-attribute.entity';
 import { Choice } from './entities/choices/choice.entity';
 import { ChoiceAttributeService } from './services/choice/choice-attribute.service';
 import { ChoiceAttributeController } from './controllers/choice-attribute.controller';
+import { ChoiceController } from './controllers/choice.controller';
+import { ChoiceService } from './services/choice/choice.service';
 
 @Module({
   imports: [
@@ -52,7 +54,8 @@ import { ChoiceAttributeController } from './controllers/choice-attribute.contro
     MenuItemController,
     MenuItemDiscountController,
     MenuItemPublicController,
-    ChoiceAttributeController
+    ChoiceAttributeController,
+    ChoiceController
   ],
   providers: [
     MenuItemTagService,
@@ -62,7 +65,8 @@ import { ChoiceAttributeController } from './controllers/choice-attribute.contro
     MenuItemRecipeService,
     TagSeeder,
     MenuItemPublicService,
-    ChoiceAttributeService
+    ChoiceAttributeService,
+    ChoiceService
   ],
   exports: [
     TagSeeder,
