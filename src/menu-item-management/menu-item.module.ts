@@ -30,6 +30,7 @@ import { ChoiceAttributeService } from './services/choice/choice-attribute.servi
 import { ChoiceAttributeController } from './controllers/choice-attribute.controller';
 import { ChoiceController } from './controllers/choice.controller';
 import { ChoiceService } from './services/choice/choice.service';
+import { MenuItemChoiceService } from './services/menu-item-choice.service';
 
 @Module({
   imports: [
@@ -66,7 +67,8 @@ import { ChoiceService } from './services/choice/choice.service';
     TagSeeder,
     MenuItemPublicService,
     ChoiceAttributeService,
-    ChoiceService
+    ChoiceService,
+    MenuItemChoiceService
   ],
   exports: [
     TagSeeder,

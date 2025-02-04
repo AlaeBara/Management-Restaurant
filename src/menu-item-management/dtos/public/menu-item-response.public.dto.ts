@@ -95,4 +95,7 @@ export class MenuItemResponseDto {
     @Expose()
     @Type(() => MenuItemCategoryResponseDto)
     category?: MenuItemCategoryResponseDto | null;
+
+    @Expose()
+    groupedChoices: any;
 }

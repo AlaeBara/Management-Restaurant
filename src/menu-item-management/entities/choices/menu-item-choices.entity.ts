@@ -10,10 +10,10 @@ export class MenuItemChoices extends UlidBaseEntity {
     @ManyToOne(() => MenuItem, (menuItem) => menuItem.choices)
     menuItem: MenuItem;
 
-    @ManyToOne(() => Choice, (choice) => choice.id)
+    @ManyToOne(() => Choice, (choice) => choice.id, { eager: true })
     choice: Choice;
 
-    @Column({ type: 'numeric', precision: 10, scale: 2 })
+    @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
     additionalPrice: number;
 
 }

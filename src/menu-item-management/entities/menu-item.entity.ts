@@ -21,6 +21,16 @@ import { DiscountMethod } from "../enums/discount-method.enum";
 import { DiscountLevel } from "../enums/discount-level.enum";
 import { MenuItemChoices } from "./choices/menu-item-choices.entity";
 
+interface TransformedChoice {
+    id: string | number;
+    additionalPrice: number;
+    value: string;
+}
+
+interface GroupedChoices {
+    [attribute: string]: TransformedChoice[];
+}
+
 @Entity(`${process.env.DATASET_PREFIX || ''}item_menu`)
 @Index(['menuItemSku'])
 export class MenuItem extends BaseEntity {
@@ -91,11 +101,38 @@ export class MenuItem extends BaseEntity {
 
     finalPrice: number;
 
-    @OneToMany(() => MenuItemChoices, (menuItemChoices) => menuItemChoices.menuItem)
+    @OneToMany(() => MenuItemChoices, (menuItemChoices) => menuItemChoices.menuItem, { eager: true, cascade: true, orphanedRowAction: 'delete' })
     choices: MenuItemChoices[];
 
-    // aditional price for the menu item
-    aditionalPrice: number;
+    groupedChoices: any;
+    _originalChoices: MenuItemChoices[];
+   
+    @AfterLoad()
+    async transformChoices() {
+        if (this.choices) {
+            const transformedChoices = this.choices.map(choice => ({
+                id: choice.id,
+                additionalPrice: choice.additionalPrice,
+                value: choice.choice.value,
+                attribute: choice.choice.attribute.attribute
+            }));
+
+            // Group by attribute with proper typing
+            this.groupedChoices = transformedChoices.reduce<GroupedChoices>((groups, choice) => {
+                const attributeName = choice.attribute;
+                if (!groups[attributeName]) {
+                    groups[attributeName] = [];
+                }
+                const { attribute, ...choiceWithoutAttribute } = choice;
+                groups[attributeName].push(choiceWithoutAttribute);
+                return groups;
+            }, {});
+
+            // Store original choices in a separate property instead of deleting
+            this._originalChoices = this.choices;
+            this.choices = undefined;
+        }
+    }
 
     @AfterLoad()
     async calculateFinalPrice() {
@@ -116,5 +153,9 @@ export class MenuItem extends BaseEntity {
         return this.discountMethod === DiscountMethod.PERCENTAGE
             ? this.basePrice * (1 - this.discountValue / 100)
             : this.basePrice - this.discountValue;
+    }
+
+    getOriginalChoices(): MenuItemChoices[] | undefined {
+        return this._originalChoices;
     }
 }

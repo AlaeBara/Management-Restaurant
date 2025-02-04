@@ -8,6 +8,6 @@ export class ChoiceAttribute extends UlidBaseEntity {
     @Column({ type: 'varchar', length: 100 })
     attribute: string;
 
-    @OneToMany(() => Choice, (choice) => choice.attribute, { eager: true })
+    @OneToMany(() => Choice, (choice) => choice.attribute)
     choices: Choice[];
 }

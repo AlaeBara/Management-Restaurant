@@ -7,6 +7,6 @@ export class Choice extends UlidBaseEntity {
     @Column({ type: 'varchar', length: 100 })
     value: string;
 
-    @ManyToOne(() => ChoiceAttribute, (attribute) => attribute.choices)
+    @ManyToOne(() => ChoiceAttribute, (attribute) => attribute.choices, { eager: true })
     attribute: ChoiceAttribute;
 }
