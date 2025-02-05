@@ -3,13 +3,16 @@ import { ArrowLeft } from 'lucide-react';
 import styles from './FullMenu.module.css';
 import { useTranslation } from 'react-i18next';
 import { Loader, AlertCircle, SearchX } from 'lucide-react';
+//hooks
 import { useClientPreferences } from '../../../../../context/OrderFlowContext';
 import { useFetchTags } from '../../../../../Hooks/Tags/useFetchTags';
 import { useFetchProduits } from '../../../../../Hooks/Products/useFetchProducts';
 import {useFetchProduitsByTag} from '../../../../../Hooks/Products/useFetchProductByTag';
+//components
 import PopUpProduct from '../../../../../components/PopUpProducts/PopUpProduct';
 import Produits from '../../../../../components/Produit/Produits';
-import { useCart } from '../../../../../context/CartContext'; // Adjust the import path as necessary
+//state golabl
+import { useCart } from '../../../../../context/CartContext';
 
 const Menu = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
