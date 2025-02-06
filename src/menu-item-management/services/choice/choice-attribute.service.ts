@@ -27,6 +27,9 @@ export class ChoiceAttributeService extends GenericService<ChoiceAttribute> {
     }
 
     async updateChoiceAttribute(id: string, updateChoiceAttributeDto: UpdateChoiceAttributeDto) {
+        await this.validateUniqueExcludingSelf({
+            attribute: updateChoiceAttributeDto.attribute,
+        }, id);
         const choiceAttribute = await this.findOneByIdWithOptions(id);
         Object.assign(choiceAttribute, updateChoiceAttributeDto);
         return this.choiceAttributeRepository.save(choiceAttribute);
