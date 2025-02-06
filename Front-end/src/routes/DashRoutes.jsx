@@ -6,10 +6,8 @@ import Spinner from '../components/Spinner/SpinnerPages';
 
 // Lazy load pages
 const Home = lazy(() => import('../modules/Dash/Home/Home'));
-const Login = lazy(() => import('../modules/Dash/LoginPage/Login'));
 const AllUsers = lazy(() => import('@/modules/Dash/UserManagments/User/AllUsersPage'));
 const DeletedUsers = lazy(() => import('@/modules/Dash/UserManagments/User/DeletedUsersPage'));
-const Zones1 = lazy(() => import('@/modules/ZoneAndTable/Zones'));
 const AddUserForm = lazy(() => import('@/modules/Dash/UserManagments/User/Components/AddUserForm'));
 const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'));
 const UpdateUserpage = lazy(() => import('@/modules/Dash/UserManagments/User/Components/UpdateUserpage'))
@@ -91,8 +89,6 @@ const ClientRoutes = () => {
   return (
     <Suspense fallback={<Spinner title="Chargement en cours..." />}>
       <Routes>
-        <Route path="/login" element={<Login />} />
-
         <Route path="*" element={<NotFound />} />
 
         <Route 
