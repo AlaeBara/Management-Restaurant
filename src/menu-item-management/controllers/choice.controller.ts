@@ -7,7 +7,8 @@ import { Choice } from "../entities/choices/choice.entity";
 import { CreateChoiceDto } from "../dtos/choices/create-choice.dto";
 import { UpdateChoiceDto } from "../dtos/choices/update-choice.dto";
 import { CreateBatchChoiceDto } from "../dtos/choices/create-batch-choice.dto";
-
+import { CreateAttributeWithChoicesDto } from "../dtos/choices/create-attribute-choices.dto";
+import { ChoiceAttributeService } from "../services/choice/choice-attribute.service";
 
 @Controller('api/choices')
 @ApiTags('choice')
@@ -16,8 +17,11 @@ export class ChoiceController {
 
     constructor(
         @Inject(ChoiceService)
-        private readonly choiceService: ChoiceService
+        private readonly choiceService: ChoiceService,
+        @Inject(ChoiceAttributeService)
+        private readonly choiceAttributeService: ChoiceAttributeService,
     ) {}
+
 
     @Get()
     @Permissions('view-choices')
@@ -76,8 +80,10 @@ export class ChoiceController {
     @Permissions('create-choice')
     @ApiOperation({ summary: 'Create a batch of choices' })
     async createBatch(@Param('attributeId', ParseULIDPipe) attributeId: string, @Body() createBatchChoiceDto: CreateBatchChoiceDto) {
-        await this.choiceService.createBatch(attributeId, createBatchChoiceDto);
+        const choiceAttribute = await this.choiceAttributeService.findOneByIdWithOptions(attributeId);
+        await this.choiceService.createBatch(choiceAttribute, createBatchChoiceDto);
         return { message: 'Super! Votre ensemble de choix a été créé avec succès', status: 201 };
+
     }
 
     @Put(':id')
@@ -105,5 +111,13 @@ export class ChoiceController {
     async restore(@Param('id', ParseULIDPipe) id: string) {
         await this.choiceService.restoreByUUID(id, true, ['attribute']);
         return { message: 'Super! Votre choix a été restauré avec succès', status: 200 };
+    }
+
+    @Post('attributes')
+    @Permissions('create-choice')
+    @ApiOperation({ summary: 'Create an attribute with choices' })
+    async createAttributeWithChoices(@Body() createAttributeWithChoicesDto: CreateAttributeWithChoicesDto) {
+        await this.choiceService.createAttributeWithChoices(createAttributeWithChoicesDto);
+        return { message: 'Super! Votre attribut avec ses choix a été créé avec succès', status: 201 };
     }
 }

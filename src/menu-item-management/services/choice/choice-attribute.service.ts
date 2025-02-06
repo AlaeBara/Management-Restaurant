@@ -1,6 +1,6 @@
 import { Injectable } from "@nestjs/common";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 
 import { GenericService } from "src/common/services/generic.service";
 import { ChoiceAttribute } from "../../entities/choices/choice-attribute.entity";
@@ -18,13 +18,34 @@ export class ChoiceAttributeService extends GenericService<ChoiceAttribute> {
         super(dataSource, ChoiceAttribute, 'choix attribut');
     }
 
-    async createAttribute(createChoiceAttributeDto: CreateChoiceAttributeDto) {
+    async inizializeQueryRunner() {
+        const queryRunner = this.dataSource.createQueryRunner();
+        await queryRunner.connect();
+        await queryRunner.startTransaction();
+        return queryRunner;
+    }
+
+    async createAttribute(createChoiceAttributeDto: CreateChoiceAttributeDto, queryRunnerPassed?: QueryRunner) {
+         const queryRunner = queryRunnerPassed || await this.inizializeQueryRunner();
+        try {
         await this.validateUnique({
             attribute: createChoiceAttributeDto.attribute,
         });
+      
         const choiceAttribute = this.choiceAttributeRepository.create({ ...createChoiceAttributeDto });
-        return this.choiceAttributeRepository.save(choiceAttribute);
+        await queryRunner.manager.save(choiceAttribute);
+        if (!queryRunnerPassed) await queryRunner.commitTransaction();
+        return choiceAttribute;
+
+        } catch (error) {
+            if (!queryRunnerPassed) await queryRunner.rollbackTransaction();
+            throw error;
+        } finally {
+            if (!queryRunnerPassed) await queryRunner.release();
+        }
+
     }
+
 
     async updateChoiceAttribute(id: string, updateChoiceAttributeDto: UpdateChoiceAttributeDto) {
         await this.validateUniqueExcludingSelf({

@@ -9,7 +9,8 @@ import {
     BadRequestException,
     forwardRef,
     Inject,
-    Injectable
+    Injectable,
+    InternalServerErrorException
 } from "@nestjs/common";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 
@@ -87,10 +88,13 @@ export class MenuItemService extends GenericService<MenuItem> {
         } catch (error) {
             await queryRunner.rollbackTransaction();
             logger.error('Error creating menu item:', { message: error.message, stack: error.stack });
-            throw new BadRequestException(error.message);
+            throw new InternalServerErrorException('une erreur est survenue lors de l\'action. Veuillez réessayer plus tard.');
         } finally {
             await queryRunner.release();
         }
+
+
+
     }
 
     private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {

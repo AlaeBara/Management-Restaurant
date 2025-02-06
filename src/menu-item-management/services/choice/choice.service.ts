@@ -1,6 +1,6 @@
-import { BadRequestException, Inject, Injectable } from "@nestjs/common";
+import { BadRequestException, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 
 import { GenericService } from "src/common/services/generic.service";
 import { Choice } from "src/menu-item-management/entities/choices/choice.entity";
@@ -9,6 +9,8 @@ import { CreateChoiceDto } from "src/menu-item-management/dtos/choices/create-ch
 import { ChoiceAttributeService } from "./choice-attribute.service";
 import { CreateBatchChoiceDto } from "src/menu-item-management/dtos/choices/create-batch-choice.dto";
 import logger from "src/common/Loggers/logger";
+import { CreateAttributeWithChoicesDto } from "src/menu-item-management/dtos/choices/create-attribute-choices.dto";
+import { ChoiceAttribute } from "src/menu-item-management/entities/choices/choice-attribute.entity";
 
 @Injectable()
 export class ChoiceService extends GenericService<Choice> {
@@ -49,10 +51,10 @@ export class ChoiceService extends GenericService<Choice> {
         return this.choiceRepository.save(choice);
     }
 
-    async createBatch(attributeId: string, createBatchChoiceDto: CreateBatchChoiceDto) {
-        const queryRunner = await this.inizializeQueryRunner();
+    async createBatch(choiceAttribute: ChoiceAttribute, createBatchChoiceDto: CreateBatchChoiceDto, queryRunnerPassed?: QueryRunner) {
+        const queryRunner = queryRunnerPassed || await this.inizializeQueryRunner();
         try {
-            const choiceAttribute = await this.choiceAttributeService.findOneByIdWithOptions(attributeId);
+           
             const choices = [];
             for (const value of createBatchChoiceDto.values) {
                 await this.validateUnique({ value: value });
@@ -60,14 +62,31 @@ export class ChoiceService extends GenericService<Choice> {
                 choices.push(choice);
             }
             await queryRunner.manager.save(Choice, choices);
+            if (!queryRunnerPassed) await queryRunner.commitTransaction();
+        } catch (error) {
+            if (!queryRunnerPassed) await queryRunner.rollbackTransaction();
+            logger.warn('Error while creating batch of choices:', { message: error.message, stack: error.stack });
+            throw new BadRequestException(error.message);
+
+
+        } finally {
+            if (!queryRunnerPassed) await queryRunner.release();
+        }
+    }
+
+
+    async createAttributeWithChoices(createAttributeWithChoicesDto: CreateAttributeWithChoicesDto) {
+        const queryRunner = await this.inizializeQueryRunner();
+        try {
+            const choiceAttribute = await this.choiceAttributeService.createAttribute(createAttributeWithChoicesDto, queryRunner);
+            await this.createBatch(choiceAttribute, { values: createAttributeWithChoicesDto.choices }, queryRunner);
             await queryRunner.commitTransaction();
         } catch (error) {
             await queryRunner.rollbackTransaction();
-            logger.warn('Error while creating batch of choices:', { message: error.message, stack: error.stack });
-            throw new BadRequestException(error.message);
+            logger.error('Error creating attribute with choices:', { message: error.message, stack: error.stack });
+            throw new InternalServerErrorException('Une erreur est survenue lors de l\'action. Veuillez réessayer plus tard.');
         } finally {
             await queryRunner.release();
         }
     }
-
 }
