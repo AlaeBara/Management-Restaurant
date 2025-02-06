@@ -105,8 +105,8 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
         categoryId:  z
             .string()
-            .nonempty({ message: "La Catégorie est obligatoire." }),
-
+            .nullable()
+            .optional(),
 
         portionProduced:z.coerce
             .number({
@@ -540,7 +540,9 @@ export default function AchatCreationForm() {
             appendIfValid('warningQuantity', preparedData.warningQuantity);
             appendIfValid('isPublished', preparedData.isPublished);
             appendIfValid('isDraft', preparedData.isDraft);
-            appendIfValid('categoryId', preparedData.categoryId);
+            if(preparedData.categoryId){
+                appendIfValid('categoryId', preparedData.categoryId);
+            }
             appendIfValid('hasRecipe', preparedData.hasRecipe);
 
             appendIfValid('basePrice', preparedData.basePrice);
@@ -714,7 +716,7 @@ export default function AchatCreationForm() {
                                         </div>
 
                                         <div className="space-y-2">
-                                            <Label>Catégorie <span className='text-red-500 text-base'>*</span></Label>
+                                            <Label>Catégorie </Label>
                                             <Select
                                                 name="categoryId"
                                                 value={formData.categoryId || ""}

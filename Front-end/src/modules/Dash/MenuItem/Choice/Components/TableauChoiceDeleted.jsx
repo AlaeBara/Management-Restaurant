@@ -4,19 +4,19 @@ import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/compon
 import{ RotateCcw } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
 
-const Tableau = ({tags ,  RestoreTag}) => {
+const Tableau = ({choices ,  restoreChoice}) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [tagSelected , setTagSelected] =useState(false);
+    const [choiceSelected , setchoiceSelected] =useState(false);
 
-    const handleRestore = (tag) => {
+    const handleRestore = (choice) => {
         setIsModalVisible(true);
-        setTagSelected(tag)
+        setchoiceSelected(choice)
     };
     const confirmRestore = () => {
-        RestoreTag(tagSelected.id); 
+        restoreChoice(choiceSelected.id); 
         setIsModalVisible(false)
-        setTagSelected(null);
+        setchoiceSelected(null);
     };
 
 return (
@@ -26,7 +26,7 @@ return (
                 <Table>
                     <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Tag</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Choix</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Date Creation</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                         </TableRow>
@@ -34,15 +34,15 @@ return (
 
                     <TableBody>
                         {
-                            tags.length > 0 ? (
-                                tags.map((tag) => (
-                                <TableRow key={tag.id} className="font-sans">
-                                    <TableCell className="text-center p-4 border">{tag.tag}</TableCell>
-                                    <TableCell className="text-center p-4 border">{formatDate(tag.createdAt)}</TableCell>
+                            choices.length > 0 ? (
+                                choices.map((choice) => (
+                                <TableRow key={choice.id} className="font-sans">
+                                    <TableCell className="text-center p-4 border">{choice.attribute}</TableCell>
+                                    <TableCell className="text-center p-4 border">{formatDate(choice.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center">
                                             <button
-                                                onClick={() => handleRestore(tag)}
+                                                onClick={() => handleRestore(choice)}
                                                 className="text-red-600 hover:text-red-800"
                                                 title="Restaurer"
                                             >
@@ -55,7 +55,7 @@ return (
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan="3" className="text-center p-4">
-                                        Aucun Tag trouvé.
+                                        Aucun Choix trouvé.
                                     </TableCell>
                                 </TableRow>
                             )
@@ -71,7 +71,7 @@ return (
                 <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                     <h3 className="text-lg font-semibold mb-4">Confirmer la restauration</h3>
                     <p className="mb-4">
-                        Êtes-vous sûr de vouloir restaurer le tag "{tagSelected.tag}" ?
+                        Êtes-vous sûr de vouloir restaurer le Choix "{choiceSelected.attribute}" ?
                     </p>
                     <div className="mt-9 flex justify-end gap-3">
                         <button

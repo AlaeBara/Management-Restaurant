@@ -418,7 +418,7 @@ export default function Component() {
                                                     setIsDeleteModalOpen(true); 
                                                 }
                                             }}
-                                            className="bg-transparent hover:bg-transparent p-2 border border-black"
+                                            className="bg-transparent hover:bg-transparent p-2 border border-red-500"
                                         >
                                             <Trash className='text-red-500' />
                                         </Button>
@@ -506,7 +506,7 @@ export default function Component() {
 
                     <form onSubmit={(e) => e.preventDefault()} className='space-y-4'>
                         <div className="bg-white rounded-lg space-y-2">
-                            <Label>Nom du Type <span className='text-red-500 text-base'>*</span></Label>
+                            <Label>Nom du type de dépense <span className='text-red-500 text-base'>*</span></Label>
                             <Input
                                 type="text"
                                 value={selectedExpenseType.id ? selectedExpenseType.name : newExpenseTypeName}

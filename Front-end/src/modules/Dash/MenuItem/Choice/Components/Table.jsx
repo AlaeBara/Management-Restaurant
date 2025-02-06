@@ -7,43 +7,43 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
 import{TrashIcon,PencilIcon } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
-import {useUpdateTag} from '../hooks/useUpdateTag'
+import {useUpdateChoice} from '../hooks/useUpdateChoice'
 
 
 
-const Tableau = ({tags , deleteTag , fetchTags}) => {
+const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
-    const [tagSelected , setTagSelected] =useState(false);
+    const [choiceSelected , setchoiceSelected] =useState(false);
 
-    const handleDelete = (tag) => {
+    const handleDelete = (choice) => {
         setIsModalVisible(true);
-        setTagSelected(tag)
+        setchoiceSelected(choice)
     };
     const confirmDelete = () => {
-        deleteTag(tagSelected.id); 
+        deleteChoice(choiceSelected.id); 
         setIsModalVisible(false)
-        setTagSelected(null);
+        setchoiceSelected(null);
     };
 
     //for Update
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
 
-    const [formData, setFormData] = useState({ tag: '' });
-    const [initialData, setInitialData] = useState({ tag: '' });
+    const [formData, setFormData] = useState({ attribute: '' });
+    const [initialData, setInitialData] = useState({ attribute: '' });
     const [id, setId] = useState(null);
 
-    const handleUpdate = (tag) => {
-        setFormData({ tag: tag.tag });
-        setInitialData({ tag: tag.tag });
-        setId(tag.id)
+    const handleUpdate = (choice) => {
+        setFormData({ attribute: choice.attribute });
+        setInitialData({  attribute: choice.attribute});
+        setId(choice.id)
         setIsModalUpdateVisible(true);
     };
 
     const CloseModel =()=>{
         setIsModalUpdateVisible(false);
         setFormData({
-            tag: '',
+            attribute: '',
         })
         resetErrors()
     }
@@ -51,7 +51,7 @@ const Tableau = ({tags , deleteTag , fetchTags}) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
 
-    const { errors, updateTag ,alert,resetErrors} = useUpdateTag(id, formData, setFormData, initialData, setInitialData ,CloseModel,fetchTags)
+    const { errors, updateChoice, alert, resetErrors } = useUpdateChoice(id, formData, setFormData, initialData , setInitialData ,CloseModel ,fetchChoices)
 
 
 
@@ -64,7 +64,7 @@ return (
                 <Table>
                     <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
-                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Tag</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Choix</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Date Creation</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                         </TableRow>
@@ -72,22 +72,22 @@ return (
 
                     <TableBody>
                         {
-                            tags.length > 0 ? (
-                                tags.map((tag) => (
-                                <TableRow key={tag.id} className="font-sans">
-                                    <TableCell className="text-center p-4 border">{tag.tag}</TableCell>
-                                    <TableCell className="text-center p-4 border">{formatDate(tag.createdAt)}</TableCell>
+                            choices.length > 0 ? (
+                                choices.map((choice) => (
+                                <TableRow key={choice.id} className="font-sans">
+                                    <TableCell className="text-center p-4 border">{choice.attribute}</TableCell>
+                                    <TableCell className="text-center p-4 border">{formatDate(choice.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center gap-5 lg:gap-8">
                                             <button
-                                                onClick={() => handleUpdate(tag)}
+                                                onClick={() => handleUpdate(choice)}
                                                 className="text-blue-600 hover:text-blue-800"
                                                 title="Modifier"
                                             >
                                                 <PencilIcon className="h-5 w-5" />
                                             </button>
                                             <button
-                                                onClick={() => handleDelete(tag)}
+                                                onClick={() => handleDelete(choice)}
                                                 className="text-red-600 hover:text-red-800"
                                                 title="Supprimer"
                                             >
@@ -100,7 +100,7 @@ return (
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan="3" className="text-center p-4">
-                                        Aucun Tag trouvé.
+                                        Aucun Choix trouvé.
                                     </TableCell>
                                 </TableRow>
                             )
@@ -116,7 +116,7 @@ return (
                 <div className="bg-white rounded-lg p-6 max-w-sm w-full mx-4">
                     <h3 className="text-lg font-semibold mb-4">Confirmer la suppression</h3>
                     <p className="mb-4">
-                        Êtes-vous sûr de vouloir supprimer le tag : "{tagSelected.tag}""
+                        Êtes-vous sûr de vouloir supprimer le choice : "{choiceSelected.attribute}""
                     </p>
                     <div className="mt-9 flex justify-end gap-3">
                         <button
@@ -154,7 +154,7 @@ return (
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="mb-4">
-                        <h3 className="text-lg font-semibold text-gray-800">Modifier le tag "{initialData.tag}" </h3>
+                        <h3 className="text-lg font-semibold text-gray-800">Modifier le Choix "{initialData.attribute}" </h3>
                     </div>
 
                     
@@ -172,19 +172,19 @@ return (
                     <form onSubmit={(e) => e.preventDefault()}>
                         <div className="space-y-4">
                             <div className="space-y-2">
-                                <Label htmlFor="tag" className="text-sm font-medium text-gray-700">
-                                    Nom du tag <span className='text-red-500 text-base'>*</span>
+                                <Label htmlFor="attribute" className="text-sm font-medium text-gray-700">
+                                    Nom du Choix <span className='text-red-500 text-base'>*</span>
                                 </Label>
                                 <Input
-                                    id="tag"
-                                    name="tag"
-                                    placeholder="Nom du tag"
+                                    id="attribute"
+                                    name="attribute"
+                                    placeholder="Exemple : Sauce"
                                     className="w-full"
                                     onChange={handleChange}
-                                    value={formData.tag}
+                                    value={formData.attribute}
                                 />
-                                {errors.tag && (
-                                    <p className="text-xs text-red-500 mt-1">{errors.tag}</p>
+                                {errors.attribute && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.attribute}</p>
                                 )} 
                             </div>
                         </div>
@@ -202,7 +202,7 @@ return (
                                 className="rounded-md bg-black px-4 py-2 text-sm font-medium text-white"
                                 onClick={(e) => {
                                     e.preventDefault();
-                                    updateTag(e);
+                                    updateChoice(e);
                                 }}
                             >
                                 Mettre à jour

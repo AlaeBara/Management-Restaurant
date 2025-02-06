@@ -34,7 +34,8 @@ import {
   Wallet,
   DollarSign,
   Shuffle,
-  Clock
+  Clock,
+  SlidersVertical
 } from "lucide-react";
 
 import {
@@ -259,6 +260,12 @@ const SideBar = () => {
             title: "Produits du Menu",
             icon:  Utensils ,
             url: "/dash/produits-menu",
+            permissions: ["access-granted", "view-units"],
+          },
+          {
+            title: "Choix",
+            icon:  SlidersVertical ,
+            url: "/dash/choix",
             permissions: ["access-granted", "view-units"],
           },
         ],
