@@ -15,7 +15,7 @@ export const useFetchChoices = () => {
       setMessage(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/choice-attributes`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/choice-attributes?relations=choices`;
 
       try {
         if (fetchAll) {

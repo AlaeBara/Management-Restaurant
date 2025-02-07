@@ -1,11 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import style from './Choice.module.css'
 import { useNavigate } from 'react-router-dom'
-import {Plus , SearchX ,Loader,ExternalLink} from "lucide-react"
+import { Plus, SearchX, Loader, ExternalLink, XIcon } from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
+import { Badge } from '@/components/ui/badge';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import 'react-toastify/dist/ReactToastify.css';
 import PaginationNav from '../../UserManagments/User/Components/PaginationNav'
@@ -21,13 +22,18 @@ import Tableau from './Components/Table'
 const Choice = () => {
     const  navigate = useNavigate()
 
+    // InputTags Logic 
+    const [pendingChoice, setPendingChoice] = useState('');
+
     const [isModalVisible ,setIsModalVisible] =useState(false)
     const showModel =()=>{
         setIsModalVisible(true);
     }
     const [formData, setFormData] = useState({
         attribute: '',
+        choices: [],
     });
+
     const CloseModel =()=>{
         setIsModalVisible(false);
         setFormData({
@@ -69,6 +75,23 @@ const Choice = () => {
 
     const { deleteChoice }= useDeleteChoice(fetchChoices , currentPage , limit)
 
+
+    const addChoice = () => {
+        if (pendingChoice.trim()) {
+          const newChoices = new Set([...(formData.choices || []), pendingChoice.trim()]); 
+          setFormData({ ...formData, choices: Array.from(newChoices) }); // Update choices in formData
+          setPendingChoice(''); 
+        }
+    };
+
+      
+    const removeChoice = (choiceToRemove) => {
+        const updatedChoices = formData.choices.filter((choice) => choice !== choiceToRemove); // Remove the choice
+        setFormData({ ...formData, choices: updatedChoices }); // Update choices in formData
+    };
+
+
+    
 
 
   return (
@@ -153,7 +176,6 @@ const Choice = () => {
                         </p>
                     </div>
 
-                    
                     {alert?.message && (
                         <Alert
                             variant={alert.type === "error" ? "destructive" : "success"}
@@ -182,6 +204,41 @@ const Choice = () => {
                                 {errors.attribute && (
                                     <p className="text-xs text-red-500 mt-1">{errors.attribute}</p>
                                 )} 
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="tag" className="text-sm font-medium text-gray-700">
+                                    Choix
+                                </Label>
+                                <div className="flex gap-2">
+
+                                    <Input
+                                        value={pendingChoice}
+                                        onChange={(e) =>  setPendingChoice(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ',') {
+                                                e.preventDefault();
+                                                addChoice();
+                                            }
+                                        }}
+                                        placeholder="Exemple : Sauce andalose , Sauce biggy"
+                                    />
+
+                                    <Button type="button" variant="secondary" className="border" onClick={addChoice}>
+                                        Ajouter
+                                    </Button>
+                                </div>
+
+                                <div className="rounded-md min-h-[2.5rem] overflow-y-auto p-2 flex gap-2 flex-wrap items-center mt-2">
+                                    {formData.choices?.map((tag, idx) => (
+                                        <Badge key={idx} variant="secondary">
+                                            {tag}
+                                            <button type="button" className="w-3 ml-2" onClick={() => removeChoice(tag)}>
+                                                <XIcon className="w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 

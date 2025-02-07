@@ -2,9 +2,11 @@ import React ,{ useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/components/ui/table"
 import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Plus, SearchX, Loader, ExternalLink, XIcon } from 'lucide-react';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button"
+import { Badge } from '@/components/ui/badge';
 import{TrashIcon,PencilIcon } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
 import {useUpdateChoice} from '../hooks/useUpdateChoice'
@@ -28,22 +30,27 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
 
     //for Update
     const [isModalUpdateVisible, setIsModalUpdateVisible] = useState(false);
-
-    const [formData, setFormData] = useState({ attribute: '' });
-    const [initialData, setInitialData] = useState({ attribute: '' });
+    const [formData, setFormData] = useState({  attribute: '', choices: [] });
+    const [initialData, setInitialData] = useState({ attribute: '', choices: [] });
     const [id, setId] = useState(null);
 
+
+
     const handleUpdate = (choice) => {
-        setFormData({ attribute: choice.attribute });
-        setInitialData({  attribute: choice.attribute});
+        const data = choice.choices?.map(choice => choice.value) || []
+        console.log(data)
+        setFormData({ attribute: choice.attribute, choices: data });
+        setInitialData({  attribute: choice.attribute, choices: data });
         setId(choice.id)
         setIsModalUpdateVisible(true);
     };
+
 
     const CloseModel =()=>{
         setIsModalUpdateVisible(false);
         setFormData({
             attribute: '',
+            choices: []
         })
         resetErrors()
     }
@@ -53,11 +60,27 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
 
     const { errors, updateChoice, alert, resetErrors } = useUpdateChoice(id, formData, setFormData, initialData , setInitialData ,CloseModel ,fetchChoices)
 
+    const [pendingChoice, setPendingChoice] = useState('');
 
 
 
+    const addChoice = () => {
+        if (pendingChoice.trim()) {
+          const newChoices = new Set([...(formData.choices || []), pendingChoice.trim()]); 
+          setFormData({ ...formData, choices: Array.from(newChoices) }); 
+          setPendingChoice(''); 
+        }
+    };
 
-return (
+      
+    const removeChoice = (choiceToRemove) => {
+        const updatedChoices = formData.choices.filter((choice) => choice !== choiceToRemove); 
+        setFormData({ ...formData, choices: updatedChoices }); 
+    };
+
+
+
+    return (
     <>
         <Card className='border-none shadow-none'>
             <CardContent>
@@ -155,6 +178,7 @@ return (
                 >
                     <div className="mb-4">
                         <h3 className="text-lg font-semibold text-gray-800">Modifier le Choix "{initialData.attribute}" </h3>
+                        <p className="mt-2 text-sm text-gray-600">Tout changement ici affectera les produits du menu.</p>
                     </div>
 
                     
@@ -186,6 +210,42 @@ return (
                                 {errors.attribute && (
                                     <p className="text-xs text-red-500 mt-1">{errors.attribute}</p>
                                 )} 
+                            </div>
+
+                            <div className="space-y-2">
+                                <Label htmlFor="tag" className="text-sm font-medium text-gray-700">
+                                    Choix
+                                </Label>
+                                <div className="flex gap-2">
+                                    <Input
+                                        value={pendingChoice}
+                                        onChange={(e) =>  setPendingChoice(e.target.value)}
+                                        onKeyDown={(e) => {
+                                            if (e.key === 'Enter' || e.key === ',') {
+                                                e.preventDefault();
+                                                console.log(pendingChoice)
+                                                console.log(formData.choices)
+                                                addChoice();
+                                            }
+                                        }}
+                                        placeholder="Exemple : Sauce andalose , Sauce biggy"
+                                    />
+
+                                    <Button type="button" variant="secondary" className="border" onClick={addChoice}>
+                                        Ajouter
+                                    </Button>
+                                </div>
+
+                                <div className="rounded-md min-h-[2.5rem] overflow-y-auto p-2 flex gap-2 flex-wrap items-center mt-2">
+                                    {formData.choices?.map((tag, idx) => (
+                                        <Badge key={idx} variant="secondary">
+                                            {tag}
+                                            <button type="button" className="w-3 ml-2" onClick={() => removeChoice(tag)}>
+                                                <XIcon className="w-3" />
+                                            </button>
+                                        </Badge>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 

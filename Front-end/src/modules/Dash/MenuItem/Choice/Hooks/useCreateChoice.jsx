@@ -23,9 +23,10 @@ export const useCreateChoice = (formData, CloseModel , fetchChoices) => {
     setAlert({ message: null, type: null });
 
     const token = Cookies.get("access_token");
-    const url = `${import.meta.env.VITE_BACKEND_URL}/api/choice-attributes`;
+    const url = `${import.meta.env.VITE_BACKEND_URL}/api/choices/attributes`;
 
     try {
+        console.log(formData)
         ChoiceSchema.parse(formData);
 
         const response = await axios.post(url, formData, {

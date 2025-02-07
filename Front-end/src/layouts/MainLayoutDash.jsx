@@ -12,6 +12,8 @@ import SideBar from "../components/Sidebar/SideBar"
 
   
 export default function MainLayout({ children }) {
+
+    const isHomePath = location.pathname === '/dash/Home';
     return (
         <SidebarProvider>
             <SideBar />
@@ -33,7 +35,7 @@ export default function MainLayout({ children }) {
                         </Breadcrumb>
                     </div>
                 </header>
-                <div className="flex flex-1 flex-col gap-4 p-4 pt-0">
+                <div className={`flex flex-1 flex-col gap-4 p-4 pt-0 ${isHomePath ? 'bg-[#f9f9f8]' : ''}`}>
                     {children}
                 </div>
             </SidebarInset>
