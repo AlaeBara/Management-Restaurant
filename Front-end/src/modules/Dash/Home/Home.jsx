@@ -13,7 +13,7 @@ const statsData = [
   },
   {
     title: "Total Commandes Aujourd'hui",
-    value: "45",
+    value: "120",
     icon: <Box />,
   },
   {
