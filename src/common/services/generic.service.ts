@@ -5,7 +5,7 @@ import {
   Req,
   BadRequestException,
 } from '@nestjs/common';
-import { Repository, DeleteResult, UpdateResult, Table, EntityManager } from 'typeorm';
+import { Repository, DeleteResult, UpdateResult, Table, EntityManager, QueryRunner } from 'typeorm';
 import { InjectDataSource } from '@nestjs/typeorm';
 import { DataSource, EntityTarget } from 'typeorm';
 import FindOneOptions from '../interface/findoneoption.interface';
@@ -340,12 +340,13 @@ export class GenericService<T> {
     return entity;
   }
 
-  async validateUnique(attributes: Partial<T>) {
+  async validateUnique(attributes: Partial<T>,queryRunnerPassed?: QueryRunner) {
     // Check each attribute individually
     for (const [key, value] of Object.entries(attributes)) {
       const count = await this.repository.count({
         where: { [key]: value } as any,
         withDeleted: false,
+        ...(queryRunnerPassed ? { queryRunner: queryRunnerPassed } : {}),
       });
 
       if (count > 0) {

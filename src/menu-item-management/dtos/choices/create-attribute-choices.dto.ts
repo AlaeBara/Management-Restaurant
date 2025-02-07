@@ -1,13 +1,14 @@
-import { IsArray, IsNotEmpty, IsString } from "class-validator";
+import { IsArray, IsNotEmpty, IsOptional, IsString } from "class-validator";
 
 export class CreateAttributeWithChoicesDto {
+
     @IsString()
     @IsNotEmpty()
     attribute: string;
+
     @IsArray()
-    @IsNotEmpty()
+    @IsOptional()
     @IsString({ each: true })
     choices: string[];
+
 }
-
-

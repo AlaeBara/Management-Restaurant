@@ -9,6 +9,7 @@ import { UpdateChoiceDto } from "../dtos/choices/update-choice.dto";
 import { CreateBatchChoiceDto } from "../dtos/choices/create-batch-choice.dto";
 import { CreateAttributeWithChoicesDto } from "../dtos/choices/create-attribute-choices.dto";
 import { ChoiceAttributeService } from "../services/choice/choice-attribute.service";
+import { UpdateAttributeWithChoicesDto } from "../dtos/choices/update-attribute-choices.dto";
 
 @Controller('api/choices')
 @ApiTags('choice')
@@ -119,5 +120,13 @@ export class ChoiceController {
     async createAttributeWithChoices(@Body() createAttributeWithChoicesDto: CreateAttributeWithChoicesDto) {
         await this.choiceService.createAttributeWithChoices(createAttributeWithChoicesDto);
         return { message: 'Super! Votre attribut avec ses choix a été créé avec succès', status: 201 };
+    }
+
+    @Put('attributes/:id')
+    @Permissions('update-choice')
+    @ApiOperation({ summary: 'Update an attribute with choices' })
+    async updateAttributeWithChoices(@Param('id', ParseULIDPipe) id: string, @Body() updateAttributeWithChoicesDto: UpdateAttributeWithChoicesDto) {
+        await this.choiceService.updateAttributeWithChoices(id, updateAttributeWithChoicesDto);
+        return { message: 'Super! Votre attribut avec ses choix a été modifié avec succès', status: 200 };
     }
 }

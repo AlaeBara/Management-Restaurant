@@ -72,7 +72,7 @@ import { MenuItemChoiceService } from './services/menu-item-choice.service';
   ],
   exports: [
     TagSeeder,
-    MenuItemService
+    MenuItemService,
   ],
 })
 export class MenuItemModule { }

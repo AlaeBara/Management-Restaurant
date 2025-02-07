@@ -7,9 +7,16 @@ import { UserManagementModule } from 'src/user-management/user-management.module
 import { ClientPermissionSeeder } from './seeders/client-permission.seeder';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([Client]),UserManagementModule],
+  imports: [TypeOrmModule.forFeature([Client]), UserManagementModule],
   controllers: [ClientController],
-  providers: [ClientService, ClientPermissionSeeder],
-  exports: [ClientPermissionSeeder],
+  providers: [
+    ClientService,
+    ClientPermissionSeeder,
+  ],
+  exports: [
+    ClientPermissionSeeder,
+    ClientService,
+  ],
 })
+
 export class ClientManagementModule {}

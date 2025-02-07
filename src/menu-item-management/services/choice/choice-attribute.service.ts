@@ -47,13 +47,26 @@ export class ChoiceAttributeService extends GenericService<ChoiceAttribute> {
     }
 
 
-    async updateChoiceAttribute(id: string, updateChoiceAttributeDto: UpdateChoiceAttributeDto) {
+    async updateChoiceAttribute(id: string, updateChoiceAttributeDto: UpdateChoiceAttributeDto, queryRunnerPassed?: QueryRunner) {
+        const queryRunner = queryRunnerPassed || await this.inizializeQueryRunner();
+        try {
+
         await this.validateUniqueExcludingSelf({
             attribute: updateChoiceAttributeDto.attribute,
         }, id);
+
         const choiceAttribute = await this.findOneByIdWithOptions(id);
         Object.assign(choiceAttribute, updateChoiceAttributeDto);
-        return this.choiceAttributeRepository.save(choiceAttribute);
+        await queryRunner.manager.update(ChoiceAttribute, id, choiceAttribute);
+        if (!queryRunnerPassed) await queryRunner.commitTransaction();
+
+        return choiceAttribute;
+        } catch (error) {
+            if (!queryRunnerPassed) await queryRunner.rollbackTransaction();
+            throw error;
+        } finally {
+            if (!queryRunnerPassed) await queryRunner.release();
+        }
     }
 
 }
