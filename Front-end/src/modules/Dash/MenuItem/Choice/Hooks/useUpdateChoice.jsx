@@ -35,7 +35,7 @@ export function useUpdateChoice(id, formData, setFormData, initialData, setIniti
             ChoiceSchema.parse(formData);
 
             const token = Cookies.get('access_token');
-            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/choice-attributes/${id}`, formData, {
+            const response = await axios.put(`${import.meta.env.VITE_BACKEND_URL}/api/choices/attributes/${id}`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },

@@ -88,6 +88,7 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
                     <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Choix</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Choix</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Date Creation</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                         </TableRow>
@@ -98,11 +99,13 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
                             choices.length > 0 ? (
                                 choices.map((choice) => (
                                 <TableRow key={choice.id} className="font-sans">
-                                    <TableCell className="text-center p-4 border">{choice.attribute}</TableCell>
-                                    <TableCell className="text-center p-4 border">{formatDate(choice.createdAt)}</TableCell>
+                                    <TableCell className="text-center p-4 border">{choice?.attribute}</TableCell>
+                                        <TableCell className="text-center p-4 border">{choice.choices?.map(choice => choice.value).join(' , ') || '-'}</TableCell>
+                                    <TableCell className="text-center p-4 border">{formatDate(choice?.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center gap-5 lg:gap-8">
                                             <button
+
                                                 onClick={() => handleUpdate(choice)}
                                                 className="text-blue-600 hover:text-blue-800"
                                                 title="Modifier"
@@ -223,8 +226,6 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
                                         onKeyDown={(e) => {
                                             if (e.key === 'Enter' || e.key === ',') {
                                                 e.preventDefault();
-                                                console.log(pendingChoice)
-                                                console.log(formData.choices)
                                                 addChoice();
                                             }
                                         }}
