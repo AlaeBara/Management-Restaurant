@@ -50,19 +50,15 @@ const Tableau = ({produits}) => {
                                                     </div>
                                                 ) : (
                                                     <div className="flex items-center justify-center gap-2">
-                                                        {/* <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
-                                                            <Minus className="w-3 h-3 mr-1" />{produit?.price?.discount?.discountValue}
-                                                              {produit?.price?.discount?.discountMethod === 'fixed' ? "Dh" : "%"}
-                                                        </span> */}
-                                                        {produit?.price?.discount && produit?.price?.discount?.discountValue !== null && (
+                                                        {produit?.discountLevel !== 'noDiscount' && produit?.discountValue !== null && (
                                                             <span className="inline-flex items-center rounded-full bg-red-100 px-2 py-1 text-xs font-medium text-red-700">
                                                                 <Minus className="w-3 h-3 mr-1" />
-                                                                {Number(produit.price.discount.discountValue)}
-                                                                {produit.price.discount.discountMethod === 'fixed' ? "Dh" : "%"}
+                                                                {Number(produit?.discountValue)}
+                                                                {produit?.discountMethod === 'fixed' ? "Dh" : "%"}
                                                             </span>
                                                         )}
                                                         <span className="font-medium">
-                                                            {parseFloat(produit?.price?.finalPrice).toFixed(2)} Dh
+                                                            {parseFloat(produit?.basePrice).toFixed(2)} Dh
                                                         </span>
                                                     </div>
                                                 )}

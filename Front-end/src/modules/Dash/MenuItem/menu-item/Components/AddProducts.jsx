@@ -22,6 +22,7 @@ import {useFetchDiscounts} from '../../../MenuItem/Discount/Hooks/useFetchDiscou
 import ReactSelect from 'react-select';
 import {X} from 'lucide-react'
 import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
+import { Textarea } from "@/components/ui/textarea";
 
     const fomulastemSchema = z.object({
         productId: z
@@ -36,10 +37,10 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
         ingredientQuantity:z.coerce
             .number({
-                required_error: "Le Quantité dans la formule est obligatoire.",
-                invalid_type_error: "Le Quantité dans la formule doit être un nombre.",
+                required_error: "Le Quantité dans la formule est obligatoire",
+                invalid_type_error: "Le Quantité dans la formule doit être un nombre",
             })
-            .nonnegative({ message: "Le Quantité dans la formule doit être un nombre positif." }).optional(),
+            .nonnegative({ message: "Le Quantité dans la formule doit être un nombre positif" }).optional(),
             
         unitId:z
             .string()
@@ -49,18 +50,35 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
 
     const TranslateSchema = z.object({
-        languageId: z
-            .string()
-            .nonempty({ message: "La langue est obligatoire." }),
-
-        name: z
-            .string()
-            .nonempty({ message: "Nom du produit du menu est obligatoire." }),
-
-        description: z
-            .string()
-            .nonempty({ message: "Description du produit du menu est obligatoire." }),
-    })
+            languageId: z.string().optional(), 
+            name: z.string().optional(), 
+            description: z.string().optional(), 
+        }).superRefine((data, ctx) => {
+            // If any field is provided, all fields become required
+            if (data.languageId || data.name || data.description) {
+            if (!data.languageId) {
+                ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "La langue est obligatoire si un autre champ est rempli",
+                path: ["languageId"],
+                });
+            }
+            if (!data.name) {
+                ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "Le nom du produit du menu est obligatoire si un autre champ est rempli",
+                path: ["name"],
+                });
+            }
+            if (!data.description) {
+                ctx.addIssue({
+                code: z.ZodIssueCode.custom,
+                message: "La description du produit du menu est obligatoire si un autre champ est rempli",
+                path: ["description"],
+                });
+            }
+            }
+        });
 
 
     const ProductSchema = z.object({
@@ -73,29 +91,26 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
             .min(1, "Au moins un tag est requis"),
 
         //Translate 
-        translates: z.array(TranslateSchema).min(1, { 
-            message: "Au moins un produit est requis" 
-        }),
-
+        translates: z.array(TranslateSchema).min(0),
         //Info
         menuItemSku: z
             .string()
-            .nonempty({ message: "Sku de l'aricle est obligatoire." })
-            .max(15, { message: "Le Sku de l'article ne doit pas dépasser 15 caractères." }),
+            .nonempty({ message: "Sku de l'aricle est obligatoire" })
+            .max(15, { message: "Le Sku de l'article ne doit pas dépasser 15 caractères" }),
 
         quantity:z.coerce
             .number({
-                required_error: "Le Quantité  est obligatoire.",
-                invalid_type_error: "Le Quantité doit être un nombre.",
+                required_error: "Le Quantité  est obligatoire",
+                invalid_type_error: "Le Quantité doit être un nombre",
             })
-            .nonnegative({ message: "Le Quantité doit être un nombre positif." }).optional(),
+            .nonnegative({ message: "Le Quantité doit être un nombre positif" }).optional(),
 
         warningQuantity: z.coerce
             .number({
-                required_error: "Le Quantité d'alerte est obligatoire.",
-                invalid_type_error: "Le Quantité d'alerte doit être un nombre.",
+                required_error: "Le Quantité d'alerte est obligatoire",
+                invalid_type_error: "Le Quantité d'alerte doit être un nombre",
             })
-            .nonnegative({ message: "Le Quantité d'alerte doit être un nombre positif." }),
+            .nonnegative({ message: "Le Quantité d'alerte doit être un nombre positif" }),
 
         isPublished: z.boolean().optional(),
 
@@ -108,19 +123,34 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
             .nullable()
             .optional(),
 
+
+        name: z
+            .string()
+            .nonempty({ message: "Le nom de l'article est obligatoire" }) 
+            .min(3, { message: "Le nom de l'article doit contenir au moins 3 caractères" })
+            .max(255, { message: "Le nom de l'article ne doit pas dépasser 255 caractères" }), 
+        
+        description: z
+            .string()
+            .nonempty({ message: "La description de l'article est obligatoire" }) 
+            .min(3, { message: "La description de l'article doit contenir au moins 3 caractères" })
+            .max(255, { message: "La description de l'article ne doit pas dépasser 255 caractères" }), 
+
+        
+
         portionProduced:z.coerce
             .number({
                 required_error: "Le Portion produite est obligatoire.",
-                invalid_type_error: "Le Portion produite doit être un nombre.",
+                invalid_type_error: "Le Portion produite doit être un nombre",
             })
-            .nonnegative({ message: "Le Portion produite doit être un nombre positif." }).optional(),
+            .nonnegative({ message: "Le Portion produite doit être un nombre positif" }).optional(),
 
         basePrice: z.coerce
             .number({
-                required_error: "Le prix de base est obligatoire.",
-                invalid_type_error: "Le prix de base doit être un nombre.",
+                required_error: "Le prix de base est obligatoire",
+                invalid_type_error: "Le prix de base doit être un nombre",
             })
-            .nonnegative({ message: "Le prix doit être un nombre positif." }),
+            .nonnegative({ message: "Le prix doit être un nombre positif" }),
 
         discountId:z
             .string()
@@ -134,10 +164,10 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 
         discountValue: z.coerce
             .number({
-                required_error: "Le valeur de remise est obligatoire.",
-                invalid_type_error: "Le valeur de remise doit être un nombre.",
+                required_error: "Le valeur de remise est obligatoire",
+                invalid_type_error: "Le valeur de remise doit être un nombre",
             })
-            .nonnegative({ message: "Le valeur de remise doit être un nombre positif." }).optional(),
+            .nonnegative({ message: "Le valeur de remise doit être un nombre positif" }).optional(),
 
     });
 
@@ -171,6 +201,8 @@ export default function AchatCreationForm() {
     const [formData, setFormData] = useState({
         menuItemSku: '',
         quantity: '',
+        name: '',
+        description: '',
         warningQuantity: null,
         isPublished: false,
         isDraft: false,
@@ -343,8 +375,7 @@ export default function AchatCreationForm() {
         setFormData({ ...formData, recipe: newFormulas });
     };
 
-
-
+    
     // Submit handler
     const [errors, setErrors] = useState({});
     const [isLoading, setIsLoading] = useState(false);
@@ -376,59 +407,59 @@ export default function AchatCreationForm() {
             let customErrors = {};
             if (formData.discountLevel === 'advanced') {
                 if (!formData.discountId) {
-                    customErrors.discountId = "Le nom de la réduction est obligatoire.";
+                    customErrors.discountId = "Le nom de la réduction est obligatoire";
                 }
             } else if (formData.discountLevel === 'basic') {
                 if (!formData.discountMethod) {
-                    customErrors.discountMethod = "Le type de remise est obligatoire.";
+                    customErrors.discountMethod = "Le type de remise est obligatoire";
                 }
                 if (formData.discountValue === null || formData.discountValue === '') {
-                    customErrors.discountValue = "La valeur de remise est obligatoire.";
+                    customErrors.discountValue = "La valeur de remise est obligatoire";
                 }
             }
 
             //Custom validation for warningQuantity
             if (formData.warningQuantity === null || formData.warningQuantity === undefined || formData.warningQuantity === "") {
-                customErrors.warningQuantity = "Le Quantité d'alerte est obligatoire.";
+                customErrors.warningQuantity = "Le Quantité d'alerte est obligatoire";
             } else if (formData.warningQuantity < 0) {
-                customErrors.warningQuantity = "Le Quantité d'alerte doit être un nombre positif.";
+                customErrors.warningQuantity = "Le Quantité d'alerte doit être un nombre positif";
             }
 
             //Custom validation for warningQuantity
             if (formData.basePrice === null || formData.basePrice === undefined || formData.basePrice === "") {
-                customErrors.basePrice = "Le Quantité d'alerte est obligatoire.";
+                customErrors.basePrice = "Le Quantité d'alerte est obligatoire";
             } else if (formData.basePrice < 0) {
-                customErrors.basePrice = "Le Quantité d'alerte doit être un nombre positif.";
+                customErrors.basePrice = "Le Quantité d'alerte doit être un nombre positif";
             }
     
             // Validate formulas if hasRecipe is true
             if (formData.hasRecipe) {
                 if (!formData.recipe || formData.recipe.length === 0) {
-                    customErrors.formulas = "Au moins une recette est requise.";
+                    customErrors.formulas = "Au moins une recette est requise";
                 } else {
                     formData.recipe.forEach((formula, index) => {
                         if (!formula.productId) {
                             customErrors.recipe = customErrors.recipe || [];
                             customErrors.recipe[index] = customErrors.recipe[index] || {};
-                            customErrors.recipe[index].productId = "L'ingrédient est obligatoire.";
+                            customErrors.recipe[index].productId = "L'ingrédient est obligatoire";
                         }
                         if (!formula.ingredientQuantity) {
                             customErrors.recipe = customErrors.recipe || [];
                             customErrors.recipe[index] = customErrors.recipe[index] || {};
-                            customErrors.recipe[index].ingredientQuantity = "La quantité nécessaire est obligatoire.";
+                            customErrors.recipe[index].ingredientQuantity = "La quantité nécessaire est obligatoire";
                         }
                         if (!formula.unitId) {
                             customErrors.recipe = customErrors.recipe || [];
                             customErrors.recipe[index] = customErrors.recipe[index] || {};
-                            customErrors.recipe[index].unitId = "L'unité est obligatoire.";
+                            customErrors.recipe[index].unitId = "L'unité est obligatoire";
                         }
                         if (!formula.inventoryId) {
                             customErrors.recipe = customErrors.recipe || [];
                             customErrors.recipe[index] = customErrors.recipe[index] || {};
-                            customErrors.recipe[index].inventoryId = "L'inventaire est obligatoire.";
+                            customErrors.recipe[index].inventoryId = "L'inventaire est obligatoire";
                         }
                         if (!formData.portionProduced) {
-                            customErrors.portionProduced = "Le Portion produite est obligatoire.";
+                            customErrors.portionProduced = "Le Portion produite est obligatoire";
                         }
                     });
                 }
@@ -436,7 +467,7 @@ export default function AchatCreationForm() {
 
             if (!formData.hasRecipe) {
                 if (!formData.quantity) {
-                    customErrors.quantity = "Le Quantité  est obligatoire.";
+                    customErrors.quantity = "Le Quantité  est obligatoire";
                 }
             }
 
@@ -472,14 +503,27 @@ export default function AchatCreationForm() {
             if (Object.keys(allErrors).length > 0) {
                 setErrors(allErrors);
                 console.log(allErrors)
+                const formattedMessages = Object.values(allErrors).flat().map(error => {
+                    if (typeof error === 'object') {
+                        return Object.values(error).join(' ; '); // Handle nested error objects
+                    }
+                    return error; 
+                }).join(' ; ');
+                setAlert({
+                    message: formattedMessages,
+                    type: "error",
+                });
                 return;
             }
+
             if (!formData.hasRecipe) {
                 formData.recipe = [];
             }
+
             if (formData.hasRecipe) {
                 formData.quantity= null;
             }
+
             if (formData.discountLevel === 'no-discount') {
                 formData.discountMethod=null
                 formData.discountValue=null
@@ -534,9 +578,12 @@ export default function AchatCreationForm() {
 
             // Step 2: Append fields to FormData
             appendIfValid('menuItemSku', preparedData.menuItemSku);
+            appendIfValid('name', preparedData.name);
+            appendIfValid('description', preparedData.description);
             if (!preparedData.hasRecipe) {
                 appendIfValid('quantity', preparedData.quantity);
             }
+
             appendIfValid('warningQuantity', preparedData.warningQuantity);
             appendIfValid('isPublished', preparedData.isPublished);
             appendIfValid('isDraft', preparedData.isDraft);
@@ -590,12 +637,15 @@ export default function AchatCreationForm() {
             setFormData({
                 menuItemSku: '',
                 quantity: '',
+                name: '',
+                description: '',
                 warningQuantity: null,
                 isPublished: false,
                 isDraft: false,
                 categoryId: '',
                 hasRecipe: false,
                 portionProduced:  null,
+
                 recipe: [
                     {
                         productId: '',
@@ -755,13 +805,52 @@ export default function AchatCreationForm() {
                                                 min='0'
                                             />
                                             <p className="text-xs text-gray-600 mt-0">
-                                                Définissez un seuil pour déclencher une alerte lorsque la quantité de cet article est faible. Par exemple, si vous entrez "30 portions", une alerte sera activée lorsque le stock atteindra ce niveau.
+                                                Veuillez saisir une description détaillée de l'article du menu. Cette description sera visible par les clients et doit inclure les ingrédients principaux, la préparation, et toute information pertinente pour aider à la décision d'achat.
                                             </p>
                                             {errors.warningQuantity && (
                                                 <p className="text-xs text-red-500 mt-1">{errors.warningQuantity}</p>
                                             )}
                                         </div>
                 
+                                    </div>
+
+                                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        
+                                        <div className="space-y-2">
+                                            <Label>
+                                                Nom de l'article <span className="text-red-500 text-base">*</span>
+                                            </Label>
+                                            <Input
+                                                name="name"
+                                                value={formData.name}
+                                                onChange={handleChange}
+                                                placeholder="Exemple : Pizza Margherita"
+                                            />
+                                            <p className="text-xs text-gray-600 mt-0">
+                                                Veuillez saisir le nom de l'article du menu. Ce nom sera affiché aux clients dans le menu et utilisé pour l'identification dans le système de gestion du restaurant. Assurez-vous qu'il soit clair, précis et représentatif de l'article.
+                                            </p>
+                                            {errors.name && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.name}</p>
+                                            )}
+                                        </div>
+
+                                        <div className="space-y-2">
+                                            <Label>
+                                            Description de l'article <span className="text-red-500 text-base">*</span>
+                                            </Label>
+                                            <Textarea
+                                                name="description"
+                                                value={formData.description}
+                                                onChange={handleChange}
+                                                placeholder="Exemple : Une délicieuse pizza garnie de fromage et de tomates"
+                                            />
+                                            <p className="text-xs text-gray-600 mt-0">
+                                                Veuillez saisir une description détaillée de l'article du menu. Cette description sera affichée aux clients et doit inclure les ingrédients principaux, le mode de préparation et toute information pertinente pour les aider dans leur choix.
+                                            </p>
+                                            {errors.description && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.description}</p>
+                                            )}
+                                        </div>
                                     </div>
 
                                     <div className="space-y-2">
@@ -1328,12 +1417,30 @@ export default function AchatCreationForm() {
                                         <div className="grid gap-4">
                                             
                                             {formData.translates.map((translates, index) => (
+                                                <div  
+                                                    key={index} 
+                                                    className="border p-4 rounded-lg"
+                                                >
+
+                                                    <div className="flex justify-end">
+                                                        {formData.translates.length > 1 && (
+                                                            <Button 
+                                                                type="button" 
+                                                                variant="destructive" 
+                                                                size="icon"
+                                                                onClick={() => removeTranslate(index)}
+                                                            >
+                                                                <Trash2 size={16} />
+                                                            </Button>
+                                                        )}
+                                                    </div>
+                                               
                                                 <div 
                                                     key={index} 
-                                                    className="grid sm:grid-cols-1 md:grid-cols-4 lg:grid-cols-4 gap-4 border p-4 rounded-lg"
+                                                    className="grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4 p-4 rounded-lg"
                                                 >
                                                     <div className="space-y-2">
-                                                        <Label>Langue <span className='text-red-500 text-base'>*</span></Label>
+                                                        <Label>Langue </Label>
                                                         <Select
                                                             name="languageId"
                                                             value={translates.languageId}
@@ -1364,7 +1471,7 @@ export default function AchatCreationForm() {
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label>Désignation de l'article <span className='text-red-500 text-base'>*</span></Label>
+                                                        <Label>Désignation de l'article </Label>
                                                         <Input
                                                             name="name"
                                                             value={translates.name || ""}
@@ -1380,8 +1487,8 @@ export default function AchatCreationForm() {
                                                     </div>
 
                                                     <div className="space-y-2">
-                                                        <Label>Détails de plat <span className='text-red-500 text-base'>*</span></Label>
-                                                        <Input
+                                                        <Label>Détails de plat</Label>
+                                                        <Textarea
                                                             name="description"
                                                             value={translates.description || ""}
                                                             onChange={(e) => handleChangee(e.target.value, index, 'description')}
@@ -1393,19 +1500,7 @@ export default function AchatCreationForm() {
                                                             </p>
                                                         )}
                                                     </div>
-
-                                                    <div className="flex items-end justify-center h-full">
-                                                        {formData.translates.length > 1 && (
-                                                            <Button 
-                                                                type="button" 
-                                                                variant="destructive" 
-                                                                size="icon"
-                                                                onClick={() => removeTranslate(index)}
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </Button>
-                                                        )}
-                                                    </div>
+                                                </div>
                                                 </div>
                                             ))}
                                         </div>
