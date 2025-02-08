@@ -38,6 +38,12 @@ export class MenuItem extends BaseEntity {
     @Column({ type: 'varchar', length: 15 })
     menuItemSku: string;
 
+    @Column({ type: 'varchar', length: 255 ,nullable: false ,default: "name"})
+    name: string;
+
+    @Column({ type: 'varchar', length: 255 ,nullable: true})
+    description: string;
+
     @Column({ type: 'int', default: 0, nullable: true })
     quantity: number;
 

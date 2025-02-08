@@ -31,9 +31,28 @@ export class CreateMenuItemDto {
   })
   menuItemSku: string;
 
+  @IsString()
+  @IsNotEmpty()
+  @Length(3, 255)
+  @ApiProperty({
+    description: 'The name of the menu item',
+    example: 'Pizza'
+  })
+  name: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @Length(3, 255)
+  @ApiProperty({
+    description: 'The description of the menu item',
+    example: 'Pizza description'
+  })
+  description: string;
+
   @IsNumber()
   @IsOptional()
   @Transform(({ value }) => Number(value))
+
   @ApiProperty({
     description: 'The quantity of the menu item',
     example: '10'

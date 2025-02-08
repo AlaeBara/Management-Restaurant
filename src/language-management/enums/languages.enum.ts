@@ -1,11 +1,9 @@
 export enum Languages {
-    FR = "fr",
     EN = "en",
     AR = "ar",
 }
 
 export const LanguageOptions = [
-    { label: "Français", value: Languages.FR },
     { label: "English", value: Languages.EN },
     { label: "العربية", value: Languages.AR },
 ];

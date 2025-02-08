@@ -73,6 +73,7 @@ import { MenuItemChoiceService } from './services/menu-item-choice.service';
   exports: [
     TagSeeder,
     MenuItemService,
+    MenuItemTranslationService
   ],
 })
 export class MenuItemModule { }
