@@ -11,7 +11,7 @@ import Spinner from '@/components/Spinner/Spinner';
 import {useFetchChoiceDeleted} from '../hooks/useFetchChoiceDeleted'
 import Tableau from './TableauChoiceDeleted'
 import { useRestoreChoice } from '../hooks/useRestoreChoice';
-
+import { Ban } from 'lucide-react';
 
 const DeletedChoice= () => {
     const  navigate = useNavigate()

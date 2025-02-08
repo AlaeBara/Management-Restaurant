@@ -100,7 +100,23 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
                                 choices.map((choice) => (
                                 <TableRow key={choice.id} className="font-sans">
                                     <TableCell className="text-center p-4 border">{choice?.attribute}</TableCell>
-                                        <TableCell className="text-center p-4 border">{choice.choices?.map(choice => choice.value).join(' , ') || '-'}</TableCell>
+                                    <TableCell className="text-center p-4 border">
+                                        {choice.choices?.length > 0 ? (
+                                            <div className="flex flex-wrap gap-2 justify-center">
+                                            {choice.choices.map((choice, index) => (
+                                                <Badge
+                                                    key={index}
+                                                    variant="secondary"
+                                                    className='text-sm capitalize'
+                                                >
+                                                {choice.value}
+                                                </Badge>
+                                            ))}
+                                            </div>
+                                        ) : (
+                                            '-'
+                                        )}
+                                    </TableCell>
                                     <TableCell className="text-center p-4 border">{formatDate(choice?.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center gap-5 lg:gap-8">

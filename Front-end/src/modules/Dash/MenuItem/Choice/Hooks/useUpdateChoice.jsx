@@ -57,7 +57,7 @@ export function useUpdateChoice(id, formData, setFormData, initialData, setIniti
             });
 
             fetchChoices();
-            CloseModel();
+            z
         } catch (error) {
             if (error instanceof z.ZodError) {
                 const fieldErrors = error.errors.reduce((acc, { path, message }) => {
@@ -67,6 +67,9 @@ export function useUpdateChoice(id, formData, setFormData, initialData, setIniti
                 setErrors(fieldErrors);
             } else {
                 console.error('Error updating Choice:', error.response?.data?.message || error.message);
+
+                // formData.attribute = initialData.attribute;
+                // formData.choices = initialData.choices;
                 setAlert({
                     message:
                         Array.isArray(error.response?.data?.message)

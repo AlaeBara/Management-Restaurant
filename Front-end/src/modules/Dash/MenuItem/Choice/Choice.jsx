@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import style from './Choice.module.css'
 import { useNavigate } from 'react-router-dom'
-import { Plus, SearchX, Loader, ExternalLink, XIcon } from 'lucide-react';
+import { Plus, SearchX, Loader, ExternalLink, XIcon ,Ban} from 'lucide-react';
 import { ToastContainer, toast } from 'react-toastify';
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";

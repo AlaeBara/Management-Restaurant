@@ -72,7 +72,7 @@ export function RevenueChart() {
               type="natural"
               fill="hsl(var(--chart-1))"
               fillOpacity={0.4}
-              stroke="hsl(var(--chart-1))"
+              stroke="hsl(var(--chart-2))"
               stackId="a"
             />
             <Area
@@ -80,7 +80,7 @@ export function RevenueChart() {
               type="natural"
               fill="hsl(var(--chart-2))"
               fillOpacity={0.4}
-              stroke="hsl(var(--chart-2))"
+              stroke="hsl(var(--chart-1))"
               stackId="a"
             />
           </AreaChart>
