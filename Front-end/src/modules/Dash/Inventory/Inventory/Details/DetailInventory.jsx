@@ -22,6 +22,8 @@ const ProduitDetails = () => {
         fetchInventory();
     }, [fetchInventory]);
 
+    
+
     const {inventorysMovements, totalIventoryMovement, Isloading, message, fetchIventoryMovement}= useFetchAdjustemetByInventory(id_iventory)
 
     const [currentPage, setCurrentPage] = useState(1);
@@ -80,7 +82,7 @@ const ProduitDetails = () => {
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Quantité totale :</span>
-                                            <h2>{inventory.totalQuantity}</h2>
+                                            <h2>{inventory.currentQuantity || "-"}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Quantité d'alerte :</span>

@@ -28,7 +28,7 @@ const CartIventory = ({inventory}) => {
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Quantité totale:</span>
-                            <h2>{inventory.totalQuantity} {inventory.productUnit}</h2>
+                            <h2>{inventory.currentQuantity} {inventory.productUnit}</h2>
                         </div>
                         <div className={styles.infoItem}>
                             <span className={styles.label}>Date de création :</span>

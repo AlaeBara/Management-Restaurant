@@ -42,7 +42,7 @@ const InventoryCart = ({ inventory ,Delete }) => {
                         <p className={style.zoneLabel}>
                             <span className={style.blacktext}>Produit :</span> {inventory.productName || '-'}
                         </p>
-                        <p className={style.zoneLabel}> <span className={style.blacktext}>Quantité totale :</span> {inventory.totalQuantity || 0} {inventory.productUnit} </p>
+                        <p className={style.zoneLabel}> <span className={style.blacktext}>Quantité totale :</span> {inventory.currentQuantity || 0} {inventory.productUnit} </p>
                         <p className={style.zoneLabel}>
                             <span className={style.blacktext}>Quantité d'alerte :</span> {inventory.warningQuantity || 'Non spécifié'} {inventory.productUnit}
                         </p>
