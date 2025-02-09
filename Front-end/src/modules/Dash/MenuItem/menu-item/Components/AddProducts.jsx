@@ -234,21 +234,6 @@ export default function AchatCreationForm() {
     });
 
 
-    useEffect(() => {
-        if (langages.length > 0) {
-            const frenchLangId = langages.find(lang => lang.label === "Français")?.id || "";
-            setFormData((prev) => ({
-                ...prev,
-                translates: [
-                    {
-                        ...prev.translates[0],
-                        languageId: frenchLangId,
-                    },
-                ],
-            }));
-        }
-    }, [langages]);
-    
     
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -1450,6 +1435,7 @@ export default function AchatCreationForm() {
                                                                 <SelectValue placeholder="Sélectionner une Choix" />
                                                             </SelectTrigger>
                                                             <SelectContent>
+                                                                <SelectItem value={null} className="font-semibold text-gray-400">Aucune langue</SelectItem>
                                                                 
                                                                 {langages.length > 0 ? (
                                                                     langages
