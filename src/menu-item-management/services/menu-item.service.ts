@@ -82,23 +82,22 @@ export class MenuItemService extends GenericService<MenuItem> {
 
             await queryRunner.commitTransaction();
 
-            this.eventEmitter.emit('menu.item.created', { menuItem: menuItem });
+            this.eventEmitter.emit('menu.item.created', menuItem);
 
             return menuItem;
         } catch (error) {
             await queryRunner.rollbackTransaction();
             logger.error('Error creating menu item:', { message: error.message, stack: error.stack });
-            throw new InternalServerErrorException('une erreur est survenue lors de l\'action. Veuillez réessayer plus tard.');
+            throw new InternalServerErrorException(error.message);
         } finally {
             await queryRunner.release();
         }
-
-
 
     }
 
     private async createBaseMenuItem(dto: CreateMenuItemDto, queryRunner: QueryRunner, req: Request) {
         const category = await this.categoryService.findOneByIdWithOptions(dto.categoryId);
+
 
         const menuItem = this.menuItemRepository.create({
             ...dto,
@@ -129,9 +128,11 @@ export class MenuItemService extends GenericService<MenuItem> {
             }));
         }
 
-        menuItem.translates = await Promise.all(dto.translates.map(async (translate) => {
-            return await this.translateService.createTranslation(menuItem, translate, queryRunner);
-        }));
+        if (dto.translates && dto.translates.length > 0) {
+            menuItem.translates = await Promise.all(dto.translates.map(async (translate) => {
+                return await this.translateService.createTranslation(menuItem, translate, queryRunner);
+            }));
+        }
 
         for (const tagId of dto.tagIds) {
             await this.TagService.addTagToMenuItem(menuItem, tagId, queryRunner);

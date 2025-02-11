@@ -1,6 +1,7 @@
 import { BaseEntity } from 'src/common/entities/base.entity';
 import { Product } from 'src/product-management/entities/product.entity';
 import { Storage } from 'src/storage-management/entities/storage.entity';
+import { Unit } from 'src/unit-management/entities/unit.entity';
 import { AfterLoad, Index, JoinColumn, ManyToOne, RelationId } from 'typeorm';
 import { Column, Entity } from 'typeorm';
 
@@ -14,32 +15,20 @@ export class Inventory extends BaseEntity {
     warningQuantity: number;
 
     @Column({ default: 0 })
-    totalQuantity: number;
+    currentQuantity: number;
 
     @ManyToOne(() => Storage, { eager: true })
     @JoinColumn()
     storage: Storage;
 
-    @RelationId((inventory: Inventory) => inventory.storage)
-    storageId: string | null;
-
     @ManyToOne(() => Product, { eager: true })
     @JoinColumn()
     product: Product;
 
+    @ManyToOne(() => Unit, { eager: true })
+    @JoinColumn()
+    unit: Unit;
+
     @RelationId((inventory: Inventory) => inventory.product)
     productId: string | null;
-
-    productUnit: string;
-    productName: string;
-    storageName: string;
-
-    @AfterLoad()
-    setProductDetails(): void {
-        this.productUnit = this.product?.unit ?? null;
-        this.productName = this.product?.productName ?? null;
-        this.storageName = this.storage?.storageName ?? null;
-        delete this.product;
-        delete this.storage;
-    }
 }

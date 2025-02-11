@@ -32,9 +32,4 @@ export class CreateProductDto {
     @ApiProperty({ description: 'The type of the product', example: 'ingredient | baverage', required: true })
     productType: ProductType;
 
-    @IsOptional()
-    @IsUUID()
-    @ApiProperty({ description: 'The id of the unit', example: '123e4567-e89b-12d3-a456-426614174000', required: true })
-    unitId: string | null;
-
 }

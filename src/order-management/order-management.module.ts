@@ -13,6 +13,11 @@ import { GuestController } from './controllers/guest.controller';
 import { GuestService } from './services/guest.service';
 import { OrderStatusHistory } from './entities/order-status-history.entity';
 import { OrderPayment } from './entities/order-payment.entity';
+import { OrderController } from './controllers/order.controller';
+import { OrderService } from './services/order.service';
+import { OrderItemService } from './services/order-item.service';
+import { ClientManagementModule } from 'src/client-management/client-management.module';
+import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 
 @Module({
   imports: [
@@ -27,9 +32,16 @@ import { OrderPayment } from './entities/order-payment.entity';
   forwardRef(() => UserManagementModule),
   forwardRef(() => ZoneTableModule),
   forwardRef(() => MenuItemModule),
+  forwardRef(() => ClientManagementModule),
+  forwardRef(() => InventoryModule),
   ],
-  controllers: [GuestController],
-  providers: [GuestService],
+  controllers: [GuestController, OrderController],
+  providers: [
+
+    GuestService,
+    OrderService,
+    OrderItemService,
+  ],
   exports: [],
 })
 

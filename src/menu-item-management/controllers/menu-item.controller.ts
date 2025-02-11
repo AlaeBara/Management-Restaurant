@@ -1,17 +1,12 @@
-import { Body, Controller, Delete, forwardRef, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, UploadedFile, UploadedFiles, UseInterceptors } from "@nestjs/common";
-import { MenuItemTagService } from "../services/menu-item-tag.service";
+import { Body, Controller, Delete, forwardRef, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query, Req, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Inventory } from "src/inventory-managemet/entities/inventory.entity";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
-import { MenuItemTag } from "../entities/menu-item-tag.entity";
-import { UpdateInventoryDto } from "src/inventory-managemet/dtos/inventory/update-inventory.dto";
 import { MenuItemService } from "../services/menu-item.service";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { AddChoiceToMenuItemDto } from "../dtos/menu-item-choices/add-choice-to-menu-item.dto";
 import { MenuItemChoiceService } from "../services/menu-item-choice.service";
-
 
 @Controller('api/menu-items')
 @ApiTags('menu-item')
@@ -22,8 +17,7 @@ export class MenuItemController {
         private readonly menuItemService: MenuItemService,
         @Inject(forwardRef(() => MenuItemChoiceService))
         private readonly menuItemChoiceService: MenuItemChoiceService
-    ) {
-    }
+    ) { }
 
     @Get()
     @Permissions('view-menu-item-tags')
@@ -90,5 +84,8 @@ export class MenuItemController {
         await this.menuItemChoiceService.addChoiceToMenuItem(addChoiceToMenuItemDto);
         return { message: 'Super! Votre choix a été ajouté avec succès', status: 201 };
     }
+
+  
+
 
 }

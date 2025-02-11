@@ -103,7 +103,6 @@ export class CreateMenuItemDto {
 
   @ValidateNested({ each: true })
   @Type(() => CreateMenuItemTranslate)
-  @ArrayMinSize(1)
   @ApiProperty({
     description: 'The translations of the menu item',
     example: [{ languageId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', name: 'English', description: 'English description' }]

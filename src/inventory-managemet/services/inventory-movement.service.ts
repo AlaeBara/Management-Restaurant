@@ -2,13 +2,15 @@ import { BadRequestException, Inject, Injectable } from "@nestjs/common";
 import { GenericService } from "src/common/services/generic.service";
 import { InventoryMovement } from "../entities/inventory-movement.entity";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository } from "typeorm";
 import { CreateInventoryMovementDto } from "../dtos/inventory-movement/create-inventory-movement.dto";
 import { Inventory } from "../entities/inventory.entity";
 import { getMovementAction, MovementType } from "../enums/movement_type.enum";
 import { InventoryService } from "./inventory.service";
 import { CreateInvenotryTransfer } from "../dtos/inventory-movement/create-inventory-transfer.dto";
 import { UserService } from "src/user-management/services/user/user.service";
+import { MenuItemRecipe } from "src/menu-item-management/entities/menu-item-recipe.entity";
+import { MenuItemRecipeService } from "src/menu-item-management/services/menu-item-recipe.service";
 
 @Injectable()
 export class InventoryMovementService extends GenericService<InventoryMovement> {
@@ -21,10 +23,13 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         @Inject()
         private readonly inventoryService: InventoryService,
         @Inject()
-        private readonly userService: UserService
+        private readonly userService: UserService,
+        @Inject()
+        private readonly menuItemRecipeService: MenuItemRecipeService
     ) {
         super(dataSource, InventoryMovement, 'inventory-movement');
     }
+
 
     /**
      * Adjusts the quantity of a single inventory record
@@ -33,21 +38,26 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
      * @param movementAction - The type of adjustment ('increase' or 'decrease')
      * @throws BadRequestException if the movement action is invalid
      */
-    async executeAdjustment(Invenetory: Inventory, quantity: number, movementAction: string) {
-        const totalQuantity = Number(Invenetory.totalQuantity);
+    async executeAdjustment(Invenetory: Inventory, quantity: number, movementAction: string, queryRunner?: QueryRunner) {
+        const totalQuantity = Number(Invenetory.currentQuantity);
         switch (movementAction) {
             case 'increase':
-                Invenetory.totalQuantity = totalQuantity + Number(quantity);
+                Invenetory.currentQuantity = totalQuantity + Number(quantity);
                 break;
             case 'decrease':
-                Invenetory.totalQuantity = totalQuantity - Number(quantity);
+                Invenetory.currentQuantity = totalQuantity - Number(quantity);
                 break;
             default:
                 throw new BadRequestException(`Action de mouvement invalide: ${movementAction}`);
         }
 
-        await this.inventoryRepository.save(Invenetory);
+        if (queryRunner) {
+            await queryRunner.manager.save(Invenetory);
+        } else {
+            await this.inventoryRepository.save(Invenetory);
+        }
     }
+
 
     /**
      * Validates the quantity of an inventory movement
@@ -87,7 +97,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         }
 
         // Validate that we're not trying to decrease more than what's available
-        if (inventoryMovementObject.movementAction === 'decrease' && inventoryMovementObject.quantity > Inventory.totalQuantity) {
+        if (inventoryMovementObject.movementAction === 'decrease' && inventoryMovementObject.quantity > Inventory.currentQuantity) {
             throw new BadRequestException('La quantité est supérieure à la quantité totale de l\'inventaire');
         }
 
@@ -131,9 +141,10 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         }
 
         // Validate source inventory has enough quantity
-        if (InventoryMovement.quantity > InventoryMovement.inventory.totalQuantity) {
+        if (InventoryMovement.quantity > InventoryMovement.inventory.currentQuantity) {
             throw new BadRequestException('La quantité demandée dépasse la quantité totale disponible dans l\'inventaire source.');
         }
+
     }
 
     /**
@@ -174,5 +185,27 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         // Save the new inventory movement object
         await this.inventoryMovementRepository.save(inventoryMovement);
     }
+
+    async executeOrderMovementOperation(quantity: number, inventoryId: string, orderNumber: string, queryRunner?: QueryRunner) {
+        const inventory = await this.inventoryService.findOneByIdWithOptions(inventoryId);
+
+        const inventoryMovement = this.inventoryMovementRepository.create({
+            inventory: inventory,
+            quantity: quantity,
+            movementType: MovementType.ORDER,
+            movementAction: 'decrease',
+            notes: `Cette opération est exécutée par une commande avec le numéro ${orderNumber}`
+        });
+
+        if (inventory.currentQuantity < quantity) {
+            throw new BadRequestException('La quantité demandée dépasse la quantité totale disponible dans l\'inventaire source.');
+        }
+        
+
+        await this.executeAdjustment(inventory, quantity, 'decrease', queryRunner);
+        await queryRunner.manager.save(InventoryMovement, inventoryMovement);
+    }
+
+    
 
 }

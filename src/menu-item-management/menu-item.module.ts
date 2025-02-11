@@ -31,6 +31,9 @@ import { ChoiceAttributeController } from './controllers/choice-attribute.contro
 import { ChoiceController } from './controllers/choice.controller';
 import { ChoiceService } from './services/choice/choice.service';
 import { MenuItemChoiceService } from './services/menu-item-choice.service';
+import { OutboxModule } from 'src/outbox-module/outbox.module';
+import { MenuItemEmitter } from './emitters/menu-item.emitter';
+import { OrderManagementModule } from 'src/order-management/order-management.module';
 
 @Module({
   imports: [
@@ -49,7 +52,10 @@ import { MenuItemChoiceService } from './services/menu-item-choice.service';
     forwardRef(() => ProductManagementModule),
     forwardRef(() => UnitModule),
     forwardRef(() => InventoryModule),
-    forwardRef(() => MediaLibraryModule)],
+    forwardRef(() => MediaLibraryModule),
+    forwardRef(() => OutboxModule),
+    forwardRef(() => OrderManagementModule)
+  ],
   controllers: [
     MenuItemTagController,
     MenuItemController,
@@ -68,12 +74,15 @@ import { MenuItemChoiceService } from './services/menu-item-choice.service';
     MenuItemPublicService,
     ChoiceAttributeService,
     ChoiceService,
-    MenuItemChoiceService
+    MenuItemChoiceService,
+    MenuItemEmitter
   ],
   exports: [
     TagSeeder,
     MenuItemService,
-    MenuItemTranslationService
+    MenuItemTranslationService,
+    MenuItemEmitter,
+    MenuItemRecipeService
   ],
 })
 export class MenuItemModule { }

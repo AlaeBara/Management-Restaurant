@@ -50,11 +50,11 @@ export class GenericService<T> {
     FindBy?: Record<string, any>,
   ): Promise<{ data: T[]; total: number; page: number; limit: number }> {
     const query = this.repository.createQueryBuilder(this.name);
-
+  
     if (FindBy) {
       query.where(FindBy);
     }
-    // ... existing code ...
+  
     if (searchQuery) {
       const searchCriteria: SearchQuery = {};
       Object.entries(searchQuery).forEach(([key, value]) => {
@@ -64,33 +64,37 @@ export class GenericService<T> {
           searchCriteria[fieldPath.join('.')] = values;
         }
       });
-
+  
       Object.entries(searchCriteria).forEach(([path, values], index) => {
         const pathParts = path.split('.');
         const isNested = pathParts.length > 1;
-
+  
         if (isNested) {
           const relationPath = pathParts.slice(0, -1).join('.');
           const lastField = pathParts[pathParts.length - 1];
-
+        
           // Add join if not already added
           query.leftJoinAndSelect(`${this.name}.${relationPath}`, relationPath);
-
+        
           // Get column metadata to check type
           const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(`${relationPath}.${lastField}`);
           const isUUID = columnMetadata?.type === 'uuid';
-
+          const isBoolean = columnMetadata?.type === 'boolean';
+        
           const conditions = values.map((value, valueIndex) => {
             const paramName = `search${index}_${valueIndex}`;
+            if (isBoolean) {
+              return `${relationPath}.${lastField} = :${paramName}`;
+            }
             return isUUID
               ? `${relationPath}.${lastField} = :${paramName}`
               : `${relationPath}.${lastField} ILIKE :${paramName}`;
           });
-
+        
           query.andWhere(`(${conditions.join(' OR ')})`,
             values.reduce((params, value, valueIndex) => ({
               ...params,
-              [`search${index}_${valueIndex}`]: isUUID ? value : `%${value}%`
+              [`search${index}_${valueIndex}`]: isUUID || isBoolean ? value : `%${value}%`
             }), {})
           );
         } else {
@@ -99,38 +103,37 @@ export class GenericService<T> {
           const columnMetadata = this.repository.metadata.findColumnWithPropertyPath(path);
           const isUUID = columnMetadata?.type === 'uuid' || isIdField;
           const isEnum = columnMetadata?.type === 'enum';
-
+          const isBoolean = columnMetadata?.type === 'boolean';
+        
           const conditions = values.map((value, valueIndex) => {
             const paramName = `search${index}_${valueIndex}`;
-            if (isUUID || isEnum) {
+            if (isUUID || isEnum || isBoolean) {
               return `${this.name}.${path} = :${paramName}`;
             }
             return `${this.name}.${path} ILIKE :${paramName}`;
           });
-
+        
           query.andWhere(`(${conditions.join(' OR ')})`,
             values.reduce((params, value, valueIndex) => ({
               ...params,
-              [`search${index}_${valueIndex}`]: isUUID || isEnum ? value : `%${value}%`
+              [`search${index}_${valueIndex}`]: isUUID || isEnum || isBoolean ? value : `%${value}%`
             }), {})
           );
         }
       });
     }
-
-    // ... existing code ...
-
+  
     const currentPage = Math.max(1, Number(page) || 1);
     const itemsPerPage = Math.max(1, Number(limit) || 10);
-
+  
     const relationArray = await this.splitByComma(relations);
-
+  
     if (relationArray && relationArray.length > 0) {
       relationArray.forEach((relation) => {
         query.leftJoinAndSelect(`${this.name}.${relation}`, relation);
       });
     }
-
+  
     if (sort) {
       const [field, order] = sort.split(':');
       query.orderBy(
@@ -140,7 +143,7 @@ export class GenericService<T> {
     } else {
       query.orderBy(`${this.name}.id`, 'ASC');
     }
-
+  
     query
       .skip((currentPage - 1) * itemsPerPage)
       .take(itemsPerPage)
@@ -151,15 +154,15 @@ export class GenericService<T> {
         ),
         withDeleted: true,
       });
-
+  
     if (!withDeleted && !onlyDeleted) {
       query.andWhere(`${this.name}.deletedAt IS NULL`);
     }
-
+  
     if (onlyDeleted) {
       query.andWhere(`${this.name}.deletedAt IS NOT NULL`);
     }
-
+  
     if (select) {
       const selectArray = await this.splitByComma(select);
       if (selectArray.length > 0) {
@@ -167,12 +170,11 @@ export class GenericService<T> {
         query.select(selectFields.map((field) => `${this.name}.${field}`));
       }
     }
-
+  
     const [data, total] = await query.getManyAndCount();
-
+  
     return { data, total, page: currentPage, limit: itemsPerPage };
   }
-
   async create(entity: Partial<T>): Promise<T> {
     return this.repository.save(entity as any);
   }

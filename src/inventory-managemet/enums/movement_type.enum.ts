@@ -7,7 +7,9 @@ export enum MovementType {
     ADJUSTMENT = 'adjustment',
     INVENTORY_COUNT = 'inventory_count',
     INVENTORY_INITIAL = 'inventory_initial',
+    ORDER = 'order',
 }
+
 
 export const getMovementAction = (type: MovementType): 'increase' | 'decrease' | 'both' => {
     switch (type) {

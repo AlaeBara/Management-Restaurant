@@ -20,4 +20,5 @@ export class OrderPaymentService extends GenericService<OrderPayment> {
     ) {
         super(dataSource, OrderPayment, 'paiement');
     }
+    
 }

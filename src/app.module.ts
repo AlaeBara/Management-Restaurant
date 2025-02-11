@@ -1,14 +1,16 @@
-import { Module } from '@nestjs/common';
-import { UserManagementModule } from './user-management/user-management.module';
-import { CommonModule } from './common/common.module';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { JwtAuthGuard } from './user-management/guards/jwt.guard';
 import { APP_GUARD } from '@nestjs/core';
+import { EventEmitterModule } from '@nestjs/event-emitter';
+import { MailerModule } from '@nestjs-modules/mailer';
+
+import { UserManagementModule } from './user-management/user-management.module';
+import { CommonModule } from './common/common.module';
+import { JwtAuthGuard } from './user-management/guards/jwt.guard';
 import { RolesGuard } from './user-management/guards/roles.guard';
 import { PermissionsGuard } from './user-management/guards/permission.guard';
-import { MailerModule } from '@nestjs-modules/mailer';
 import { ZoneTableModule } from './zone-table-management/zone-table.module';
 import { ClientManagementModule } from './client-management/client-management.module';
 import { UnitModule } from './unit-management/unit.module';
@@ -26,14 +28,17 @@ import { UploadModule } from './upload-management/upload.module';
 import { MediaLibraryModule } from './media-library-management/media-library.module';
 import { PaymentModule } from './payment-management/payment.module';
 import { OrderManagementModule } from './order-management/order-management.module';
-import { EventEmitterModule } from '@nestjs/event-emitter';
+import { OutboxModule } from './outbox-module/outbox.module';
+import { OutboxListener } from './outbox-module/listeners/outbox.listener';
+import { InventoryMovementListener } from './inventory-managemet/listeners/inventory-movement.listener';
+import { InventoryListenerFactory } from './inventory-managemet/listeners/inventory.listener.factory';
+import { OutboxListenerFactory } from './outbox-module/listeners/outbox.listener.factory';
 
 @Module({
   imports: [
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
-      isGlobal: true, // makes env variables available throughout the app
-      //envFilePath: '.env',
+      isGlobal: true,
     }),
     JwtModule.register({
       global: true,
@@ -59,6 +64,7 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
     MediaLibraryModule,
     PaymentModule,
     OrderManagementModule,
+    OutboxModule,
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -68,19 +74,19 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
       database: process.env.DB_NAME_TEST,
       autoLoadEntities: true,
       synchronize: true,
+      subscribers: [
+        OutboxListener,
+      ],
     }),
     MailerModule.forRoot({
       transport: {
         host: process.env.EMAIL_HOST,
-        port: 587, // Add explicit port
-        secure: true, // Add secure option for TLS
+        port: 587,
+        secure: true,
         auth: {
           user: process.env.EMAIL_USERNAME,
           pass: process.env.EMAIL_PASSWORD,
-        }/* ,
-        tls: {
-          rejectUnauthorized: false // Add this for development
-        } */
+        },
       },
     }),
   ],
@@ -100,4 +106,10 @@ import { EventEmitterModule } from '@nestjs/event-emitter';
   exports: [],
 })
 
-export class AppModule { }
+export class AppModule implements OnApplicationBootstrap {
+  constructor(private readonly outboxListenerFactory: OutboxListenerFactory) {}
+
+  async onApplicationBootstrap() {
+    this.outboxListenerFactory.create();
+  }
+}

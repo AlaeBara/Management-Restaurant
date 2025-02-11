@@ -34,7 +34,7 @@ export class Order extends UlidBaseEntity {
     @JoinColumn({ name: 'table_id' })
     table: Table;
 
-    @ManyToOne(() => User, (user) => user.id)
+    @ManyToOne(() => User, (user) => user.id, { nullable: true })
     @JoinColumn({ name: 'served_by' })
     servedBy: User;
 
@@ -53,7 +53,7 @@ export class Order extends UlidBaseEntity {
     serviceType: ServiceType;
 
     @Column({ type: 'varchar', length: 255, nullable: true })
-    note: string;
+    note: string | null;
 
     @Column({ type: 'int', enum: DeliveryType, default: DeliveryType.ON_SITE })
     deliveryType: DeliveryType;
@@ -61,8 +61,8 @@ export class Order extends UlidBaseEntity {
     @Column({ type: 'int', enum: OrderStatus, default: OrderStatus.CREATED })
     orderStatus: OrderStatus;
 
-    @Column({ enum: DiscountType, default: DiscountType.PERCENTAGE })
-    discountType: DiscountType;
+    @Column({ type: 'int', enum: DiscountType, default: null, nullable: true })
+    discountType: DiscountType | null;
 
     // discountValue is the discount amount or the discount percentage
     @Column({ type: "decimal", precision: 10, scale: 2, nullable: true })
@@ -71,7 +71,7 @@ export class Order extends UlidBaseEntity {
     @Column({ type: "varchar", length: 255, nullable: true })
     discountRaison: string | null;
 
-    @Column({ type: "decimal", precision: 10, scale: 2 })
+    @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     totalAmount: number;
 
     @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
@@ -79,6 +79,7 @@ export class Order extends UlidBaseEntity {
 
     @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     totalAditionalPrice: number;
+
     @Column({ type: "decimal", precision: 10, scale: 2, default: 0 })
     totalRefundedAmount: number;
 
@@ -94,12 +95,13 @@ export class Order extends UlidBaseEntity {
     @OneToMany(() => OrderStatusHistory, (orderStatusHistory) => orderStatusHistory.order, { cascade: true })
     orderStatusHistory: OrderStatusHistory[];
 
-    @OneToMany(() => OrderPayment, (orderPayment) => orderPayment.order, { cascade: true, eager: true })
+    @OneToMany(() => OrderPayment, (orderPayment) => orderPayment.order, { cascade: true, eager: true, onDelete: 'CASCADE' })
     orderPayments: OrderPayment[];
 
     @BeforeInsert()
     generateOrderNumber(): void {
         const randomString = Math.random().toString(36).substring(2, 8).toUpperCase(); // Random 6-character string
-        this.orderNumber = `CMD-${randomString}`;
+        const randomNum = Math.floor(Math.random() * 1000).toString().padStart(3, '0'); // Random 3-digit number
+        this.orderNumber = `CMD-${randomString}-${randomNum}`;
     }
 }

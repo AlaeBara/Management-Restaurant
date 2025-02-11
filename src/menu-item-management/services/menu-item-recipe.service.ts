@@ -11,6 +11,9 @@ import { CreateMenuItemIngredientRecipeDto } from "../dtos/menu-item-recipe/crea
 import { OnEvent } from "@nestjs/event-emitter";
 import logger from "src/common/Loggers/logger";
 import { MenuItemService } from "./menu-item.service";
+import { InventoryMovementService } from "src/inventory-managemet/services/inventory-movement.service";
+import { Order } from "src/order-management/entities/order.entity";
+import { OrderItem } from "src/order-management/entities/order-item.entity";
 
 @Injectable()
 export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
@@ -26,7 +29,10 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
         @Inject(forwardRef(() => InventoryService))
         private readonly inventoryService: InventoryService,
         @Inject(forwardRef(() => MenuItemService))
-        private readonly menuItemService: MenuItemService
+        private readonly menuItemService: MenuItemService,
+        @Inject(forwardRef(() => InventoryMovementService))
+        private readonly inventoryMovementService: InventoryMovementService
+
 
     ) {
         super(dataSource, MenuItemRecipe, 'recette de l\'article menu');
@@ -64,9 +70,7 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
         await queryRunner.manager.softDelete(MenuItemRecipe, { menuItem: { id: menuItem.id } });
     }
 
-    @OnEvent('menu.item.created')
-    async recalculateQuantityBasedOnStock({ menuItem }: { menuItem: MenuItem }) {
-
+    async recalculateQuantityBasedOnStock(menuItem: MenuItem): Promise<MenuItem | null> {
         try {
             if (!menuItem.hasRecipe) return; // Early return if menu item has no recipe
 
@@ -78,10 +82,10 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
             }
 
             const minQuantity = recipes.map(recipe => {
-                let quantity = recipe.inventory.totalQuantity;
+                let quantity = recipe.inventory.currentQuantity;
 
-                if (recipe.inventory.productUnit !== recipe.unit.unit) {
-                    quantity = Number(quantity) / Number(recipe.unit.conversionFactorToBaseUnit);
+                if (recipe.inventory.unit !== recipe.unit) {
+                    quantity = Number(quantity) * Number(recipe.inventory.unit.conversionFactorToBaseUnit);
                 }
 
                 return Math.floor(Number(quantity) / Number(recipe.quantityRequiredPerPortion));
@@ -94,11 +98,39 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
                 return;
             }
 
-            await this.menuItemService.setQuantityBasedOnStock(menuItem, quantity);
+           return await this.menuItemService.setQuantityBasedOnStock(menuItem, quantity);
         } catch (error) {
             logger.error('Error in recalculate Quantity Based On Stock:', { message: error.message, stack: error.stack });
-            throw new InternalServerErrorException('Une erreur est survenue lors du recalcul de la quantité');
+            throw new InternalServerErrorException(error.message);
         }
+
     }
+
+    /* async executeMovements(orderItems: OrderItem[], menuItem: MenuItem, order: Order, queryRunner: QueryRunner) {
+        for (const menuItem of orderItems) {
+            for (const ingredient of menuItem.rec) {
+                if (await this.isSameUnit(recipe.inventory.id, recipe.unit.id)) {
+                    await this.inventoryMovementService.executeOrderMovementOperation(orderItem.quantity * recipe.quantityRequiredPerPortion, recipe.inventory.id, order.orderNumber, queryRunner);
+                }
+                else {
+                    console.log('not same unit 2');
+                }
+            }
+
+        }
+    } */
+
+
+
+    async updateQuantity(menuItem: MenuItem, quantity: number, queryRunner: QueryRunner) {
+        menuItem.quantity -= Number(quantity);
+        await queryRunner.manager.save(menuItem);
+    }
+
+    async isSameUnit(recipeId: string): Promise<boolean> {
+        const menuItemRecipe = await this.recipeRepository.findOne({ where: { id: recipeId } });
+        return menuItemRecipe.inventory.unit === menuItemRecipe.unit;
+    }
+
 
 }
