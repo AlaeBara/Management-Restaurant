@@ -30,8 +30,6 @@ import { PaymentModule } from './payment-management/payment.module';
 import { OrderManagementModule } from './order-management/order-management.module';
 import { OutboxModule } from './outbox-module/outbox.module';
 import { OutboxListener } from './outbox-module/listeners/outbox.listener';
-import { InventoryMovementListener } from './inventory-managemet/listeners/inventory-movement.listener';
-import { InventoryListenerFactory } from './inventory-managemet/listeners/inventory.listener.factory';
 import { OutboxListenerFactory } from './outbox-module/listeners/outbox.listener.factory';
 
 @Module({

@@ -11,6 +11,7 @@ import { CreateInvenotryTransfer } from "../dtos/inventory-movement/create-inven
 import { UserService } from "src/user-management/services/user/user.service";
 import { MenuItemRecipe } from "src/menu-item-management/entities/menu-item-recipe.entity";
 import { MenuItemRecipeService } from "src/menu-item-management/services/menu-item-recipe.service";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 @Injectable()
 export class InventoryMovementService extends GenericService<InventoryMovement> {
@@ -24,8 +25,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         private readonly inventoryService: InventoryService,
         @Inject()
         private readonly userService: UserService,
-        @Inject()
-        private readonly menuItemRecipeService: MenuItemRecipeService
+        private readonly eventEmitter: EventEmitter2
     ) {
         super(dataSource, InventoryMovement, 'inventory-movement');
     }
@@ -120,6 +120,7 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         const inventoryMovement = await this.initializeInventoryMovement(InventoryMovementDto, request);
         await this.executeAdjustment(inventoryMovement.inventory, inventoryMovement.quantity, inventoryMovement.movementAction);
         await this.inventoryMovementRepository.save(inventoryMovement);
+        await this.eventEmitter.emit('inventory.movement.created', inventoryMovement);
     }
 
     /**
@@ -200,12 +201,12 @@ export class InventoryMovementService extends GenericService<InventoryMovement> 
         if (inventory.currentQuantity < quantity) {
             throw new BadRequestException('La quantité demandée dépasse la quantité totale disponible dans l\'inventaire source.');
         }
-        
+
 
         await this.executeAdjustment(inventory, quantity, 'decrease', queryRunner);
         await queryRunner.manager.save(InventoryMovement, inventoryMovement);
     }
 
-    
+
 
 }

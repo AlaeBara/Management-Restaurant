@@ -30,19 +30,7 @@ export class MenuItemEmitter {
 
     @OnEvent('menu.item.created')
     async recalculateQuantityEvent(menuItem: MenuItem) {
-        // If no recipe, log it and return
-        if (!menuItem.hasRecipe) {
-            await this.outboxService.initOutbox(
-                OutboxAction.MENU_ITEM_CREATED, 
-                menuItem, 
-                OutboxStatus.PROCESSED, 
-                'Skipped: Menu item has no recipe'
-            );
-            return;
-        }
-
         try {
-            throw new Error('test');
             const recalculatedItem = await this.menuItemRecipeService.recalculateQuantityBasedOnStock(menuItem);
             
             // Only mark as processed if recalculation was successful

@@ -232,4 +232,31 @@ export class MenuItemService extends GenericService<MenuItem> {
             return 'Super! Votre produit de menu a été affiché avec succès';
         }
     }
+
+    async getMenuItemIdsByInventoryId(inventoryId: string): Promise<string[]> {
+        try {
+            const menuItems = await this.menuItemRepository.find({
+                select: ['id'],
+                where: {
+                    hasRecipe: true,
+                    hidden: false,
+                    recipe: {
+                        inventory: {
+                            id: inventoryId
+                        }
+                    }
+                },
+                withDeleted: false
+            });
+    
+            return menuItems.map(item => item.id);
+        } catch (error) {
+            logger.error('Error fetching menu item IDs by inventory ID:', { 
+                message: error.message, 
+                stack: error.stack,
+                inventoryId 
+            });
+            throw new InternalServerErrorException('Failed to fetch menu item IDs');
+        }
+    }
 }

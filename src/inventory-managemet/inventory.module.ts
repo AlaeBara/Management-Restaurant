@@ -12,11 +12,10 @@ import { InvetoryMovementController } from './controllers/inventory-movement.con
 import { InventoryMovementService } from './services/inventory-movement.service';
 import { InventoryMovementPermissionSeeder } from './seeders/inventory-movement-permissions.seeder';
 import { InventoryPermissionSeeder } from './seeders/inventory-permission.seeder';
-import { InventoryMovementListener } from './listeners/inventory-movement.listener';
 import { OutboxModule } from 'src/outbox-module/outbox.module';
-import { InventoryListenerFactory } from './listeners/inventory.listener.factory';
 import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
 import { UnitModule } from 'src/unit-management/unit.module';
+import { InventoryMovementEmitter } from './emitters/inventory-movement.emitter';
 
 @Module({
   imports: [
@@ -38,8 +37,7 @@ import { UnitModule } from 'src/unit-management/unit.module';
     Inventory,
     InventoryPermissionSeeder,
     InventoryMovementPermissionSeeder,
-    InventoryMovementListener,
-    InventoryListenerFactory
+    InventoryMovementEmitter
   ],
   exports: [
     InventoryService,
@@ -47,8 +45,7 @@ import { UnitModule } from 'src/unit-management/unit.module';
     Inventory,
     InventoryPermissionSeeder,
     InventoryMovementPermissionSeeder,
-    InventoryMovementListener,
-    InventoryListenerFactory
+    InventoryMovementEmitter
   ],
 })
 

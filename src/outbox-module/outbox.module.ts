@@ -8,6 +8,7 @@ import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
 import { OutboxListenerFactory } from './listeners/outbox.listener.factory';
 import { RetryFailedMenuItemCreatedActionCron } from './crons/retry-failed-menu-item-created-action.cron';
 import { ScheduleModule } from '@nestjs/schedule';
+import { RetryFailedUpdateQuantityAfterMovementCreatedCron } from './crons/retry-failed-update-quantity-after-movement-created.cron';
 
 @Module({
   imports: [
@@ -22,13 +23,14 @@ import { ScheduleModule } from '@nestjs/schedule';
     RetryFailedMenuItemCreatedActionCron,
     OutboxListener,
     OutboxListenerFactory,
-  
+    RetryFailedUpdateQuantityAfterMovementCreatedCron
   ],
   exports: [
     OutboxService,
     RetryFailedMenuItemCreatedActionCron,
     OutboxListener,
     OutboxListenerFactory,
+    RetryFailedUpdateQuantityAfterMovementCreatedCron
   ],
 
 })

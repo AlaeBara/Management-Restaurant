@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource, Repository } from "typeorm";
+import { DataSource, Raw, Repository } from "typeorm";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 
 import { GenericService } from "src/common/services/generic.service";
@@ -37,6 +37,18 @@ export class OutboxService extends GenericService<Outbox> {
 
     async setOutboxStatus(outboxId: string, status: OutboxStatus, lastFailedReason?: string): Promise<void> {
         await this.outboxRepository.update(outboxId, { status, lastFailedReason });
+    }
+
+    async setAllMovementOutboxStatus(inventoryId: string): Promise<void> {
+        await this.outboxRepository.update(
+            {
+                action: OutboxAction.INVENTORY_MOVEMENT_CREATED,
+                payload: Raw(alias => `${alias}::jsonb->>'inventoryId' = :inventoryId`, { inventoryId: inventoryId.toString() })
+            },
+            { 
+                status: OutboxStatus.PROCESSED,
+            }
+        );
     }
 
 }
