@@ -42,6 +42,7 @@ export class MenuItemEmitter {
         }
 
         try {
+            throw new Error('test');
             const recalculatedItem = await this.menuItemRecipeService.recalculateQuantityBasedOnStock(menuItem);
             
             // Only mark as processed if recalculation was successful

@@ -48,9 +48,9 @@ export class MenuItemController {
     @Permissions('create-menu-item')
     @ApiOperation({ summary: 'Create a menu item' })
     @UseInterceptors(FilesInterceptor('images', 10))
-    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFiles() images: Array<Express.Multer.File>,@Req() req: Request) {
+    async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFiles() images: Array<Express.Multer.File>, @Req() req: Request) {
         createMenuItemDto.images = images;
-        await this.menuItemService.createMenuItem(createMenuItemDto, req); 
+        await this.menuItemService.createMenuItem(createMenuItemDto, req);
         return { message: 'Super! Votre produit de menu a été créé avec succès', status: 201 };
     }
 
@@ -85,7 +85,11 @@ export class MenuItemController {
         return { message: 'Super! Votre choix a été ajouté avec succès', status: 201 };
     }
 
-  
-
-
+    @Patch(':id/toggle-hidden-state')
+    @Permissions('toggle-hidden-state-menu-item')
+    @ApiOperation({ summary: 'Toggle hidden state of a menu item' })
+    async toggleHiddenState(@Param('id', ParseUUIDPipe) id: string) {
+        const message = await this.menuItemService.toggleMenuItemHiddenState(id);
+        return { message, status: 200 };
+    }
 }

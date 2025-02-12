@@ -222,4 +222,14 @@ export class MenuItemService extends GenericService<MenuItem> {
         return menuItems.length > 0;
     }
 
+    async toggleMenuItemHiddenState(id: string) {
+        const menuItem = await this.findOneByIdWithOptions(id);
+        menuItem.hidden = !menuItem.hidden;
+        await this.menuItemRepository.save(menuItem);
+        if (menuItem.hidden) {
+            return 'Super! Votre produit de menu a été masqué avec succès';
+        } else {
+            return 'Super! Votre produit de menu a été affiché avec succès';
+        }
+    }
 }

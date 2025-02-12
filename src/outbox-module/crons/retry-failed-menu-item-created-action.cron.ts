@@ -6,7 +6,6 @@ import { OutboxAction } from '../enums/outbox-action.enum';
 import { OutboxStatus } from '../enums/outbox-status.enum';
 import { MenuItem } from 'src/menu-item-management/entities/menu-item.entity';
 
-
 @Injectable()
 export class RetryFailedMenuItemCreatedActionCron {
   private readonly logger = new Logger(RetryFailedMenuItemCreatedActionCron.name);
@@ -28,10 +27,12 @@ export class RetryFailedMenuItemCreatedActionCron {
     }
 
     try {
-      const failedActions = await this.outboxService.outboxRepository.find({where: {
-        action: OutboxAction.MENU_ITEM_CREATED, //should track only hasrecuipe
-        status: OutboxStatus.FAILED,
-      }});
+      const failedActions = await this.outboxService.outboxRepository.find({
+        where: {
+          action: OutboxAction.MENU_ITEM_CREATED, //should track only hasrecuipe
+          status: OutboxStatus.FAILED,
+        }
+      });
 
       if (failedActions.length === 0) {
         this.logger.log('No failed menu item creation actions to retry');
@@ -44,13 +45,13 @@ export class RetryFailedMenuItemCreatedActionCron {
       for (const outbox of failedActions) {
         try {
           this.logger.debug(`Attempting to retry menu item creation for ID: ${outbox.id}`);
-          
+
           // Retry the recalculation
           await this.menuItemRecipeService.recalculateQuantityBasedOnStock(outbox.payload as MenuItem);
 
           // Update outbox status to completed
           await this.outboxService.setOutboxStatus(outbox.id, OutboxStatus.PROCESSED);
-            
+
           this.logger.log(
             `Successfully retried menu item creation for ID: ${outbox.id}`,
           );
@@ -71,22 +72,46 @@ export class RetryFailedMenuItemCreatedActionCron {
     }
   }
 
-  public async startPolling() {
-    const job = this.schedulerRegistry.getCronJob('retryFailedMenuItemCreatedAction');
-    job.start();
-    this.isEnabled = true;
-    this.logger.log('retryFailedMenuItemCreatedAction cron job started');
+  public startPolling(): void {
+    try {
+      const job = this.schedulerRegistry.getCronJob('retryFailedMenuItemCreatedAction');
+      if (!job) {
+        throw new Error('Cron job not found');
+      }
+
+      if (job.running) {
+        this.logger.log('Cron job is already running');
+        return;
+      }
+
+      job.start();
+      this.isEnabled = true;
+      this.logger.log('retryFailedMenuItemCreatedAction cron job started');
+    } catch (error) {
+      this.logger.error(`Failed to start cron job: ${error.message}`);
+      throw error;
+    }
   }
 
-  public async stopPolling() {
-    const job = this.schedulerRegistry.getCronJob('retryFailedMenuItemCreatedAction');
-    job.stop();
-    this.isEnabled = false;
-    this.logger.log('retryFailedMenuItemCreatedAction cron job stopped');
+  public stopPolling(): void {
+    try {
+      const job = this.schedulerRegistry.getCronJob('retryFailedMenuItemCreatedAction');
+      if (!job) {
+        throw new Error('Cron job not found');
+      }
+
+      if (!job.running) {
+        this.logger.log('Cron job is already stopped');
+        return;
+      }
+
+      job.stop();
+      this.isEnabled = false;
+      this.logger.log('retryFailedMenuItemCreatedAction cron job stopped');
+    } catch (error) {
+      this.logger.error(`Failed to stop cron job: ${error.message}`);
+      throw error;
+    }
   }
 
-  /* startCron() {
-    this.isEnabled = true;
-    this.logger.log('Retry failed menu item cron job started');
-  } */
 }

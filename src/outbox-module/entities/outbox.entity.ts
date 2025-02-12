@@ -32,9 +32,8 @@ export class Outbox extends UlidBaseEntity {
   retryCount: number;
 
   @BeforeInsert()
-  @BeforeUpdate()
+
   checkStatus() {
-    console.log('checkStatus', this.status);
     if(this.status === OutboxStatus.FAILED) {
       this.retryCount = this.retryCount || 0;
       this.retryCount++;
@@ -45,6 +44,21 @@ export class Outbox extends UlidBaseEntity {
       this.processedAt = new Date();
     }
 
+    if(this.status === OutboxStatus.CANCELLED) {
+      this.cancelledAt = new Date();
+    }
+  }
+
+  @BeforeUpdate()
+  updateStatus() {
+    if(this.status === OutboxStatus.FAILED) {
+      this.retryCount = this.retryCount || 0;
+      this.retryCount++;
+      this.lastFailedAt = new Date();
+    }
+    if(this.status === OutboxStatus.PROCESSED) {
+      this.processedAt = new Date();
+    }
     if(this.status === OutboxStatus.CANCELLED) {
       this.cancelledAt = new Date();
     }
