@@ -9,10 +9,11 @@ import {
 import { Separator } from "@/components/ui/separator"
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import SideBar from "../components/Sidebar/SideBar"
-
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { useNavigate } from "react-router-dom";
   
 export default function MainLayout({ children }) {
-
+    const navigate = useNavigate();
     const isHomePath = location.pathname === '/dash/Home';
     return (
         <SidebarProvider>
@@ -33,6 +34,15 @@ export default function MainLayout({ children }) {
                             </BreadcrumbItem>
                             </BreadcrumbList>
                         </Breadcrumb>
+                    </div>
+                    <div className="flex items-center gap-2 ml-auto px-5 cursor-pointer" onClick={() => {
+                        navigate('/dash/Home');
+                    }}>
+                        <span className="text-sm font-medium">Super Admin</span>
+                        <Avatar>    
+                            <AvatarImage src="https://github.com/shadcn.png" />
+                            <AvatarFallback>CN</AvatarFallback>
+                        </Avatar>
                     </div>
                 </header>
                 <div className={`flex flex-1 flex-col gap-4 p-4 pt-0 ${isHomePath ? 'bg-[#f9f9f8]' : ''}`}>

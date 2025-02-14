@@ -82,7 +82,7 @@ const UpdateDiscounts =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Compon
 const DeletedDiscount =lazy(()=> import('@/modules/Dash/MenuItem/Discount/Components/DeletedDiscount'))
 const Choice = lazy(()=> import('@/modules/Dash/MenuItem/Choice/Choice'))
 const DeletedChoice =lazy(()=> import('@/modules/Dash/MenuItem/Choice/Components/DeletedChoice'))
-
+const Profile = lazy(()=> import('@/modules/Dash/Profile/Profile'))
 const NotFound =lazy(()=> import('@/components/404/PageNotFounds'))
 
 const ClientRoutes = () => {
@@ -944,6 +944,18 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/profile" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>              
+                <Profile/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        
       </Routes>
     </Suspense>
   );

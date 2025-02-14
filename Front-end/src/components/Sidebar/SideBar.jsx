@@ -77,9 +77,12 @@ import {
 } from "@/components/ui/sidebar";
 
 import { useUserContext } from '../../context/UserContext';
+import { useNavigate } from 'react-router-dom';
+
 
 const SideBar = () => {
   const { logout, user } = useUserContext();
+  const navigate = useNavigate();
 
   const data = {
     user: {
@@ -448,10 +451,12 @@ const SideBar = () => {
                   </div>
                 </DropdownMenuLabel>
                 <DropdownMenuSeparator />
-                <DropdownMenuGroup>
+                <DropdownMenuGroup onClick={() => {
+                  navigate('/dash/profile');
+                }}>
                   <DropdownMenuItem>
-                    <Sparkles />
-                    Upgrade to Pro
+                    <User />
+                    Profile
                   </DropdownMenuItem>
                 </DropdownMenuGroup>
                 <DropdownMenuSeparator />
