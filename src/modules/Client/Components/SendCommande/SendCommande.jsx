@@ -1,13 +1,14 @@
-import React, { useEffect, memo ,useState} from 'react';
+import React, { useEffect, memo, useState } from 'react';
 import { ArrowLeft } from 'lucide-react';
 import styles from './SendCommande.module.css';
 import { useTranslation } from 'react-i18next';
-import { useCart } from '../../../../context/CartContext'; // Import useCart from your CartContext
+import { useCart } from '../../../../context/CartContext';
+import { formatPrice } from '../../../../components/FormatPrice/FormatPrice';
 
 
 const SendCommande = memo(({ previousStep }) => {
   const { t, i18n } = useTranslation();
-  const { cart } = useCart(); // Use the cart state from the context
+  const { cart } = useCart(); 
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -16,14 +17,26 @@ const SendCommande = memo(({ previousStep }) => {
     }
   }, [cart]);
 
-  // Calculate the total price of all items in the cart
+  
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
-      return total + item.finalPrice * item.quantity;
+      return total + item.price * item.quantity;
     }, 0);
   };
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+
+
+
+
+
+
+
+
+
+
+
+
 
   return (
     <>
@@ -31,7 +44,6 @@ const SendCommande = memo(({ previousStep }) => {
         <div className={styles.invoiceContainer}>
           <h1 className={styles.title}>{t('Order Summary')}</h1>
 
-          {/* Invoice Header */}
           <div className={styles.invoiceHeader}>
             <div className={styles.invoiceRow}>
               <div className={styles.qty}>{t('Qty')}</div>
@@ -40,7 +52,6 @@ const SendCommande = memo(({ previousStep }) => {
             </div>
           </div>
 
-          {/* Invoice Items */}
           <div className={styles.invoiceItems}>
             {isLoading ? (
               <div className={styles.loading}>
@@ -48,13 +59,13 @@ const SendCommande = memo(({ previousStep }) => {
               </div>
             ) : cart.length > 0 ? (
               cart.map((item) => (
-                <div key={item.id} className={styles.invoiceRow}>
+                <div key={item.productId} className={styles.invoiceRow}>
                   <div className={styles.qty}>{item.quantity}x</div>
                   <div className={styles.item}>
-                    {item.name || `Item ${item.id}`} {/* Use item name or fallback */}
+                    {item.name || `Item ${item.productId}`} 
                   </div>
                   <div className={styles.amount}>
-                    {(item.quantity * item.finalPrice).toFixed(2)} Dh{/* Use finalPrice */}
+                    {formatPrice(item.total)} Dh
                   </div>
                 </div>
               ))
@@ -65,19 +76,18 @@ const SendCommande = memo(({ previousStep }) => {
             )}
           </div>
 
-          {/* Total */}
           <div className={styles.totalSection}>
             <div className={styles.invoiceRow}>
               <div className={styles.totalLabel}>{t('Total')}</div>
               <div className={styles.totalAmount}>
-                {calculateTotal().toFixed(2)} Dh
+                {formatPrice(calculateTotal())} Dh
               </div>
             </div>
           </div>
         </div>
       </div>
 
-      {/* Navigation Buttons */}
+     
       <div className={styles.btnBox}>
         <button className={styles.btn_back} onClick={previousStep}>
           <ArrowLeft /> {t('Previous')}
@@ -88,7 +98,7 @@ const SendCommande = memo(({ previousStep }) => {
           onClick={() => {
             alert('WA Khelsna AZABI');
           }}
-          disabled={cart.length === 0} // Disable if cart is empty
+          disabled={cart.length === 0} 
         >
           {t('Place Order')}
         </button>

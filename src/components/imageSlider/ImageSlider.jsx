@@ -30,15 +30,17 @@ const ImageSlider = memo(({ item}) => {
 
   return (
     <div className={styles.sliderContainer}>
-      <div className={styles.slideCounter}>
-        {currentSlide}/{item.images.length}
-      </div>
+      {item.images.length >= 2 && 
+        <div className={styles.slideCounter}>
+          {currentSlide}/{item.images.length}
+        </div>
+      }
       <Swiper
         modules={[Autoplay, Navigation]}
         spaceBetween={10}
         slidesPerView={1}
         autoplay={{ delay: 3000, disableOnInteraction: false }}
-        loop
+        loop={item.images.length >= 2}
         onSlideChange={(swiper) => setCurrentSlide(swiper.realIndex + 1)}
         className={styles.swiperContainer}
       >

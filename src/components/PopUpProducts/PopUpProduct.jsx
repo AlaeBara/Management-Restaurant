@@ -3,6 +3,8 @@ import { X, Plus, Minus } from 'lucide-react';
 import ImageSlider from '../imageSlider/ImageSlider';
 import style from './PopUpProducts.module.css';
 import { useCart } from '../../context/CartContext'; // Import useCart from your CartContext
+import { formatPrice } from '../FormatPrice/FormatPrice';
+
 
 const PopUpProduct = memo(({ product, onClose, language }) => {
   const [quantity, setQuantity] = useState(1);
@@ -42,7 +44,7 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
     // Create the cart item
     const cartItem = {
       id: product.id,
-      name: product.translates.find((t) => t.languageValue === language)?.name || product.name || 'No Name',
+      name: product.translates.find((t) => t.languageValue === language)?.name || product.name,
       finalPrice: product.finalPrice,
       quantity,
     };
@@ -75,18 +77,18 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
         {/* Product Details */}
         <div className="px-6 flex-1">
           <h2 className="text-xl font-bold mb-4">
-            {product.translates.find((t) => t.languageValue === language)?.name || 'No Name'}
+            {product.translates.find((t) => t.languageValue === language)?.name || product.name}
           </h2>
           <p className="text-gray-600 mb-4 ">
-            {product.translates.find((t) => t.languageValue === language)?.description || 'No Description'}
+            {product.translates.find((t) => t.languageValue === language)?.description || product.description}
           </p>
           <div className="flex items-center justify-center gap-2 mb-6">
             <span className="text-lg font-semibold">
-              {product.finalPrice} Dh
+              {formatPrice(product.finalPrice)} Dh
             </span>
             {product.finalPrice !== product.basePrice && (
               <span className="text-sm text-gray-500 line-through">
-                {product.basePrice} Dh
+                {formatPrice(product.basePrice)} Dh
               </span>
             )}
           </div>

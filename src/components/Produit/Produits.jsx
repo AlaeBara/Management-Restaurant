@@ -3,6 +3,7 @@ import React, { useCallback ,memo} from 'react';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import styles from '../../modules/Client/Components/Menu/FullMenu/FullMenu.module.css';
 import ImageSlider from '../imageSlider/ImageSlider';
+import { formatPrice } from '../FormatPrice/FormatPrice';
 
 const Produits = memo(({ produits, language, quantities, handleIncrement, handleDecrement, handleAddToCart, handleProductClick }) => {
   return produits.map((item) => (
@@ -26,18 +27,18 @@ const Produits = memo(({ produits, language, quantities, handleIncrement, handle
             }
 
             <h3 className={styles.itemName}>
-                {item.translates.find((t) => t.languageValue === language)?.name || 'No Name'}
+                {item.translates.find((t) => t.languageValue === language)?.name || item.name}
             </h3>
 
             <div className={styles.ratingContainer}>
-                <p>{item.translates.find((t) => t.languageValue === language)?.description || 'No Description'}</p>
+                <p>{item.translates.find((t) => t.languageValue === language)?.description || item.description}</p>
             </div>
 
             <div>
                 <span className={styles.price}>
-                    {item.finalPrice}Dh
+                    {formatPrice(item.finalPrice)} Dh
                     {item.finalPrice !== item.basePrice && (
-                        <span className={styles.oldPrice}>{item.basePrice} Dh</span>
+                        <span className={styles.oldPrice}>{formatPrice(item.basePrice)} Dh</span>
                     )}
                 </span>
             </div>

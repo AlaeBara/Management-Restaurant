@@ -94,7 +94,7 @@ const Menu = memo(({ previousStep, nextStep }) => {
     const quantity = quantities[item.id] || 1;
 
     const cartItem = {
-      name: item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name',
+      name: item.translates?.find((t) => t.languageValue === language)?.name || item.name,
       id: item.id,
       quantity: quantity,
       finalPrice: item.finalPrice || 0,
