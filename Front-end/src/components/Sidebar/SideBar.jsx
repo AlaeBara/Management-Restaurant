@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import style from './SideBar.module.css'
 import {
+  LayoutDashboard,
   ShoppingCart,
   SquareMenu ,
   Utensils,
@@ -91,6 +92,12 @@ const SideBar = () => {
       avatar: user?.avatar || "/default-avatar.jpg",
     },
     navMain: [
+
+      {
+        title: "Tableau de bord",
+        icon: LayoutDashboard,
+        url: "/dash/Home",
+      },
       {
         title: "Comptes et Access",
         icon: Users,

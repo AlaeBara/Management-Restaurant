@@ -11,10 +11,13 @@ import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/s
 import SideBar from "../components/Sidebar/SideBar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom";
+import { useUserContext } from "../context/UserContext";
   
 export default function MainLayout({ children }) {
     const navigate = useNavigate();
     const isHomePath = location.pathname === '/dash/Home';
+    const { user } = useUserContext();
+
     return (
         <SidebarProvider>
             <SideBar />
@@ -36,9 +39,9 @@ export default function MainLayout({ children }) {
                         </Breadcrumb>
                     </div>
                     <div className="flex items-center gap-2 ml-auto px-5 cursor-pointer" onClick={() => {
-                        navigate('/dash/Home');
+                        navigate('/dash/profile');
                     }}>
-                        <span className="text-sm font-medium">Super Admin</span>
+                        <span className="text-sm font-medium">{user.username}</span>
                         <Avatar>    
                             <AvatarImage src="https://github.com/shadcn.png" />
                             <AvatarFallback>CN</AvatarFallback>
