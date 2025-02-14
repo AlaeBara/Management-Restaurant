@@ -89,7 +89,7 @@ export class Order extends UlidBaseEntity {
     @Column({ type: 'boolean', default: false })
     isTransfer: boolean;
 
-    @OneToMany(() => OrderItem, (orderItem) => orderItem.order, { cascade: true, eager: true })
+    @OneToMany(() => OrderItem, (orderItem) => orderItem.order, { cascade: true, onDelete: 'CASCADE', eager: true })
     orderItems: OrderItem[];
 
     @OneToMany(() => OrderStatusHistory, (orderStatusHistory) => orderStatusHistory.order, { cascade: true })

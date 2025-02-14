@@ -5,10 +5,6 @@ import { OrderItemType } from 'src/order-management/enums/order-item-type.enum';
 import { Transform } from 'class-transformer';
 
 export class CreateOrderItemDto {
-    @ApiProperty({ description: 'The ID of the associated order' })
-    @IsULID()
-    @IsOptional()
-    orderId: string;
 
     @ApiPropertyOptional({ description: 'Full label of the order item' })
     @IsOptional()

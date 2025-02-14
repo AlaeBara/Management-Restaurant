@@ -73,8 +73,7 @@ export class OrderService extends GenericService<Order> {
 
         await queryRunner.commitTransaction();
 
-        return savedOrder;
-
+        return order.orderNumber;
     }
 
 

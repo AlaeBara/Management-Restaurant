@@ -37,8 +37,8 @@ export class OrderController {
     @Public()
     @ApiOperation({ summary: 'Create a order By Client' })
     async create(@Body() createOrderDto: CreateOrderDto, @Req() req: Request) {
-        const order = await this.orderService.createOrder(createOrderDto, req);
+        const orderNumber = await this.orderService.createOrder(createOrderDto, req);
 
-        return { message: 'Super! Votre commande a été créée avec succès', status: 201, data: order };
+        return { message: 'Super! Votre commande a été créée avec succès', status: 201, orderNumber: orderNumber };
     }
 }
