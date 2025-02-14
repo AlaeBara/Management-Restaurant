@@ -59,6 +59,11 @@ export class MenuItemResponseDto {
     id: string;
 
     @Expose()
+    name: string;
+    @Expose()
+    description: string;
+
+    @Expose()
     quantity: number;
 
     @Expose()
