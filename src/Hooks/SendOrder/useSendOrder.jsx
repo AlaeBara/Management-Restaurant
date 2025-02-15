@@ -14,9 +14,10 @@ export const useSendOrder = () => {
 
         try {
             const response = await axios.post(url, orderData); 
-            setOrderResponse(response.data); 
+            console.log(response.data);
+            return response.data;
         } catch (err) {
-            console.error("Failed to send order:", err);
+            console.error("Failed to send order:", err.response.data);
             setError("Une erreur s'est produite lors de l'envoi de la commande."); 
         } finally {
             setLoading(false); 

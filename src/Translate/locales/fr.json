@@ -46,6 +46,11 @@
     "loading_menu_items": "Chargement des articles du menu...",
 
 
-    "loading_cart": "Chargement du panier..."
+    "loading_cart": "Chargement du panier...",
+    "sending_order": "Envoi de la commande...",
+
+    "Order Successful": "Commande réussie",
+    "Order Number": "Numéro de commande",
+    "Return to Home": "Retour à la page d'accueil"
 }
   

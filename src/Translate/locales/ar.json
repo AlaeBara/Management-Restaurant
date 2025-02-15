@@ -47,6 +47,11 @@
     "loading_menu_items": "جارٍ تحميل عناصر القائمة...",
 
     
-    "loading_cart": "جارٍ تحميل السلة..."
+    "loading_cart": "جارٍ تحميل السلة...",
+    "sending_order": "جارٍ إرسال الطلب...",
+
+    "Order Successful": "تم إرسال الطلب بنجاح",
+    "Order Number": "رقم الطلب",
+    "Return to Home": "العودة للرئيسية"
 }
   

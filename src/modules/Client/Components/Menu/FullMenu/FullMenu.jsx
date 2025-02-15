@@ -14,6 +14,9 @@ import Produits from '../../../../../components/Produit/Produits';
 //state golabl
 import { useCart } from '../../../../../context/CartContext';
 
+
+
+
 const Menu = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
   const { language } = useClientPreferences();
@@ -81,6 +84,7 @@ const Menu = memo(({ previousStep, nextStep }) => {
       [itemId]: (prevQuantities[itemId] || 1) + 1,
     }));
   }, []);
+
   const handleDecrement = useCallback((itemId) => {
     setQuantities((prevQuantities) => ({
       ...prevQuantities,
@@ -88,8 +92,6 @@ const Menu = memo(({ previousStep, nextStep }) => {
     }));
   }, []);
 
-  
-   
   const handleAddToCart = useCallback((item) => {
     const quantity = quantities[item.id] || 1;
 

@@ -1,5 +1,4 @@
-// Produits.js
-import React, { useCallback ,memo} from 'react';
+import React, {memo} from 'react';
 import { Plus, Minus, ShoppingCart } from 'lucide-react';
 import styles from '../../modules/Client/Components/Menu/FullMenu/FullMenu.module.css';
 import ImageSlider from '../imageSlider/ImageSlider';
@@ -7,7 +6,9 @@ import { formatPrice } from '../FormatPrice/FormatPrice';
 
 const Produits = memo(({ produits, language, quantities, handleIncrement, handleDecrement, handleAddToCart, handleProductClick }) => {
   return produits.map((item) => (
+
     <div key={item.id} className={styles.menuItem} onClick={() => handleProductClick(item)}>
+        
         <ImageSlider item={item} />
         <div className={styles.itemInfo}>
 
@@ -60,7 +61,6 @@ const Produits = memo(({ produits, language, quantities, handleIncrement, handle
                     <ShoppingCart className={styles.icon} />
                 </button>
             </div>
-
         </div>
     </div>
   ));

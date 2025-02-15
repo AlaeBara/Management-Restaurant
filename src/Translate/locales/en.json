@@ -46,6 +46,11 @@
     "loading_menu_items": "Loading menu items...",
 
 
-    "loading_cart": "Loading cart..."
+    "loading_cart": "Loading cart...",
+    "sending_order": "Sending order...",
+
+    "Order Successful": "Order Successful",
+    "Order Number": "Order Number",
+    "Return to Home": "Return to Home"
     
 }

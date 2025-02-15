@@ -4,12 +4,14 @@ import styles from './SendCommande.module.css';
 import { useTranslation } from 'react-i18next';
 import { useCart } from '../../../../context/CartContext';
 import { formatPrice } from '../../../../components/FormatPrice/FormatPrice';
-
+import { useSendOrder } from '../../../../Hooks/SendOrder/useSendOrder';
+import { useNavigate } from 'react-router-dom';
 
 const SendCommande = memo(({ previousStep }) => {
   const { t, i18n } = useTranslation();
   const { cart } = useCart(); 
   const [isLoading, setIsLoading] = useState(true);
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (cart !== undefined) {
@@ -17,7 +19,6 @@ const SendCommande = memo(({ previousStep }) => {
     }
   }, [cart]);
 
-  
   const calculateTotal = () => {
     return cart.reduce((total, item) => {
       return total + item.price * item.quantity;
@@ -26,17 +27,33 @@ const SendCommande = memo(({ previousStep }) => {
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 
+  const { sendOrder, loading, error } = useSendOrder();
 
+  const transformCartData = () => {
+    const transformedCart = {
+      totalAmount: calculateTotal(),
+      // numberOfSeats: 4, 
+      // totalAditionalPrice: 20.00, 
+      tableId: "00955e03-7c92-42ef-94ef-596bb1e68dde", 
+      items: cart.map(item => ({
+        productId: item.productId,
+        type: item.type,
+        quantity: item.quantity,
+        price: item.price,
+        total: item.total
+      }))
+    };
+    return transformedCart;
+  };
 
+  const handleSendOrder = async () => {
+    const orderData = transformCartData();
+    const response = await sendOrder(orderData);
 
-
-
-
-
-
-
-
-
+    if (response?.status === 201) {
+      navigate('/commande-succès', { state: { orderDetails: response } });
+    }
+  };
 
   return (
     <>
@@ -87,7 +104,6 @@ const SendCommande = memo(({ previousStep }) => {
         </div>
       </div>
 
-     
       <div className={styles.btnBox}>
         <button className={styles.btn_back} onClick={previousStep}>
           <ArrowLeft /> {t('Previous')}
@@ -95,12 +111,10 @@ const SendCommande = memo(({ previousStep }) => {
 
         <button
           className={`${styles.btn_next}`}
-          onClick={() => {
-            alert('WA Khelsna AZABI');
-          }}
-          disabled={cart.length === 0} 
+          onClick={handleSendOrder}
+          disabled={cart.length === 0 || loading} 
         >
-          {t('Place Order')}
+          {loading ? t('sending_order') : t('Place Order')}
         </button>
       </div>
     </>

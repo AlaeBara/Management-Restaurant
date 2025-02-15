@@ -1,12 +1,27 @@
-import React from 'react';
-import { Routes, Route } from 'react-router-dom'; 
-import Home from '../modules/Client/Home';
+import React, { lazy, Suspense } from 'react';
+import { Routes, Route } from 'react-router-dom';
+import {Loader} from 'lucide-react'
+
+
+// Lazy load components
+const Home = lazy(() => import('../modules/Client/Home'));
+const OrderSuccess = lazy(() => import('../modules/Client/Components/OrderSuccess/OrderSuccess'));
+
+// Spinner component using Tailwind CSS
+const Spinner = () => (
+  <div className="flex justify-center items-center h-screen w-screen">
+    <Loader className='w-12 h-12 animate-spin'/>
+  </div>
+);
 
 const ClientRoutes = () => {
   return (
-    <Routes>
-      <Route path="/" element={<Home />} />
-    </Routes>
+    <Suspense fallback={<Spinner />}>
+      <Routes>
+        <Route path="/" element={<Home />} />
+        <Route path="/commande-succès" element={<OrderSuccess />} />
+      </Routes>
+    </Suspense>
   );
 };
 
