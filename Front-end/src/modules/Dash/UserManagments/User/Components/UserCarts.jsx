@@ -18,7 +18,8 @@ const userCarts = ({ user, deleteUser}) => {
         return `${formattedDate} ${formattedTime}`;
     };
 
-    const handleDeleteClick = (userId) => {
+    const handleDeleteClick = (e, userId) => {
+        e.stopPropagation();
         setUserToDelete(userId);
         setIsModalVisible(true);
     };
@@ -37,7 +38,7 @@ const userCarts = ({ user, deleteUser}) => {
 
     return (
         <>
-            <div className={style.userCard} key={user.id}>
+            <div className={style.userCard} key={user.id} onClick={() =>  navigate(`/dash/utilisateur-details/${user.id}`)}>
 
                 <div className={`${style.status} ${style[user.status]}`}>
                     {user.status === UserStatus.ACTIVE ? "Actif" :
@@ -75,14 +76,14 @@ const userCarts = ({ user, deleteUser}) => {
 
 
                 <div className={style.userAction}>
-                    <div className={style.btn} onClick={() => navigate(`/dash/Update-user/${user.id}`)}>
+                    <div className={style.btn} onClick={(e) => {e.stopPropagation(); navigate(`/dash/Update-user/${user.id}`)}}>
                         <Edit className="mr-2 h-4 w-4" /> Mise à Jour
                     </div>
 
                     {user.status !== "deleted" && (
                         <div
                             className={`${style.btn} ${style.delete}`}
-                            onClick={() => handleDeleteClick(user.id)}
+                            onClick={(e) => handleDeleteClick(e, user.id)}
                         >
                             <Trash2 className="mr-2 h-4 w-4" /> Supprimer
                         </div>

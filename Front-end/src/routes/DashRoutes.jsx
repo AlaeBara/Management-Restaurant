@@ -7,6 +7,7 @@ import Spinner from '../components/Spinner/SpinnerPages';
 // Lazy load pages
 const Home = lazy(() => import('../modules/Dash/Home/Home'));
 const AllUsers = lazy(() => import('@/modules/Dash/UserManagments/User/AllUsersPage'));
+const DetailsUser = lazy(() => import('@/modules/Dash/UserManagments/User/Details/DetailsUser'));
 const DeletedUsers = lazy(() => import('@/modules/Dash/UserManagments/User/DeletedUsersPage'));
 const AddUserForm = lazy(() => import('@/modules/Dash/UserManagments/User/Components/AddUserForm'));
 const AllRoles=lazy(() => import('@/modules/Dash/UserManagments/Role/AllRoles'));
@@ -141,6 +142,17 @@ const ClientRoutes = () => {
             <ProtectedRoute>
               <MainLayout>
                 <UpdateUserpage/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route  
+          path="/utilisateur-details/:id" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <DetailsUser/>
               </MainLayout>
             </ProtectedRoute>
           } 
