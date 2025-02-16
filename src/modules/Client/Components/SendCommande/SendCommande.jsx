@@ -6,6 +6,8 @@ import { useCart } from '../../../../context/CartContext';
 import { formatPrice } from '../../../../components/FormatPrice/FormatPrice';
 import { useSendOrder } from '../../../../Hooks/SendOrder/useSendOrder';
 import { useNavigate } from 'react-router-dom';
+import { toast, ToastContainer } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const SendCommande = memo(({ previousStep }) => {
   const { t, i18n } = useTranslation();
@@ -55,13 +57,44 @@ const SendCommande = memo(({ previousStep }) => {
       if (localStorage.getItem('cart')) {
         localStorage.removeItem('cart');
       }
+      localStorage.removeItem('mainStep');
+      localStorage.removeItem('guidStep');
       setCart([]);
       navigate('/commande-succès', { state: { orderDetails: response } });
     }
   };
 
+
+  
+  // Display error toast if there's an error
+  useEffect(() => {
+    if (error) {
+      toast.error(error);
+    }
+  }, [error]);
+
   return (
     <>
+
+      <ToastContainer
+        position="top-center"
+        style={{ 
+          top: "50%", 
+          left: "50%", 
+          transform: "translate(-50%, -50%)", 
+          maxWidth: "90%" 
+        }}
+        autoClose={5000}
+        hideProgressBar={false}
+        newestOnTop={false}
+        closeOnClick
+        rtl={dir === 'rtl'}
+        pauseOnFocusLoss
+        draggable
+        pauseOnHover
+      />
+
+
       <div className={styles.pageContainer} dir={dir}>
         <div className={styles.invoiceContainer}>
           <h1 className={styles.title}>{t('Order Summary')}</h1>
@@ -108,6 +141,7 @@ const SendCommande = memo(({ previousStep }) => {
           </div>
         </div>
       </div>
+
 
       <div className={styles.btnBox}>
         <button className={styles.btn_back} onClick={previousStep}>

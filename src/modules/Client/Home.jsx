@@ -10,8 +10,14 @@ import Cart from './Components/Cart/Cart';
 import SendCommande from './Components/SendCommande/SendCommande';
 
 const Home = () => {
-  const [mainStep, setMainStep] = useState(1);
-  const [guidStep, setGuidStep] = useState(1);
+    const [mainStep, setMainStep] = useState(() => {
+      return parseInt(localStorage.getItem('mainStep')) || 1;
+    });
+    
+  const [guidStep, setGuidStep] = useState(() => {
+    return parseInt(localStorage.getItem('guidStep')) || 1;
+  });
+
   const { language, setLanguage } = useClientPreferences();
   const { typemenu, settypemenu } = useClientPreferences();
   const { i18n } = useTranslation();
@@ -20,12 +26,20 @@ const Home = () => {
     i18n.changeLanguage(language);
   }, [language, i18n]);
 
+  useEffect(() => {
+    localStorage.setItem('mainStep', mainStep);
+  }, [mainStep]);
+
+  useEffect(() => {
+    localStorage.setItem('guidStep', guidStep);
+  }, [guidStep]);
+
   const handleMainNext = () => {
     setMainStep(prev => prev + 1);
   };
 
   const handleMainPrevious = () => {
-    setMainStep(prev => prev - 1);
+    setMainStep(prev => (prev > 1 ? prev - 1 : 1));
   };
 
   const handleGuidNext = () => {
@@ -45,10 +59,8 @@ const Home = () => {
   };
 
   const handleCartPrevious = () => {
-    if (typemenu === 'full_menu') {
-      setMainStep(4);
-    } else {
-      setMainStep(4);
+    setMainStep(4);
+    if (typemenu !== 'full_menu') {
       setGuidStep(3);
     }
   };
@@ -57,58 +69,25 @@ const Home = () => {
     setMainStep(6);
   };
 
-  const handelSendComandePrevious= () => {
+  const handelSendComandePrevious = () => {
     setMainStep(6);
   };
 
-
   return (
     <>
-      {mainStep === 1 && (
-        <Language nextStep={handleMainNext} />
-      )}
+      {mainStep === 1 && <Language nextStep={handleMainNext} />}
 
-      {mainStep === 2 && (
-        <Connect 
-          previousStep={handleMainPrevious} 
-          nextStep={handleMainNext} 
-        />
-      )}
+      {mainStep === 2 && <Connect previousStep={handleMainPrevious} nextStep={handleMainNext} />}
 
-      {mainStep === 3 && (
-        <TypeMenu 
-          previousStep={handleMainPrevious} 
-          nextStep={handleMainNext} 
-        />
-      )}
+      {mainStep === 3 && <TypeMenu previousStep={handleMainPrevious} nextStep={handleMainNext} />}
 
-      {mainStep === 4 && typemenu === 'full_menu' && (
-        <FullMenu 
-          previousStep={handleMainPrevious} 
-          nextStep={handelFullMenuNext}
-        />
-      )}
+      {mainStep === 4 && typemenu === 'full_menu' && <FullMenu previousStep={handleMainPrevious} nextStep={handelFullMenuNext} />}
 
-      {mainStep === 4 && typemenu !== 'full_menu' && (
-        <GuidMenu
-          currentStep={guidStep}
-          previousStep={handleGuidPrevious}
-          nextStep={handleGuidNext}
-        />
-      )}
+      {mainStep === 4 && typemenu !== 'full_menu' && <GuidMenu currentStep={guidStep} previousStep={handleGuidPrevious} nextStep={handleGuidNext} />}
 
-      {mainStep === 6 && (
-        <Cart 
-          previousStep={handleCartPrevious}
-          nextStep={handleMainNext}
-        />
-      )}
+      {mainStep === 6 && <Cart previousStep={handleCartPrevious} nextStep={handleMainNext} />}
 
-      {mainStep === 7 && (
-        <SendCommande 
-          previousStep={handelSendComandePrevious}
-        />
-      )}
+      {mainStep === 7 && <SendCommande previousStep={handelSendComandePrevious} />}
     </>
   );
 };
