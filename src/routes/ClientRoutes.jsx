@@ -7,7 +7,7 @@ import {Loader} from 'lucide-react'
 const Home = lazy(() => import('../modules/Client/Home'));
 const OrderSuccess = lazy(() => import('../modules/Client/Components/OrderSuccess/OrderSuccess'));
 
-// Spinner component using Tailwind CSS
+
 const Spinner = () => (
   <div className="flex justify-center items-center h-screen w-screen">
     <Loader className='w-12 h-12 animate-spin'/>

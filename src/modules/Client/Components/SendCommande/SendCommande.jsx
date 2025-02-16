@@ -9,7 +9,7 @@ import { useNavigate } from 'react-router-dom';
 
 const SendCommande = memo(({ previousStep }) => {
   const { t, i18n } = useTranslation();
-  const { cart } = useCart(); 
+  const { cart, setCart } = useCart(); 
   const [isLoading, setIsLoading] = useState(true);
   const navigate = useNavigate();
 
@@ -46,11 +46,14 @@ const SendCommande = memo(({ previousStep }) => {
     return transformedCart;
   };
 
+
   const handleSendOrder = async () => {
     const orderData = transformCartData();
     const response = await sendOrder(orderData);
 
     if (response?.status === 201) {
+      localStorage.removeItem('cart');
+      setCart([]);
       navigate('/commande-succès', { state: { orderDetails: response } });
     }
   };
@@ -110,11 +113,11 @@ const SendCommande = memo(({ previousStep }) => {
         </button>
 
         <button
-          className={`${styles.btn_next}`}
+          className={`${styles.btn_next} ${loading ? styles.disabled : ''}`}
           onClick={handleSendOrder}
           disabled={cart.length === 0 || loading} 
         >
-          {loading ? t('sending_order') : t('Place Order')}
+          {loading  ? t('sending_order') : t('Place Order')}
         </button>
       </div>
     </>

@@ -116,6 +116,11 @@
     /* white-space: nowrap; */
 }
 
+.disabled {
+    background-color: #ccc;
+    cursor: not-allowed;
+}
+
 @keyframes gradientAnimation {
     0% {
         -webkit-box-shadow: 0 0 0 0 var(--primary-hover-color);
