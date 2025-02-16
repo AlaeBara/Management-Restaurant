@@ -52,7 +52,9 @@ const SendCommande = memo(({ previousStep }) => {
     const response = await sendOrder(orderData);
 
     if (response?.status === 201) {
-      localStorage.removeItem('cart');
+      if (localStorage.getItem('cart')) {
+        localStorage.removeItem('cart');
+      }
       setCart([]);
       navigate('/commande-succès', { state: { orderDetails: response } });
     }

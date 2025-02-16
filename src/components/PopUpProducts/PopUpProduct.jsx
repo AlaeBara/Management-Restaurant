@@ -2,14 +2,14 @@ import React, { useState, memo } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
 import ImageSlider from '../imageSlider/ImageSlider';
 import style from './PopUpProducts.module.css';
-import { useCart } from '../../context/CartContext'; // Import useCart from your CartContext
+import { useCart } from '../../context/CartContext'; 
 import { formatPrice } from '../FormatPrice/FormatPrice';
 
 
 const PopUpProduct = memo(({ product, onClose, language }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSupplements, setSelectedSupplements] = useState([]);
-  const { addToCart } = useCart(); // Use the addToCart function from the context
+  const { addToCart } = useCart();
 
   // Static data for supplements (replace with dynamic data later)
   const supplements = [

@@ -10,6 +10,7 @@ const Produits = memo(({ produits, language, quantities, handleIncrement, handle
     <div key={item.id} className={styles.menuItem} onClick={() => handleProductClick(item)}>
         
         <ImageSlider item={item} />
+        
         <div className={styles.itemInfo}>
 
             {item.discountLevel === "basic" && 
