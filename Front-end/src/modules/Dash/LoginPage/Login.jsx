@@ -63,16 +63,14 @@ const Login = () => {
       if (response.data) {
         Cookies.set('access_token', response.data.access_token, { expires: 1, secure: true, sameSite: 'None' });
         await fetchUserData();
-        toast.success("Login successful!", { autoClose: 2000 });
-        setTimeout(() => {
-          navigate('/dash/Home');
-        }, 2000);
+        toast.success("Authentification réussie", { autoClose: 2000 });
+        navigate('/dash/Home');
       }
     } catch (error) {
       if (error.response) {
-        toast.error("Invalid credentials");
+        toast.error("Identifiants invalides");
       } else {
-        toast.error("An error occurred. Please try again.");
+        toast.error("Une erreur est survenue. Veuillez réessayer.");
       }
       setIsLoading(false);
     }
@@ -145,7 +143,7 @@ const Login = () => {
 
           <Button 
             type="submit" 
-            className="w-full bg-orange-500 hover:bg-orange-600 ring-0 focus-visible:ring-offset-0 focus-visible:ring-0"
+            className="w-full bg-black text-white hover:bg-gray-800 ring-0 focus-visible:ring-offset-0 focus-visible:ring-0"
             disabled={isLoading}
           >
             {isLoading ? (

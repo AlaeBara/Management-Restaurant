@@ -181,7 +181,7 @@ export default function Component() {
         <ToastContainer />
 
         <div className="space-y-2 m-3">
-            <h1 className="text-2xl font-bold text-black font-sans">Inventaire : {inventory.sku} - {inventory.productName}</h1>
+            <h1 className="text-2xl font-bold text-black font-sans">Inventaire : {inventory.sku} - {inventory?.product.productName}</h1>
             <p className="text-base text-gray-600">
                 Remplissez les informations ci-dessous pour effectuer un ajustement d'inventaire.
             </p>

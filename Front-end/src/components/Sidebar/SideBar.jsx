@@ -162,7 +162,7 @@ const SideBar = () => {
           {
             title: "Transfert",
             icon: ArrowLeftRight,
-            url: "/dash/transfert",
+            url: "/dash/transfert-inventaire",
             permissions: ["access-granted", "view-inventories"],
           },
         ],

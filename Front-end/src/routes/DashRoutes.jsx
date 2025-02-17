@@ -66,7 +66,8 @@ const ADDOperation = lazy(()=>import('@/modules/Dash/Operation/Components/AddOpe
 const Expense=lazy(()=>import('@/modules/Dash/Expense/Expense'))
 const AddExpense =lazy(()=>import('@/modules/Dash/Expense/Components/AddExpense'))
 const ShiftZone =lazy(()=>import('@/modules/Dash/Shift Zone/ShiftZone'))
-const Transfert=lazy(()=>import('@/modules/Dash/Transfert/Transfert'))
+const AddTransfertInventory=lazy(()=>import('@/modules/Dash/Transfert/Transfert'))
+const TransfertInventory=lazy(()=>import('@/modules/Dash/Transfert/TransfertInventory'))
 const TransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/TransfertOperations'))
 const AddTransfertOperation =lazy(()=>import('@/modules/Dash/Transfert-Operations/Components/AddTransfertOperation'))
 const AddMultiTable =  lazy(()=> import('@/modules/Dash/Zone&Table/Zones/ZoneDetails/AddMultiTable'))
@@ -804,11 +805,22 @@ const ClientRoutes = () => {
         />
 
         <Route 
-          path="/transfert" 
+          path="/transfert-inventaire" 
           element={
             <ProtectedRoute>
               <MainLayout>
-                <Transfert/>
+                <TransfertInventory/>
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+
+        <Route 
+          path="/transfert-inventaire/ajouter-transfert" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <AddTransfertInventory/>
               </MainLayout>
             </ProtectedRoute>
           } 
