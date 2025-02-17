@@ -28,7 +28,7 @@
 
     "Order Summary":"ملخص الطلب",
     "Qty": "الكمية",
-    "Item":"الصنف",
+    "Item":"الطبق",
     "Amount":"المبلغ",
 
     "Place Order": "اطلب الآن",
@@ -52,6 +52,8 @@
 
     "Order Successful": "تم إرسال الطلب بنجاح",
     "Order Number": "رقم الطلب",
-    "Return to Home": "العودة للرئيسية"
+    "Return to Home": "العودة للرئيسية",
+
+    "Actions": "العمليات"
 }
   

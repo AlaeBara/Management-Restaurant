@@ -1,6 +1,6 @@
 import React, { useState, memo } from 'react';
 import { X, Plus, Minus } from 'lucide-react';
-import ImageSlider from '../imageSlider/ImageSlider';
+import ImageSlider from './imageSliderForPopUp';
 import style from './PopUpProducts.module.css';
 import { useCart } from '../../context/CartContext'; 
 import { formatPrice } from '../FormatPrice/FormatPrice';

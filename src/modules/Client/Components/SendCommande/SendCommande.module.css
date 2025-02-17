@@ -39,7 +39,7 @@
 /* Invoice Grid Layout */
 .invoiceRow {
     display: grid;
-    grid-template-columns: 80px 1fr 120px;
+    grid-template-columns: 120px 1fr 80px;
     gap: 16px;
     align-items: center;
     padding: 8px 0;
@@ -119,6 +119,13 @@
 .disabled {
     background-color: #ccc;
     cursor: not-allowed;
+}
+
+
+.emptyCartText{
+    text-align: center;
+    font-size: 1.2rem;
+    font-weight: 500;
 }
 
 @keyframes gradientAnimation {

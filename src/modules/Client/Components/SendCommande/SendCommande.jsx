@@ -101,8 +101,8 @@ const SendCommande = memo(({ previousStep }) => {
 
           <div className={styles.invoiceHeader}>
             <div className={styles.invoiceRow}>
-              <div className={styles.qty}>{t('Qty')}</div>
               <div className={styles.item}>{t('Item')}</div>
+              <div className={styles.qty}>{t('Qty')}</div>
               <div className={styles.amount}>{t('Amount')}</div>
             </div>
           </div>
@@ -115,10 +115,10 @@ const SendCommande = memo(({ previousStep }) => {
             ) : cart.length > 0 ? (
               cart.map((item) => (
                 <div key={item.productId} className={styles.invoiceRow}>
-                  <div className={styles.qty}>{item.quantity}x</div>
                   <div className={styles.item}>
                     {item.name || `Item ${item.productId}`} 
                   </div>
+                  <div className={styles.qty}>{item.quantity}x</div>
                   <div className={styles.amount}>
                     {formatPrice(item.total)} Dh
                   </div>

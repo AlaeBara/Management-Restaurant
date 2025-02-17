@@ -3,13 +3,14 @@ import styles from './Cart.module.css';
 import { useTranslation } from 'react-i18next';
 import { Trash, ArrowLeft, Plus, Minus } from 'lucide-react';
 import { useClientPreferences } from '../../../../context/OrderFlowContext';
-import { useCart } from '../../../../context/CartContext'; 
+import { useCart } from '../../../../context/CartContext';
 import { Loader } from 'lucide-react';
+import { formatPrice } from '../../../../components/FormatPrice/FormatPrice';
 
 const Cart = memo(({ previousStep, nextStep }) => {
   const { t, i18n } = useTranslation();
   const { language } = useClientPreferences();
-  const { cart, removeFromCart, updateCartItemQuantity } = useCart(); 
+  const { cart, removeFromCart, updateCartItemQuantity } = useCart();
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
@@ -19,103 +20,103 @@ const Cart = memo(({ previousStep, nextStep }) => {
   }, [cart]);
 
   const handleDelete = (productId) => {
-    removeFromCart(productId); 
+    removeFromCart(productId);
   };
 
   const handleQuantityChange = (productId, change) => {
     const item = cart.find((item) => item.productId === productId);
     if (item) {
-      const newQuantity = Math.max(1, item.quantity + change); 
-      updateCartItemQuantity(productId, newQuantity); 
+      const newQuantity = Math.max(1, item.quantity + change);
+      updateCartItemQuantity(productId, newQuantity);
     }
   };
 
-  
+  const calculateTotal = () => {
+    return cart.reduce((total, item) => {
+      return total + item.price * item.quantity;
+    }, 0);
+  };
+
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
 
   return (
     <>
-      <div className={styles.container} dir={dir}>
-        <h1 className={styles.title}>{t('Your Food Cart')}</h1>
-        <div className={styles.cartItems}>
-          {isLoading ? (
-            <div className='mt-[20vh] flex flex-col justify-center items-center'>
-              <Loader className="h-6 w-6 animate-spin" />
-              <p>{t('loading_cart')}</p>
+      <div className={styles.pageContainer} dir={dir}>
+        <div className={styles.invoiceContainer}>
+          <h1 className={styles.title}>{t('Your Food Cart')}</h1>
+
+          <div className={styles.invoiceHeader}>
+            <div className={styles.invoiceRow}>
+              <div className={styles.item}>{t('Item')}</div>
+              <div className={styles.qty}>{t('Qty')}</div>
+              <div className={styles.amount}>{t('Amount')}</div>
+              <div className={styles.actions}>{t('Actions')}</div>
             </div>
-          ) : cart.length > 0 ? (
-            cart.map((item) => (
-              <div key={item.productId} className={styles.cartItem}>
-                <div className={styles.itemInfo}>
-                  <div className={styles.itemDetails}>
-                    {/* Name and Price */}
-                    <div className={styles.itemHeader}>
-                      <span className={styles.itemName}>
-                        {item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name'}
-                      </span>
-                      <span className={styles.itemPrice}>
-                        {item.price} Dh
-                      </span>
-                    </div>
+          </div>
 
-                   
-                    <div className={styles.itemHeader}>
-                      <span className={styles.quantityLabel}>
-                        {t('Quantity')}:
+          <div className={styles.invoiceItems}>
+            {isLoading ? (
+              <div className={styles.loading}>
+                <Loader className="h-6 w-6 animate-spin" />
+                <p>{t('loading_cart')}</p>
+              </div>
+            ) : cart.length > 0 ? (
+              cart.map((item) => (
+                <div key={item.productId} className={styles.invoiceRow}>
+                  <div className={styles.item}>
+                    {item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name'}
+                  </div>
+                  <div className={styles.qty}>
+                    <div className={styles.quantityControl}>
+                      <button
+                        className={styles.quantityButton}
+                        onClick={() => handleQuantityChange(item.productId, -1)}
+                        disabled={item.quantity <= 1}
+                      >
+                        <Minus className='w-4 h-4' />
+                      </button>
+                      <span className={styles.quantityValue}>
+                        {item.quantity}
                       </span>
-                      <div className={styles.quantityControl}>
-                        <button
-                          className={styles.quantityButton}
-                          onClick={() => handleQuantityChange(item.productId, -1)}
-                          disabled={item.quantity <= 1}
-                        >
-                          <Minus className={styles.iconn} />
-                        </button>
-                        <span className={styles.quantityValue}>
-                          {item.quantity}
-                        </span>
-                        <button
-                          className={styles.quantityButton}
-                          onClick={() => handleQuantityChange(item.productId, 1)}
-                        >
-                          <Plus className={styles.iconn} />
-                        </button>
-                      </div>
-                    </div>
-
-                    
-                    <div className={styles.itemHeader}>
-                      <span className={styles.quantityLabel}>
-                        {t('Total')}:
-                      </span>
-                      <span className={styles.itemPrice}>
-                      {item.total} Dh
-                      </span>
+                      <button
+                        className={styles.quantityButton}
+                        onClick={() => handleQuantityChange(item.productId, 1)}
+                      >
+                        <Plus className='w-4 h-4' />
+                      </button>
                     </div>
                   </div>
+                  <div className={styles.amount}>
+                    {formatPrice(item.total)} Dh
+                  </div>
+                  <div className={styles.actions}>
+                    <button
+                      className={styles.deleteButton}
+                      onClick={() => handleDelete(item.productId)}
+                    >
+                      <Trash className='w-4 h-4' />
+                    </button>
+                  </div>
                 </div>
-
-                <div className={styles.actions}>
-                  <button
-                    className={styles.deleteButton}
-                    onClick={() => handleDelete(item.productId)}
-                  >
-                    <Trash className={styles.icon} />
-                    {t('Delete')}
-                  </button>
-                </div>
-
+              ))
+            ) : (
+              <div className={styles.emptyCart}>
+                <p className={styles.emptyCartText}>{t('Your cart is empty')}</p>
               </div>
-            ))
-          ) : (
-            <div className={styles.emptyCart}>
-              <p className={styles.emptyCartText}>{t('Your cart is empty')}</p>
+            )}
+          </div>
+
+          <div className={styles.totalSection}>
+            <div className={styles.invoiceRow}>
+              <div className={styles.totalLabel}>{t('Total')}</div>
+              <div className={styles.totalAmount}>
+                {formatPrice(calculateTotal())} Dh
+              </div>
             </div>
-          )}
+          </div>
         </div>
       </div>
 
-      
       <div className={styles.btnBox}>
         <button className={styles.btn_back} onClick={previousStep}>
           <ArrowLeft /> {t('Previous')}
@@ -128,6 +129,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
           {t('Next')}
         </button>
       </div>
+      
     </>
   );
 });
