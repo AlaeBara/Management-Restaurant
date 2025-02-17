@@ -37,7 +37,7 @@ const Produits = memo(({ produits, language, quantities, handleIncrement, handle
             </div>
 
             <div>
-                <span className={styles.price}>
+                <span className={styles.price} dir='ltr'>
                     {formatPrice(item.finalPrice)} Dh
                     {item.finalPrice !== item.basePrice && (
                         <span className={styles.oldPrice}>{formatPrice(item.basePrice)} Dh</span>
