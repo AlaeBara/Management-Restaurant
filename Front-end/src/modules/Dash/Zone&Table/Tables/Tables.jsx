@@ -40,6 +40,7 @@ const Zones = () => {
     const startItem = (currentPage - 1) * limit + 1;
     const endItem = Math.min(currentPage * limit, totalTables);
 
+
     useEffect(() => {
         fetchZones({fetchAll:true});
     }, [fetchZones]);

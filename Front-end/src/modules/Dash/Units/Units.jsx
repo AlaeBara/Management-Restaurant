@@ -37,6 +37,14 @@ const Units = () => {
         fetchUnits({page: currentPage, limit :limit});
     }, [currentPage, limit, fetchUnits]);
 
+
+    //fix problem of pagination (delete last item in page <=2  => he return to Previous page)
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [totalPages, currentPage]);
+
     const {deleteUnit} = useDeleteUnit(fetchUnits)
 
   return (

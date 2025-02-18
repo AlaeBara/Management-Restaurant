@@ -39,6 +39,13 @@ const DeletedRole = () => {
     const startItem = (currentPage - 1) * limit + 1;
     const endItem = Math.min(currentPage * limit, totalRoles);
 
+    //fix problem of pagination (delete last item in page <=2  => he return to Previous page)
+    useEffect(() => {
+      if (currentPage > totalPages && totalPages > 0) {
+          setCurrentPage(totalPages);
+      }
+    }, [totalPages, currentPage]);
+
     const {RestoreRole} = useRestoreRole(fetchRoles)
     
 

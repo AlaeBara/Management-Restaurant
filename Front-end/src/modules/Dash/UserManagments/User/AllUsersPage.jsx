@@ -78,6 +78,13 @@ const CreateUsers = () => {
     const startItem = (currentPage - 1) * limit + 1;
     const endItem = Math.min(currentPage * limit, numberOfData);
 
+    //fix problem of pagination (delete last item in page <=2  => he return to Previous page)
+    useEffect(() => {
+        if (currentPage > totalPages && totalPages > 0) {
+            setCurrentPage(totalPages);
+        }
+    }, [totalPages, currentPage]);
+
     // for show good formation of last lkogin of user
     const formatDate = (lastLogin) => {
         if (!lastLogin) return "introuvable";
