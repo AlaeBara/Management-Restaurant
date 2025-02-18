@@ -86,6 +86,8 @@ const Choice = lazy(()=> import('@/modules/Dash/MenuItem/Choice/Choice'))
 const DeletedChoice =lazy(()=> import('@/modules/Dash/MenuItem/Choice/Components/DeletedChoice'))
 const Profile = lazy(()=> import('@/modules/Dash/Profile/Profile'))
 const NotFound =lazy(()=> import('@/components/404/PageNotFounds'))
+const Orders = lazy(()=> import('@/modules/Dash/Orders/Orders'))
+
 
 const ClientRoutes = () => {
   return (
@@ -979,6 +981,18 @@ const ClientRoutes = () => {
             </ProtectedRoute>
           } 
         />
+
+        <Route 
+          path="/commandes" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <Orders/> 
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
+        
         
       </Routes>
     </Suspense>

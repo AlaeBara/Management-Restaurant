@@ -21,7 +21,9 @@ import Cookies from 'js-cookie';
 import { useUserContext } from '../../../context/UserContext';
 
 const loginSchema = z.object({
-  emailOrUsername: z.string(),
+  emailOrUsername: z.string().nonempty({
+    message: "L'email ou le username est requis.",
+  }),
   password: z.string().min(5, {
     message: "Le mot de passe doit comporter au moins 5 caractères.",
   }),
