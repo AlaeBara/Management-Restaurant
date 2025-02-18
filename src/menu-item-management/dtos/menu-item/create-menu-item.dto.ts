@@ -19,6 +19,8 @@ import { CreateMenuItemTranslate } from '../menu-item-translate/create-menu-item
 import { DiscountMethod } from 'src/menu-item-management/enums/discount-method.enum';
 import { CreateMenuItemIngredientRecipeDto } from '../menu-item-recipe/create-menu-item-ingredient-recipe.dto';
 import { DiscountLevel } from 'src/menu-item-management/enums/discount-level.enum';
+import { AddChoiceToMenuItemDto } from '../menu-item-choices/add-choice-to-menu-item.dto';
+import { AssignChoicesWithMenuItemDto } from '../menu-item-choices/assign-choices-with-menu-item.dto';
 
 export class CreateMenuItemDto {
 
@@ -186,4 +188,13 @@ export class CreateMenuItemDto {
   @IsArray()
   images?: Express.Multer.File[];
 
+  @IsArray()
+  @IsOptional()
+  /* @ValidateNested({ each: true })
+  @Type(() => AssignChoicesWithMenuItemDto) */
+  @ApiProperty({
+    description: 'The choices of the menu item',
+    example: [{ choiceId: 'b3b2067b-e019-4fe3-ad69-c7468acb9db2', additionalPrice: 10 }]
+  })
+  choices: AssignChoicesWithMenuItemDto[];
 }

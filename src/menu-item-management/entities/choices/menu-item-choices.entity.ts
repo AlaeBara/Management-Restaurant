@@ -15,5 +15,4 @@ export class MenuItemChoices extends UlidBaseEntity {
 
     @Column({ type: 'numeric', precision: 10, scale: 2, default: 0 })
     additionalPrice: number;
-
 }

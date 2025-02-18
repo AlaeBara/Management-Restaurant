@@ -38,10 +38,10 @@ export class MenuItem extends BaseEntity {
     @Column({ type: 'varchar', length: 15 })
     menuItemSku: string;
 
-    @Column({ type: 'varchar', length: 255 ,nullable: false ,default: "name"})
+    @Column({ type: 'varchar', length: 255, nullable: false, default: "name" })
     name: string;
 
-    @Column({ type: 'varchar', length: 255 ,nullable: true})
+    @Column({ type: 'varchar', length: 255, nullable: true })
     description: string;
 
     @Column({ type: 'int', default: 0, nullable: true })
@@ -112,16 +112,21 @@ export class MenuItem extends BaseEntity {
 
     groupedChoices: any;
     _originalChoices: MenuItemChoices[];
-   
+
     @AfterLoad()
     async transformChoices() {
-        if (this.choices) {
-            const transformedChoices = this.choices.map(choice => ({
-                id: choice.id,
-                additionalPrice: choice.additionalPrice,
-                value: choice.choice.value,
-                attribute: choice.choice.attribute.attribute
-            }));
+        if (this.choices && Array.isArray(this.choices)) {
+            console.log('Transforming choices:', this.choices);
+
+            // Safely map choices, ensuring no null or undefined values are processed
+            const transformedChoices = this.choices
+                .filter(choice => choice && choice.choice && choice.choice.attribute) // Filter out invalid entries
+                .map(choice => ({
+                    id: choice.id,
+                    additionalPrice: choice.additionalPrice,
+                    value: choice.choice.value,
+                    attribute: choice.choice.attribute.attribute
+                }));
 
             // Group by attribute with proper typing
             this.groupedChoices = transformedChoices.reduce<GroupedChoices>((groups, choice) => {
@@ -137,6 +142,11 @@ export class MenuItem extends BaseEntity {
             // Store original choices in a separate property instead of deleting
             this._originalChoices = this.choices;
             this.choices = undefined;
+        } else {
+            // Handle cases where choices are null or not an array
+            console.warn('Choices are null or not an array:', this.choices);
+            this.groupedChoices = {};
+            this._originalChoices = [];
         }
     }
 

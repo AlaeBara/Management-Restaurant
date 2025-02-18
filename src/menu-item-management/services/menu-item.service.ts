@@ -29,6 +29,7 @@ import { MediaLibraryService } from "src/media-library-management/services/media
 import { InventoryService } from "src/inventory-managemet/services/inventory.service";
 import logger from "src/common/Loggers/logger";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { MenuItemChoiceService } from "./menu-item-choice.service";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -57,6 +58,8 @@ export class MenuItemService extends GenericService<MenuItem> {
         readonly mediaLibraryService: MediaLibraryService,
         @Inject(forwardRef(() => InventoryService))
         readonly inventoryService: InventoryService,
+        @Inject(forwardRef(() => MenuItemChoiceService))
+        readonly menuItemChoiceService: MenuItemChoiceService,
         private eventEmitter: EventEmitter2
     ) {
         super(dataSource, MenuItem, 'article menu');
@@ -80,11 +83,9 @@ export class MenuItemService extends GenericService<MenuItem> {
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner, req);
             await this.discountService.setDiscountToMenuItem(menuItem, createMenuItemDto, queryRunner);
 
-            await queryRunner.commitTransaction();
-
             this.eventEmitter.emit('menu.item.created', menuItem);
 
-            return menuItem;
+            //return menuItem;
         } catch (error) {
             await queryRunner.rollbackTransaction();
             logger.error('Error creating menu item:', { message: error.message, stack: error.stack });
@@ -106,6 +107,7 @@ export class MenuItemService extends GenericService<MenuItem> {
             translates: [],
             recipe: [],
             images: [],
+            choices: []
         });
 
         if (dto.portionProduced && dto.hasRecipe) {
@@ -126,6 +128,10 @@ export class MenuItemService extends GenericService<MenuItem> {
             menuItem.recipe = await Promise.all(dto.recipe.map(async (recipe) => {
                 return await this.recipeService.createRecipe(menuItem, recipe, queryRunner);
             }));
+        }
+
+        if (dto.choices && dto.choices.length > 0) {
+            menuItem.choices = await this.menuItemChoiceService.addChoicesToMenuItemBatch(dto.choices, menuItem, queryRunner);
         }
 
         if (dto.translates && dto.translates.length > 0) {
@@ -248,13 +254,13 @@ export class MenuItemService extends GenericService<MenuItem> {
                 },
                 withDeleted: false
             });
-    
+
             return menuItems.map(item => item.id);
         } catch (error) {
-            logger.error('Error fetching menu item IDs by inventory ID:', { 
-                message: error.message, 
+            logger.error('Error fetching menu item IDs by inventory ID:', {
+                message: error.message,
                 stack: error.stack,
-                inventoryId 
+                inventoryId
             });
             throw new InternalServerErrorException('Failed to fetch menu item IDs');
         }

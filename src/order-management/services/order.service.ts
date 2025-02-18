@@ -75,6 +75,4 @@ export class OrderService extends GenericService<Order> {
 
         return order.orderNumber;
     }
-
-
 }
