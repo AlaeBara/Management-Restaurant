@@ -4,22 +4,28 @@ import {
 } from "@nestjs/typeorm";
 import {
     DataSource,
+    QueryRunner,
     Repository,
 } from "typeorm";
 
 import { GenericService } from "src/common/services/generic.service";
 import logger from "src/common/Loggers/logger";
-import { Order } from "../entities/order.entity";
-import { OrderItemService } from "./order-item.service";
+import { Order } from "src/order-management/entities/order.entity";
+import { CreateOrderDto } from "src/order-management/dtos/order/create-order.dto";
+import { OrderItemService } from "src/order-management/services/order-item.service";
 import { forwardRef, Inject } from "@nestjs/common";
 import { TableService } from "src/zone-table-management/services/table.service";
 import { UserService } from "src/user-management/services/user/user.service";
 import { ClientService } from "src/client-management/services/client.service";
-import { GuestService } from "./guest.service";
+import { GuestService } from "src/order-management/services/guest.service";
+import { OrderItem } from "src/order-management/entities/order-item.entity";
+import { Languages } from "src/language-management/enums/languages.enum";
 import { MenuItemService } from "src/menu-item-management/services/menu-item.service";
+import { MenuItemTranslate } from "src/menu-item-management/entities/menu-item-translation.enity";
 import { MenuItemTranslationService } from "src/menu-item-management/services/menu-item-translation.service";
+import { MenuItemChoices } from "src/menu-item-management/entities/choices/menu-item-choices.entity";
 
-export class OrderService extends GenericService<Order> {
+export class OrderPublicService extends GenericService<Order> {
 
     constructor(
         @InjectDataSource() dataSource: DataSource,
@@ -50,4 +56,23 @@ export class OrderService extends GenericService<Order> {
         return queryRunner;
     }
 
+    async createOrder(createOrderDto: CreateOrderDto, req: Request) {
+        const queryRunner = await this.inizializeQueryRunner();
+        const order = this.orderRepository.create(createOrderDto);
+
+        const [table] = await Promise.all([
+            this.tableService.findOneByIdWithOptions(createOrderDto.tableId),
+        ]);
+
+        order.table = table;
+        const savedOrder = await queryRunner.manager.save(order);
+
+        order.orderItems = await Promise.all(createOrderDto.items.map(async (orderItem) => {
+            return await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
+        }));
+
+        await queryRunner.commitTransaction();
+
+        return order.orderNumber;
+    }
 }

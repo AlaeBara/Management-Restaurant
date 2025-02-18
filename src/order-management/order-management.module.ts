@@ -18,29 +18,35 @@ import { OrderService } from './services/order.service';
 import { OrderItemService } from './services/order-item.service';
 import { ClientManagementModule } from 'src/client-management/client-management.module';
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
+import { OrderPublicController } from './controllers/public/order.public.controller';
+import { OrderPublicService } from './services/public/order.public.service';
 
 @Module({
   imports: [
     TypeOrmModule.forFeature([
-    Order,
-    OrderItem,
-    Guest,
-    OrderStatusHistory,
-    OrderPayment]),
-  forwardRef(() => PaymentModule),
-  forwardRef(() => ProductManagementModule),
-  forwardRef(() => UserManagementModule),
-  forwardRef(() => ZoneTableModule),
-  forwardRef(() => MenuItemModule),
-  forwardRef(() => ClientManagementModule),
-  forwardRef(() => InventoryModule),
+      Order,
+      OrderItem,
+      Guest,
+      OrderStatusHistory,
+      OrderPayment]),
+    forwardRef(() => PaymentModule),
+    forwardRef(() => ProductManagementModule),
+    forwardRef(() => UserManagementModule),
+    forwardRef(() => ZoneTableModule),
+    forwardRef(() => MenuItemModule),
+    forwardRef(() => ClientManagementModule),
+    forwardRef(() => InventoryModule),
   ],
-  controllers: [GuestController, OrderController],
+  controllers: [
+    GuestController,
+    OrderController,
+    OrderPublicController
+  ],
   providers: [
-
     GuestService,
     OrderService,
     OrderItemService,
+    OrderPublicService
   ],
   exports: [],
 })
