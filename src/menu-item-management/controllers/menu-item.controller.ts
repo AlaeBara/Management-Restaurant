@@ -7,6 +7,7 @@ import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
 import { FilesInterceptor } from "@nestjs/platform-express";
 import { AddChoiceToMenuItemDto } from "../dtos/menu-item-choices/add-choice-to-menu-item.dto";
 import { MenuItemChoiceService } from "../services/menu-item-choice.service";
+import { MenuItemRecipeService } from "../services/menu-item-recipe.service";
 
 @Controller('api/menu-items')
 @ApiTags('menu-item')
@@ -16,7 +17,9 @@ export class MenuItemController {
         @Inject(forwardRef(() => MenuItemService))
         private readonly menuItemService: MenuItemService,
         @Inject(forwardRef(() => MenuItemChoiceService))
-        private readonly menuItemChoiceService: MenuItemChoiceService
+        private readonly menuItemChoiceService: MenuItemChoiceService,
+        @Inject(forwardRef(() => MenuItemRecipeService))
+        private readonly menuItemRecipeService: MenuItemRecipeService
     ) { }
 
     @Get()
@@ -91,5 +94,14 @@ export class MenuItemController {
     async toggleHiddenState(@Param('id', ParseUUIDPipe) id: string) {
         const message = await this.menuItemService.toggleMenuItemHiddenState(id);
         return { message, status: 200 };
+    }
+
+    @Post(':id/recalculate-quantity')
+    @Permissions('recalculate-quantity-menu-item')
+    @ApiOperation({ summary: 'Recalculate quantity of a menu item' })
+    async recalculateQuantity(@Param('id', ParseUUIDPipe) id: string) {
+        const menuItem = await this.menuItemService.findOneByIdOrFail(id);
+        const recalculatedItem = await this.menuItemRecipeService.recalculateQuantityBasedOnStock(menuItem);
+        return { message: 'Super! La quantité du produit de menu a été recalculée avec succès', status: 200, data: recalculatedItem };
     }
 }

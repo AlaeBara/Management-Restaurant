@@ -1,4 +1,4 @@
-import { DataSource, QueryRunner, Repository } from "typeorm";
+import { DataSource, QueryRunner, Repository, UpdateResult } from "typeorm";
 import { GenericService } from "src/common/services/generic.service";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 import { BadRequestException, forwardRef, Inject, Injectable, InternalServerErrorException } from "@nestjs/common";
@@ -62,6 +62,33 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
         return await queryRunner.manager.save(MenuItemRecipe, recipe);
     }
 
+    async createBatchRecipes(menuItem: MenuItem, dto: CreateMenuItemIngredientRecipeDto[], queryRunner: QueryRunner): Promise<MenuItemRecipe[]> {
+
+        if (!menuItem) throw new BadRequestException('Le produit de menu indéfini');
+        if (menuItem.portionProduced <= 0) throw new BadRequestException('Le nombre de portion produite par recette ne peut être inférieur ou égale à 0');
+
+        const recipes = await Promise.all(dto.map(async (recipeItem) => {
+            if (recipeItem.ingredientQuantity <= 0) throw new BadRequestException('La quantité de l\'ingrédient ne peut être inférieure ou égale à 0');
+            const [product, unit, inventory] = await Promise.all([
+                this.productService.findOneByIdWithOptions(recipeItem.productId),
+                this.unitService.findOneByIdWithOptions(recipeItem.unitId),
+                this.inventoryService.findOneByIdWithOptions(recipeItem.inventoryId)
+            ]);
+
+
+            return this.recipeRepository.create({
+                menuItem: menuItem,
+                ingredientQuantity: recipeItem.ingredientQuantity,
+                product: product,
+                inventory: inventory,
+                unit: unit,
+                quantityRequiredPerPortion: recipeItem.ingredientQuantity / menuItem.portionProduced,
+            });
+        }));
+
+        return await queryRunner.manager.save(MenuItemRecipe, recipes);
+    }
+
     async restoreRecipes(menuItem: MenuItem, queryRunner: QueryRunner) {
         await queryRunner.manager.restore(MenuItemRecipe, { menuItem: { id: menuItem.id } });
     }
@@ -70,26 +97,29 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
         await queryRunner.manager.softDelete(MenuItemRecipe, { menuItem: { id: menuItem.id } });
     }
 
-    async recalculateQuantityBasedOnStock(menuItem: MenuItem): Promise<MenuItem | null> {
+    async recalculateQuantityBasedOnStock(menuItem: MenuItem): Promise<UpdateResult> {
         try {
             if (!menuItem.hasRecipe) return; // Early return if menu item has no recipe
 
             const recipes = await this.recipeRepository.find({ where: { menuItem: { id: menuItem.id } }, relations: ['inventory', 'unit', 'product'] });
 
+
             if (!recipes || recipes.length === 0) {
-                logger.warn('No recipes found for menu item:', { menuItem });
+                logger.warn('No recipes found for menu item: ' + menuItem.id);
                 return;
             }
 
             const minQuantity = recipes.map(recipe => {
-                let quantity = recipe.inventory.currentQuantity;
+                let inventoryQuantity = recipe.inventory.currentQuantity;
 
-                if (recipe.inventory.unit !== recipe.unit) {
-                    quantity = Number(quantity) * Number(recipe.inventory.unit.conversionFactorToBaseUnit);
+                if (recipe.inventory.unit.id !== recipe.unit.id) {
+                    inventoryQuantity = Number(inventoryQuantity) * Number(recipe.inventory.unit.conversionFactorToBaseUnit);
                 }
 
-                return Math.floor(Number(quantity) / Number(recipe.quantityRequiredPerPortion));
+                const calculatedQuantity = Math.floor(Number(inventoryQuantity) / Number(recipe.quantityRequiredPerPortion));
+                return calculatedQuantity;
             });
+
 
             const quantity = Math.min(...minQuantity);
 
@@ -98,12 +128,11 @@ export class MenuItemRecipeService extends GenericService<MenuItemRecipe> {
                 return;
             }
 
-           return await this.menuItemService.setQuantityBasedOnStock(menuItem, quantity);
+            return await this.menuItemService.setQuantityBasedOnStock(menuItem, quantity);
         } catch (error) {
             logger.error('Error in recalculate Quantity Based On Stock:', { message: error.message, stack: error.stack });
             throw new InternalServerErrorException(error.message);
         }
-
     }
 
     /* async executeMovements(orderItems: OrderItem[], menuItem: MenuItem, order: Order, queryRunner: QueryRunner) {

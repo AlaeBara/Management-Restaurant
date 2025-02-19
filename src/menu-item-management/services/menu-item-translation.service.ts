@@ -30,7 +30,22 @@ export class MenuItemTranslationService extends GenericService<MenuItemTranslate
             description: dto.description,
         });
 
-       return await queryRunner.manager.save(MenuItemTranslate, translation);
+        return await queryRunner.manager.save(MenuItemTranslate, translation);
+    }
+
+    async createBatchTranslations(menuItem: MenuItem, dto: CreateMenuItemTranslate[], queryRunner: QueryRunner) {
+        const translations = await Promise.all(dto.map(async (translate) => {
+            const language = await this.languageService.getLanguageByCode(translate.languageId);
+
+            return this.translationRepository.create({
+                menuItem: menuItem,
+                language: language,
+                name: translate.name,
+                description: translate.description,
+            });            
+        }));
+
+        return await queryRunner.manager.save(MenuItemTranslate, translations);
     }
 
     async softDeleteTranslations(menuItem: MenuItem, queryRunner: QueryRunner) {

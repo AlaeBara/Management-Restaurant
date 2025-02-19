@@ -30,7 +30,7 @@ export class Order extends UlidBaseEntity {
     @Column({ type: 'varchar', length: 50, unique: true })
     orderNumber: string;
 
-    @ManyToOne(() => Table, (table) => table.id)
+    @ManyToOne(() => Table, (table) => table.id, { eager: true })
     @JoinColumn({ name: 'table_id' })
     table: Table;
 

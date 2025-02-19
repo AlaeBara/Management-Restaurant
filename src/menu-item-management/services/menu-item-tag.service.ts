@@ -111,4 +111,10 @@ export class MenuItemTagService extends GenericService<MenuItemTag> {
         return true;
     }
 
+    async addTagsToMenuItemBatch(menuItem: MenuItem, tagIds: string[], queryRunner: QueryRunner) {
+        return await Promise.all(tagIds.map(async (tagId) => {
+            return await this.findOneByIdWithOptions(tagId);
+        }));
+    }
+
 }

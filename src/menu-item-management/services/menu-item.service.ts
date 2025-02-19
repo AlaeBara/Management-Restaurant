@@ -3,7 +3,8 @@ import {
     IsNull,
     Not,
     QueryRunner,
-    Repository
+    Repository,
+    UpdateResult
 } from "typeorm";
 import {
     BadRequestException,
@@ -83,9 +84,9 @@ export class MenuItemService extends GenericService<MenuItem> {
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner, req);
             await this.discountService.setDiscountToMenuItem(menuItem, createMenuItemDto, queryRunner);
 
-            this.eventEmitter.emit('menu.item.created', menuItem);
-
-            //return menuItem;
+            if (menuItem.hasRecipe) {
+                this.eventEmitter.emit('menu.item.created', menuItem);
+            }
         } catch (error) {
             await queryRunner.rollbackTransaction();
             logger.error('Error creating menu item:', { message: error.message, stack: error.stack });
@@ -125,9 +126,7 @@ export class MenuItemService extends GenericService<MenuItem> {
                 throw new BadRequestException('Vous devez ajouter au moins un ingrédient');
             }
 
-            menuItem.recipe = await Promise.all(dto.recipe.map(async (recipe) => {
-                return await this.recipeService.createRecipe(menuItem, recipe, queryRunner);
-            }));
+            menuItem.recipe = await this.recipeService.createBatchRecipes(menuItem, dto.recipe, queryRunner);
         }
 
         if (dto.choices && dto.choices.length > 0) {
@@ -135,13 +134,11 @@ export class MenuItemService extends GenericService<MenuItem> {
         }
 
         if (dto.translates && dto.translates.length > 0) {
-            menuItem.translates = await Promise.all(dto.translates.map(async (translate) => {
-                return await this.translateService.createTranslation(menuItem, translate, queryRunner);
-            }));
+            menuItem.translates = await this.translateService.createBatchTranslations(menuItem, dto.translates, queryRunner);
         }
 
-        for (const tagId of dto.tagIds) {
-            await this.TagService.addTagToMenuItem(menuItem, tagId, queryRunner);
+        if (dto.tagIds && dto.tagIds.length > 0) {
+            menuItem.tags = await this.TagService.addTagsToMenuItemBatch(menuItem, dto.tagIds, queryRunner);
         }
 
         if (dto.images && dto.images.length > 0) {
@@ -218,9 +215,11 @@ export class MenuItemService extends GenericService<MenuItem> {
         }
     }
 
-    async setQuantityBasedOnStock(menuItem: MenuItem, quantity: number) {
-        menuItem.quantity = quantity;
-        return await this.menuItemRepository.save(menuItem);
+    async setQuantityBasedOnStock(menuItem: MenuItem, quantity: number): Promise<UpdateResult> {
+        return await this.menuItemRepository.update(
+            { id: menuItem.id },
+            { quantity: quantity }
+        );
     }
 
     async isCategoryUsed(id: string) {
