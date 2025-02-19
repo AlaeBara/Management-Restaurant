@@ -42,7 +42,7 @@ const Tableau = ({produits}) => {
                                 produits.length > 0 ? (
                                     produits.map((produit) => (
                                         <TableRow key={produit.id} className="font-sans">
-                                            <TableCell className="text-center p-4 border">{produit.translates[0].name}</TableCell>
+                                            <TableCell className="text-center p-4 border">{produit?.name}</TableCell>
                                             <TableCell className="text-center p-4 border">
                                                 {produit?.price?.discount?.status === 'noDiscount' ? (
                                                     <div className="font-medium">

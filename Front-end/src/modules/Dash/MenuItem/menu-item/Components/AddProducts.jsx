@@ -539,6 +539,11 @@ export default function AchatCreationForm() {
 
             appendIfValid('basePrice', preparedData.basePrice);
 
+            //choix
+            if(savedData.length > 0){
+               appendArray('choices', savedData);
+            }
+
             if (preparedData.hasRecipe) {
                 appendIfValid('portionProduced', preparedData.portionProduced);
                 appendArray('recipe', preparedData.recipe);
@@ -643,108 +648,76 @@ export default function AchatCreationForm() {
         { value: 'no-discount', label: 'Aucune remise' }
     ];
 
-    
-    // //for choice 
-    // const [selectedChoices, setSelectedChoices] = useState([]);
-    // const { choiceData, fetchOneChoice  } = useGetOneChoice();
+    //choice
+    const [temporaryChoices, setTemporaryChoices] = useState([]); 
+    const [savedData, setSavedData] = useState([]); 
+    const { fetchOneChoice } = useGetOneChoice(); 
 
-    // // Add a new choice
-    // const handleAddChoice = () => {
-    //     setSelectedChoices([...selectedChoices, { choiceId: null, items: [] }]);
-    // };
-
-    // // Fetch items for a specific choice and update its items
-    // const handleChoiceSelect = async (choiceId, choiceIndex) => {
-    //     try {
-    //         const choiceData = await fetchOneChoice(choiceId); 
-    //         if (choiceData) {
-    //             const updatedChoices = [...selectedChoices];
-    //             updatedChoices[choiceIndex].items = choiceData.choices;
-    //             setSelectedChoices(updatedChoices);
-    //         }
-    //     } catch (error) {
-    //         console.error("Error fetching choice data:", error);
-    //     }
-    // };
-
-    // // Handle item selection and price update
-    // const handleItemSelect = (choiceIndex, itemId, price) => {
-    //     const updatedChoices = [...selectedChoices];
-    //     const choice = updatedChoices[choiceIndex];
-    //     const existingItemIndex = choice.items.findIndex(item => item.id === itemId);
-
-    //     if (existingItemIndex > -1) {
-    //         // Update price if item already exists
-    //         choice.items[existingItemIndex].price = price;
-    //     } else {
-    //         // Add new item
-    //         choice.items.push({ id: itemId, price });
-    //     }
-    //     setSelectedChoices(updatedChoices);
-    // };
-
-    const [selectedChoices, setSelectedChoices] = useState([]);
-    const [savedData, setSavedData] = useState([]); // State to store the final saved data
-    const { choiceData, fetchOneChoice } = useGetOneChoice();
-
-    // Add a new choice
+    // Add a new select component (temporary)
     const handleAddChoice = () => {
-        setSelectedChoices([...selectedChoices, { choiceId: null, items: [] }]);
+        setTemporaryChoices([...temporaryChoices, { choiceId: null, items: [] }]);
     };
 
-    // Fetch items for a specific choice and update its items
+    // Handle choice selection and fetch items
     const handleChoiceSelect = async (choiceId, choiceIndex) => {
         try {
             const choiceData = await fetchOneChoice(choiceId);
             if (choiceData) {
-                const updatedChoices = [...selectedChoices];
-                updatedChoices[choiceIndex].items = choiceData.choices;
-                setSelectedChoices(updatedChoices);
+                const updatedTemporaryChoices = [...temporaryChoices];
+                updatedTemporaryChoices[choiceIndex].choiceId = choiceId;
+                updatedTemporaryChoices[choiceIndex].items = choiceData.choices.map(item => ({
+                    id: item.id,
+                    value: item.value,
+                    price: null,
+                }));
+                setTemporaryChoices(updatedTemporaryChoices);
             }
         } catch (error) {
             console.error("Error fetching choice data:", error);
         }
     };
 
-    // Handle item selection and price update
+    // Handle item price change and save data
     const handleItemSelect = (choiceIndex, itemId, price) => {
-        const updatedChoices = [...selectedChoices];
-        const choice = updatedChoices[choiceIndex];
-        const existingItemIndex = choice.items.findIndex(item => item.id === itemId);
-
-        if (existingItemIndex > -1) {
-            // Update price if item already exists
-            choice.items[existingItemIndex].price = price;
-        } else {
-            // Add new item
-            choice.items.push({ id: itemId, price });
+        const updatedTemporaryChoices = [...temporaryChoices];
+        const choice = updatedTemporaryChoices[choiceIndex];
+    
+        // Update the price for the selected item
+        const selectedItem = choice.items.find(item => item.id === itemId);
+        if (selectedItem) {
+            selectedItem.price = price !== null ? price : null; 
         }
-
-        setSelectedChoices(updatedChoices);
-
-        // Automatically save the data
-        saveDataAutomatically(updatedChoices);
+    
+        setTemporaryChoices(updatedTemporaryChoices);
+    
+        // Update the saved data
+        const updatedSavedData = savedData.filter((item) => item.choiceId !== itemId); 
+    
+        if (price >= 0 && price !== null) {
+            updatedSavedData.push({
+                choiceId: itemId, 
+                additionalPrice: price,
+            });
+        }
+    
+        setSavedData(updatedSavedData);
     };
 
-    // Automatically save data whenever an item's price changes
-    const saveDataAutomatically = (choices) => {
-        const dataToSave = choices.map(choice => ({
-            choiceId: choice.choiceId,
-            items: choice.items.filter(item => item.price > 0), // Only include items with a price > 0
-        }));
+    // Remove a temporary choice
+    const handleRemoveChoice = (choiceIndex) => {
+        const updatedTemporaryChoices = temporaryChoices.filter((_, i) => i !== choiceIndex);
+        setTemporaryChoices(updatedTemporaryChoices);
 
-        setSavedData(dataToSave); // Update the saved data state
-        console.log("Saved Data:", dataToSave); // Log the saved data (or send it to your backend)
+        // Remove any saved data associated with this choice's items
+        const choice = temporaryChoices[choiceIndex];
+        if (choice.items) {
+            const itemIds = choice.items.map((item) => item.id);
+            const updatedSavedData = savedData.filter((item) => !itemIds.includes(item.choiceId));
+            setSavedData(updatedSavedData);
+        }
     };
 
     
-
-
-
-
-
-
-
     return (
         <div className="w-full">
 
@@ -1541,24 +1514,24 @@ export default function AchatCreationForm() {
                                     <p className="text-ms mt-0">
                                         Cette section vous permet de <strong>gérer et configurer les choix</strong> pour vos produits. Vous pouvez <strong>ajouter un choix</strong>, sélectionner les éléments associés, et définir leurs prix. Les éléments sans prix ne peuvent pas être sélectionnés. Ces choix seront utilisés pour personnaliser les produits dans le menu et offrir une <strong>expérience client optimale</strong>. Assurez-vous de configurer chaque choix avec précision pour une gestion efficace.
                                     </p>
-                                    
-                                    {choices.length !== selectedChoices.length  && (
+
+                                    {/* Button to add a new choice */}
+
+                                    {choices.length !== temporaryChoices.length  && (
                                         <div className="flex justify-center">
-                                            <Button type="button" variant="outline" onClick={handleAddChoice}> <Plus size={16} /> Ajouter un choix</Button>
+                                            <Button type="button" variant="outline" onClick={handleAddChoice}>
+                                                <Plus size={16} /> Ajouter un choix
+                                            </Button>
                                         </div>
                                     )}
 
-                                    {selectedChoices.map((choice, index) => (
+                                    {temporaryChoices.map((choice, index) => (
                                         <div key={index} className="space-y-4 border p-4 rounded-md">
                                             <div className="flex justify-between items-center">
                                                 <h3 className="text-lg font-bold text-gray-800">Choix {index + 1}</h3>
                                                 <button
                                                     type="button"
-                                                    onClick={() => {
-                                                        const updatedChoices = selectedChoices.filter((_, i) => i !== index);
-                                                        setSelectedChoices(updatedChoices);
-                                                        saveDataAutomatically(updatedChoices);
-                                                    }}
+                                                    onClick={() => handleRemoveChoice(index)}
                                                     className="bg-red-500 text-white p-2 rounded-md"
                                                 >
                                                     <Trash2 size={16} />
@@ -1568,19 +1541,18 @@ export default function AchatCreationForm() {
                                             <div>
                                                 <Select
                                                     value={choice.choiceId || ""}
-                                                    onValueChange={(value) => {
-                                                        const updatedChoices = [...selectedChoices];
-                                                        updatedChoices[index].choiceId = value;
-                                                        setSelectedChoices(updatedChoices);
-                                                        handleChoiceSelect(value, index);
-                                                    }}
+                                                    onValueChange={(value) => handleChoiceSelect(value, index)}
                                                 >
                                                     <SelectTrigger>
                                                         <SelectValue placeholder="Sélectionner un choix" />
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {choices.map((choice) => (
-                                                            <SelectItem key={choice.id} value={choice.id} disabled={selectedChoices.some((c) => c.choiceId === choice.id)}>
+                                                            <SelectItem
+                                                                key={choice.id}
+                                                                value={choice.id}
+                                                                disabled={temporaryChoices.some((c) => c.choiceId === choice.id)}
+                                                            >
                                                                 {choice.attribute}
                                                             </SelectItem>
                                                         ))}
@@ -1588,6 +1560,7 @@ export default function AchatCreationForm() {
                                                 </Select>
                                             </div>
 
+                                            {/* Render items for the selected choice */}
                                             {choice.items && choice.items.length > 0 ? (
                                                 <div className="space-y-6">
                                                     <h3 className="text-xl font-bold text-gray-800">Éléments disponibles</h3>
@@ -1599,23 +1572,35 @@ export default function AchatCreationForm() {
                                                             >
                                                                 <div className="flex items-center justify-between w-full">
                                                                     <span className="text-ms font-medium text-gray-700">{item.value}</span>
-                                                                    {item.price > 0 ? (
+                                                                    {(item.price >= 0 && item.price !== null)  ? (
                                                                         <CheckCircle className="text-green-500 ml-5 w-5 h-5" title="Active" />
                                                                     ) : (
-                                                                        <XCircle className="text-gray-400 ml-5 w-5 h-5" title="Inactive" />
+                                                                        <XCircle className="text-gray-500 ml-5 w-5 h-5" title="Inactive" />
                                                                     )}
                                                                 </div>
                                                                 <Input
-                                                                    type="number"
+                                                                    // type="number"
+                                                                    type="text"
+                                                                    inputMode="numeric" 
                                                                     placeholder="Prix"
+                                                                    value={item.price !== null && item.price !== undefined ? item.price  : ""}
                                                                     className={`mt-3 w-full rounded-md focus:ring-2 focus:outline-none ${
-                                                                        item.price >= 0
-                                                                            ? "border-green-300 focus:ring-green-500"
-                                                                            : "border-gray-300 focus:ring-gray-500"
+                                                                        (item.price >= 0 && item.price !== null) 
+                                                                            ? "border-green-500 focus:ring-green-500"
+                                                                            : "border-gray-500 focus:ring-gray-500"
                                                                     }`}
-                                                                    onChange={(e) =>
-                                                                        handleItemSelect(index, item.id, parseFloat(e.target.value))
-                                                                    }
+                                                                    // onChange={(e) => {
+                                                                    //     const value = e.target.value;
+                                                                    //     const price = (value === "" || value < 0 )  ? null : parseFloat(value); 
+                                                                    //     handleItemSelect(index, item.id, price);
+                                                                    // }}
+                                                                    onChange={(e) => {
+                                                                        const value = e.target.value;
+                                                                        const isNumeric = /^-?\d*\.?\d+$/.test(value);
+                                                                        const price = (value === "" || value < 0 || !isNumeric) ? null : parseFloat(value);
+                                                                    
+                                                                        handleItemSelect(index, item.id, price);
+                                                                    }}
                                                                 />
                                                             </div>
                                                         ))}
@@ -1626,13 +1611,12 @@ export default function AchatCreationForm() {
                                             )}
                                         </div>
                                     ))}
+
+                                    <pre>{JSON.stringify(savedData, null, 2)}</pre>
                                 </TabsContent>
                             </Tabs>
 
                             
-
-
-
                             <div className="flex justify-end w-full">
                                 <div className="flex justify-end max-w-2xl gap-4">
                                     <Button type="button" onClick={() => navigate('/dash/produits-menu')} className="w-full bg-red-500  text-white hover:bg-red-600">
