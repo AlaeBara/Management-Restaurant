@@ -23,6 +23,9 @@ import ReactSelect from 'react-select';
 import {X} from 'lucide-react'
 import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 import { Textarea } from "@/components/ui/textarea";
+import {useFetchChoices} from '../../Choice/Hooks/useFetchChoice'
+import {useGetOneChoice} from '../hooks/useGetOneChoice'
+
 
     const fomulastemSchema = z.object({
         productId: z
@@ -48,7 +51,6 @@ import { Textarea } from "@/components/ui/textarea";
             .optional(),
     });
 
-
     const TranslateSchema = z.object({
             languageId: z.string().optional(), 
             name: z.string().optional(), 
@@ -56,40 +58,37 @@ import { Textarea } from "@/components/ui/textarea";
         }).superRefine((data, ctx) => {
             // If any field is provided, all fields become required
             if (data.languageId || data.name || data.description) {
-            if (!data.languageId) {
-                ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "La langue est obligatoire si un autre champ est rempli",
-                path: ["languageId"],
-                });
-            }
-            if (!data.name) {
-                ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "Le nom du produit du menu est obligatoire si un autre champ est rempli",
-                path: ["name"],
-                });
-            }
-            if (!data.description) {
-                ctx.addIssue({
-                code: z.ZodIssueCode.custom,
-                message: "La description du produit du menu est obligatoire si un autre champ est rempli",
-                path: ["description"],
-                });
-            }
+                if (!data.languageId) {
+                    ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "La langue est obligatoire si un autre champ est rempli",
+                    path: ["languageId"],
+                    });
+                }
+                if (!data.name) {
+                    ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "Le nom du produit du menu est obligatoire si un autre champ est rempli",
+                    path: ["name"],
+                    });
+                }
+                if (!data.description) {
+                    ctx.addIssue({
+                    code: z.ZodIssueCode.custom,
+                    message: "La description du produit du menu est obligatoire si un autre champ est rempli",
+                    path: ["description"],
+                    });
+                }
             }
         });
-
 
     const ProductSchema = z.object({
         //Formule
         recipe: z.array(fomulastemSchema).nullable().optional(),
-
         //Tag  
         tagIds: z
             .array(z.string())
             .min(1, "Au moins un tag est requis"),
-
         //Translate 
         translates: z.array(TranslateSchema).min(0),
         //Info
@@ -97,78 +96,61 @@ import { Textarea } from "@/components/ui/textarea";
             .string()
             .nonempty({ message: "Sku de l'aricle est obligatoire" })
             .max(15, { message: "Le Sku de l'article ne doit pas dépasser 15 caractères" }),
-
         quantity:z.coerce
             .number({
                 required_error: "Le Quantité  est obligatoire",
                 invalid_type_error: "Le Quantité doit être un nombre",
             })
             .nonnegative({ message: "Le Quantité doit être un nombre positif" }).optional(),
-
         warningQuantity: z.coerce
             .number({
                 required_error: "Le Quantité d'alerte est obligatoire",
                 invalid_type_error: "Le Quantité d'alerte doit être un nombre",
             })
             .nonnegative({ message: "Le Quantité d'alerte doit être un nombre positif" }),
-
         isPublished: z.boolean().optional(),
-
         isDraft: z.boolean().optional(),
-
         hasRecipe: z.boolean().optional(),
-
         categoryId:  z
             .string()
             .nullable()
             .optional(),
-
-
         name: z
             .string()
             .nonempty({ message: "Le nom de l'article est obligatoire" }) 
             .min(3, { message: "Le nom de l'article doit contenir au moins 3 caractères" })
             .max(255, { message: "Le nom de l'article ne doit pas dépasser 255 caractères" }), 
-        
         description: z
             .string()
             .nonempty({ message: "La description de l'article est obligatoire" }) 
             .min(3, { message: "La description de l'article doit contenir au moins 3 caractères" })
             .max(255, { message: "La description de l'article ne doit pas dépasser 255 caractères" }), 
-
-        
-
         portionProduced:z.coerce
             .number({
                 required_error: "Le Portion produite est obligatoire.",
                 invalid_type_error: "Le Portion produite doit être un nombre",
             })
             .nonnegative({ message: "Le Portion produite doit être un nombre positif" }).optional(),
-
         basePrice: z.coerce
             .number({
                 required_error: "Le prix de base est obligatoire",
                 invalid_type_error: "Le prix de base doit être un nombre",
             })
             .nonnegative({ message: "Le prix doit être un nombre positif" }),
-
         discountId:z
             .string()
             .nullable()
             .optional(),
-
         discountMethod :z
             .string()
             .nullable()
             .optional(),
-
         discountValue: z.coerce
             .number({
                 required_error: "Le valeur de remise est obligatoire",
                 invalid_type_error: "Le valeur de remise doit être un nombre",
             })
             .nonnegative({ message: "Le valeur de remise doit être un nombre positif" }).optional(),
-
     });
 
 
@@ -181,11 +163,9 @@ export default function AchatCreationForm() {
     const { product, fetchProduct} = useFetchProduct()
     const { units , fetchUnits} = useFetchUnits()
     const { discounts,  fetchDiscounts } =useFetchDiscounts()
-    const [alert, setAlert] = useState({ message: null, type: null });
-    const [fileError, setFileError] = useState("");
+    const {inventorys, fetchIventory}=useFetchIventory()
+    const {choices, fetchChoices}=useFetchChoices()
 
-    //api for get All inventaire of product
-    const {inventorys, totalIventory, loading, error, fetchIventory}=useFetchIventory()
 
     useEffect(() => {
         fetchTags({fetchAll: true });
@@ -195,7 +175,11 @@ export default function AchatCreationForm() {
         fetchUnits({fetchAll: true })
         fetchDiscounts({fetchAll: true })
         fetchIventory({fetchAll: true })
-    }, [fetchTags,fetchCategorie,fetchLangage,fetchProduct,fetchUnits,fetchIventory]);
+        fetchChoices({fetchAll: true })
+    }, [fetchTags,fetchCategorie,fetchLangage,fetchProduct,fetchUnits,fetchIventory,fetchChoices]);
+
+    const [alert, setAlert] = useState({ message: null, type: null });
+    const [fileError, setFileError] = useState("");
 
 
     const [formData, setFormData] = useState({
@@ -233,8 +217,6 @@ export default function AchatCreationForm() {
         discountMethod: ''
     });
 
-
-    
     const handleChange = (e) => {
         const { name, value } = e.target;
         setFormData((prevFormData) => {
@@ -244,7 +226,6 @@ export default function AchatCreationForm() {
             };
         });
     };
-
 
     //for images 
     const handleImageChange = (e) => {
@@ -258,9 +239,7 @@ export default function AchatCreationForm() {
             setFileError("Seuls les fichiers image (JPEG, PNG, JPG) sont acceptés.");
             return;
         }
-
         setFileError("");
-
         setFormData((prev) => ({
             ...prev,
             images: [...prev.images, ...files],
@@ -274,12 +253,10 @@ export default function AchatCreationForm() {
         }));
     };
     
-
     //forTags
     const handleSelectChange = (field, value) => {
         setFormData({ ...formData, [field]: value });
     };
-
 
     //for translates
     const handleChangee = (value, index, field) => {
@@ -376,7 +353,6 @@ export default function AchatCreationForm() {
             if (formData.discountValue) {
                 formData.discountValue = parseFloat(formData.discountValue);
             }
-
             if(formData.quantity){
                 formData.quantity = parseFloat(formData.quantity);
             }
@@ -387,7 +363,6 @@ export default function AchatCreationForm() {
                 formData.portionProduced = parseFloat(formData.portionProduced);
             }
             
-
             // Custom validation price section
             let customErrors = {};
             if (formData.discountLevel === 'advanced') {
@@ -484,7 +459,6 @@ export default function AchatCreationForm() {
     
             // Merge custom errors and schema errors
             const allErrors = { ...customErrors, ...schemaErrors };
-    
             if (Object.keys(allErrors).length > 0) {
                 setErrors(allErrors);
                 console.log(allErrors)
@@ -504,17 +478,15 @@ export default function AchatCreationForm() {
             if (!formData.hasRecipe) {
                 formData.recipe = [];
             }
-
             if (formData.hasRecipe) {
                 formData.quantity= null;
             }
-
             if (formData.discountLevel === 'no-discount') {
                 formData.discountMethod=null
                 formData.discountValue=null
                 formData.discountId=null
             }
-    
+
             const preparedData = Object.fromEntries(
                 Object.entries(formData).filter(([key, value]) => value !== null && value !== "" && (!Array.isArray(value) || value.length !== 0))
             );
@@ -522,20 +494,10 @@ export default function AchatCreationForm() {
             console.log(preparedData)
 
             const formDataObject = new FormData();
-
             // Helper function to append fields if they exist and have a value
             const appendIfValid = (key, value) => {
                 if (value !== null && value !== "") {
                     formDataObject.append(key, value);
-                }
-            };
-
-            // Helper function to append nested objects
-            const appendNestedObject = (prefix, obj) => {
-                for (const key in obj) {
-                    if (obj[key] !== null && obj[key] !== "") {
-                        formDataObject.append(`${prefix}[${key}]`, obj[key]);
-                    }
                 }
             };
 
@@ -560,7 +522,6 @@ export default function AchatCreationForm() {
                 }
             };
 
-
             // Step 2: Append fields to FormData
             appendIfValid('menuItemSku', preparedData.menuItemSku);
             appendIfValid('name', preparedData.name);
@@ -568,7 +529,6 @@ export default function AchatCreationForm() {
             if (!preparedData.hasRecipe) {
                 appendIfValid('quantity', preparedData.quantity);
             }
-
             appendIfValid('warningQuantity', preparedData.warningQuantity);
             appendIfValid('isPublished', preparedData.isPublished);
             appendIfValid('isDraft', preparedData.isDraft);
@@ -583,7 +543,6 @@ export default function AchatCreationForm() {
                 appendIfValid('portionProduced', preparedData.portionProduced);
                 appendArray('recipe', preparedData.recipe);
             }
-
             // Append price fields
             if (preparedData.discountLevel === 'advanced') {
                 appendIfValid('discountId', preparedData.discountId);
@@ -592,21 +551,17 @@ export default function AchatCreationForm() {
                 appendIfValid('discountMethod', preparedData.discountMethod);
                 appendIfValid('discountValue', preparedData.discountValue);
             }
-
             appendIfValid('discountLevel', preparedData.discountLevel);
-
             // Append translates array
             appendArray('translates', preparedData.translates);
             // Append tagIds array
             appendArray('tagIds', preparedData.tagIds);
-
             // Append images array
             if (formData.images?.length > 0) {
                 formData.images.forEach(image => {
                     formDataObject.append('images', image);
                 });
             }
-
 
             for (const [key, value] of formDataObject.entries()) {
                 console.log(key, value);
@@ -678,17 +633,62 @@ export default function AchatCreationForm() {
         }
     };
 
-
     const statuses = [
         { value: 'percentage', label: 'Pourcentage' },
         { value: 'fixed', label: 'Montant fixe' },
     ];
-
     const typeDiscounts = [
         { value: 'advanced', label: 'Avancé' },
         { value: 'basic', label: 'Basique' },
         { value: 'no-discount', label: 'Aucune remise' }
     ];
+
+    //for choice 
+
+    const [selectedChoices, setSelectedChoices] = useState([]);
+    const { choiceData, fetchOneChoice  } = useGetOneChoice();
+
+    // Add a new choice
+    const handleAddChoice = () => {
+        setSelectedChoices([...selectedChoices, { choiceId: null, items: [] }]);
+    };
+
+    // Fetch items for a specific choice and update its items
+    const handleChoiceSelect = async (choiceId, choiceIndex) => {
+        try {
+            const choiceData = await fetchOneChoice(choiceId); 
+            if (choiceData) {
+                const updatedChoices = [...selectedChoices];
+                updatedChoices[choiceIndex].items = choiceData.choices;
+                setSelectedChoices(updatedChoices);
+                console.log(choiceData.choices);
+            }
+        } catch (error) {
+            console.error("Error fetching choice data:", error);
+        }
+    };
+
+    // Handle item selection and price update
+    const handleItemSelect = (choiceIndex, itemId, price) => {
+        const updatedChoices = [...selectedChoices];
+        const choice = updatedChoices[choiceIndex];
+        const existingItemIndex = choice.items.findIndex(item => item.id === itemId);
+
+        if (existingItemIndex > -1) {
+            // Update price if item already exists
+            choice.items[existingItemIndex].price = price;
+        } else {
+            // Add new item
+            choice.items.push({ id: itemId, price });
+        }
+        setSelectedChoices(updatedChoices);
+    };
+
+
+
+
+
+
 
     return (
         <div className="w-full">
@@ -722,9 +722,10 @@ export default function AchatCreationForm() {
 
                             <Tabs defaultValue="basic" className="w-full space-y-6">
 
-                                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-3 h-max">
+                                <TabsList className="grid w-full grid-cols-2 sm:grid-cols-3 md:grid-cols-5 lg:grid-cols-5 gap-3 h-max">
                                     <TabsTrigger value="basic" className="text-sm h-full py-2">Informations</TabsTrigger>
-                                    <TabsTrigger value="translations" className="text-sm h-full py-2">Titre</TabsTrigger>
+                                    <TabsTrigger value="choix" className="text-sm h-full py-2">Choix</TabsTrigger>
+                                    <TabsTrigger value="translations" className="text-sm h-full py-2 col-span-2 sm:col-span-1">Titre</TabsTrigger>
                                     <TabsTrigger value="price" className="text-sm h-full py-2">Prix</TabsTrigger>
                                     <TabsTrigger value="fermola" className="text-sm h-full py-2">Recette</TabsTrigger>
                                 </TabsList>
@@ -960,19 +961,15 @@ export default function AchatCreationForm() {
                                                     ))}
                                                 </div>
                                             )}
-                                            
                                             {/* Display file type error message */}
                                             {fileError && (
                                                 <p className="text-xs text-red-500 mt-1">{fileError}</p>
                                             )}
-
                                             {/* Display error message */}
                                             {errors.images && (
                                                 <p className="text-xs text-red-500 mt-1">{errors.images}</p>
                                             )}
                                         </div>
-
-
                                     </div>
                                     
                                 </TabsContent>
@@ -1013,234 +1010,226 @@ export default function AchatCreationForm() {
 
                                         {!formData.hasRecipe ? 
 
-                                        // grid grid-cols-1 sm:grid-cols-2 gap-4
-                                        <div className="">
-                                            <div className="space-y-2">
-                                                <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
-                                                <Input
-                                                    type="number"
-                                                    name="quantity"
-                                                    value={formData.quantity || ""}
-                                                    onChange={handleChange}
-                                                    placeholder='Exemple : 30 portions'
-                                                    min="0"
-                                                    disabled={formData.hasRecipe}
-                                                />
-                                                {errors.quantity && (
-                                                    <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
-                                                )}
+                                            <div className="">
+                                                <div className="space-y-2">
+                                                    <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
+                                                    <Input
+                                                        type="number"
+                                                        name="quantity"
+                                                        value={formData.quantity || ""}
+                                                        onChange={handleChange}
+                                                        placeholder='Exemple : 30 portions'
+                                                        min="0"
+                                                        disabled={formData.hasRecipe}
+                                                    />
+                                                    {errors.quantity && (
+                                                        <p className="text-xs text-red-500 mt-1">{errors.quantity}</p>
+                                                    )}
+                                                </div>
                                             </div>
-                                        </div>
 
 
-                                        :
+                                            :
 
-                                        <>
+                                            <>
 
-                                        <div className="flex justify-between items-center">
-                                            <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">La Recette</h2>
-                                            <Button 
-                                                type="button" 
-                                                variant="outline" 
-                                                onClick={addFormule}
-                                                className="flex items-center gap-2"
-                                            >
-                                                <Plus size={16} /> Ajouter Recette
-                                            </Button>
-                                            
-                                        </div>
-
-                                        <div className="grid gap-4">
-                                            {formData.recipe.map((recipe, index) => (
-                                                <div 
-                                                    key={index} 
-                                                    className="border p-4 rounded-lg"
+                                            <div className="flex justify-between items-center">
+                                                <h2 className="font-semibold lg:text-2xl md:text-xl sm:text-base">La Recette</h2>
+                                                <Button 
+                                                    type="button" 
+                                                    variant="outline" 
+                                                    onClick={addFormule}
+                                                    className="flex items-center gap-2"
                                                 >
+                                                    <Plus size={16} /> Ajouter Recette
+                                                </Button>
+                                                
+                                            </div>
 
-                                                    <div className="flex justify-end">
-                                                        {formData.recipe.length > 1 && (
-                                                            <Button 
-                                                                type="button" 
-                                                                variant="destructive" 
-                                                                size="icon"
-                                                                onClick={() => removeFormule(index)}
-                                                            >
-                                                                <Trash2 size={16} />
-                                                            </Button>
-                                                        )}
-                                                    </div>
+                                            <div className="grid gap-4">
+                                                {formData.recipe.map((recipe, index) => (
+                                                    <div 
+                                                        key={index} 
+                                                        className="border p-4 rounded-lg"
+                                                    >
 
-                                                    <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4'>
-                                                        <div className="space-y-2">
-                                                            <Label>Ingrédient <span className='text-red-500 text-base'>*</span></Label>
-                                                            <Select
-                                                                name="productId"
-                                                                value={recipe.productId || ""}
-                                                                onValueChange={(value) => handleChangee2(value, index, 'productId')}
-                                                                disabled={!formData.hasRecipe}
-                                                            >
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Sélectionner une Ingrédient" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {product.length > 0 ? (
-                                                                        product
-                                                                            .map((product) => (
-                                                                                <SelectItem key={product.id} value={product.id}>
-                                                                                    {product.productName}
-                                                                                </SelectItem>
-                                                                            ))
-                                                                    ) : (
-                                                                        <p className='text-sm'>Aucune donnée disponible</p>
-                                                                    )}
-                                                                </SelectContent>
-                                                            </Select>
-                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].productId && (
-                                                                <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.recipe[index].productId}
-                                                                </p>
+                                                        <div className="flex justify-end">
+                                                            {formData.recipe.length > 1 && (
+                                                                <Button 
+                                                                    type="button" 
+                                                                    variant="destructive" 
+                                                                    size="icon"
+                                                                    onClick={() => removeFormule(index)}
+                                                                >
+                                                                    <Trash2 size={16} />
+                                                                </Button>
                                                             )}
                                                         </div>
 
-                                                        <div className="space-y-2">
-                                                            <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
-                                                            <div className="flex gap-2">
-                                                                <Input
-                                                                    type="number"
-                                                                    name="ingredientQuantity"
-                                                                    value={recipe.ingredientQuantity !== null && recipe.ingredientQuantity !== undefined ? recipe.ingredientQuantity : ""}
-                                                                    onChange={(e) => handleChangee2(e.target.value, index, 'ingredientQuantity')}
-                                                                    placeholder='Quantité nécessaire'
-                                                                    disabled={!formData.hasRecipe}
-                                                                    step='any'
-                                                                    min="0"
-                                                                    className="flex-1"
-                                                                />
-                                                                
+                                                        <div className='grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-3 gap-4'>
+                                                            <div className="space-y-2">
+                                                                <Label>Ingrédient <span className='text-red-500 text-base'>*</span></Label>
                                                                 <Select
-                                                                    name="unitId"
-                                                                    value={recipe.unitId || ""}
-                                                                    onValueChange={(value) => handleChangee2(value, index, 'unitId')}
+                                                                    name="productId"
+                                                                    value={recipe.productId || ""}
+                                                                    onValueChange={(value) => handleChangee2(value, index, 'productId')}
                                                                     disabled={!formData.hasRecipe}
                                                                 >
-                                                                    <SelectTrigger
-                                                                        className={`w-[100px] ${
-                                                                            !recipe.unitId && errors.recipe?.[index]?.unitId
-                                                                                ? " border-solid border-2 border-red-500"
-                                                                                : ""
-                                                                        }`}
-                                                                    >
-                                                                        <SelectValue placeholder="Unité" />
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Sélectionner une Ingrédient" />
                                                                     </SelectTrigger>
                                                                     <SelectContent>
-                                                                        {units.length > 0 ? (
-                                                                            units.map((unit) => (
-                                                                                <SelectItem key={unit.id} value={unit.id}>
-                                                                                    {unit.unit}
-                                                                                </SelectItem>
-                                                                            ))
+                                                                        {product.length > 0 ? (
+                                                                            product
+                                                                                .map((product) => (
+                                                                                    <SelectItem key={product.id} value={product.id}>
+                                                                                        {product.productName}
+                                                                                    </SelectItem>
+                                                                                ))
                                                                         ) : (
                                                                             <p className='text-sm'>Aucune donnée disponible</p>
                                                                         )}
                                                                     </SelectContent>
                                                                 </Select>
+                                                                {errors.recipe && errors.recipe[index] && errors.recipe[index].productId && (
+                                                                    <p className="text-xs text-red-500 mt-1">
+                                                                        {errors.recipe[index].productId}
+                                                                    </p>
+                                                                )}
                                                             </div>
-                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].ingredientQuantity && (
-                                                                <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.recipe[index].ingredientQuantity}
-                                                                </p>
-                                                            )}
-                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].unitId && (
-                                                                <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.recipe[index].unitId}
-                                                                </p>
-                                                            )}
-                                                        </div>
 
-                                                        <div className="space-y-2">
-                                                            <Label>Inventaire <span className='text-red-500 text-base'>*</span></Label>
-                                                            <Select
-                                                                name="inventoryId"
-                                                                value={recipe.inventoryId || ""}
-                                                                onValueChange={(value) => handleChangee2(value, index, 'inventoryId')}
-                                                                disabled={!recipe.productId}
-                                                            >
-                                                                <SelectTrigger>
-                                                                    <SelectValue placeholder="Sélectionner un inventaire" />
-                                                                </SelectTrigger>
-                                                                <SelectContent>
-                                                                    {inventorys.length > 0 ? (
-                                                                        inventorys
-                                                                            .filter((inventory) => inventory.productId === recipe.productId)
-                                                                            .map((inventory) => (
-                                                                                <SelectItem key={inventory.id} value={inventory.id}>
-                                                                                    {inventory.sku} 
-                                                                                </SelectItem>
-                                                                            )).length > 0 ? (
-                                                                                inventorys
-                                                                                    .filter((inventory) => inventory.productId === recipe.productId)
-                                                                                    .map((inventory) => (
-                                                                                        <SelectItem key={inventory.id} value={inventory.id}>
-                                                                                            {inventory.sku} 
-                                                                                        </SelectItem>
-                                                                                    ))
+                                                            <div className="space-y-2">
+                                                                <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
+                                                                <div className="flex gap-2">
+                                                                    <Input
+                                                                        type="number"
+                                                                        name="ingredientQuantity"
+                                                                        value={recipe.ingredientQuantity !== null && recipe.ingredientQuantity !== undefined ? recipe.ingredientQuantity : ""}
+                                                                        onChange={(e) => handleChangee2(e.target.value, index, 'ingredientQuantity')}
+                                                                        placeholder='Quantité nécessaire'
+                                                                        disabled={!formData.hasRecipe}
+                                                                        step='any'
+                                                                        min="0"
+                                                                        className="flex-1"
+                                                                    />
+                                                                    
+                                                                    <Select
+                                                                        name="unitId"
+                                                                        value={recipe.unitId || ""}
+                                                                        onValueChange={(value) => handleChangee2(value, index, 'unitId')}
+                                                                        disabled={!formData.hasRecipe}
+                                                                    >
+                                                                        <SelectTrigger
+                                                                            className={`w-[100px] ${
+                                                                                !recipe.unitId && errors.recipe?.[index]?.unitId
+                                                                                    ? " border-solid border-2 border-red-500"
+                                                                                    : ""
+                                                                            }`}
+                                                                        >
+                                                                            <SelectValue placeholder="Unité" />
+                                                                        </SelectTrigger>
+                                                                        <SelectContent>
+                                                                            {units.length > 0 ? (
+                                                                                units.map((unit) => (
+                                                                                    <SelectItem key={unit.id} value={unit.id}>
+                                                                                        {unit.unit}
+                                                                                    </SelectItem>
+                                                                                ))
                                                                             ) : (
                                                                                 <p className='text-sm'>Aucune donnée disponible</p>
-                                                                            )
-                                                                    ) : (
-                                                                        <p className='text-sm'>Aucune donnée disponible</p>
-                                                                    )}
-                                                                </SelectContent>
-                                                            </Select>
-                                                            {errors.recipe && errors.recipe[index] && errors.recipe[index].inventoryId && (
-                                                                <p className="text-xs text-red-500 mt-1">
-                                                                    {errors.recipe[index].inventoryId}
-                                                                </p>
-                                                            )}
+                                                                            )}
+                                                                        </SelectContent>
+                                                                    </Select>
+                                                                </div>
+                                                                {errors.recipe && errors.recipe[index] && errors.recipe[index].ingredientQuantity && (
+                                                                    <p className="text-xs text-red-500 mt-1">
+                                                                        {errors.recipe[index].ingredientQuantity}
+                                                                    </p>
+                                                                )}
+                                                                {errors.recipe && errors.recipe[index] && errors.recipe[index].unitId && (
+                                                                    <p className="text-xs text-red-500 mt-1">
+                                                                        {errors.recipe[index].unitId}
+                                                                    </p>
+                                                                )}
+                                                            </div>
+
+                                                            <div className="space-y-2">
+                                                                <Label>Inventaire <span className='text-red-500 text-base'>*</span></Label>
+                                                                <Select
+                                                                    name="inventoryId"
+                                                                    value={recipe.inventoryId || ""}
+                                                                    onValueChange={(value) => handleChangee2(value, index, 'inventoryId')}
+                                                                    disabled={!recipe.productId}
+                                                                >
+                                                                    <SelectTrigger>
+                                                                        <SelectValue placeholder="Sélectionner un inventaire" />
+                                                                    </SelectTrigger>
+                                                                    <SelectContent>
+                                                                        {inventorys.length > 0 ? (
+                                                                            inventorys
+                                                                                .filter((inventory) => inventory.productId === recipe.productId)
+                                                                                .map((inventory) => (
+                                                                                    <SelectItem key={inventory.id} value={inventory.id}>
+                                                                                        {inventory.sku} 
+                                                                                    </SelectItem>
+                                                                                )).length > 0 ? (
+                                                                                    inventorys
+                                                                                        .filter((inventory) => inventory.productId === recipe.productId)
+                                                                                        .map((inventory) => (
+                                                                                            <SelectItem key={inventory.id} value={inventory.id}>
+                                                                                                {inventory.sku} 
+                                                                                            </SelectItem>
+                                                                                        ))
+                                                                                ) : (
+                                                                                    <p className='text-sm'>Aucune donnée disponible</p>
+                                                                                )
+                                                                        ) : (
+                                                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                                                        )}
+                                                                    </SelectContent>
+                                                                </Select>
+                                                                {errors.recipe && errors.recipe[index] && errors.recipe[index].inventoryId && (
+                                                                    <p className="text-xs text-red-500 mt-1">
+                                                                        {errors.recipe[index].inventoryId}
+                                                                    </p>
+                                                                )}
+                                                            </div>
                                                         </div>
                                                     </div>
-                                                </div>
-                                                
-                                            ))}
-                                        </div>
-
-                                        <div className='flex justify-end'>
-                                            <div className="space-y-2 w-full sm:w-1/2 md:w-1/3 lg:w-1/3">
-                                                <Label>Portion produite <span className='text-red-500 text-base'>*</span></Label>
-                                                <Input
-                                                    type="number"
-                                                    name="portionProduced"
-                                                    value={formData.portionProduced || ""}
-                                                    onChange={handleChange}
-                                                    placeholder='Exemple : 30 portions'
-                                                    disabled={!formData.hasRecipe}
-                                                    min="0"
-                                                />
-                                                {errors.portionProduced && (
-                                                    <p className="text-xs text-red-500 mt-1">
-                                                        {errors.portionProduced}
-                                                    </p>
-                                                )}
+                                                    
+                                                ))}
                                             </div>
-                                        </div>
 
-                                        </>}
+                                            <div className='flex justify-end'>
+                                                <div className="space-y-2 w-full sm:w-1/2 md:w-1/3 lg:w-1/3">
+                                                    <Label>Portion produite <span className='text-red-500 text-base'>*</span></Label>
+                                                    <Input
+                                                        type="number"
+                                                        name="portionProduced"
+                                                        value={formData.portionProduced || ""}
+                                                        onChange={handleChange}
+                                                        placeholder='Exemple : 30 portions'
+                                                        disabled={!formData.hasRecipe}
+                                                        min="0"
+                                                    />
+                                                    {errors.portionProduced && (
+                                                        <p className="text-xs text-red-500 mt-1">
+                                                            {errors.portionProduced}
+                                                        </p>
+                                                    )}
+                                                </div>
+                                            </div>
 
-                                        
+                                        </>
+                                        }
                                     </div>
                                 </TabsContent>
-
-
-
-
-
 
                                 <TabsContent value="price" className="space-y-4">
 
                                     <p className="text-ms mt-0">
                                         Définissez le <strong>prix de base</strong> de l'article et appliquez une <strong>réduction</strong> si nécessaire. Le prix de base est obligatoire, tandis que la réduction est facultative. Assurez-vous que le prix est cohérent avec votre stratégie tarifaire.
                                     </p>
-
 
                                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                                         <div className="space-y-2">
@@ -1288,24 +1277,81 @@ export default function AchatCreationForm() {
                                     {formData.discountLevel === 'basic' ? 
 
 
-                                    (<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                        (<div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                            <div className="space-y-2">
+                                                <Label>Type de la remise  <span className='text-red-500 text-base'>*</span></Label>
+                                                <Select
+                                                    id="discountMethod"
+                                                    name="discountMethod"
+                                                    value={formData.discountMethod  || ""}
+                                                    onValueChange={(value) => handleChange({ target: { name: 'discountMethod', value } })}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Sélectionnez le type de remise" />
+                                                    </SelectTrigger>
+                                                    <SelectContent className="max-h-48 overflow-y-auto">
+                                                        {statuses.length > 0 ? (
+                                                            statuses
+                                                                .map((statuse) => (
+                                                                    <SelectItem key={statuse.value} value={statuse.value}>
+                                                                        {statuse.label}
+                                                                    </SelectItem>
+                                                                ))
+                                                        ) : (
+                                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                                        )}
+                                                    </SelectContent>
+                                                </Select>
+                                                {errors.discountMethod && (
+                                                    <p className="text-xs text-red-500 mt-1">{errors.discountMethod}</p>
+                                                )}
+                                            </div>
+
+                                            <div className="space-y-2">
+                                                <Label>Valeur de la remise <span className='text-red-500 text-base'>*</span></Label>
+                                                <Input
+                                                    type="number"
+                                                    name="discountValue"
+                                                    value={formData.discountValue !== null && formData.discountValue !== undefined ? formData.discountValue : ""}
+                                                    onChange={handleChange}
+                                                    placeholder='Exemple : 20'
+                                                    min="0"
+                                                    step="any"
+                                                    disabled={!formData.discountMethod}
+                                                    max={formData.discountMethod === 'percentage' ? '100' : undefined}
+                                                />
+                                                {errors.discountValue  && (
+                                                    <p className="text-xs text-red-500 mt-1">{errors.discountValue}</p>
+                                                )}
+                                            </div>
+                                        </div>
+                                    )
+
+                                    : formData.discountLevel === 'advanced' ? (
+
                                         <div className="space-y-2">
-                                            <Label>Type de la remise  <span className='text-red-500 text-base'>*</span></Label>
+                                            <Label>Nom de Réduction </Label>
                                             <Select
-                                                id="discountMethod"
-                                                name="discountMethod"
-                                                value={formData.discountMethod  || ""}
-                                                onValueChange={(value) => handleChange({ target: { name: 'discountMethod', value } })}
+                                                name="discountId"
+                                                value={formData.discountId}
+                                                onValueChange={(value) => handleChange({ target: { name: 'discountId', value } })}
                                             >
                                                 <SelectTrigger>
-                                                    <SelectValue placeholder="Sélectionnez le type de remise" />
+                                                    <SelectValue placeholder="Sélectionner Réduction" />
                                                 </SelectTrigger>
-                                                <SelectContent className="max-h-48 overflow-y-auto">
-                                                    {statuses.length > 0 ? (
-                                                        statuses
-                                                            .map((statuse) => (
-                                                                <SelectItem key={statuse.value} value={statuse.value}>
-                                                                    {statuse.label}
+                                                <SelectContent  position="popper" 
+                                                    side="bottom" 
+                                                    align="start"
+                                                    className="max-h-[300px] overflow-y-auto"
+                                                >
+                                                    <SelectItem value={null} className="font-semibold text-gray-400">
+                                                        Aucune réduction
+                                                    </SelectItem>
+                                                    {discounts.length > 0 ? (
+                                                        discounts
+                                                            .map((discount) => (
+                                                                <SelectItem key={discount.id} value={discount.id}>
+                                                                    {discount.discountSku} - {discount.discountValue} {discount.discountMethod === "percentage" ? '%' :"Dh" }
                                                                 </SelectItem>
                                                             ))
                                                     ) : (
@@ -1313,73 +1359,15 @@ export default function AchatCreationForm() {
                                                     )}
                                                 </SelectContent>
                                             </Select>
-                                            {errors.discountMethod && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.discountMethod}</p>
+                                            {errors.discountId && (
+                                                <p className="text-xs text-red-500 mt-1">{errors.discountId}</p>
                                             )}
                                         </div>
-
-                                        <div className="space-y-2">
-                                            <Label>Valeur de la remise <span className='text-red-500 text-base'>*</span></Label>
-                                            <Input
-                                                type="number"
-                                                name="discountValue"
-                                                value={formData.discountValue !== null && formData.discountValue !== undefined ? formData.discountValue : ""}
-                                                onChange={handleChange}
-                                                placeholder='Exemple : 20'
-                                                min="0"
-                                                step="any"
-                                                disabled={!formData.discountMethod}
-                                                max={formData.discountMethod === 'percentage' ? '100' : undefined}
-                                            />
-                                            {errors.discountValue  && (
-                                                <p className="text-xs text-red-500 mt-1">{errors.discountValue}</p>
-                                            )}
-                                        </div>
-                                    </div>)
-
-                                    : formData.discountLevel === 'advanced' ? (
-
-                                    <div className="space-y-2">
-                                        <Label>Nom de Réduction </Label>
-                                        <Select
-                                            name="discountId"
-                                            value={formData.discountId}
-                                            onValueChange={(value) => handleChange({ target: { name: 'discountId', value } })}
-                                        >
-                                            <SelectTrigger>
-                                                <SelectValue placeholder="Sélectionner Réduction" />
-                                            </SelectTrigger>
-                                            <SelectContent  position="popper" 
-                                                side="bottom" 
-                                                align="start"
-                                                className="max-h-[300px] overflow-y-auto"
-                                            >
-                                                <SelectItem value={null} className="font-semibold text-gray-400">
-                                                    Aucune réduction
-                                                </SelectItem>
-                                                {discounts.length > 0 ? (
-                                                    discounts
-                                                        .map((discount) => (
-                                                            <SelectItem key={discount.id} value={discount.id}>
-                                                                {discount.discountSku} - {discount.discountValue} {discount.discountMethod === "percentage" ? '%' :"Dh" }
-                                                            </SelectItem>
-                                                        ))
-                                                ) : (
-                                                    <p className='text-sm'>Aucune donnée disponible</p>
-                                                )}
-                                            </SelectContent>
-                                        </Select>
-                                        {errors.discountId && (
-                                            <p className="text-xs text-red-500 mt-1">{errors.discountId}</p>
-                                        )}
-                                    </div>)
-                                    : (
+                                    )
+                                    :(
                                         null
                                     )}
-
-                                    
                                 </TabsContent>
-
 
                                 <TabsContent value="translations" className="space-y-4">
                                     <div className="space-y-4">
@@ -1492,7 +1480,69 @@ export default function AchatCreationForm() {
                                         </div>
                                     </div>
                                 </TabsContent>
+
+
+                                <TabsContent value="choix" className="space-y-4">
+                                    <div>
+                                        <Button type="button" onClick={handleAddChoice}>Ajouter un choix</Button>
+                                    </div>
+
+                                    {selectedChoices.map((choice, index) => (
+                                        <div key={index} className="space-y-4 border p-4 rounded-md">
+                                            <div>
+                                                <Select
+                                                    value={choice.choiceId || ""}
+                                                    onValueChange={(value) => {
+                                                        const updatedChoices = [...selectedChoices];
+                                                        updatedChoices[index].choiceId = value;
+                                                        setSelectedChoices(updatedChoices);
+                                                        handleChoiceSelect(value, index); // Pass the index to update the correct choice
+                                                    }}
+                                                >
+                                                    <SelectTrigger>
+                                                        <SelectValue placeholder="Sélectionner un choix" />
+                                                    </SelectTrigger>
+                                                    <SelectContent>
+                                                        {choices.map((choice) => (
+                                                            <SelectItem key={choice.id} value={choice.id}>
+                                                                {choice.attribute}
+                                                            </SelectItem>
+                                                        ))}
+                                                    </SelectContent>
+                                                </Select>
+                                            </div>
+
+                                            {choice.items && choice.items.length > 0 && (
+                                                <div className="space-y-6">
+                                                    <h3 className="text-xl font-bold text-gray-800">Éléments disponibles</h3>
+                                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                        {choice.items.map((item) => (
+                                                            <div
+                                                                key={item.id}
+                                                                className="flex flex-col items-start justify-between p-4 bg-white shadow-md rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300"
+                                                            >
+                                                                <span className="text-lg font-medium text-gray-700">{item.value}</span>
+                                                                <Input
+                                                                    type="number"
+                                                                    placeholder="Prix"
+                                                                    className="mt-3 w-full border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:outline-none"
+                                                                    onChange={(e) =>
+                                                                        handleItemSelect(index, item.id, parseFloat(e.target.value))
+                                                                    }
+                                                                />
+                                                            </div>
+                                                        ))}
+                                                    </div>
+                                                </div>
+                                            )}
+                                        </div>
+                                    ))}
+                                </TabsContent>
                             </Tabs>
+
+                            
+
+
 
                             <div className="flex justify-end w-full">
                                 <div className="flex justify-end max-w-2xl gap-4">
