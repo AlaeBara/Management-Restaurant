@@ -536,14 +536,11 @@ export default function AchatCreationForm() {
                 appendIfValid('categoryId', preparedData.categoryId);
             }
             appendIfValid('hasRecipe', preparedData.hasRecipe);
-
             appendIfValid('basePrice', preparedData.basePrice);
-
             //choix
             if(savedData.length > 0){
                appendArray('choices', savedData);
             }
-
             if (preparedData.hasRecipe) {
                 appendIfValid('portionProduced', preparedData.portionProduced);
                 appendArray('recipe', preparedData.recipe);
@@ -577,7 +574,6 @@ export default function AchatCreationForm() {
             const response = await axios.post(`${import.meta.env.VITE_BACKEND_URL}/api/menu-items`,  formDataObject, {
                 headers: { Authorization: `Bearer ${token}` , 'Content-Type': 'multipart/form-data',},
             });
-    
             // Reset form and errors
             setFormData({
                 menuItemSku: '',
