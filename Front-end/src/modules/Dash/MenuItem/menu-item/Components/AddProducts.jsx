@@ -25,7 +25,7 @@ import {useFetchIventory} from '../../../Achats/Hooks/useFetchInventorys'
 import { Textarea } from "@/components/ui/textarea";
 import {useFetchChoices} from '../../Choice/Hooks/useFetchChoice'
 import {useGetOneChoice} from '../hooks/useGetOneChoice'
-
+import { CheckCircle, XCircle } from 'lucide-react';
 
     const fomulastemSchema = z.object({
         productId: z
@@ -643,10 +643,49 @@ export default function AchatCreationForm() {
         { value: 'no-discount', label: 'Aucune remise' }
     ];
 
-    //for choice 
+    
+    // //for choice 
+    // const [selectedChoices, setSelectedChoices] = useState([]);
+    // const { choiceData, fetchOneChoice  } = useGetOneChoice();
+
+    // // Add a new choice
+    // const handleAddChoice = () => {
+    //     setSelectedChoices([...selectedChoices, { choiceId: null, items: [] }]);
+    // };
+
+    // // Fetch items for a specific choice and update its items
+    // const handleChoiceSelect = async (choiceId, choiceIndex) => {
+    //     try {
+    //         const choiceData = await fetchOneChoice(choiceId); 
+    //         if (choiceData) {
+    //             const updatedChoices = [...selectedChoices];
+    //             updatedChoices[choiceIndex].items = choiceData.choices;
+    //             setSelectedChoices(updatedChoices);
+    //         }
+    //     } catch (error) {
+    //         console.error("Error fetching choice data:", error);
+    //     }
+    // };
+
+    // // Handle item selection and price update
+    // const handleItemSelect = (choiceIndex, itemId, price) => {
+    //     const updatedChoices = [...selectedChoices];
+    //     const choice = updatedChoices[choiceIndex];
+    //     const existingItemIndex = choice.items.findIndex(item => item.id === itemId);
+
+    //     if (existingItemIndex > -1) {
+    //         // Update price if item already exists
+    //         choice.items[existingItemIndex].price = price;
+    //     } else {
+    //         // Add new item
+    //         choice.items.push({ id: itemId, price });
+    //     }
+    //     setSelectedChoices(updatedChoices);
+    // };
 
     const [selectedChoices, setSelectedChoices] = useState([]);
-    const { choiceData, fetchOneChoice  } = useGetOneChoice();
+    const [savedData, setSavedData] = useState([]); // State to store the final saved data
+    const { choiceData, fetchOneChoice } = useGetOneChoice();
 
     // Add a new choice
     const handleAddChoice = () => {
@@ -656,12 +695,11 @@ export default function AchatCreationForm() {
     // Fetch items for a specific choice and update its items
     const handleChoiceSelect = async (choiceId, choiceIndex) => {
         try {
-            const choiceData = await fetchOneChoice(choiceId); 
+            const choiceData = await fetchOneChoice(choiceId);
             if (choiceData) {
                 const updatedChoices = [...selectedChoices];
                 updatedChoices[choiceIndex].items = choiceData.choices;
                 setSelectedChoices(updatedChoices);
-                console.log(choiceData.choices);
             }
         } catch (error) {
             console.error("Error fetching choice data:", error);
@@ -681,8 +719,25 @@ export default function AchatCreationForm() {
             // Add new item
             choice.items.push({ id: itemId, price });
         }
+
         setSelectedChoices(updatedChoices);
+
+        // Automatically save the data
+        saveDataAutomatically(updatedChoices);
     };
+
+    // Automatically save data whenever an item's price changes
+    const saveDataAutomatically = (choices) => {
+        const dataToSave = choices.map(choice => ({
+            choiceId: choice.choiceId,
+            items: choice.items.filter(item => item.price > 0), // Only include items with a price > 0
+        }));
+
+        setSavedData(dataToSave); // Update the saved data state
+        console.log("Saved Data:", dataToSave); // Log the saved data (or send it to your backend)
+    };
+
+    
 
 
 
@@ -1483,13 +1538,18 @@ export default function AchatCreationForm() {
 
 
                                 <TabsContent value="choix" className="space-y-4">
-                                    <div>
-                                        <Button type="button" onClick={handleAddChoice}>Ajouter un choix</Button>
-                                    </div>
+                                    <p className="text-ms mt-0">
+                                        Cette section vous permet de <strong>gérer et configurer les choix</strong> pour vos produits. Vous pouvez <strong>ajouter un choix</strong>, sélectionner les éléments associés, et définir leurs prix. Les éléments sans prix ne peuvent pas être sélectionnés. Ces choix seront utilisés pour personnaliser les produits dans le menu et offrir une <strong>expérience client optimale</strong>. Assurez-vous de configurer chaque choix avec précision pour une gestion efficace.
+                                    </p>
+                                    
+                                    {choices.length !== selectedChoices.length  && (
+                                        <div className="flex justify-center">
+                                            <Button type="button" variant="outline" onClick={handleAddChoice}> <Plus size={16} /> Ajouter un choix</Button>
+                                        </div>
+                                    )}
 
                                     {selectedChoices.map((choice, index) => (
                                         <div key={index} className="space-y-4 border p-4 rounded-md">
-
                                             <div className="flex justify-between items-center">
                                                 <h3 className="text-lg font-bold text-gray-800">Choix {index + 1}</h3>
                                                 <button
@@ -1497,6 +1557,7 @@ export default function AchatCreationForm() {
                                                     onClick={() => {
                                                         const updatedChoices = selectedChoices.filter((_, i) => i !== index);
                                                         setSelectedChoices(updatedChoices);
+                                                        saveDataAutomatically(updatedChoices);
                                                     }}
                                                     className="bg-red-500 text-white p-2 rounded-md"
                                                 >
@@ -1527,20 +1588,31 @@ export default function AchatCreationForm() {
                                                 </Select>
                                             </div>
 
-                                            {choice.items && choice.items.length > 0 && (
+                                            {choice.items && choice.items.length > 0 ? (
                                                 <div className="space-y-6">
                                                     <h3 className="text-xl font-bold text-gray-800">Éléments disponibles</h3>
-                                                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                                                    <div className="grid grid-cols-[repeat(auto-fit,minmax(200px,1fr))] gap-4">
                                                         {choice.items.map((item) => (
                                                             <div
                                                                 key={item.id}
                                                                 className="flex flex-col items-start justify-between p-4 bg-white shadow-md rounded-lg border border-gray-200 hover:shadow-lg transition-shadow duration-300"
                                                             >
-                                                                <span className="text-lg font-medium text-gray-700">{item.value}</span>
+                                                                <div className="flex items-center justify-between w-full">
+                                                                    <span className="text-ms font-medium text-gray-700">{item.value}</span>
+                                                                    {item.price > 0 ? (
+                                                                        <CheckCircle className="text-green-500 ml-5 w-5 h-5" title="Active" />
+                                                                    ) : (
+                                                                        <XCircle className="text-gray-400 ml-5 w-5 h-5" title="Inactive" />
+                                                                    )}
+                                                                </div>
                                                                 <Input
                                                                     type="number"
                                                                     placeholder="Prix"
-                                                                    className="mt-3 w-full border-gray-300 rounded-md focus:ring-2 focus:ring-primary focus:outline-none"
+                                                                    className={`mt-3 w-full rounded-md focus:ring-2 focus:outline-none ${
+                                                                        item.price >= 0
+                                                                            ? "border-green-300 focus:ring-green-500"
+                                                                            : "border-gray-300 focus:ring-gray-500"
+                                                                    }`}
                                                                     onChange={(e) =>
                                                                         handleItemSelect(index, item.id, parseFloat(e.target.value))
                                                                     }
@@ -1549,6 +1621,8 @@ export default function AchatCreationForm() {
                                                         ))}
                                                     </div>
                                                 </div>
+                                            ) : (
+                                                <p className="text-sm text-center">Aucun élément disponible</p>
                                             )}
                                         </div>
                                     ))}
