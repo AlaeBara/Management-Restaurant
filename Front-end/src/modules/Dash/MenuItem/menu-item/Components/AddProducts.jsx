@@ -1489,6 +1489,21 @@ export default function AchatCreationForm() {
 
                                     {selectedChoices.map((choice, index) => (
                                         <div key={index} className="space-y-4 border p-4 rounded-md">
+
+                                            <div className="flex justify-between items-center">
+                                                <h3 className="text-lg font-bold text-gray-800">Choix {index + 1}</h3>
+                                                <button
+                                                    type="button"
+                                                    onClick={() => {
+                                                        const updatedChoices = selectedChoices.filter((_, i) => i !== index);
+                                                        setSelectedChoices(updatedChoices);
+                                                    }}
+                                                    className="bg-red-500 text-white p-2 rounded-md"
+                                                >
+                                                    <Trash2 size={16} />
+                                                </button>
+                                            </div>
+
                                             <div>
                                                 <Select
                                                     value={choice.choiceId || ""}
@@ -1496,7 +1511,7 @@ export default function AchatCreationForm() {
                                                         const updatedChoices = [...selectedChoices];
                                                         updatedChoices[index].choiceId = value;
                                                         setSelectedChoices(updatedChoices);
-                                                        handleChoiceSelect(value, index); // Pass the index to update the correct choice
+                                                        handleChoiceSelect(value, index);
                                                     }}
                                                 >
                                                     <SelectTrigger>
@@ -1504,7 +1519,7 @@ export default function AchatCreationForm() {
                                                     </SelectTrigger>
                                                     <SelectContent>
                                                         {choices.map((choice) => (
-                                                            <SelectItem key={choice.id} value={choice.id}>
+                                                            <SelectItem key={choice.id} value={choice.id} disabled={selectedChoices.some((c) => c.choiceId === choice.id)}>
                                                                 {choice.attribute}
                                                             </SelectItem>
                                                         ))}
