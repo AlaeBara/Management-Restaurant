@@ -3,12 +3,13 @@ import { Card, CardContent } from "@/components/ui/card"
 import {Table,TableBody,TableCell,TableHead,TableHeader,TableRow} from "@/components/ui/table"
 import{ RotateCcw } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
-
+import { Badge } from '@/components/ui/badge';
 const Tableau = ({choices ,  restoreChoice}) => {
 
     const [isModalVisible, setIsModalVisible] = useState(false);
     const [choiceSelected , setchoiceSelected] =useState(false);
 
+    console.log(choices)
     const handleRestore = (choice) => {
         setIsModalVisible(true);
         setchoiceSelected(choice)
@@ -22,11 +23,12 @@ const Tableau = ({choices ,  restoreChoice}) => {
 return (
     <>
         <Card className='border-none shadow-none'>
-            <CardContent>
+            <CardContent className='p-0'>
                 <Table>
                     <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom du Choix</TableHead>
+                            <TableHead className="p-3 text-center border text-sm text-black font-bold">Choix</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Date Creation</TableHead>
                             <TableHead className="p-3 text-center border text-sm text-black font-bold">Action</TableHead>
                         </TableRow>
@@ -37,8 +39,25 @@ return (
                             choices.length > 0 ? (
                                 choices.map((choice) => (
                                 <TableRow key={choice.id} className="font-sans">
-                                    <TableCell className="text-center p-4 border">{choice.attribute}</TableCell>
-                                    <TableCell className="text-center p-4 border">{formatDate(choice.createdAt)}</TableCell>
+                                    <TableCell className="text-center p-4 border text-nowrap">{choice.attribute}</TableCell>
+                                    <TableCell className="text-center p-4 border">
+                                        {choice.choices?.length > 0 ? (
+                                            <div className="flex flex-wrap gap-2 justify-center">
+                                            {choice.choices.map((choice, index) => (
+                                                <Badge
+                                                    key={index}
+                                                    variant="secondary"
+                                                    className='text-sm capitalize'
+                                                >
+                                                {choice.value}
+                                                </Badge>
+                                            ))}
+                                            </div>
+                                        ) : (
+                                            '-'
+                                        )}
+                                    </TableCell>
+                                    <TableCell className="text-center p-4 border text-nowrap">{formatDate(choice.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center">
                                             <button

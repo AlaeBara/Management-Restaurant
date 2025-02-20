@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { Card, CardContent } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { RotateCcw } from 'lucide-react'
+import { RotateCcw , PencilIcon , TrashIcon } from 'lucide-react'
 import { formatDate } from '@/components/dateUtils/dateUtils'
 import { useNavigate } from 'react-router-dom'
 
@@ -82,9 +82,9 @@ const Tableau = ({ Discounts , Restore}) => {
     return (
         <>
             <Card className='border-none shadow-none'>
-                <CardContent>
+            <CardContent className='p-0'>
                     <Table>
-                       <TableHeader className="border bg-gray-100">
+                        <TableHeader className="border bg-gray-100">
                             <TableRow className='hover:bg-transparent'>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Code Promo</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Type de réduction</TableHead>
@@ -103,18 +103,18 @@ const Tableau = ({ Discounts , Restore}) => {
                                 Discounts.length > 0 ? (
                                     Discounts.map((Discount) => (
                                         <TableRow key={Discount.id} className="font-sans">
-                                            <TableCell className="text-center p-4 border">{Discount.discountSku}</TableCell>
-                                            <TableCell className={`text-center p-4 border font-bold ${
+                                            <TableCell className="text-center p-4 border text-nowrap">{Discount.discountSku}</TableCell>
+                                            <TableCell className={`text-center p-4 border font-bold text-nowrap ${
                                                 getDiscountStyle(Discount.discountType).className}`}
                                             >
                                                 {discountType.find((type) => type.value === Discount.discountType)?.label || 'N/A'}
                                             </TableCell>
-                                            <TableCell className={`text-center p-4 border font-bold ${
+                                            <TableCell className={`text-center p-4 border font-bold text-nowrap ${
                                                 getStatusStyle(Discount.discountMethod).className}`}
                                             > 
                                                 {statuses.find((status) => status.value === Discount.discountMethod)?.label || 'N/A'}
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border font-medium">                                                
+                                            <TableCell className="text-center p-4 border font-medium text-nowrap">                                                
                                                 {
                                                     Discount.discountMethod === 'percentage' ? 
                                                     <> 
@@ -130,7 +130,7 @@ const Tableau = ({ Discounts , Restore}) => {
                                                     </>  
                                                 }
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">
+                                            <TableCell className="text-center p-4 border text-nowrap">
                                                 <span 
                                                     className={`
                                                         inline-block px-3 py-1 rounded-full 
@@ -140,9 +140,20 @@ const Tableau = ({ Discounts , Restore}) => {
                                                     {Discount.isActive ? 'Actif' : 'Inactif'}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">{Discount.startDate ? `de ${Discount.startDate} à ${Discount.endDate}` : '-'}</TableCell>
-                                            <TableCell className="text-center p-4 border">{Discount.startTime ? `de ${Discount.startTime.slice(0, 5)} à ${Discount.endTime.slice(0, 5)}` : '-'}</TableCell>
-                                            <TableCell className="text-center p-4 border">{formatDate(Discount.createdAt)}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">
+                                                {Discount.discountType == 'regularly' && 'Chaque: ' + Discount.activeDays}
+                                                {Discount.discountType == 'limited_date' &&
+                                                    (
+                                                        Discount.startDate
+                                                        ? `de ${Discount.startDate} à ${Discount.endDate}`
+                                                        : '-'
+                                                    ) 
+                                                }
+                                                {Discount.discountType == 'quantity' && 'Quantité: ' + Number(Discount.usageQuota)}
+                                            </TableCell>
+
+                                            <TableCell className="text-center p-4 border text-nowrap">{Discount.startTime ? `de ${Discount.startTime.slice(0, 5)} à ${Discount.endTime.slice(0, 5)}` : '-'}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">{formatDate(Discount.createdAt)}</TableCell>
 
                                             <TableCell className="text-center p-4 text-nowrap border">
                                                 <div className="flex justify-center items-center gap-5 lg:gap-8">
@@ -160,7 +171,7 @@ const Tableau = ({ Discounts , Restore}) => {
                                 ) : (
                                     <TableRow>
                                         <TableCell colSpan="8" className="text-center p-4">
-                                            Aucun code promo trouvé.
+                                            Aucun Code Promo Supprimés Trouvé.
                                         </TableCell>
                                     </TableRow>
                                 )

@@ -24,12 +24,11 @@ const Tableau = ({produits}) => {
     return (
         <>
             <Card className='border-none shadow-none'>
-                <CardContent>
+                <CardContent className='p-0'>
                     <Table>
                         <TableHeader className="border bg-gray-100">
                             <TableRow className='hover:bg-transparent'>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Nom de Produit</TableHead>
-                                {/* <TableHead className="p-3 text-center border text-sm text-black font-bold">Prix</TableHead> */}
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Prix</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Quantité</TableHead>
                                 <TableHead className="p-3 text-center border text-sm text-black font-bold">Date de création</TableHead>
@@ -42,8 +41,8 @@ const Tableau = ({produits}) => {
                                 produits.length > 0 ? (
                                     produits.map((produit) => (
                                         <TableRow key={produit.id} className="font-sans">
-                                            <TableCell className="text-center p-4 border">{produit?.name}</TableCell>
-                                            <TableCell className="text-center p-4 border">
+                                            <TableCell className="text-center p-4 border text-nowrap">{produit?.name}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">
                                                 {produit?.price?.discount?.status === 'noDiscount' ? (
                                                     <div className="font-medium">
                                                         {parseFloat(produit?.price?.finalPrice).toFixed(2)} Dh
@@ -63,8 +62,8 @@ const Tableau = ({produits}) => {
                                                     </div>
                                                 )}
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">{produit.quantity}</TableCell>
-                                            <TableCell className="text-center p-4 border">{formatDate(produit.createdAt)}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">{produit.quantity}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">{formatDate(produit.createdAt)}</TableCell>
 
                                             <TableCell className="text-center p-4 text-nowrap border">
                                                 <div className="flex justify-center items-center gap-5 lg:gap-8">

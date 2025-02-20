@@ -82,7 +82,7 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
     return (
         <>
             <Card className='border-none shadow-none'>
-                <CardContent>
+                <CardContent className='p-0'>
                     <Table>
                         <TableHeader className="border bg-gray-100">
                             <TableRow className='hover:bg-transparent'>
@@ -103,18 +103,18 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                 Discounts.length > 0 ? (
                                     Discounts.map((Discount) => (
                                         <TableRow key={Discount.id} className="font-sans">
-                                            <TableCell className="text-center p-4 border">{Discount.discountSku}</TableCell>
-                                            <TableCell className={`text-center p-4 border font-bold ${
+                                            <TableCell className="text-center p-4 border text-nowrap">{Discount.discountSku}</TableCell>
+                                            <TableCell className={`text-center p-4 border font-bold text-nowrap ${
                                                 getDiscountStyle(Discount.discountType).className}`}
                                             >
                                                 {discountType.find((type) => type.value === Discount.discountType)?.label || 'N/A'}
                                             </TableCell>
-                                            <TableCell className={`text-center p-4 border font-bold ${
+                                            <TableCell className={`text-center p-4 border font-bold text-nowrap ${
                                                 getStatusStyle(Discount.discountMethod).className}`}
                                             > 
                                                 {statuses.find((status) => status.value === Discount.discountMethod)?.label || 'N/A'}
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border font-medium">                                                
+                                            <TableCell className="text-center p-4 border font-medium text-nowrap">                                                
                                                 {
                                                     Discount.discountMethod === 'percentage' ? 
                                                     <> 
@@ -130,7 +130,7 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                                     </>  
                                                 }
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">
+                                            <TableCell className="text-center p-4 border text-nowrap">
                                                 <span 
                                                     className={`
                                                         inline-block px-3 py-1 rounded-full 
@@ -140,16 +140,20 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                                                     {Discount.isActive ? 'Actif' : 'Inactif'}
                                                 </span>
                                             </TableCell>
-                                            <TableCell className="text-center p-4 border">
+                                            <TableCell className="text-center p-4 border text-nowrap">
                                                 {Discount.discountType == 'regularly' && 'Chaque: ' + Discount.activeDays}
                                                 {Discount.discountType == 'limited_date' &&
-                                                    (Discount.startDate
-                                                    ? `de ${Discount.startDate} à ${Discount.endDate}`
-                                                    : '-') }
+                                                    (
+                                                        Discount.startDate
+                                                        ? `de ${Discount.startDate} à ${Discount.endDate}`
+                                                        : '-'
+                                                    ) 
+                                                }
+                                                {Discount.discountType == 'quantity' && 'Quantité: ' + Number(Discount.usageQuota)}
                                             </TableCell>
 
-                                            <TableCell className="text-center p-4 border">{Discount.startTime ? `de ${Discount.startTime.slice(0, 5)} à ${Discount.endTime.slice(0, 5)}` : '-'}</TableCell>
-                                            <TableCell className="text-center p-4 border">{formatDate(Discount.createdAt)}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">{Discount.startTime ? `de ${Discount.startTime.slice(0, 5)} à ${Discount.endTime.slice(0, 5)}` : '-'}</TableCell>
+                                            <TableCell className="text-center p-4 border text-nowrap">{formatDate(Discount.createdAt)}</TableCell>
 
                                             <TableCell className="text-center p-4 text-nowrap border">
                                                 <div className="flex justify-center items-center gap-5 lg:gap-8">
@@ -183,6 +187,8 @@ const Tableau = ({ Discounts , deleteDiscount }) => {
                     </Table>
                 </CardContent>
             </Card>
+
+
 
             {isModalVisible && (
                 <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

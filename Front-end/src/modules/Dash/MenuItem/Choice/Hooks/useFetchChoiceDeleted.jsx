@@ -15,7 +15,7 @@ export const useFetchChoiceDeleted = () => {
       setMessage(null);
 
       const token = Cookies.get("access_token");
-      const url = `${import.meta.env.VITE_BACKEND_URL}/api/choice-attributes?onlyDeleted=true`;
+      const url = `${import.meta.env.VITE_BACKEND_URL}/api/choice-attributes?onlyDeleted=true&relations=choices`;
 
       try {
         if (fetchAll) {

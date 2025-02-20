@@ -22,7 +22,7 @@ const Tableau = ({tags ,  RestoreTag}) => {
 return (
     <>
         <Card className='border-none shadow-none'>
-            <CardContent>
+            <CardContent className='p-0'>
                 <Table>
                     <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
@@ -37,8 +37,8 @@ return (
                             tags.length > 0 ? (
                                 tags.map((tag) => (
                                 <TableRow key={tag.id} className="font-sans">
-                                    <TableCell className="text-center p-4 border">{tag.tag}</TableCell>
-                                    <TableCell className="text-center p-4 border">{formatDate(tag.createdAt)}</TableCell>
+                                    <TableCell className="text-center p-4 border text-nowrap">{tag.tag}</TableCell>
+                                    <TableCell className="text-center p-4 border text-nowrap">{formatDate(tag.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center">
                                             <button
@@ -55,7 +55,7 @@ return (
                             ) : (
                                 <TableRow>
                                     <TableCell colSpan="3" className="text-center p-4">
-                                        Aucun Tag trouvé.
+                                        Aucun Tag Supprimés Trouvé.
                                     </TableCell>
                                 </TableRow>
                             )

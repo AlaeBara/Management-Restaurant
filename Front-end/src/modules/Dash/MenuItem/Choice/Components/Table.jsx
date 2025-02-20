@@ -83,7 +83,7 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
     return (
     <>
         <Card className='border-none shadow-none'>
-            <CardContent>
+            <CardContent className='p-0'>
                 <Table>
                     <TableHeader className="border bg-gray-100">
                         <TableRow className='hover:bg-transparent'>
@@ -99,7 +99,7 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
                             choices.length > 0 ? (
                                 choices.map((choice) => (
                                 <TableRow key={choice.id} className="font-sans">
-                                    <TableCell className="text-center p-4 border">{choice?.attribute}</TableCell>
+                                    <TableCell className="text-center p-4 border text-nowrap">{choice?.attribute}</TableCell>
                                     <TableCell className="text-center p-4 border">
                                         {choice.choices?.length > 0 ? (
                                             <div className="flex flex-wrap gap-2 justify-center">
@@ -117,7 +117,7 @@ const Tableau = ({choices ,  deleteChoice , fetchChoices}) => {
                                             '-'
                                         )}
                                     </TableCell>
-                                    <TableCell className="text-center p-4 border">{formatDate(choice?.createdAt)}</TableCell>
+                                    <TableCell className="text-center p-4 border text-nowrap">{formatDate(choice?.createdAt)}</TableCell>
                                     <TableCell className="text-center p-4 text-nowrap border">
                                         <div className="flex justify-center items-center gap-5 lg:gap-8">
                                             <button
