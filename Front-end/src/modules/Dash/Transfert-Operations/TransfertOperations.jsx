@@ -76,7 +76,7 @@ const Operation= () => {
                 <>
                     {transferts.length > 0 ? (
                     <>
-                        <div>
+                        <div className="grid grid-cols-1">
                             <TableauTransfert data={transferts}  Confirm={ConfirmOperation}/>
                         </div>
                         <PaginationNav

@@ -21,6 +21,7 @@ const ProduitDetails = () => {
     useEffect(() => {
         fetchInventory();
     }, [fetchInventory]);
+    console.log(inventory)
 
     
 
@@ -97,11 +98,11 @@ const ProduitDetails = () => {
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Nom du produit :</span>
-                                            <h2>{inventory.productName}</h2>
+                                            <h2>{inventory?.product?.productName}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Nom du Stock :</span>
-                                            <h2>{inventory.storageName}</h2>
+                                            <h2>{inventory?.storage?.storageName}</h2>
                                         </div>
                                         <div className={styles.infoItem}>
                                             <span className={styles.label}>Date de création :</span>
@@ -137,7 +138,7 @@ const ProduitDetails = () => {
                         <>
                             {inventorysMovements.length > 0 ? (
                             <>
-                                <div className={styles.userGrid}>
+                                <div className="grid grid-cols-1">
                                     <ResponsiveTable data={inventorysMovements} />
                                 </div>
                                 <PaginationNav

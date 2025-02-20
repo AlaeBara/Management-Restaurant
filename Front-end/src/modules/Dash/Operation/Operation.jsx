@@ -85,7 +85,7 @@ const Operation= () => {
                 <>
                     {operations.length > 0 ? (
                     <>
-                        <div>
+                        <div className="grid grid-cols-1">
                             <TableauOperation data={operations} Confirm={ConfirmOperation} confirmTransferOperation={confirmTransferOperation}  />
                         </div>
                         <PaginationNav

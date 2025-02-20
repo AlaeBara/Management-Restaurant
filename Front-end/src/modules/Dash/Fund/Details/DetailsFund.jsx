@@ -174,7 +174,7 @@ const FundDetails = () => {
                         <>
                             {operations.length > 0 ? (
                             <>
-                                <div className={styles.userGrid}>
+                                <div className="grid grid-cols-1">
                                     <TableauOperation data={operations} Confirm={ConfirmOperation} confirmTransferOperation={confirmTransferOperation} />
                                 </div>
                                 <PaginationNav

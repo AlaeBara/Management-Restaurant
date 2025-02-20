@@ -78,7 +78,7 @@ const Operation= () => {
                 <>
                     {expenses.length > 0 ? (
                     <>
-                        <div>
+                        <div className="grid grid-cols-1">
                             <TableauExpense data={expenses}  Confirm={ConfirmOperation}/>
                         </div>
                         <PaginationNav
