@@ -5,6 +5,7 @@ import {
   ShoppingCart,
   SquareMenu ,
   Utensils,
+  HandPlatter,
   Tag,
   BadgeCheck,
   Bell,
@@ -97,6 +98,11 @@ const SideBar = () => {
         title: "Tableau de bord",
         icon: LayoutDashboard,
         url: "/dash/Home",
+      },
+      {
+        title: "Serveur",
+        icon: HandPlatter,
+        url: "/dash/serveur",
       },
       {
         title: "Comptes et Access",
