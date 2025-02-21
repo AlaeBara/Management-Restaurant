@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ServeurDash.module.css';
 import Cart from './components/Carts'; 
 import { X } from 'lucide-react';
-
+import Main from './components/Main';
 
 const ServeurDash = () => {
     const [showCart, setShowCart] = useState(false);
@@ -39,6 +39,8 @@ const ServeurDash = () => {
             <h1 className={`text-2xl font-bold ${styles.typinganimation}`}>Bonjour 👋</h1>
             <p className='text-gray-500'>Vous pouvez gérer facilement les commandes des clients.</p>
         </dir>
+
+        <Main />
         
         {/* Cart Section */}
         <Cart showCart={showCart} />
