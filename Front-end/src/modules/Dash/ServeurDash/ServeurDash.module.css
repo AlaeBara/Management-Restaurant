@@ -1,9 +1,21 @@
 .container {
     display: flex;
-    flex-direction: row;
+    flex-direction: column;
     padding: 0 20px;
     gap: 20px;
     position: relative;
+}
+
+.DivTags {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
+}
+
+.TagsContainer {
+    display: flex;
+    flex-direction: row;
+    gap: 10px;
 }
 
 

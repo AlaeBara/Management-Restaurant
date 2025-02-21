@@ -35,12 +35,11 @@ const ServeurDash = () => {
 
   return (
     <div className={styles.container}>
-        <dir className={`flex flex-col p-0`}>
+        <dir className={`flex flex-col p-0 m-0`}>
             <h1 className={`text-2xl font-bold ${styles.typinganimation}`}>Bonjour 👋</h1>
             <p className='text-gray-500'>Vous pouvez gérer facilement les commandes des clients.</p>
         </dir>
-
-
+        
         {/* Cart Section */}
         <Cart showCart={showCart} />
 

@@ -23,8 +23,8 @@ const Cart = React.memo(({ showCart }) => {
         <p>0 Dh</p>
       </div>
         
-      <div className={styles.DivButton}>  
-        <button className={styles.paymentButton}>Enregistrer la commande</button>
+      <div className={styles.DivButton}> 
+        <button className={styles.paymentButton}> Enregistrer la commande</button>
         <button className={styles.CleanButton}><Trash2 /></button>
       </div>
     </div>
