@@ -30,6 +30,8 @@ const Main = memo(() => {
 
   return (
     <>
+
+        {/* Tags */}
         <div className={`${styles.container} grid grid-cols-1`}>
             <div className={`${styles.categories}`} ref={categoriesRef}>
                 {Array.from({ length: 20 }).map((_, index) => (
@@ -39,6 +41,8 @@ const Main = memo(() => {
                 ))}
             </div>
         </div>
+
+        {/* Produits */}
 
     </>
   );
