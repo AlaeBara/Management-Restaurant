@@ -14,7 +14,7 @@
     width: 50px;
     height: 50px;
     border-radius: 50%;
-    background-color: #4CAF50;
+    background-color: black;
     color: white;
     border: none;
     cursor: pointer;
@@ -24,8 +24,17 @@
     font-size: 24px;
     box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
     z-index: 1000;
+    transition: all 0.3s ease-in-out;
 }
 
+.toggleButtonActive {
+    right: 400px;
+    bottom: 30px;
+    border-radius: 10px 0 0 10px;
+    width: 30px;
+    height: 30px;
+    font-size: 10px;
+}
 
 .typinganimation {
     width: 20ch; 
@@ -39,14 +48,13 @@
     from { width: 0ch; }
     to { width: 20ch; }
 }
-  
 
-  
-  
 @media (max-width: 768px) {
     .container {
       flex-direction: column;
     }
-
-    
+    .toggleButton {
+        bottom: 10px;
+        right: 10px;
+    } 
 }

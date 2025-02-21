@@ -1,5 +1,7 @@
 import React from 'react';
 import styles from './Carts.module.css';
+import { formatDate } from '@/components/dateUtils/dateUtils';
+import { Trash2 } from 'lucide-react';
 
 const Cart = React.memo(({ showCart }) => {
   return (
@@ -7,21 +9,24 @@ const Cart = React.memo(({ showCart }) => {
       id="cartSection"
       className={`${styles.cartSection} ${showCart ? styles.cartOpen : ''}`}
     >
-        <h2>Current Order</h2>
 
-        <div className={styles.cartItems}>
-            <div className={styles.cartItem}>Item 1</div>
-            <div className={styles.cartItem}>Item 2</div>
-        </div>
+      <div className={styles.DivTitle}>
+        <h2 className={`text-2xl font-bold ${styles.Title}`}>Commande actuelle</h2>
+        <p className='text-ms text-gray-500'>Date : {formatDate(new Date())}</p>
+      </div>
+      
+      <div className={styles.cartItems}>
+      </div>
 
-        <div className={styles.cartSummary}>
-            <p>Subtotal: $XX.XX</p>
-            <p>Tax: $X.XX</p>
-            <p>Discount: $X.XX</p>
-            <p>Total: $XX.XX</p>
-        </div>
+      <div className={`${styles.cartSummary} shadow-sm`}>
+        <p>Total:</p>
+        <p>0 Dh</p>
+      </div>
         
-        <button className={styles.paymentButton}>Continue to Payment</button>
+      <div className={styles.DivButton}>  
+        <button className={styles.paymentButton}>Enregistrer la commande</button>
+        <button className={styles.CleanButton}><Trash2 /></button>
+      </div>
     </div>
   );
 });

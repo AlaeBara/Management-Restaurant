@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ServeurDash.module.css';
 import Cart from './components/Carts'; 
+import { X } from 'lucide-react';
+
 
 const ServeurDash = () => {
     const [showCart, setShowCart] = useState(false);
@@ -43,8 +45,8 @@ const ServeurDash = () => {
         <Cart showCart={showCart} />
 
         {/* Floating Toggle Button */}
-        <button className={styles.toggleButton} onClick={toggleCart}>
-            <span role="img" aria-label="cart">🛒</span>
+        <button className={`${styles.toggleButton} ${showCart ? styles.toggleButtonActive : ''}`} onClick={toggleCart}>
+            <span role="img" aria-label="cart">{showCart ? <X /> : '🛒'}</span>
         </button>
     </div>
   );
