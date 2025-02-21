@@ -20,6 +20,9 @@ import { ClientManagementModule } from 'src/client-management/client-management.
 import { InventoryModule } from 'src/inventory-managemet/inventory.module';
 import { OrderPublicController } from './controllers/public/order.public.controller';
 import { OrderPublicService } from './services/public/order.public.service';
+import { OrderEmitterEvent } from './emitter/order.emitter';
+import { OrderEventService } from './services/event/order.event.service';
+import { OutboxModule } from 'src/outbox-module/outbox.module';
 
 @Module({
   imports: [
@@ -36,6 +39,7 @@ import { OrderPublicService } from './services/public/order.public.service';
     forwardRef(() => MenuItemModule),
     forwardRef(() => ClientManagementModule),
     forwardRef(() => InventoryModule),
+    forwardRef(() => OutboxModule)
   ],
   controllers: [
     GuestController,
@@ -46,7 +50,9 @@ import { OrderPublicService } from './services/public/order.public.service';
     GuestService,
     OrderService,
     OrderItemService,
-    OrderPublicService
+    OrderPublicService,
+    OrderEmitterEvent,
+    OrderEventService
   ],
   exports: [],
 })

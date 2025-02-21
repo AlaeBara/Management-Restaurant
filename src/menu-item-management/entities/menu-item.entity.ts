@@ -144,7 +144,6 @@ export class MenuItem extends BaseEntity {
             this.choices = undefined;
         } else {
             // Handle cases where choices are null or not an array
-            console.warn('Choices are null or not an array:', this.choices);
             this.groupedChoices = {};
             this._originalChoices = [];
         }

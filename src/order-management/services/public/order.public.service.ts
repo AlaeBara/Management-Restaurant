@@ -24,6 +24,7 @@ import { MenuItemService } from "src/menu-item-management/services/menu-item.ser
 import { MenuItemTranslate } from "src/menu-item-management/entities/menu-item-translation.enity";
 import { MenuItemTranslationService } from "src/menu-item-management/services/menu-item-translation.service";
 import { MenuItemChoices } from "src/menu-item-management/entities/choices/menu-item-choices.entity";
+import { EventEmitter2 } from "@nestjs/event-emitter";
 
 export class OrderPublicService extends GenericService<Order> {
 
@@ -45,6 +46,7 @@ export class OrderPublicService extends GenericService<Order> {
         private menuItemTranslationService: MenuItemTranslationService,
         @Inject(MenuItemService)
         private menuItemService: MenuItemService,
+        private eventEmitter: EventEmitter2
     ) {
         super(dataSource, Order, 'commande');
     }
@@ -58,21 +60,31 @@ export class OrderPublicService extends GenericService<Order> {
 
     async createOrder(createOrderDto: CreateOrderDto, req: Request) {
         const queryRunner = await this.inizializeQueryRunner();
-        const order = this.orderRepository.create(createOrderDto);
 
-        const [table] = await Promise.all([
-            this.tableService.findOneByIdWithOptions(createOrderDto.tableId),
-        ]);
+        try {
+            const order = this.orderRepository.create(createOrderDto);
 
-        order.table = table;
-        const savedOrder = await queryRunner.manager.save(order);
+            const [table] = await Promise.all([
+                this.tableService.findOneByIdWithOptions(createOrderDto.tableId),
+            ]);
 
-        order.orderItems = await Promise.all(createOrderDto.items.map(async (orderItem) => {
-            return await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
-        }));
+            order.table = table;
+            const savedOrder = await queryRunner.manager.save(order);
 
-        await queryRunner.commitTransaction();
+            order.orderItems = await Promise.all(createOrderDto.items.map(async (orderItem) => {
+                return await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
+            }));
 
-        return order.orderNumber;
+            await queryRunner.commitTransaction();
+            
+            this.eventEmitter.emit('order.created', order.id);
+
+            return order.orderNumber;
+        } catch (error) {
+            await queryRunner.rollbackTransaction();
+            throw error;
+        } finally {
+            await queryRunner.release();
+        }
     }
 }

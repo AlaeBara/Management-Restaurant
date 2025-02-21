@@ -8,4 +8,7 @@ export enum OutboxAction {
   INVENTORY_QUANTITY_UPDATED = 'inventory_quantity_updated',
   NEW_INVENTORY_MOVEMENT = 'new_inventory_movement',
   INVENTORY_MOVEMENT_CREATED = 'inventory_movement_created', // should update quantity of menu items related to the inventory after a movement
+
+  //order events
+  ORDER_CREATED = 'order_created',
 }

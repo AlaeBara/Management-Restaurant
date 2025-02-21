@@ -31,6 +31,7 @@ import { InventoryService } from "src/inventory-managemet/services/inventory.ser
 import logger from "src/common/Loggers/logger";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { MenuItemChoiceService } from "./menu-item-choice.service";
+import internal from "stream";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -83,6 +84,8 @@ export class MenuItemService extends GenericService<MenuItem> {
 
             await this.createRelatedEntities(menuItem, createMenuItemDto, queryRunner, req);
             await this.discountService.setDiscountToMenuItem(menuItem, createMenuItemDto, queryRunner);
+
+            await queryRunner.commitTransaction();
 
             if (menuItem.hasRecipe) {
                 this.eventEmitter.emit('menu.item.created', menuItem);
@@ -218,6 +221,14 @@ export class MenuItemService extends GenericService<MenuItem> {
     async setQuantityBasedOnStock(menuItem: MenuItem, quantity: number): Promise<UpdateResult> {
         return await this.menuItemRepository.update(
             { id: menuItem.id },
+            { quantity: quantity }
+        );
+    }
+
+    async updateQuantity(menuItemId: string, quantity: number, queryRunner: QueryRunner): Promise<UpdateResult> {
+        return await queryRunner.manager.update(
+            MenuItem,
+            { id: menuItemId },
             { quantity: quantity }
         );
     }

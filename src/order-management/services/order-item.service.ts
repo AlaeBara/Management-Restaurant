@@ -24,7 +24,7 @@ export class OrderItemService extends GenericService<OrderItem> {
     constructor(
         @InjectDataSource() dataSource: DataSource,
         @InjectRepository(OrderItem)
-        private orderItemRepository: Repository<OrderItem>,
+        public orderItemRepository: Repository<OrderItem>,
         @Inject(MenuItemService)
         private menuItemService: MenuItemService,
         @Inject(InventoryMovementService)
@@ -37,13 +37,13 @@ export class OrderItemService extends GenericService<OrderItem> {
 
     async createOrderItem(createOrderItemDto: CreateOrderItemDto, order: Order, queryRunner: QueryRunner) {
         const orderItem = this.orderItemRepository.create(createOrderItemDto);
+        
         orderItem.order = order;
         orderItem.product = await this.menuItemService.findOneByIdWithOptions(createOrderItemDto.productId);
         orderItem.fullLabel = await this.getItemLabel(orderItem);
         await queryRunner.manager.save(OrderItem, orderItem);
-        //await this.updateMenuItemQuantity(orderItem, order, queryRunner);
-        return orderItem;
 
+        return orderItem;
     }
 
     async getItemLabel(orderItem: OrderItem): Promise<string> {

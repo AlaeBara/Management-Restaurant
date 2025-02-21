@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { DataSource, Raw, Repository } from "typeorm";
+import { DataSource, QueryRunner, Raw, Repository } from "typeorm";
 import { InjectDataSource, InjectRepository } from "@nestjs/typeorm";
 
 import { GenericService } from "src/common/services/generic.service";
@@ -17,13 +17,19 @@ export class OutboxService extends GenericService<Outbox> {
         super(dataSource, Outbox, 'outbox');
     }
 
-    async initOutbox(action: OutboxAction, payload: any, status: OutboxStatus = OutboxStatus.PENDING, lastFailedReason?: string): Promise<Outbox> {
+    async initOutbox(action: OutboxAction, payload: any, status: OutboxStatus = OutboxStatus.PENDING, lastFailedReason?: string, queryRunner?: QueryRunner): Promise<Outbox> {
         const outbox = await this.outboxRepository.create({
             action,
             payload,
             status,
             lastFailedReason
         });
+        console.log('Outbox created:', outbox);
+
+        if (queryRunner) {
+            return queryRunner.manager.save(outbox);
+        }
+
         return this.outboxRepository.save(outbox);
     }
 
