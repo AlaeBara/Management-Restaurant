@@ -6,7 +6,7 @@ import 'swiper/css/navigation';
 import styles from './ImageSlider.module.css';
 
 
-const ImageSlider = memo(({ item}) => {
+const ImageSlider = memo(({item}) => {
     const [currentSlide, setCurrentSlide] = useState(1); 
     const imageLinks = [
         "https://images.deliveryhero.io/image/fd-th/LH/jb7y-listing.jpg",

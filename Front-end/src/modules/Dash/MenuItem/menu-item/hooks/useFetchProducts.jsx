@@ -35,7 +35,7 @@ export const useFetchProduits = () => {
           }
 
           setProduits(allProduits);
-          setTotalPurchases(allProduits.length);
+          setTotalProduits(allProduits.length);
         } else {
           const response = await axios.get(url, {
             params: { page, limit, sort: "createdAt:desc" },

@@ -3,16 +3,19 @@ import styles from './Main.module.css';
 import { useFetchTags } from '../hooks/UseFetcchTags';
 import { Loader } from 'lucide-react';
 import Produit from './Produit';
-
+import { useFetchProduits } from '../hooks/UseFetchProduits';
 
 const Main = memo(() => {
     const [selectedCategory, setSelectedCategory] = useState('Tous');
 
     const { tags, Isloading, message, fetchTags } = useFetchTags();
+    const { produits, totalProduits, Isloading:IsloadingProduits, message:msgProduits, fetchProduits } = useFetchProduits();
+    
+    
     useEffect(() => {
         fetchTags({fetchAll: true});
+        fetchProduits({fetchAll: true});
     }, []);
-
 
     //sroll with wheel of mouse
     const categoriesRef = useRef(null);
@@ -77,10 +80,24 @@ const Main = memo(() => {
 
         {/* Produits */}
         <div className='grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4'>
-            {Array.from({ length: 10 }).map((_, index) => (
-                <Produit key={index} />
-            ))}
-            
+            {IsloadingProduits ? 
+                <div className='flex flex-col justify-center items-center h-full'>
+                    <Loader className='w-5 h-5 animate-spin' />
+                    <p className='text-gray-500'>Chargement des produits...</p>
+                </div>
+                :
+                <>
+                    {msgProduits ? (
+                        <div className='flex justify-center items-center h-full'>
+                            <p className='text-red-500 text-center'>{msgProduits}</p>
+                        </div>
+                    ) : (
+                        produits.map((produit) => (
+                            <Produit key={produit.id} produit={produit} />
+                        ))
+                    )}
+                </>
+            }
         </div>
 
     </>
