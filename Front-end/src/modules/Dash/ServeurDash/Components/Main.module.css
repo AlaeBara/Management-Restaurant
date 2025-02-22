@@ -1,7 +1,7 @@
 .container {
     max-width: 100%;
-    margin: 20px auto;
-    margin-bottom: 20px;
+    margin: 10px auto;
+    margin-bottom: 5px;
 }
 /* Categories Section */
 .categories {
@@ -20,7 +20,7 @@
 .categoryButton {
     flex: 0 0 auto;
     padding: 0.5rem 1rem;
-    border-radius: 9999px;
+    border-radius: 10px;
     background-color: #f3f4f6;
     color: #2d3748;
     border: none;
@@ -29,13 +29,16 @@
     white-space: nowrap;
     font-size: 0.875rem; 
 }
+
 .categoryButton:hover {
-    background-color: #c8e6c9;
+    background-color: #dcdde0;
 }
+
 .categoryButton.active {
-    background-color: #2d6a4f;
+    background-color: #2d3748;
     color: white;
 }
+
 /* Responsive Styles */
 @media (max-width: 768px) {
     .categories {
