@@ -4,12 +4,15 @@ import ImageSlider from './imageSliderForPopUp';
 import style from './PopUpProducts.module.css';
 import { useCart } from '../../context/CartContext'; 
 import { formatPrice } from '../FormatPrice/FormatPrice';
+import { ShoppingBasket } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 
 const PopUpProduct = memo(({ product, onClose, language }) => {
   const [quantity, setQuantity] = useState(1);
   const [selectedSupplements, setSelectedSupplements] = useState([]);
   const { addToCart } = useCart();
+  const { t } = useTranslation();
 
   // Static data for supplements (replace with dynamic data later)
   const supplements = [
@@ -138,10 +141,10 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
         {/* Fixed Add to Cart Button */}
         <div className="sticky bottom-0 bg-white p-4 border-t border-gray-200">
           <button
-            className="w-full bg-[#0C5800] text-white py-3 rounded-lg hover:bg-[#245e48] transition-colors shadow-lg"
+            className="flex items-center justify-center w-full bg-[#2d3748] text-white py-3 rounded-lg transition-colors shadow-lg"
             onClick={handleAddToCartClick}
           >
-            Add to Cart
+            <ShoppingBasket className="mr-2" /> {t('Add to Cart')}
           </button>
         </div>
       </div>

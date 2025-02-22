@@ -13,8 +13,8 @@ import PopUpProduct from '../../../../../components/PopUpProducts/PopUpProduct';
 import Produits from '../../../../../components/Produit/Produits';
 //state golabl
 import { useCart } from '../../../../../context/CartContext';
-
-
+// Toastify
+import {ToastContainer } from 'react-toastify';
 
 
 const Menu = memo(({ previousStep, nextStep }) => {
@@ -102,7 +102,7 @@ const Menu = memo(({ previousStep, nextStep }) => {
       finalPrice: item.finalPrice || 0,
     };
 
-    addToCart(cartItem); // Use the context function to add the item to the cart
+    addToCart(cartItem);
   }, [addToCart, quantities, language]);
 
 
@@ -128,10 +128,12 @@ const Menu = memo(({ previousStep, nextStep }) => {
   }, [tags, selectedCategory]);
 
   const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
+  
 
   return (
     <>
       <div className={styles.container} dir={dir}>
+        <ToastContainer />
         <h1 className={styles.title}>{t('full_menu_title')}</h1>
         <p className={styles.description}>{t('full_menu_description')}</p>
 

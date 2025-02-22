@@ -1,10 +1,16 @@
 import React, { createContext, useContext, useState, useCallback, useEffect } from 'react';
 import { formatPrice } from '../components/FormatPrice/FormatPrice';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
+import { useClientPreferences } from './OrderFlowContext';
 
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    
+    const [language, setLanguage] = useState(() => {
+        const savedLanguage = localStorage.getItem('language');
+        return savedLanguage || 'fr';
+    });
     
     const [cart, setCart] = useState(() => {
         const savedCart = localStorage.getItem('cart');
@@ -19,33 +25,75 @@ export const CartProvider = ({ children }) => {
     // Function to add an item to the cart
     const addToCart = useCallback((item) => {
         setCart((prevCart) => {
-            const existingItem = prevCart.find((cartItem) => cartItem.productId === item.id);
+        const existingItem = prevCart.find((cartItem) => cartItem.productId === item.id);
 
-            if (existingItem) {
-                return prevCart.map((cartItem) =>
-                    cartItem.productId === item.id
-                        ? { 
-                            ...cartItem, 
-                            quantity: cartItem.quantity + item.quantity,
-                            total: parseFloat(cartItem.price) * (cartItem.quantity + item.quantity)
-                        }
-                        : cartItem
-                );
-            } else {
-                return [
-                    ...prevCart, 
-                    { 
-                        productId: item.id, 
-                        type: 100, 
-                        quantity: item.quantity, 
-                        price: Number(formatPrice(item.finalPrice)),
-                        total: Number(formatPrice(item.finalPrice) * Number(item.quantity)) ,
-                        name: item.name 
-                    }
-                ];
-            }
+        if (existingItem) {
+            const updatedCart = prevCart.map((cartItem) =>
+            cartItem.productId === item.id
+                ? {
+                    ...cartItem,
+                    quantity: cartItem.quantity + item.quantity,
+                    total: parseFloat(cartItem.price) * (cartItem.quantity + item.quantity),
+                }
+                : cartItem
+            );
+
+            // Show toast for updated quantity
+            const message =
+            language === 'en'
+                ? `${item.name} quantity updated to ${existingItem.quantity + item.quantity} `
+                : language === 'fr'
+                ? `Quantité de ${item.name} mise à jour à ${existingItem.quantity + item.quantity} !`
+                : `! ${existingItem.quantity + item.quantity} إلى ${item.name} تم تحديث الكمية `;
+
+            toast.success(message, {
+                position: 'bottom-center',
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                style: { backgroundColor: '#fff', color: '#2d3748' },
+            });
+
+            return updatedCart;
+        } else {
+            const newCart = [
+            ...prevCart,
+            {
+                productId: item.id,
+                type: 100,
+                quantity: item.quantity,
+                price: Number(formatPrice(item.finalPrice)),
+                total: Number(formatPrice(item.finalPrice) * Number(item.quantity)),
+                name: item.name,
+            },
+            ];
+
+            // Show toast for new item added
+            const message =
+            language === 'en'
+                ? `${item.name} added to cart !`
+                : language === 'fr'
+                ? `${item.name} ajouté au panier !`
+                : `! ${item.name} تم إضافة  إلى السلة`;
+
+            toast.success(message, {
+                position: 'bottom-center',
+                autoClose: 1500,
+                hideProgressBar: true,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                style: { backgroundColor: '#fff', color: '#2d3748' },
+            });
+
+            return newCart;
+        }
         });
-    }, []);
+    }, [language]); 
 
     // Function to remove an item from the cart
     const removeFromCart = useCallback((productId) => {

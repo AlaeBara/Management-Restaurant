@@ -8,6 +8,7 @@ const LanguageSelector =  memo(({ nextStep }) => {
 
   const handleLanguageChange = (lang) => {
     setLanguage(lang);
+    localStorage.setItem('language', lang);
   };
 
   return (

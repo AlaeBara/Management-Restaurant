@@ -4,7 +4,11 @@ import React, { createContext, useContext, useState } from 'react';
 const OrderFlowContext = createContext();
 
 export const ClientPreferencesProvider = ({ children }) => {
-  const [language, setLanguage] = useState(''); // Default language state
+  // const [language, setLanguage] = useState(''); // Default language state
+  const [language, setLanguage] = useState(() => {
+    const savedLanguage = localStorage.getItem('language');
+    return savedLanguage || 'fr';
+  });
   const [connect, setconnect] = useState(null); // Stores type of connect
   const [typemenu, settypemenu] = useState(null); //  Stores type of menu
 

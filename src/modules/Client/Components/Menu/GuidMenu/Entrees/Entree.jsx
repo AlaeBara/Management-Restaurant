@@ -14,6 +14,8 @@ import PopUpProduct from '../../../../../../components/PopUpProducts/PopUpProduc
 import Produits from '../../../../../../components/Produit/Produits';
 //state golabl
 import { useCart } from '../../../../../../context/CartContext';
+// Toastify
+import {ToastContainer } from 'react-toastify';
 
 
 
@@ -133,7 +135,7 @@ const Entree = memo(({ previousStep, nextStep }) => {
   return (
     <>
       <div className={styles.container} dir={dir}>
-
+        <ToastContainer />
         <h1 className={styles.title}>{t('Main Menu')}</h1>
 
         {/* Categories Section */}
