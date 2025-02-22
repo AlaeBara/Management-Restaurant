@@ -35,7 +35,7 @@ const OrderSuccess = () => {
 
             <div className="flex justify-center mt-5">
                 <button
-                    className="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition duration-300"
+                    className="bg-[#2d3748] text-white px-6 py-3 rounded-lg transition duration-300"
                     onClick={handleReturnHome}
                 >
                     {t('Return to Home')}

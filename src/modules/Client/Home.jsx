@@ -10,9 +10,9 @@ import Cart from './Components/Cart/Cart';
 import SendCommande from './Components/SendCommande/SendCommande';
 
 const Home = () => {
-    const [mainStep, setMainStep] = useState(() => {
-      return parseInt(localStorage.getItem('mainStep')) || 1;
-    });
+  const [mainStep, setMainStep] = useState(() => {
+    return parseInt(localStorage.getItem('mainStep')) || 1;
+  });
     
   const [guidStep, setGuidStep] = useState(() => {
     return parseInt(localStorage.getItem('guidStep')) || 1;

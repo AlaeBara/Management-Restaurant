@@ -10,7 +10,7 @@ export const useSendOrder = () => {
         setLoading(true); 
         setError(null); 
 
-        const url = `${import.meta.env.VITE_BACKEND_URL}/api/orders`; 
+        const url = `${import.meta.env.VITE_BACKEND_URL}/api/orders/public`; 
 
         try {
             const response = await axios.post(url, orderData); 
@@ -18,7 +18,7 @@ export const useSendOrder = () => {
             return response.data;
         } catch (err) {
             console.error("Failed to send order:", err.response.data);
-            setError("Une erreur s'est produite lors de l'envoi de la commande."); 
+            setError(err.response.data.message); 
         } finally {
             setLoading(false); 
         }

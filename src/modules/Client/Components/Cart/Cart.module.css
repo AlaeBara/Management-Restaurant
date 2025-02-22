@@ -61,7 +61,7 @@
 }
 
 .deleteButton {
-  background-color: var(--primary-color);
+  background-color: #2d3748;
   color: white;
   border: none;
   padding: 8px 16px;
@@ -72,11 +72,11 @@
   gap: 8px;
   font-size: 14px;
   font-weight: 600;
-  transition: all 0.3s ease;
+  transition: all 0.5s ease;
 }
 
 .deleteButton:hover {
-  background-color: var(--primary-hover-color);
+  background-color: #1e242e;
 }
 
 .totalSection {
@@ -88,13 +88,13 @@
 .totalLabel {
   font-size: 18px;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #2d3748;
 }
 
 .totalAmount {
   font-size: 18px;
   font-weight: 700;
-  color: var(--primary-color);
+  color: #2d3748;
 }
 
 .btnBox {
@@ -115,11 +115,11 @@
   padding: 10px 20px;
   font-size: 1rem;
   font-weight: bold;
-  color: white;
+  color: #f3f4f6;
   border: none;
   border-radius: 8px;
   cursor: pointer;
-  background-color: var(--primary-color);
+  background-color:  #2d3748;
   transition: background-color 0.3s ease;
 }
 

@@ -169,8 +169,8 @@ const Dessert = memo(({ previousStep, nextStep }) => {
         ) : (
           <div>
             {filteredItems.length === 0 ? (
-              <div className="mt-[20vh] flex flex-col items-center justify-center text-red-500 text-center">
-                <SearchX className="h-12 w-12 mb-4 text-red-500" />
+              <div className="mt-[20vh] flex flex-col items-center justify-center text-[#2d3748] text-center">
+                <SearchX className="h-12 w-12 mb-4 text-[#2d3748]" />
                 {t('CategorieVide')}
               </div>
             ) : (

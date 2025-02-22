@@ -82,8 +82,8 @@
 }
   
 .selected {
-  border-color: var(--main_color);
-  background-color: #e3f2fd;
+  border-color: #2d3748;
+  background-color: #f3f4f6;
 }
   
 .langText {
@@ -107,14 +107,14 @@
 
 
 .btn_next_Active{
-  background-color: var(--main_color);
+  background-color: #2d3748;
   cursor: pointer;
 }
 
 .btn_next_Disable{
-  background-color: #62925b;
+  background-color: #f3f4f6;
+  color: #2d3748;
 }
-
 
 
   

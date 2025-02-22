@@ -1,5 +1,5 @@
 import React, {memo} from 'react';
-import { Plus, Minus, ShoppingCart } from 'lucide-react';
+import { Plus, Minus, ShoppingBasket  } from 'lucide-react';
 import styles from '../../modules/Client/Components/Menu/FullMenu/FullMenu.module.css';
 import ImageSlider from '../imageSlider/ImageSlider';
 import { formatPrice } from '../FormatPrice/FormatPrice';
@@ -58,8 +58,8 @@ const Produits = memo(({ produits, language, quantities, handleIncrement, handle
                     </button>
                 </div>
 
-                <button className={styles.addToCartButton} onClick={(e) => { e.stopPropagation(); handleAddToCart(item); }}>
-                    <ShoppingCart className={styles.icon} />
+                <button className={styles.addToCartButton} title='Ajouter au panier' onClick={(e) => { e.stopPropagation(); handleAddToCart(item); }}>
+                    <ShoppingBasket  className={styles.icon} />
                 </button>
             </div>
         </div>
