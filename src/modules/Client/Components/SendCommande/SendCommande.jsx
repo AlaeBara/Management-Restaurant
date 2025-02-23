@@ -65,7 +65,6 @@ const SendCommande = memo(({ previousStep }) => {
   };
 
 
-  
   // Display error toast if there's an error
   useEffect(() => {
     if (error) {
@@ -77,13 +76,7 @@ const SendCommande = memo(({ previousStep }) => {
     <>
 
       <ToastContainer
-        position="top-center"
-        style={{ 
-          top: "50%", 
-          left: "50%", 
-          transform: "translate(-50%, -50%)", 
-          maxWidth: "90%" 
-        }}
+        position="top-right"
         autoClose={5000}
         hideProgressBar={false}
         newestOnTop={false}

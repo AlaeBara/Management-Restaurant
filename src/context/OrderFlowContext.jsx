@@ -9,6 +9,7 @@ export const ClientPreferencesProvider = ({ children }) => {
     const savedLanguage = localStorage.getItem('language');
     return savedLanguage || 'fr';
   });
+  
   const [connect, setconnect] = useState(null); // Stores type of connect
   const [typemenu, settypemenu] = useState(null); //  Stores type of menu
 

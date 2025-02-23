@@ -7,11 +7,10 @@ import { useClientPreferences } from './OrderFlowContext';
 const CartContext = createContext();
 
 export const CartProvider = ({ children }) => {
-    const [language, setLanguage] = useState(() => {
-        const savedLanguage = localStorage.getItem('language');
-        return savedLanguage || 'fr';
-    });
-    
+
+    const { language, setLanguage } = useClientPreferences();
+
+
     const [cart, setCart] = useState(() => {
         const savedCart = localStorage.getItem('cart');
         return savedCart ? JSON.parse(savedCart) : [];
