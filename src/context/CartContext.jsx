@@ -46,7 +46,7 @@ export const CartProvider = ({ children }) => {
                 : `! ${existingItem.quantity + item.quantity} إلى ${item.name} تم تحديث الكمية `;
 
             toast.success(message, {
-                position: 'bottom-center',
+                position: 'top-right',
                 autoClose: 1500,
                 hideProgressBar: true,
                 closeOnClick: true,
@@ -79,7 +79,7 @@ export const CartProvider = ({ children }) => {
                 : `! ${item.name} تم إضافة  إلى السلة`;
 
             toast.success(message, {
-                position: 'bottom-center',
+                position: 'top-right',
                 autoClose: 1500,
                 hideProgressBar: true,
                 closeOnClick: true,
