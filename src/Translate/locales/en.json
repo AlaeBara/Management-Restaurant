@@ -54,6 +54,9 @@
     "Return to Home": "Return to Home",
 
     "Actions": "Actions",
-    "Add to Cart": "Add to Cart"
+    "Add to Cart": "Add to Cart",
+    
+    "supplements": "Supplements",
+    "noSupplements": "No supplements"
     
 }

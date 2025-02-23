@@ -10,10 +10,6 @@
 }
   
 .scrollbarcustom::-webkit-scrollbar-thumb {
-  background: #888; /* Darker gray thumb */
+  background: #c7c4c4; /* Darker gray thumb */
   border-radius: 4px; /* Rounded corners */
-}
-
-.radioInput{
-  accent-color: #2d3748;
 }
