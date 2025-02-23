@@ -19,8 +19,8 @@ const Cart = memo(({ previousStep, nextStep }) => {
     }
   }, [cart]);
 
-  const handleDelete = (productId) => {
-    removeFromCart(productId);
+  const handleDelete = (productId, supplements) => {
+    removeFromCart(productId, supplements);
   };
 
   const handleQuantityChange = (productId, change) => {
@@ -62,9 +62,24 @@ const Cart = memo(({ previousStep, nextStep }) => {
               </div>
             ) : cart.length > 0 ? (
               cart.map((item) => (
-                <div key={item.productId} className={styles.invoiceRow}>
+                <div key={`${item.productId}-${JSON.stringify(item.supplements)}`} className={styles.invoiceRow}>
                   <div className={styles.item}>
-                    {item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name'}
+                    <div className={styles.itemName}>
+                      {item.translates?.find((t) => t.languageValue === language)?.name || item.name || 'No Name'}
+                    </div>
+                    {/* Display Supplements */}
+                    {item.supplements && item.supplements.length > 0 && (
+                      <div className='flex flex-col gap-2 mt-2'>
+                        <p className='text-sm font-semibold'>{t('supplements')}:</p>
+                        <ul className='list-disc list-inside'>
+                          {item.supplements.map((supplement, index) => (
+                            <li key={index} className='text-sm'>
+                              {supplement.name} (+{formatPrice(supplement.price)} Dh)
+                            </li>
+                          ))}
+                        </ul>
+                      </div>
+                    )}
                   </div>
                   <div className={styles.qty}>
                     <div className={styles.quantityControl}>
@@ -73,7 +88,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
                         onClick={() => handleQuantityChange(item.productId, -1)}
                         disabled={item.quantity <= 1}
                       >
-                        <Minus className='w-4 h-4' />
+                        <Minus className="w-4 h-4" />
                       </button>
                       <span className={styles.quantityValue}>
                         {item.quantity}
@@ -82,7 +97,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
                         className={styles.quantityButton}
                         onClick={() => handleQuantityChange(item.productId, 1)}
                       >
-                        <Plus className='w-4 h-4' />
+                        <Plus className="w-4 h-4" />
                       </button>
                     </div>
                   </div>
@@ -92,9 +107,9 @@ const Cart = memo(({ previousStep, nextStep }) => {
                   <div className={styles.actions}>
                     <button
                       className={styles.deleteButton}
-                      onClick={() => handleDelete(item.productId)}
+                      onClick={() => handleDelete(item.productId, item.supplements)}
                     >
-                      <Trash className='w-4 h-4' />
+                      <Trash className="w-4 h-4" />
                     </button>
                   </div>
                 </div>
@@ -129,7 +144,6 @@ const Cart = memo(({ previousStep, nextStep }) => {
           {t('Next')}
         </button>
       </div>
-      
     </>
   );
 });

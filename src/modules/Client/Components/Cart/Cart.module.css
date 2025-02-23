@@ -158,7 +158,9 @@
   }
 
   .btnBox {
-    gap: 20px;
+    display: flex;
+    justify-content: space-between;
+    gap: 0;
   }
 
   .quantityButton {
@@ -169,6 +171,7 @@
     padding: 8px 8px;
   }
 }
+
 
 
 

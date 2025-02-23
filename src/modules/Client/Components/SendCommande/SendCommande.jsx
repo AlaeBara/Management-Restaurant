@@ -5,9 +5,11 @@ import { useTranslation } from 'react-i18next';
 import { useCart } from '../../../../context/CartContext';
 import { formatPrice } from '../../../../components/FormatPrice/FormatPrice';
 import { useSendOrder } from '../../../../Hooks/SendOrder/useSendOrder';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+
+
 
 const SendCommande = memo(({ previousStep }) => {
   const { t, i18n } = useTranslation();
@@ -31,12 +33,15 @@ const SendCommande = memo(({ previousStep }) => {
 
   const { sendOrder, loading, error } = useSendOrder();
 
+  const [searchParams] = useSearchParams();
+  const qrcode = searchParams.get('qrcode');
+
   const transformCartData = () => {
     const transformedCart = {
       totalAmount: calculateTotal(),
       // numberOfSeats: 4, 
       // totalAditionalPrice: 20.00, 
-      tableId: "00955e03-7c92-42ef-94ef-596bb1e68dde", 
+      tableId: qrcode || "00955e03-7c92-42ef-94ef-596bb1e68dde", 
       items: cart.map(item => ({
         productId: item.productId,
         type: item.type,
@@ -45,9 +50,9 @@ const SendCommande = memo(({ previousStep }) => {
         total: item.total
       }))
     };
+    console.log(transformedCart)
     return transformedCart;
   };
-
 
   const handleSendOrder = async () => {
     const orderData = transformCartData();
@@ -68,9 +73,17 @@ const SendCommande = memo(({ previousStep }) => {
   // Display error toast if there's an error
   useEffect(() => {
     if (error) {
-      toast.error(error);
+      // Check if error is an array
+      if (Array.isArray(error)) {
+        const errorMessage = error.join('\n');
+        toast.error(errorMessage);
+      } else {
+        // If error is a string, display it directly
+        toast.error(error);
+      }
     }
   }, [error]);
+
 
   return (
     <>

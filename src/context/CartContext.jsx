@@ -24,7 +24,14 @@ export const CartProvider = ({ children }) => {
     // Function to add an item to the cart
     const addToCart = useCallback((item) => {
         setCart((prevCart) => {
-        const existingItem = prevCart.find((cartItem) => cartItem.productId === item.id);
+
+        //old condition
+        // const existingItem = prevCart.find((cartItem) => cartItem.productId === item.id);
+        //new condition
+        const existingItem = prevCart.find((cartItem) =>
+            cartItem.productId === item.id &&
+            JSON.stringify(cartItem.supplements) === JSON.stringify(item.supplements || [])
+        );
 
         if (existingItem) {
             const updatedCart = prevCart.map((cartItem) =>
@@ -67,6 +74,7 @@ export const CartProvider = ({ children }) => {
                 price: Number(formatPrice(item.finalPrice)),
                 total: Number(formatPrice(item.finalPrice) * Number(item.quantity)),
                 name: item.name,
+                supplements: item.supplements || [],
             },
             ];
 
@@ -94,10 +102,15 @@ export const CartProvider = ({ children }) => {
         });
     }, [language]); 
 
-    // Function to remove an item from the cart
-    const removeFromCart = useCallback((productId) => {
-        setCart((prevCart) => prevCart.filter((item) => item.productId !== productId));
+    const removeFromCart = useCallback((productId, supplements = []) => {
+        setCart((prevCart) =>
+            prevCart.filter((item) =>
+                item.productId !== productId ||
+                JSON.stringify(item.supplements) !== JSON.stringify(supplements)
+            )
+        );
     }, []);
+      
 
     // Function to update the quantity of an item in the cart
     const updateCartItemQuantity = useCallback((productId, newQuantity) => {

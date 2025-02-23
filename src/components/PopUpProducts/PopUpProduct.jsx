@@ -13,6 +13,7 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
   const [selectedSupplements, setSelectedSupplements] = useState([]);
   const { addToCart } = useCart();
   const { t } = useTranslation();
+  const { i18n } = useTranslation();
 
   const handleIncrement = () => {
     setQuantity((prev) => prev + 1);
@@ -33,32 +34,40 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
   const { groupedChoices } = product;
 
   const handleAddToCartClick = () => {
-    // Calculate the total price including supplements
-    const supplementsTotal = (product.supplements || []).reduce((total, supplementId) => {
-      const supplement = groupedChoices.find((s) => s.id === supplementId);
-      return total + (supplement ? supplement.price : 0);
+    // Calculate the total price of selected supplements
+    const supplementsTotal = selectedSupplements.reduce((total, supplementId) => {
+      const supplement = Object.values(product.groupedChoices || {})
+        .flat()
+        .find((choice) => choice.id === supplementId);
+      return total + (supplement ? parseFloat(supplement.additionalPrice) : 0);
     }, 0);
 
-    console.log(supplementsTotal);
-
-    // Create the cart item
+    // Create the cart item with supplements data
     const cartItem = {
       id: product.id,
       name: product.translates.find((t) => t.languageValue === language)?.name || product.name,
-      finalPrice: product.finalPrice + supplementsTotal,
+      finalPrice: parseFloat(product.finalPrice) + supplementsTotal,
       quantity,
+      supplements: selectedSupplements.map((supplementId) => {
+        const supplement = Object.values(product.groupedChoices || {})
+          .flat()
+          .find((choice) => choice.id === supplementId);
+        return supplement
+          ? { id: supplement.id, name: supplement.value, price: parseFloat(supplement.additionalPrice) }
+          : null;
+      }).filter(Boolean),
     };
 
     // Add the item to the cart using the context function
     addToCart(cartItem);
 
     // Close the popup
-    onClose();
+    // onClose();
   };
 
-
+  const dir = i18n.language === 'ar' ? 'rtl' : 'ltr';
   return (
-    <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4`}>
+    <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4`} dir={dir}>
       <div className={`bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative flex flex-col shadow-2xl ${style.scrollbarcustom}`}>
         
         {/* Fixed close btn and Product Image */}
@@ -95,8 +104,6 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
             )}
           </div>
 
-
-
           {/* Quantity Control */}
           <div className="flex items-center justify-center gap-4 mb-6">
             <button
@@ -113,7 +120,6 @@ const PopUpProduct = memo(({ product, onClose, language }) => {
               <Plus className="w-4 h-4" />
             </button>
           </div>
-
 
           {/* Supplements Section */}
           <div className="mb-6">
