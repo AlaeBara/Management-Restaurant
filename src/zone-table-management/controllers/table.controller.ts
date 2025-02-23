@@ -69,6 +69,13 @@ export class TableController {
     return this.tableService.findAllGroupByZone();
   }
 
+  @Get('find/:idOrTableCode')
+  @Permissions('read-table')
+  @ApiOperation({ summary: 'Get a table by id or table code' })
+  async getTableByIdOrTableCode(@Param('idOrTableCode') idOrTableCode: string) {
+    return this.tableService.getTableByIdOrTableCode(idOrTableCode);
+  }
+
   @Get(':id')
   @Permissions('view-table')
   @ApiOperation({ summary: 'Get a table by id' })
@@ -141,4 +148,6 @@ export class TableController {
     await this.tableService.createManyTables(createTablesDto);
     return { message: 'Super! Chaque table a été créée avec succès', status: 201 };
   }
+
+  
 }

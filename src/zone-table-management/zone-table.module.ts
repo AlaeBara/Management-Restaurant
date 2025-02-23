@@ -11,6 +11,8 @@ import { ZonePermissionSeeder } from './seeders/zone-permissions.dto';
 import { qrCodeModule } from 'src/qr-code/qr-code.module';
 import { User } from 'src/user-management/entities/user.entity';
 import { UserManagementModule } from 'src/user-management/user-management.module';
+import { RedirectController } from './controllers/redirect.controller';
+import { RedirectService } from './services/redirect.service';
 
 @Module({
   imports: [
@@ -20,13 +22,15 @@ import { UserManagementModule } from 'src/user-management/user-management.module
   ],
   controllers: [
     ZoneController,
-    TableController
+    TableController,
+    RedirectController
   ],
   providers: [
     ZoneService,
     TableService,
     TablePermissionSeeder,
     ZonePermissionSeeder,
+    RedirectService
   ],
   exports: [
     TablePermissionSeeder,

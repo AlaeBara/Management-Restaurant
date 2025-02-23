@@ -17,6 +17,7 @@ import QrcodeService from 'src/qr-code/services/qrcode.service';
 import { TableStatus } from '../enums/table-status.enum';
 import { CreateManyTablesDto } from '../dtos/table/create-many-tables.dto';
 import { TableObjectDto } from '../dtos/table/table-object.dto';
+import { isUUID } from 'class-validator';
 
 @Injectable()
 export class TableService extends GenericService<Table> {
@@ -36,10 +37,10 @@ export class TableService extends GenericService<Table> {
    * @param table Table
    * @returns Promise<Table> with the QR code
    */
-  async generateQrCode(table: Table) {
+  async generateTableQrCode(table: Table) {
     // Generate a QR code with the MENU_WITH_QRCODE_URL and the table id
     const qrcode = await this.qrcodeService.generateQrCode(
-      process.env.MENU_WITH_QRCODE_URL + table.id,
+      process.env.CLIENT_MENU_BACKEND_ENDPOINT + table.id,
     );
 
     // Update the table with the QR code
@@ -47,6 +48,10 @@ export class TableService extends GenericService<Table> {
 
     // Save the table
     return this.tableRepository.save(table);
+  }
+
+  async getMenuUrl(table: Table) {
+    return process.env.CLIENT_MENU_URL + table.id;
   }
 
   /**
@@ -85,7 +90,7 @@ export class TableService extends GenericService<Table> {
     if (tableDto.zoneUUID) await this.assignZone(table, tableDto.zoneUUID);
 
     // Generate a QR code for the table
-    await this.generateQrCode(table);
+    await this.generateTableQrCode(table);
 
     // Return the table
     return table;
@@ -165,7 +170,7 @@ export class TableService extends GenericService<Table> {
       throw new BadRequestException('La table existe déjà');
     }
   }
- 
+
   async createManyTables(object: CreateManyTablesDto) {
     const zone = await this.zoneService.findOneByIdWithOptions(object.zoneUUID);
 
@@ -194,7 +199,7 @@ export class TableService extends GenericService<Table> {
         tableName: `Table ${i}`,
         zone: zone,
         qrcode: await this.qrcodeService.generateQrCode(
-          process.env.MENU_WITH_QRCODE_URL + tableCode,
+          process.env.CLIENT_MENU_BACKEND_ENDPOINT + tableCode,
         ),
         tableStatus: object.tableStatus || TableStatus.AVAILABLE,
         isActive: object.isActive !== undefined ? object.isActive : true,
@@ -211,6 +216,28 @@ export class TableService extends GenericService<Table> {
       select: ['tableCode'], // Only fetch the tableCode column for efficiency
       withDeleted: false
     });
+  }
+
+  async getTableByIdOrTableCode(idOrTableCode: string) {
+    let table: Table | null = null;
+
+    if (isUUID(idOrTableCode)) {
+      table = await this.tableRepository.findOne({
+        where: { id: idOrTableCode },
+        withDeleted: false
+      });
+    } else {
+      table = await this.tableRepository.findOne({
+        where: { tableCode: idOrTableCode },
+        withDeleted: false
+      });
+    }
+
+    if (!table) {
+      throw new NotFoundException('La table n\'existe pas');
+    }
+
+    return table;
   }
 
 }

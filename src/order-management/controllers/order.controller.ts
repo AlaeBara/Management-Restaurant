@@ -4,7 +4,8 @@ import {
     Delete, Get, Patch, Post, Put,
     Inject,
     Param,
-    Query
+    Query,
+    Req
 } from "@nestjs/common";
 import {
     ApiBearerAuth,
@@ -16,6 +17,7 @@ import { OrderService } from "../services/order.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Order } from "../entities/order.entity";
 import { ParseULIDPipe } from "src/common/pipes/parse-ulid.pipe";
+import { CreateOrderDto } from "../dtos/order/create-order.dto";
 
 @Controller('api/orders')
 @ApiTags('orders')
@@ -57,5 +59,12 @@ export class OrderController {
     @ApiOperation({ summary: 'Get a order by id or order number' })
     async getOrder(@Param('idOrOrderNumber') idOrOrderNumber: string) {
         return this.orderService.findOrderByIdOrOrderNumber(idOrOrderNumber);
+    }
+
+    @Post()
+    @Permissions('create-order')
+    @ApiOperation({ summary: 'Create a new order' })
+    async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() req: Request) {
+        return this.orderService.createOrderByStaff(createOrderDto, req);
     }
 }
