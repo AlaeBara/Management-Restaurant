@@ -9,6 +9,6 @@ export function getLabelServiceType(serviceType: ServiceType): string {
         case ServiceType.SERVICE_A_LA_FOIS:
             return 'Service à la fois';
         case ServiceType.SERVICE_GUIDE:
-            return 'Service guidé';
+            return 'Service guidé';
     }
 }

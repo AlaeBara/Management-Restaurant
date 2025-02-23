@@ -52,10 +52,10 @@ export class OrderController {
         );
     }
 
-    @Get(':id')
+    @Get(':idOrOrderNumber')
     @Permissions('read-order')
-    @ApiOperation({ summary: 'Get a order by id' })
-    async getOrder(@Param('id', ParseULIDPipe) id: string) {
-        return this.orderService.findOneWithoutBuilder(id);
+    @ApiOperation({ summary: 'Get a order by id or order number' })
+    async getOrder(@Param('idOrOrderNumber') idOrOrderNumber: string) {
+        return this.orderService.findOrderByIdOrOrderNumber(idOrOrderNumber);
     }
 }

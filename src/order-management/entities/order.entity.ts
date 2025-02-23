@@ -22,6 +22,7 @@ import { OrderItem } from "./order-item.entity";
 import { Guest } from "./guest.entity";
 import { OrderStatusHistory } from "./order-status-history.entity";
 import { OrderPayment } from "./order-payment.entity";
+import { OrderAction } from "./order-action.entity";
 
 @Entity(`${process.env.DATASET_PREFIX || ''}orders`)
 @Index(['id', 'orderNumber'])
@@ -33,18 +34,6 @@ export class Order extends UlidBaseEntity {
     @ManyToOne(() => Table, (table) => table.id, { eager: true })
     @JoinColumn({ name: 'table_id' })
     table: Table;
-
-    @ManyToOne(() => User, (user) => user.id, { nullable: true })
-    @JoinColumn({ name: 'served_by' })
-    servedBy: User;
-
-    @ManyToOne(() => Client, (client) => client.id, { nullable: true })
-    @JoinColumn({ name: 'client_id' })
-    client: Client;
-
-    @ManyToOne(() => Guest, (guest) => guest.id, { nullable: true })
-    @JoinColumn({ name: 'guest_id' })
-    guest: Guest;
 
     @Column({ type: 'int', nullable: true })
     numberOfSeats: number;
@@ -97,6 +86,9 @@ export class Order extends UlidBaseEntity {
 
     @OneToMany(() => OrderPayment, (orderPayment) => orderPayment.order, { cascade: true, eager: true, onDelete: 'CASCADE' })
     orderPayments: OrderPayment[];
+
+    @OneToMany(() => OrderAction, (orderAction) => orderAction.order, { cascade: true, eager: true, onDelete: 'CASCADE' })
+    orderActions: OrderAction[];
 
     @BeforeInsert()
     generateOrderNumber(): void {

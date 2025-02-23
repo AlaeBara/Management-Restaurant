@@ -279,4 +279,9 @@ export class UserService extends GenericService<User> {
     user.password = await hash(newPassword);
     return this.userRepository.save(user);
   }
+
+  async findUserByRequest(request: Request) {
+    const reqUser = request['user'] ? request['user'] : null;
+    return reqUser ? this.userRepository.findOne({ where: { id: reqUser.sub } }) : null;
+  }
 }

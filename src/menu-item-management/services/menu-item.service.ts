@@ -32,6 +32,8 @@ import logger from "src/common/Loggers/logger";
 import { EventEmitter2 } from "@nestjs/event-emitter";
 import { MenuItemChoiceService } from "./menu-item-choice.service";
 import internal from "stream";
+import { MenuItemResponseDto } from "../dtos/public/menu-item-response.public.dto";
+import { plainToInstance } from "class-transformer";
 
 @Injectable()
 export class MenuItemService extends GenericService<MenuItem> {
@@ -274,5 +276,22 @@ export class MenuItemService extends GenericService<MenuItem> {
             });
             throw new InternalServerErrorException('Failed to fetch menu item IDs');
         }
+    }
+
+    async getMenuItemsByTag(tag: string) {
+        const menuItems = await this.menuItemRepository.createQueryBuilder('menuItem')
+        .leftJoinAndSelect('menuItem.tags', 'tag') // Join the tags relation
+        .leftJoinAndSelect('menuItem.translates', 'translates') // Join the choices relation
+        .leftJoinAndSelect('translates.language', 'language') // Join the choices relation
+        .leftJoinAndSelect('menuItem.discount', 'discount') // Join the choices relationç
+        .leftJoinAndSelect('menuItem.images', 'images') // Join the choices relation
+        .leftJoinAndSelect('menuItem.recipe', 'recipe') // Join the choices relation
+        .leftJoinAndSelect('menuItem.category', 'category') // Join the choices relation
+        .where('tag.id = :tagId', { tagId: tag }) // Filter by tag ID
+        .getMany();
+
+        return plainToInstance(MenuItemResponseDto, menuItems, {
+            excludeExtraneousValues: true
+        });
     }
 }

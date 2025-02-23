@@ -104,4 +104,11 @@ export class MenuItemController {
         const recalculatedItem = await this.menuItemRecipeService.recalculateQuantityBasedOnStock(menuItem);
         return { message: 'Super! La quantité du produit de menu a été recalculée avec succès', status: 200, data: recalculatedItem };
     }
+
+    @Get('tags/:tag')
+    @Permissions('view-menu-item-tags')
+    @ApiOperation({ summary: 'Get all menu items by tag' }) 
+    async getMenuItemsByTag(@Param('tag') tag: string) {
+        return this.menuItemService.getMenuItemsByTag(tag);
+    }
 }

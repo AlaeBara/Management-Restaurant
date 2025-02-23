@@ -23,6 +23,8 @@ import { OrderPublicService } from './services/public/order.public.service';
 import { OrderEmitterEvent } from './emitter/order.emitter';
 import { OrderEventService } from './services/event/order.event.service';
 import { OutboxModule } from 'src/outbox-module/outbox.module';
+import { OrderAction } from './entities/order-action.entity';
+import { OrderActionService } from './services/order-action.service';
 
 @Module({
   imports: [
@@ -31,7 +33,9 @@ import { OutboxModule } from 'src/outbox-module/outbox.module';
       OrderItem,
       Guest,
       OrderStatusHistory,
-      OrderPayment]),
+      OrderPayment,
+      OrderAction
+    ]),
     forwardRef(() => PaymentModule),
     forwardRef(() => ProductManagementModule),
     forwardRef(() => UserManagementModule),
@@ -51,6 +55,7 @@ import { OutboxModule } from 'src/outbox-module/outbox.module';
     OrderService,
     OrderItemService,
     OrderPublicService,
+    OrderActionService,
     OrderEmitterEvent,
     OrderEventService
   ],

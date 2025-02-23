@@ -32,3 +32,23 @@ export enum OrderStatus {
     COMPLETED = 600,
     CANCELLED = 700,
 }
+
+export function getLabelOrderStatus(orderStatus: OrderStatus): string {
+    switch (orderStatus) {
+        case OrderStatus.CREATED:
+            return 'En Attente de Confirmation';
+        case OrderStatus.CONFIRMED:
+            return 'En Attente de Préparation';
+        case OrderStatus.IN_PREPARATION:
+            return 'En cours de Préparation';
+        case OrderStatus.READY_TO_SERVE:
+            return 'Prêt à servir';
+        case OrderStatus.SERVED:
+            return 'Commande servie';
+        case OrderStatus.COMPLETED:
+            return 'Commande terminée';
+        case OrderStatus.CANCELLED:
+            return 'Commande annulée';
+    }
+}
+

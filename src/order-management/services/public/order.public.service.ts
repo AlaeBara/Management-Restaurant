@@ -9,22 +9,20 @@ import {
 } from "typeorm";
 
 import { GenericService } from "src/common/services/generic.service";
-import logger from "src/common/Loggers/logger";
 import { Order } from "src/order-management/entities/order.entity";
-import { CreateOrderDto } from "src/order-management/dtos/order/create-order.dto";
 import { OrderItemService } from "src/order-management/services/order-item.service";
-import { forwardRef, Inject } from "@nestjs/common";
+import { forwardRef, Inject, NotFoundException } from "@nestjs/common";
 import { TableService } from "src/zone-table-management/services/table.service";
 import { UserService } from "src/user-management/services/user/user.service";
 import { ClientService } from "src/client-management/services/client.service";
 import { GuestService } from "src/order-management/services/guest.service";
-import { OrderItem } from "src/order-management/entities/order-item.entity";
-import { Languages } from "src/language-management/enums/languages.enum";
 import { MenuItemService } from "src/menu-item-management/services/menu-item.service";
-import { MenuItemTranslate } from "src/menu-item-management/entities/menu-item-translation.enity";
 import { MenuItemTranslationService } from "src/menu-item-management/services/menu-item-translation.service";
-import { MenuItemChoices } from "src/menu-item-management/entities/choices/menu-item-choices.entity";
 import { EventEmitter2 } from "@nestjs/event-emitter";
+import { PublicCreateOrderDto } from "src/order-management/dtos/public/order/create-order.public.dto";
+import { OrderActionService } from "../order-action.service";
+import { OrderResponsePublicDto } from "src/order-management/dtos/public/order/order-response.public.dto";
+import { plainToInstance } from "class-transformer";
 
 export class OrderPublicService extends GenericService<Order> {
 
@@ -46,7 +44,9 @@ export class OrderPublicService extends GenericService<Order> {
         private menuItemTranslationService: MenuItemTranslationService,
         @Inject(MenuItemService)
         private menuItemService: MenuItemService,
-        private eventEmitter: EventEmitter2
+        private eventEmitter: EventEmitter2,
+        @Inject(OrderActionService)
+        private orderActionService: OrderActionService
     ) {
         super(dataSource, Order, 'commande');
     }
@@ -58,7 +58,7 @@ export class OrderPublicService extends GenericService<Order> {
         return queryRunner;
     }
 
-    async createOrder(createOrderDto: CreateOrderDto, req: Request) {
+    async createOrderByClient(createOrderDto: PublicCreateOrderDto, req: Request) {
         const queryRunner = await this.inizializeQueryRunner();
 
         try {
@@ -74,11 +74,10 @@ export class OrderPublicService extends GenericService<Order> {
             order.orderItems = await Promise.all(createOrderDto.items.map(async (orderItem) => {
                 return await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
             }));
+            
+            await this.orderActionService.createOrderAction(req, savedOrder, 'CREATED_BY_CLIENT', queryRunner);
 
             await queryRunner.commitTransaction();
-            
-            this.eventEmitter.emit('order.created', order.id);
-
             return order.orderNumber;
         } catch (error) {
             await queryRunner.rollbackTransaction();
@@ -86,5 +85,21 @@ export class OrderPublicService extends GenericService<Order> {
         } finally {
             await queryRunner.release();
         }
+    }
+
+    async findOrderByIdOrOrderNumber(idOrOrderNumber: string) {
+        const order = await this.orderRepository.findOne({
+            where: [{ orderNumber: idOrOrderNumber }, { id: idOrOrderNumber }],
+            relations: ['orderItems', 'orderPayments', 'orderStatusHistory', 'orderActions', 'table']
+        });
+
+        if (!order) {
+            throw new NotFoundException('Aucune commande trouvée');
+        }
+
+        return plainToInstance(OrderResponsePublicDto, order, {
+            excludeExtraneousValues: true, // This ensures only @Expose()'d properties are included
+            enableImplicitConversion: true // This helps with type conversions
+        });
     }
 }
