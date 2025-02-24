@@ -113,17 +113,19 @@ export const CartProvider = ({ children }) => {
       
 
     // Function to update the quantity of an item in the cart
-    const updateCartItemQuantity = useCallback((productId, newQuantity) => {
+    // Function to update the quantity of an item in the cart
+    const updateCartItemQuantity = useCallback((productId, newQuantity, supplements) => {
         setCart((prevCart) =>
-            prevCart.map((item) =>
-                item.productId === productId
-                    ? { 
-                        ...item, 
-                        quantity: newQuantity,
-                        total: parseFloat(item.price) * newQuantity
-                    }
-                    : item
-            )
+        prevCart.map((item) =>
+            item.productId === productId &&
+            JSON.stringify(item.supplements) === JSON.stringify(supplements)
+            ? {
+                ...item,
+                quantity: newQuantity,
+                total: parseFloat(item.price) * newQuantity,
+                }
+            : item
+        )
         );
     }, []);
 
