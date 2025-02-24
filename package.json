@@ -35,6 +35,8 @@
     "@nestjs/schedule": "^5.0.1",
     "@nestjs/swagger": "^7.4.2",
     "@nestjs/typeorm": "^10.0.2",
+    "@sentry/nestjs": "^9.1.0",
+    "@sentry/profiling-node": "^9.1.0",
     "@types/pdfkit": "^0.13.8",
     "argon2": "^0.41.1",
     "aws-sdk": "^2.1692.0",

@@ -1,23 +1,22 @@
+import "src/instrument";
+
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { ValidationPipe } from '@nestjs/common';
-import { MasterSeeder } from './common/seeders/master.seeder';
 import helmet from 'helmet';
 import { join } from 'path';
 import { NestExpressApplication } from '@nestjs/platform-express';
+
+import { SentryCatchAllExceptionFilter } from "./common/sentry/sentry.catch";
+import { MasterSeeder } from './common/seeders/master.seeder';
+
 async function bootstrap() {
-  // Create a new NestJS application instance using Fastify as the underlying HTTP server
-  // This represents a change from the default Express platform to Fastify for improved performance
-  /*  const app = await NestFactory.create<NestFastifyApplication>(
-     AppModule,
-     new FastifyAdapter(),
-   ); */
-
   // Use the default NestJS application instance
-
-  //const app = await NestFactory.create(AppModule);
   const app = await NestFactory.create<NestExpressApplication>(AppModule);
+
+  // Apply Sentry exception filter globally
+  app.useGlobalFilters(new SentryCatchAllExceptionFilter());
 
   // Important: Configure static file serving
   app.useStaticAssets(join(__dirname, '..', 'uploads'), {

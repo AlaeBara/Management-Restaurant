@@ -2,9 +2,10 @@ import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { JwtModule } from '@nestjs/jwt';
 import { ConfigModule } from '@nestjs/config';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD } from '@nestjs/core';
 import { EventEmitterModule } from '@nestjs/event-emitter';
 import { MailerModule } from '@nestjs-modules/mailer';
+import { SentryGlobalFilter, SentryModule } from '@sentry/nestjs/setup';
 
 import { UserManagementModule } from './user-management/user-management.module';
 import { CommonModule } from './common/common.module';
@@ -31,9 +32,11 @@ import { OrderManagementModule } from './order-management/order-management.modul
 import { OutboxModule } from './outbox-module/outbox.module';
 import { OutboxListener } from './outbox-module/listeners/outbox.listener';
 import { OutboxListenerFactory } from './outbox-module/listeners/outbox.listener.factory';
+import { SentryCatchAllExceptionFilter } from './common/sentry/sentry.catch';
 
 @Module({
   imports: [
+    SentryModule.forRoot(),
     EventEmitterModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -100,12 +103,21 @@ import { OutboxListenerFactory } from './outbox-module/listeners/outbox.listener
   {
     provide: APP_GUARD,
     useClass: PermissionsGuard,
-  },],
+  },
+  {
+    provide: APP_FILTER,
+    useClass: SentryGlobalFilter,
+  },
+  {
+    provide: APP_FILTER,
+    useClass: SentryCatchAllExceptionFilter,
+  },
+  ],
   exports: [],
 })
 
 export class AppModule implements OnApplicationBootstrap {
-  constructor(private readonly outboxListenerFactory: OutboxListenerFactory) {}
+  constructor(private readonly outboxListenerFactory: OutboxListenerFactory) { }
 
   async onApplicationBootstrap() {
     this.outboxListenerFactory.create();
