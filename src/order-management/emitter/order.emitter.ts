@@ -6,7 +6,7 @@ import { forwardRef } from "@nestjs/common";
 import { OrderEventService } from "../services/event/order.event.service";
 import { DataSource } from "typeorm";
 import { InjectDataSource } from "@nestjs/typeorm";
-import { OutboxAction } from "src/outbox-module/enums/outbox-action.enum";
+import { OutboxAction, OutboxOrderAction } from "src/outbox-module/enums/outbox-action.enum";
 import { OutboxStatus } from "src/outbox-module/enums/outbox-status.enum";
 
 export class OrderEmitterEvent {
@@ -26,14 +26,14 @@ export class OrderEmitterEvent {
         return queryRunner;
     }
 
-    @OnEvent('order.created')
-    async emitOrderCreated(orderId: string) {
+    @OnEvent('order.validated')
+    async emitOrderValidated(orderId: string) {
         const queryRunner = await this.inizializeQueryRunner();
         try {
             await this.orderEventService.deductMenuItemQuantityNoRecipe(orderId, queryRunner);
 
             await this.outboxService.initOutbox(
-                OutboxAction.ORDER_CREATED,
+                OutboxOrderAction.ORDER_VALIDATED,
                 { orderId },
                 OutboxStatus.PROCESSED,
                 null,

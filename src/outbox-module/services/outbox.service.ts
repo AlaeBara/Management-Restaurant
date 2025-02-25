@@ -17,7 +17,7 @@ export class OutboxService extends GenericService<Outbox> {
         super(dataSource, Outbox, 'outbox');
     }
 
-    async initOutbox(action: OutboxAction, payload: any, status: OutboxStatus = OutboxStatus.PENDING, lastFailedReason?: string, queryRunner?: QueryRunner): Promise<Outbox> {
+    async initOutbox(action: string, payload: any, status: OutboxStatus = OutboxStatus.PENDING, lastFailedReason?: string, queryRunner?: QueryRunner): Promise<Outbox> {
         const outbox = await this.outboxRepository.create({
             action,
             payload,

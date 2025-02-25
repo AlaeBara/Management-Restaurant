@@ -25,6 +25,8 @@ import { OrderEventService } from './services/event/order.event.service';
 import { OutboxModule } from 'src/outbox-module/outbox.module';
 import { OrderAction } from './entities/order-action.entity';
 import { OrderActionService } from './services/order-action.service';
+import { OrderStatusController } from './controllers/orderStatus.controller';
+import { OrderStatusService } from './services/order-status.service';
 
 @Module({
   imports: [
@@ -48,7 +50,8 @@ import { OrderActionService } from './services/order-action.service';
   controllers: [
     GuestController,
     OrderController,
-    OrderPublicController
+    OrderPublicController,
+    OrderStatusController
   ],
   providers: [
     GuestService,
@@ -57,7 +60,8 @@ import { OrderActionService } from './services/order-action.service';
     OrderPublicService,
     OrderActionService,
     OrderEmitterEvent,
-    OrderEventService
+    OrderEventService,
+    OrderStatusService
   ],
   exports: [],
 })

@@ -4,6 +4,7 @@ import {
 } from "@nestjs/typeorm";
 import {
     DataSource,
+    QueryRunner,
     Repository,
 } from "typeorm";
 
@@ -11,7 +12,7 @@ import { GenericService } from "src/common/services/generic.service";
 import logger from "src/common/Loggers/logger";
 import { Order } from "../entities/order.entity";
 import { OrderItemService } from "./order-item.service";
-import { forwardRef, Inject, NotFoundException } from "@nestjs/common";
+import { BadRequestException, forwardRef, Inject, InternalServerErrorException, NotFoundException } from "@nestjs/common";
 import { TableService } from "src/zone-table-management/services/table.service";
 import { UserService } from "src/user-management/services/user/user.service";
 import { ClientService } from "src/client-management/services/client.service";
@@ -23,6 +24,7 @@ import { EventEmitter2 } from "@nestjs/event-emitter";
 import { OrderActionService } from "./order-action.service";
 import { plainToInstance } from "class-transformer";
 import { OrderResponsePublicDto } from "../dtos/public/order/order-response.public.dto";
+import { OrderStatus } from "../enums/order-status.enum";
 
 export class OrderService extends GenericService<Order> {
 
@@ -81,8 +83,9 @@ export class OrderService extends GenericService<Order> {
 
             return order.orderNumber;
         } catch (error) {
+            logger.error('Error creating order:', { message: error.message, stack: error.stack });
             await queryRunner.rollbackTransaction();
-            throw error;
+            throw new InternalServerErrorException(error.message);
         } finally {
             await queryRunner.release();
         }
@@ -99,5 +102,10 @@ export class OrderService extends GenericService<Order> {
         }
 
         return order;
+    }
+
+    async updateOrderStatus(order:Order, orderStatus: OrderStatus,queryRunner?:QueryRunner){
+        order.orderStatus = orderStatus;
+        return queryRunner ? queryRunner.manager.save(order) : this.orderRepository.save(order);
     }
 }

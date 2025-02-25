@@ -12,3 +12,7 @@ export enum OutboxAction {
   //order events
   ORDER_CREATED = 'order_created',
 }
+
+export enum OutboxOrderAction {
+  ORDER_VALIDATED = 'order_validated',
+}

@@ -7,8 +7,8 @@ import { OutboxAction } from '../enums/outbox-action.enum';
 @Entity('outbox')
 export class Outbox extends UlidBaseEntity {
   
-  @Column({ type: 'enum', enum: OutboxAction })
-  action: OutboxAction;
+  @Column({ type: 'varchar', nullable: true })
+  action: string;
 
   @Column({ type: 'json' })
   payload: any;
