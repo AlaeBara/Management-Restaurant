@@ -34,7 +34,7 @@ const SendCommande = memo(({ previousStep }) => {
   const { sendOrder, loading, error } = useSendOrder();
 
   const [searchParams] = useSearchParams();
-  const qrcode = searchParams.get('qrcode');
+  const qrcode = searchParams.get('table');
 
   const transformCartData = () => {
     const transformedCart = {

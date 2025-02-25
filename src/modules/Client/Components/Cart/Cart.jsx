@@ -66,7 +66,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
                     onClick={() => handleDelete(item.productId, item.supplements)}
                     className="text-red-500 hover:text-red-700"
                   >
-                    <Trash className="h-5 w-5" />
+                    <Trash className="h-6 w-6" />
                   </button>
                 </div>
 
@@ -75,9 +75,10 @@ const Cart = memo(({ previousStep, nextStep }) => {
                   <p className="text-sm font-medium mb-2">{t('supplements')}:</p>
                   <div className="text-sm text-gray-600  flex flex-wrap gap-2 ">
                     {item.supplements && item.supplements.length > 0 ? (
-                      item.supplements.map((supplement) => (
+                      item.supplements.map((supplement, index) => (
                         <span key={supplement.id}>
-                          ({supplement.name} - {supplement.price} Dh) -
+                          ({supplement.name} - {supplement.price} Dh)
+                          {index < item.supplements.length - 1 ? <span className="text-gray-600 ml-2">-</span> : ''}   
                         </span>
                       ))
                     ) : (
@@ -100,7 +101,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
                     <span className="text-sm">{item.quantity}</span>
                     <button
                       onClick={() => handleQuantityChange(item.productId, 1, item.supplements)}
-                      className="p-1 border rounded-md hover:bg-gray-100"
+                      className="p-1 border rounded-md  hover:bg-gray-100"
                     >
                       <Plus className="h-4 w-4" />
                     </button>
@@ -110,7 +111,7 @@ const Cart = memo(({ previousStep, nextStep }) => {
     
                 <div className="mt-4 flex items-center justify-between">
                   <p className="text-sm font-medium mb-2">{t('Total')}:</p>
-                  <p className="text-lg font-bold text-gray-600">{item.total} Dh</p>
+                  <p className="text-xl font-bold text-gray-600">{item.total} Dh</p>
                 </div>
               </div>
             ))
