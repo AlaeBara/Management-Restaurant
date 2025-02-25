@@ -118,7 +118,7 @@ const TableauOperation = ({ data , Confirm , confirmTransferOperation }) => {
         <td className="p-3 text-sm">{operation?.transferToFund?.sku && <>{operation?.fund.sku} → {operation?.transferToFund?.sku}</> || '-'}</td>
         
         <td className="p-3 text-sm ">
-          <span className='px-3 py-1 bg-gray-500 text-white rounded-full text-sm w-fit whitespace-nowrap font-bold flex items-center'><Coins className='h-5 w-5 mr-2'/>{operation.amount} Dh</span>
+          <span className='px-3 py-1 bg-gray-500 text-white rounded-full text-sm w-fit whitespace-nowrap font-bold flex items-center'><Coins className='h-5 w-5 mr-2'/>{Number(operation.amount)} Dh</span>
         </td>
 
         <td className="p-3 text-sm">{formatDate(operation.dateOperation)}</td>
@@ -129,7 +129,7 @@ const TableauOperation = ({ data , Confirm , confirmTransferOperation }) => {
           </span>
         </td>
 
-        <td className="p-3 text-sm">{operation.reference || "-"}</td>
+        <td className="p-3 text-sm ">{operation.reference || "-"}</td>
 
         <td className="p-3 text-sm">{operation.note || "-"}</td>
 
@@ -275,14 +275,14 @@ const TableauOperation = ({ data , Confirm , confirmTransferOperation }) => {
             <thead className="hidden md:table-header-group">
               <tr className="bg-gray-100">
                 <th className="p-3 text-left text-sm"></th>
-                <th className="p-3 text-left text-sm">Type</th>
-                <th className="p-3 text-left text-sm">Transfert</th>
-                <th className="p-3 text-left text-sm">Montant</th>
-                <th className="p-3 text-left text-sm">Date d'operation</th>
-                <th className="p-3 text-left text-sm">Status</th>
-                <th className="p-3 text-left text-sm">Référence</th>
-                <th className="p-3 text-left text-sm">Notes</th>
-                <th className="p-3 text-left text-sm">Approuver d'opération</th>
+                <th className="p-3 text-center text-sm">Type</th>
+                <th className="p-3  text-center text-sm">Transfert</th>
+                <th className="p-3  text-center text-sm">Montant</th>
+                <th className="p-3  text-center text-sm">Date d'operation</th>
+                <th className="p-3  text-center text-sm">Status</th>
+                <th className="p-3  text-center text-sm">Référence</th>
+                <th className="p-3  text-center text-sm">Notes</th>
+                <th className="p-3  text-center text-sm">Approuver d'opération</th>
               </tr>
             </thead>
             <tbody>
