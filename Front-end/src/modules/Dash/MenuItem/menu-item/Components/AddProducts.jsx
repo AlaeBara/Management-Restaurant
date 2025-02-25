@@ -1608,7 +1608,7 @@ export default function AchatCreationForm() {
                                         </div>
                                     ))}
 
-                                    <pre>{JSON.stringify(savedData, null, 2)}</pre>
+                                    {/* <pre>{JSON.stringify(savedData, null, 2)}</pre> */}
                                 </TabsContent>
                             </Tabs>
 

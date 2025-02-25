@@ -57,7 +57,7 @@ const Tableau = ({produits}) => {
                                                             </span>
                                                         )}
                                                         <span className="font-medium">
-                                                            {parseFloat(produit?.basePrice).toFixed(2)} Dh
+                                                            {Number(produit?.basePrice)} Dh
                                                         </span>
                                                     </div>
                                                 )}

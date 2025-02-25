@@ -19,10 +19,9 @@ const Produit = ({ produit }) => {
 
   return (
     <div className={`${styles.Produit} w-full h-full rounded-lg shadow p-2 flex flex-row sm:flex-col sm:space-y-4`}>
-        <div className="w-1/2 sm:w-full rounded-lg overflow-hidden">
+        <div className="w-1/2 flex items-center sm:w-full rounded-lg overflow-hidden">
             <ImageSlider item={produit} />
         </div>
-
         <div className="w-1/2 sm:w-full flex flex-col justify-between pl-2 sm:pl-0">
             <div className="space-y-2">
                 <h3 className="text-lg font-medium">{produit.name}</h3>

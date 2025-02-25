@@ -12,6 +12,14 @@ import SideBar from "../components/Sidebar/SideBar"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { useNavigate } from "react-router-dom";
 import { useUserContext } from "../context/UserContext";
+import {
+    DropdownMenu,
+    DropdownMenuContent,
+    DropdownMenuItem,
+    DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
+import { Bell } from "lucide-react"; 
+
   
 export default function MainLayout({ children }) {
     const navigate = useNavigate();
@@ -38,14 +46,34 @@ export default function MainLayout({ children }) {
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
-                    <div className="flex items-center gap-2 ml-auto px-5 cursor-pointer" onClick={() => {
-                        navigate('/dash/profile');
-                    }}>
-                        <span className="text-sm font-medium">{user.username}</span>
-                        <Avatar>    
-                            <AvatarImage src="https://github.com/shadcn.png" />
-                            <AvatarFallback>CN</AvatarFallback>
-                        </Avatar>
+                    <div className="flex items-center gap-2 ml-auto px-5">
+                        <DropdownMenu>
+                            <DropdownMenuTrigger asChild>
+                                <div className="flex items-center gap-2 cursor-pointer">
+                                    <div className="relative">
+                                        <Bell className="h-5 w-5 text-gray-600" />
+                                        <span className="absolute -top-1 -right-1 bg-red-500 text-white text-xs rounded-full px-1">
+                                            2
+                                        </span>
+                                    </div>
+                                </div>
+                            </DropdownMenuTrigger>
+                            <DropdownMenuContent className="w-64 mr-7 p-0">
+                                <div className="bg-[#2d3748] p-4">
+                                    <h3 className="text-sm text-white font-semibold ">Notifications</h3>
+                                </div>
+                                <div className="px-2 py-5">
+                                    <div className="space-y-2">
+                                        <div className="p-2 bg-gray-100 rounded-lg">
+                                            <p className="text-sm">You have a new message from John Doe.</p>
+                                        </div>
+                                        <div className="p-2 bg-gray-100 rounded-lg">
+                                            <p className="text-sm">Your order has been shipped.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </DropdownMenuContent>
+                        </DropdownMenu>
                     </div>
                 </header>
                 <div className={`flex flex-1 flex-col gap-4 p-4 pt-0 ${isHomePath ? 'bg-[#f9f9f8]' : ''}`}>
