@@ -299,7 +299,7 @@ export default function Component() {
                         )}
                     </div>
                     
-                    <div className="space-y-2">
+                    {/* <div className="space-y-2">
                         <Label htmlFor="parentCategoryId">Catégorie parente</Label>
                         <Select
                             id="parentCategoryId"
@@ -326,7 +326,7 @@ export default function Component() {
                         {errors.parentCategoryId && (
                             <p className="text-xs text-red-500 mt-1">{errors.parentCategoryId}</p>
                         )}
-                    </div>
+                    </div> */}
 
                     <div className="space-y-2">
                         <Label htmlFor="isTimeRestricted">Restriction temporelle</Label>

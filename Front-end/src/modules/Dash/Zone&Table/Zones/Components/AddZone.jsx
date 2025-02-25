@@ -157,7 +157,7 @@ export default function Component() {
                                 )}
                             </div>
 
-                            <div className="space-y-2">
+                            {/* <div className="space-y-2">
                                 <Label htmlFor="parentZone">Zone Parent</Label>
                                 <Select
                                     id="parentZone"
@@ -182,7 +182,7 @@ export default function Component() {
                                 {errors.parentZone && (
                                     <p className="text-xs text-red-500 mt-1">{errors.parentZoneUUID}</p>
                                 )}
-                            </div>
+                            </div> */}
 
                             <div className='flex gap-4'>
 

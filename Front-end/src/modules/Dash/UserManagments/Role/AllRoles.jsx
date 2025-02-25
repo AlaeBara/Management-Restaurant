@@ -17,7 +17,7 @@ const AllRoles = () => {
     const [limit] = useState(10);
     const { roles, totalRoles, loading, error, fetchRoles } = useRoles();
 
-    const totalPages = Math.ceil(totalRoles / limit);
+    const totalPages = Math.ceil((totalRoles-1) / limit);
 
     useEffect(() => {
       fetchRoles(currentPage, limit);
@@ -36,7 +36,7 @@ const AllRoles = () => {
     };
 
     const startItem = (currentPage - 1) * limit + 1;
-    const endItem = Math.min(currentPage * limit, totalRoles);
+    const endItem = Math.min(currentPage * limit, (totalRoles-1));
 
     //fix problem of pagination (delete last item in page <=2  => he return to Previous page)
     useEffect(() => {
@@ -121,7 +121,7 @@ const AllRoles = () => {
                   totalPages={totalPages}
                   startItem={startItem}
                   endItem={endItem}
-                  numberOfData={totalRoles}
+                  numberOfData={totalRoles-1}
                   onPreviousPage={handlePreviousPage}
                   onNextPage={handleNextPage}
                 />
