@@ -18,13 +18,15 @@ import {
     DropdownMenuItem,
     DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { Bell } from "lucide-react"; 
+import { useState } from "react";
+import { Bell, X } from "lucide-react"; 
 
   
 export default function MainLayout({ children }) {
     const navigate = useNavigate();
     const isHomePath = location.pathname === '/dash/Home';
     const { user } = useUserContext();
+    const [isOpen, setIsOpen] = useState(false);
 
     return (
         <SidebarProvider>
@@ -46,8 +48,9 @@ export default function MainLayout({ children }) {
                             </BreadcrumbList>
                         </Breadcrumb>
                     </div>
+
                     <div className="flex items-center gap-2 ml-auto px-5">
-                        <DropdownMenu>
+                        <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
                             <DropdownMenuTrigger asChild>
                                 <div className="flex items-center gap-2 cursor-pointer">
                                     <div className="relative">
@@ -59,8 +62,9 @@ export default function MainLayout({ children }) {
                                 </div>
                             </DropdownMenuTrigger>
                             <DropdownMenuContent className="w-64 mr-7 p-0">
-                                <div className="bg-[#2d3748] p-4">
-                                    <h3 className="text-sm text-white font-semibold ">Notifications</h3>
+                                <div className="bg-[#2d3748] p-4 flex justify-between items-center">
+                                    <h3 className="text-md text-white font-semibold ">Notifications</h3>
+                                    <X className="w-4 h-4 text-white" onClick={() => setIsOpen(false)} />
                                 </div>
                                 <div className="px-2 py-5">
                                     <div className="space-y-2">
@@ -75,6 +79,10 @@ export default function MainLayout({ children }) {
                             </DropdownMenuContent>
                         </DropdownMenu>
                     </div>
+
+
+
+
                 </header>
                 <div className={`flex flex-1 flex-col gap-4 p-4 pt-0 ${isHomePath ? 'bg-[#f9f9f8]' : ''}`}>
                     {children}
