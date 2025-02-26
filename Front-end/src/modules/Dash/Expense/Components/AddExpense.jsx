@@ -82,8 +82,8 @@ export default function Component() {
 
     
     const statuses = [
-        { value: 'pending', label: 'En attente' },
-        { value: 'approved', label: 'Approuvé' },
+        { value: 'pending', label: 'Paiement à valider' },
+        { value: 'approved', label: 'Paiement effectué' },
     ];
       
         
@@ -258,6 +258,78 @@ export default function Component() {
                     )}
                     <form onSubmit={Submit} className="space-y-4">
 
+                    <div className="space-y-2">
+                            <Label htmlFor="expenseTypeId">Type de dépense <span className='text-red-500 text-base'>*</span></Label>
+                            <div className="flex items-center gap-1">
+                                <Select
+                                    key={formData.expenseTypeId || "default"}
+                                    id="expenseTypeId"
+                                    name="expenseTypeId"
+                                    value={formData.expenseTypeId || ""}
+                                    onValueChange={(value) => handleChange({ target: { name: 'expenseTypeId', value : value || '' } })}
+                                   defaultValue="annule"
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionnez un type de dépense" />
+                                    </SelectTrigger>
+                                    <SelectContent className="max-h-48 overflow-y-auto">
+                                        <SelectItem value={null} className="text-red-500" >Annulé</SelectItem>
+                                        {Types.length > 0 ? (
+                                            Types.map((et) => (
+                                                <SelectItem key={et.id} value={et.id}>
+                                                    {et.name}
+                                                </SelectItem>
+                                            ))
+                                        ) : (
+                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                {!formData.expenseTypeId && 
+                                    <Button
+                                        type="button"
+                                        onClick={() => setIsModalOpen(true)}
+                                    >
+                                        <Plus/>
+                                    </Button>
+                                }
+
+                                {formData.expenseTypeId && 
+                                    <>
+                                        <Button
+                                            type="button"
+                                            onClick={() => {
+                                                const selectedType = Types.find((et) => et.id === formData.expenseTypeId);
+                                                if (selectedType) {
+                                                    setExpenseTypeToDelete(selectedType); 
+                                                    setIsDeleteModalOpen(true); 
+                                                }
+                                            }}
+                                            className="bg-transparent hover:bg-transparent p-2 border border-red-500"
+                                        >
+                                            <Trash className='text-red-500' />
+                                        </Button>
+                                        <Button
+                                            type="button"
+                                            onClick={() => {
+                                                const selectedType = Types.find((et) => et.id === formData.expenseTypeId);
+                                                if (selectedType) {
+                                                    setSelectedExpenseType({ id: selectedType.id, name: selectedType.name });
+                                                    setIsModalOpen(true);
+                                                }
+                                            }}
+                                            className='p-2'
+                                        >
+                                            <Edit />
+                                        </Button>
+                                    </>
+                                }
+                            </div>
+                            {errors.expenseTypeId && (
+                                <p className="text-xs text-red-500 mt-1">{errors.expenseTypeId}</p>
+                            )}
+                        </div>
+
                         <div className="space-y-2">
                             <Label htmlFor="operation">Nom du fond de caisse  <span className='text-red-500 text-base'>*</span></Label>
                             <Select
@@ -367,79 +439,6 @@ export default function Component() {
                             />
                             {errors.dateOperation && (
                                 <p className="text-xs text-red-500 mt-1">{errors.dateOperation}</p>
-                            )}
-                        </div>
-
-
-                        <div className="space-y-2">
-                            <Label htmlFor="expenseTypeId">Type de dépense <span className='text-red-500 text-base'>*</span></Label>
-                            <div className="flex items-center gap-1">
-                                <Select
-                                    key={formData.expenseTypeId || "default"}
-                                    id="expenseTypeId"
-                                    name="expenseTypeId"
-                                    value={formData.expenseTypeId || ""}
-                                    onValueChange={(value) => handleChange({ target: { name: 'expenseTypeId', value : value || '' } })}
-                                   defaultValue="annule"
-                                >
-                                    <SelectTrigger>
-                                        <SelectValue placeholder="Sélectionnez un type de dépense" />
-                                    </SelectTrigger>
-                                    <SelectContent className="max-h-48 overflow-y-auto">
-                                        <SelectItem value={null} className="text-red-500" >Annulé</SelectItem>
-                                        {Types.length > 0 ? (
-                                            Types.map((et) => (
-                                                <SelectItem key={et.id} value={et.id}>
-                                                    {et.name}
-                                                </SelectItem>
-                                            ))
-                                        ) : (
-                                            <p className='text-sm'>Aucune donnée disponible</p>
-                                        )}
-                                    </SelectContent>
-                                </Select>
-                                {!formData.expenseTypeId && 
-                                    <Button
-                                        type="button"
-                                        onClick={() => setIsModalOpen(true)}
-                                    >
-                                        <Plus/>
-                                    </Button>
-                                }
-
-                                {formData.expenseTypeId && 
-                                    <>
-                                        <Button
-                                            type="button"
-                                            onClick={() => {
-                                                const selectedType = Types.find((et) => et.id === formData.expenseTypeId);
-                                                if (selectedType) {
-                                                    setExpenseTypeToDelete(selectedType); 
-                                                    setIsDeleteModalOpen(true); 
-                                                }
-                                            }}
-                                            className="bg-transparent hover:bg-transparent p-2 border border-red-500"
-                                        >
-                                            <Trash className='text-red-500' />
-                                        </Button>
-                                        <Button
-                                            type="button"
-                                            onClick={() => {
-                                                const selectedType = Types.find((et) => et.id === formData.expenseTypeId);
-                                                if (selectedType) {
-                                                    setSelectedExpenseType({ id: selectedType.id, name: selectedType.name });
-                                                    setIsModalOpen(true);
-                                                }
-                                            }}
-                                            className='p-2'
-                                        >
-                                            <Edit />
-                                        </Button>
-                                    </>
-                                }
-                            </div>
-                            {errors.expenseTypeId && (
-                                <p className="text-xs text-red-500 mt-1">{errors.expenseTypeId}</p>
                             )}
                         </div>
                       

@@ -86,7 +86,7 @@ const TableauExpense = ({ data , Confirm }) => {
         <td className="p-3 text-sm">{operation?.fund?.name}</td>
         
 
-        <td className="p-3 text-sm">{operation?.expenseType?.name || '-'}</td>
+        <td className="p-3 text-sm">{<span className="px-3 py-1 bg-gray-500 text-white rounded-full w-fit text-sm font-bold flex items-center">{operation?.expenseType?.name}</span> || '-'}</td>
 
       
         <td className="p-3 text-sm">

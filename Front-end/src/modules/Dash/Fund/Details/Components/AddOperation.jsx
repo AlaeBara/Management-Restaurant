@@ -73,8 +73,8 @@ export default function Component() {
     ];
 
     const statuses = [
-        { value: 'pending', label: 'En attente' },
-        { value: 'approved', label: 'Approuvé' },
+        { value: 'pending', label: 'Paiement à valider' },
+        { value: 'approved', label: 'Paiement effectué' },
     ];
       
 
