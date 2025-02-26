@@ -3,11 +3,15 @@
     flex: 1;
     background-color: #f3f4f6;
     transition: transform 0.3s ease-in-out;
-    padding: 30px 20px 10px 20px;
+    padding: 10px 0;
     overflow-y: hidden;
     display: flex;
     flex-direction: column;
     height: 100vh;
+}
+
+.DivTitle{
+    padding: 0 20px;
 }
 
 .Title {
@@ -18,7 +22,9 @@
     overflow-y: auto; 
     flex-grow: 1; 
     max-height: calc(100vh - 200px); 
-    margin: 20px 0;
+    margin: 15px 0;
+    padding: 0px 20px;
+    background-color: white;
 }
 
 /* Custom scrollbar for WebKit browsers */
@@ -45,15 +51,18 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin: 10px 0;
-    padding: 20px;
+    margin: 0px 0;
+    padding: 0 20px;
     border-radius: 10px;
-    background-color: white; 
 }
 
 .cartSummary p{
     font-size: 1.2rem;
     font-weight: bold;
+}
+
+.boxInputs{
+    padding: 0 20px;
 }
 
 

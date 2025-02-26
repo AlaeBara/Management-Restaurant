@@ -1,9 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import styles from './Carts.module.css';
 import { formatDate } from '@/components/dateUtils/dateUtils';
-import { Trash2 } from 'lucide-react';
+import { Trash2, Receipt } from 'lucide-react';
 import { useServeurContext } from '../../../../context/ServeurContext';
 import { Loader , Minus, Plus } from 'lucide-react';
+import { Badge } from '@/components/ui/badge';
+import { Label } from '@/components/ui/label';
+import { Input } from '@/components/ui/input';
 
 const Cart = React.memo(({ showCart }) => {
 
@@ -45,15 +48,15 @@ const Cart = React.memo(({ showCart }) => {
   return (
     <div id="cartSection" className={`${styles.cartSection} ${showCart ? styles.cartOpen : ''}`}>
 
-        <div className={styles.DivTitle}>
+        <div className={`${styles.DivTitle}`}>
             <h2 className={`text-2xl font-bold ${styles.Title}`}>Commande actuelle</h2>
             <p className='text-ms text-gray-500'>Date : {formatDate(new Date())}</p>
         </div>
       
         <div className={styles.cartItems}>
-            <div className="space-y-4 mr-2">
+            <div className="space-y-2 my-4">
                 {isLoading ? (
-                    <div className="flex flex-col justify-center items-center">
+                    <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
                         <Loader className="h-6 w-6 animate-spin" />
                         <p>Chargement des articles...</p>
                     </div>
@@ -100,11 +103,27 @@ const Cart = React.memo(({ showCart }) => {
                                 <p className='text-lg font-medium'>{item.total} Dh</p>
                             </div>
 
+                            {/* Supplements */}
+                            {item.supplements.length > 0 && (
+                                <>
+                                    <p className="text-xs font-medium">Suppléments:</p>
+                                    <div className="flex flex-wrap gap-1 mt-1">
+                                        {item.supplements.map((supplement) => (
+                                        <Badge key={supplement.id} variant="outline" className="text-xs bg-background rounded-full">
+                                            {supplement.name}
+                                            {supplement.price > 0 && ` (+${supplement.price} Dh)`}
+                                        </Badge>
+                                        ))}
+                                    </div>
+                                </>
+                            )}
+
                         </div>
                     ))
                 ) : (
-                    <div className="flex flex-col justify-center items-center">
-                        <p className="text-gray-600">Votre panier est vide</p>
+                    <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+                        <Receipt className="h-12 w-12 mb-2 opacity-20" />
+                        <p>Le panier est vide</p>
                     </div>
                 )}
             </div>
@@ -112,11 +131,31 @@ const Cart = React.memo(({ showCart }) => {
 
 
 
-        <div className={`${styles.cartSummary} shadow-sm`}>
+        <div className={`${styles.cartSummary}`}>
             <p>Total:</p>
             <p>{calculateTotal()} Dh</p>
         </div>
-        
+
+
+        <div className={`${styles.boxInputs} grid grid-cols-2 gap-3 w-full`}>
+            <div>
+                <Label htmlFor="table" className="text-xs">
+                    Numéro de table
+                </Label>
+                <Input id="table" value={1} onChange={(e) => setTableNumber(e.target.value)} className="h-9 bg-white" />
+            </div>
+            <div>
+                <Label htmlFor="note" className="text-xs">
+                    Note
+                </Label>
+                <Input
+                    id="note"
+                    placeholder="Note spéciale"
+                    value="order Ayoub Baraoui"
+                    className="h-9 bg-white"
+                />
+            </div>
+        </div>
 
 
         <div className={styles.DivButton}> 

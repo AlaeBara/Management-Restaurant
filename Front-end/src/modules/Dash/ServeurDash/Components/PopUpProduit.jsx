@@ -3,13 +3,14 @@ import { X, Plus, Minus } from 'lucide-react';
 import ImageSlider from './ImageSlider';
 import style from './PopUpProduit.module.css'; 
 import { ShoppingBasket } from 'lucide-react';
-
+import { useServeurContext } from '../../../../context/ServeurContext';
 
 const PopUpProduct = memo(({ product, onClose}) => {
     const [quantity, setQuantity] = useState(1);
     const [selectedSupplements, setSelectedSupplements] = useState([]);
-  
 
+    const {addToCart} = useServeurContext();
+  
     const handleIncrement = () => {
         setQuantity((prev) => prev + 1);
     };
@@ -18,14 +19,51 @@ const PopUpProduct = memo(({ product, onClose}) => {
         setQuantity((prev) => Math.max(1, prev - 1));
     };
 
-    
+    const handleSupplementChange = (supplementId) => {
+        setSelectedSupplements((prev) =>
+          prev.includes(supplementId)
+            ? prev.filter((id) => id !== supplementId)
+            : [...prev, supplementId]
+        );
+    };
+
     const { groupedChoices } = product;
+
+    const handleAddToCartClick = () => {
+        // Calculate the total price of selected supplements
+        const supplementsTotal = selectedSupplements.reduce((total, supplementId) => {
+            const supplement = Object.values(product.groupedChoices || {})
+                .flat()
+                .find((choice) => choice.id === supplementId);
+            return total + (supplement ? parseFloat(supplement.additionalPrice) : 0);
+        }, 0);
+        // Create the cart item with supplements data
+        const cartItem = {
+            id: product.id,
+            name: product.name,
+            finalPrice: parseFloat(product.finalPrice) + supplementsTotal,
+            quantity,
+            supplements: selectedSupplements.map((supplementId) => {
+                const supplement = Object.values(product.groupedChoices || {})
+                .flat()
+                .find((choice) => choice.id === supplementId);
+                return supplement
+                    ? { id: supplement.id, name: supplement.value, price: parseFloat(supplement.additionalPrice) }
+                    : null;
+            }).filter(Boolean),
+        };
+    
+        // Add the item to the cart using the context function
+        addToCart(cartItem);
+    
+        // Close the popup
+        // onClose();
+    };
 
 
   return (
     <div className={`fixed inset-0 flex items-center justify-center bg-black bg-opacity-50 z-50 p-4`}  onClick={(e) => {e.stopPropagation() ; onClose()}}>
-        <div className={`bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative flex flex-col shadow-2xl ${style.scrollbarcustom} ${style.scrollbarcustom2}`}>
-        
+        <div className={`bg-white rounded-lg w-full max-w-md max-h-[90vh] overflow-y-auto relative flex flex-col shadow-2xl ${style.scrollbarcustom} ${style.scrollbarcustom2}`} onClick={(e) => e.stopPropagation()}>
             {/* Fixed close btn and Product Image */}
             <div className="sticky top-0 bg-white z-40">
                 <button
@@ -102,7 +140,7 @@ const PopUpProduct = memo(({ product, onClose}) => {
                                             <input
                                                 type="checkbox"
                                                 checked={selectedSupplements.includes(choice.id)}
-                                                onChange={() => handleSupplementChange(choice.id)}
+                                                onChange={() =>  handleSupplementChange(choice.id)}
                                                 className="w-4 h-4 accent-[#2d3748] border-gray-300"
                                             />
                                             <span>{choice.value}</span>
@@ -124,7 +162,7 @@ const PopUpProduct = memo(({ product, onClose}) => {
             <div className="sticky bottom-0 bg-white p-4 border-t border-gray-200">
                 <button
                     className="flex items-center justify-center w-full bg-[#2d3748] text-white py-3 rounded-lg transition-colors shadow-lg"
-                    // onClick={handleAddToCartClick}
+                    onClick={handleAddToCartClick}
                 >
                     <ShoppingBasket className="mr-2" /> Ajouter au panier
                 </button>
