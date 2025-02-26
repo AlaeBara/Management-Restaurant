@@ -9,6 +9,7 @@ import Spinner from '@/components/Spinner/Spinner';
 import {useFetchExpense} from './hooks/useFetchExpense'
 import TableauExpense from './Components/TableauExpense'
 import {useConfirmOperation} from './Hooks/useConfirmOperation'
+import {useChangeFundSource} from '../Operation/Hooks/useModifyFund'
 
 const Operation= () => {
     const  navigate = useNavigate()
@@ -43,6 +44,8 @@ const Operation= () => {
     }, [currentPage, limit,  fetchExpense]);
 
     const {ConfirmOperation}= useConfirmOperation(fetchExpense ,currentPage, limit)
+
+    const {ChangeFundSource}=useChangeFundSource(fetchExpense ,currentPage, limit)
 
 
 
@@ -79,7 +82,7 @@ const Operation= () => {
                     {expenses.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1">
-                            <TableauExpense data={expenses}  Confirm={ConfirmOperation}/>
+                            <TableauExpense data={expenses}  Confirm={ConfirmOperation} ChangeFundSource={ChangeFundSource}/>
                         </div>
                         <PaginationNav
                             currentPage={currentPage}

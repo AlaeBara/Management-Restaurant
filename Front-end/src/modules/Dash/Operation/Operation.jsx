@@ -10,7 +10,7 @@ import {useFetchOperation} from './Hooks/useFetchOperation'
 import TableauOperation from './Components/TableauOperation'
 import {useConfirmOperation} from './Hooks/useConfirmOperation'
 import {useConfirmTansferOperation} from '../Transfert-Operations/hooks/useConfirmTransferOperation'
-
+import {useChangeFundSource} from './Hooks/useModifyFund'
 
 
 const Operation= () => {
@@ -49,8 +49,7 @@ const Operation= () => {
     const {ConfirmOperation}= useConfirmOperation(fetchOperation ,currentPage, limit)
     const {ConfirmOperation: confirmTransferOperation}=useConfirmTansferOperation(fetchOperation ,currentPage, limit)
 
-
-
+    const {ChangeFundSource}=useChangeFundSource(fetchOperation ,currentPage, limit)
 
 
   return (
@@ -86,7 +85,7 @@ const Operation= () => {
                     {operations.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1">
-                            <TableauOperation data={operations} Confirm={ConfirmOperation} confirmTransferOperation={confirmTransferOperation}  />
+                            <TableauOperation data={operations} Confirm={ConfirmOperation} confirmTransferOperation={confirmTransferOperation} ChangeFundSource={ChangeFundSource} />
                         </div>
                         <PaginationNav
                             currentPage={currentPage}

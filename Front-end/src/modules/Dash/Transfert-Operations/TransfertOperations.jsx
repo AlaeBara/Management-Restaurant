@@ -9,6 +9,9 @@ import Spinner from '@/components/Spinner/Spinner';
 import {useFetchOperationTransfert} from './hooks/useFetchOperations'
 import TableauTransfert from './Components/TableauTransfert'
 import {useConfirmTansferOperation} from './Hooks/useConfirmTransferOperation'
+import {useChangeFundSource} from '../Operation/hooks/useModifyFund'
+
+
 
 const Operation= () => {
     const  navigate = useNavigate()
@@ -40,6 +43,8 @@ const Operation= () => {
 
 
     const {ConfirmOperation}=useConfirmTansferOperation(fetchTransfertOperation,currentPage, limit)
+
+    const {ChangeFundSource}=useChangeFundSource(fetchTransfertOperation,currentPage, limit)
 
 
 
@@ -77,7 +82,7 @@ const Operation= () => {
                     {transferts.length > 0 ? (
                     <>
                         <div className="grid grid-cols-1">
-                            <TableauTransfert data={transferts}  Confirm={ConfirmOperation}/>
+                            <TableauTransfert data={transferts}  Confirm={ConfirmOperation}  ChangeFundSource={ChangeFundSource}/>
                         </div>
                         <PaginationNav
                             currentPage={currentPage}
