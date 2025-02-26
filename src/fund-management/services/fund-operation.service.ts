@@ -11,6 +11,7 @@ import { CreateExpenseDto } from "../dtos/fund-operation/create-expense.dto";
 import { CreateTransferOperationDto } from "../dtos/fund-operation/create-transfer-operation.dto";
 import { UserService } from "src/user-management/services/user/user.service";
 import { ExpenseTypeService } from "./expense-type.service";
+import { ChangeFundSourceDto } from "../dtos/fund-operation/change-fund.dto";
 
 @Injectable()
 export class FundOperationService extends GenericService<FundOperationEntity> {
@@ -189,5 +190,30 @@ export class FundOperationService extends GenericService<FundOperationEntity> {
     async getExpenseType(expenseTypeId: string) {
         const expenseType = await this.expenseTypeService.findOneByIdWithOptions(expenseTypeId);
         return expenseType;
+    }
+
+    async changeFundSource(changeFundSourceDto: ChangeFundSourceDto) : Promise<FundOperationEntity>{
+        const operation = await this.findOneByIdWithOptions(changeFundSourceDto.operationId, {
+            relations: ['fund', 'transferToFund']
+        });
+        console.log(operation);
+
+        if(operation.status == FundOperationStatus.APPROVED){
+            throw new BadRequestException('Vous ne pouvez pas modifier la source de fonds d\'une opération approuvée');
+        }
+
+        if(operation.transferToFund && changeFundSourceDto.fundId === operation.transferToFund.id){
+            throw new BadRequestException('Vous ne pouvez pas effectuer un transfert vers le même fonds');
+        }
+
+        if (operation.fund.id === changeFundSourceDto.fundId) {
+            throw new BadRequestException('Vous ne pouvez pas mettre à jour la source de fonds vers le même fonds.');
+        }
+
+        const fund = await this.fundService.findOneByIdWithOptions(changeFundSourceDto.fundId);
+
+        operation.fund = fund;
+
+        return this.fundOperationRepository.save(operation);
     }
 }

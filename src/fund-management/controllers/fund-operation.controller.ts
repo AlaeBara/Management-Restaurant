@@ -6,6 +6,7 @@ import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { CreateFundOperationDto } from "../dtos/fund-operation/create-fund-operation.dto";
 import { CreateExpenseDto } from "../dtos/fund-operation/create-expense.dto";
 import { CreateTransferOperationDto } from "../dtos/fund-operation/create-transfer-operation.dto";
+import { ChangeFundSourceDto } from "../dtos/fund-operation/change-fund.dto";
 
 @Controller('api/funds-operations')
 @ApiTags('Fund Management - Operations')
@@ -97,5 +98,13 @@ export class FundOperationController {
     async deleteOperation(@Param('id') id: string) {
         await this.fundOperationService.deleteOperation(id);
         return { message: 'Super! Votre opération de caisse a été supprimée avec succès', status: 200 };
+    }
+
+    @Patch('change-fund-source')
+    @Permissions('write-fund-operation')
+    @ApiOperation({ summary: 'Change the fund source of a fund operation' })
+    async changeFundSource(@Body() changeFundSourceDto: ChangeFundSourceDto) {
+        await this.fundOperationService.changeFundSource(changeFundSourceDto);
+        return { message: 'Super! Changement de la source de fonds effectué avec succès', status: 200 };
     }
 }
