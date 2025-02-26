@@ -4,13 +4,15 @@ import { useFetchTags } from '../hooks/UseFetcchTags';
 import { Loader } from 'lucide-react';
 import Produit from './Produit';
 import { useFetchProduits } from '../hooks/UseFetchProduits';
+import PopUpProduct from './PopUpProduit';
+
 
 const Main = memo(() => {
     const [selectedCategory, setSelectedCategory] = useState('Tous');
+    const [selectedProduct, setSelectedProduct] = useState(null);
 
     const { tags, Isloading, message, fetchTags } = useFetchTags();
     const { produits, totalProduits, Isloading:IsloadingProduits, message:msgProduits, fetchProduits } = useFetchProduits();
-    
     
     useEffect(() => {
         fetchTags({fetchAll: true});
@@ -41,6 +43,15 @@ const Main = memo(() => {
             }
         };
     }, []);
+
+
+    const handleProductClick = (product) => {
+        setSelectedProduct(product);
+    };
+    
+    const handleClosePopup = () => {
+        setSelectedProduct(null);
+    };
 
 
 
@@ -77,7 +88,6 @@ const Main = memo(() => {
         </div>
 
 
-
         {/* Produits */}
         <div className='grid grid-cols-[repeat(auto-fit,minmax(250px,1fr))] gap-4'>
             {IsloadingProduits ? 
@@ -93,13 +103,16 @@ const Main = memo(() => {
                         </div>
                     ) : (
                         produits.map((produit) => (
-                            <Produit key={produit.id} produit={produit} />
+                            <Produit key={produit.id} produit={produit} handleProductClick={handleProductClick} />
                         ))
                     )}
                 </>
             }
         </div>
 
+        {selectedProduct && (
+            <PopUpProduct product={selectedProduct} onClose={handleClosePopup} />
+        )}
     </>
   );
 });

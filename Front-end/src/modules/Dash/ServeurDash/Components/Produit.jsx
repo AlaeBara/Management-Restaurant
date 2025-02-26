@@ -4,7 +4,7 @@ import { ShoppingBasket, Plus, Minus } from 'lucide-react';
 import styles from './Produit.module.css';
 
 
-const Produit = ({ produit }) => {
+const Produit = ({ produit ,  handleProductClick  }) => {
     const [quantity, setQuantity] = useState(1); 
 
     const handleIncrease = () => {
@@ -18,7 +18,7 @@ const Produit = ({ produit }) => {
     };
 
   return (
-    <div className={`${styles.Produit} w-full h-full rounded-lg shadow p-2 flex flex-row sm:flex-col sm:space-y-4`}>
+    <div className={`${styles.Produit} w-full h-full rounded-lg shadow p-2 flex flex-row sm:flex-col sm:space-y-4`} onClick={() => handleProductClick(produit)}> 
         <div className="w-1/2 flex items-center sm:w-full rounded-lg overflow-hidden">
             <ImageSlider item={produit} />
         </div>
@@ -35,28 +35,38 @@ const Produit = ({ produit }) => {
                     </p>
                     <div className="flex items-center space-x-2">
                         <button
-                            onClick={handleDecrease}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleDecrease();
+                            }}
                             className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
-                            title="Decrease quantity"
+                            title="Diminuer la quantité"
                         >
                             <Minus size={16} />
                         </button>
                         <span className="text-lg font-medium">{quantity}</span>
                         <button
-                            onClick={handleIncrease}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleIncrease();
+                            }}
                             className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
-                            title="Increase quantity"
+                            title="Augmenter la quantité"
                         >
                             <Plus size={16} />
                         </button>
                     </div>
                 </div>
+
                 {/* Mobile */}
                 <div className="sm:hidden">
                     <div className="flex items-center justify-center mb-2">
                         <div className="flex items-center space-x-2">
                             <button
-                                onClick={handleDecrease}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleDecrease();
+                                }}
                                 className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
                                 title="Decrease quantity"
                             >
@@ -64,7 +74,10 @@ const Produit = ({ produit }) => {
                             </button>
                             <span className="text-lg font-medium">{quantity}</span>
                             <button
-                                onClick={handleIncrease}
+                                onClick={(e) => {
+                                    e.stopPropagation();
+                                    handleIncrease();
+                                }}
                                 className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
                                 title="Increase quantity"
                             >
@@ -78,10 +91,13 @@ const Produit = ({ produit }) => {
                 </div>
             </div>
             <button
-                className="w-full bg-[#f3f4f6] text-[#2d3748] px-3 py-2 rounded-md flex items-center justify-center mt-4"
+                className="w-full bg-[#f3f4f6] hover:bg-[#2d3748] hover:text-white transition-all duration-700 text-[#2d3748] px-3 py-2 rounded-md flex items-center justify-center mt-4"
                 title="Ajouter au panier"
+                onClick={(e) => {
+                    e.stopPropagation();
+                }}
             >
-                <ShoppingBasket className="mr-2" />  <span className="hidden sm:inline">Ajouter au panier</span>
+                <ShoppingBasket className="mr-0 sm:mr-2" />  <span className="hidden sm:inline">Ajouter au panier</span>
             </button>
         </div>
     </div>
