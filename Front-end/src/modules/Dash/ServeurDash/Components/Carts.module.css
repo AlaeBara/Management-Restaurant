@@ -18,20 +18,21 @@
     overflow-y: auto; 
     flex-grow: 1; 
     max-height: calc(100vh - 200px); 
-    margin: 40px 0;
+    margin: 20px 0;
 }
+
 /* Custom scrollbar for WebKit browsers */
 .cartItems::-webkit-scrollbar {
-    width: 10px; /* Width of the scrollbar */
+    width: 5px; /* Width of the scrollbar */
 }
 
 .cartItems::-webkit-scrollbar-track {
-    background: #f1f1f1; /* Color of the track */
+    background: #ffffff; /* Color of the track */
     border-radius: 5px; /* Rounded corners for the track */
 }
 
 .cartItems::-webkit-scrollbar-thumb {
-    background: gray; /* Color of the scroll thumb */
+    background: #c0bebe; /* Color of the scroll thumb */
     border-radius: 5px; /* Rounded corners for the thumb */
 }
 

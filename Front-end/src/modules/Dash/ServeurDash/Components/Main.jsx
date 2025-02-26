@@ -1,10 +1,12 @@
-import React, { useState, useEffect, useRef, memo } from 'react';
+import React, { useState, useEffect, useRef, memo, useCallback } from 'react';
 import styles from './Main.module.css';
 import { useFetchTags } from '../hooks/UseFetcchTags';
 import { Loader } from 'lucide-react';
 import Produit from './Produit';
 import { useFetchProduits } from '../hooks/UseFetchProduits';
 import PopUpProduct from './PopUpProduit';
+import { useServeurContext } from '../../../../context/ServeurContext';
+import { ToastContainer } from 'react-toastify';
 
 
 const Main = memo(() => {
@@ -54,9 +56,40 @@ const Main = memo(() => {
     };
 
 
+    const { addToCart } = useServeurContext();
+    const [quantities, setQuantities] = useState({});
+
+    // Memoized event handlers
+    const handleIncrement = useCallback((itemId) => {
+        setQuantities((prevQuantities) => ({
+            ...prevQuantities,
+            [itemId]: (prevQuantities[itemId] || 1) + 1,
+        }));
+    }, []);
+    
+    const handleDecrement = useCallback((itemId) => {
+        setQuantities((prevQuantities) => ({
+            ...prevQuantities,
+            [itemId]: Math.max(1, (prevQuantities[itemId] || 1) - 1),
+        }));
+    }, []);
+
+
+    const handleAddToCart = useCallback((item) => {
+        const quantity = quantities[item.id] || 1;
+        const cartItem = {
+          name: item.name,
+          id: item.id,
+          quantity: quantity,
+          finalPrice: item.finalPrice || 0,
+        };
+        addToCart(cartItem);
+    },[quantities, addToCart]);
 
   return (
     <>
+
+        <ToastContainer />
 
         {/* Tags */}
         <div className={`${styles.container} grid grid-cols-1`}>
@@ -103,7 +136,14 @@ const Main = memo(() => {
                         </div>
                     ) : (
                         produits.map((produit) => (
-                            <Produit key={produit.id} produit={produit} handleProductClick={handleProductClick} />
+                            <Produit key={produit.id} 
+                                produit={produit} 
+                                handleProductClick={handleProductClick} 
+                                quantities={quantities}
+                                handleIncrement={handleIncrement}
+                                handleDecrement={handleDecrement}
+                                handleAddToCart={handleAddToCart}
+                            />
                         ))
                     )}
                 </>

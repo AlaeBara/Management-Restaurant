@@ -3,20 +3,8 @@ import ImageSlider from './ImageSlider';
 import { ShoppingBasket, Plus, Minus } from 'lucide-react';
 import styles from './Produit.module.css';
 
-
-const Produit = ({ produit ,  handleProductClick  }) => {
-    const [quantity, setQuantity] = useState(1); 
-
-    const handleIncrease = () => {
-        setQuantity(quantity + 1);
-    };
-
-    const handleDecrease = () => {
-        if (quantity > 1) {
-        setQuantity(quantity - 1);
-        }
-    };
-
+const Produit = ({ produit ,  handleProductClick , handleIncrement , handleDecrement , handleAddToCart , quantities }) => {
+    
   return (
     <div className={`${styles.Produit} w-full h-full rounded-lg shadow p-2 flex flex-row sm:flex-col sm:space-y-4`} onClick={() => handleProductClick(produit)}> 
         <div className="w-1/2 flex items-center sm:w-full rounded-lg overflow-hidden">
@@ -37,18 +25,18 @@ const Produit = ({ produit ,  handleProductClick  }) => {
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleDecrease();
+                                handleDecrement(produit.id);
                             }}
                             className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
                             title="Diminuer la quantité"
                         >
                             <Minus size={16} />
                         </button>
-                        <span className="text-lg font-medium">{quantity}</span>
+                        <span className="text-lg font-medium">{quantities[produit.id] || 1}</span>
                         <button
                             onClick={(e) => {
                                 e.stopPropagation();
-                                handleIncrease();
+                                handleIncrement(produit.id);
                             }}
                             className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
                             title="Augmenter la quantité"
@@ -65,18 +53,18 @@ const Produit = ({ produit ,  handleProductClick  }) => {
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    handleDecrease();
+                                    handleDecrement(produit.id);
                                 }}
                                 className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
                                 title="Decrease quantity"
                             >
                                 <Minus size={16} />
                             </button>
-                            <span className="text-lg font-medium">{quantity}</span>
+                            <span className="text-lg font-medium">{quantities[produit.id] || 1}</span>
                             <button
                                 onClick={(e) => {
                                     e.stopPropagation();
-                                    handleIncrease();
+                                    handleIncrement(produit.id);
                                 }}
                                 className="bg-[#f3f4f6] text-[#2d3748] p-1 rounded-md"
                                 title="Increase quantity"
@@ -95,6 +83,7 @@ const Produit = ({ produit ,  handleProductClick  }) => {
                 title="Ajouter au panier"
                 onClick={(e) => {
                     e.stopPropagation();
+                    handleAddToCart(produit);
                 }}
             >
                 <ShoppingBasket className="mr-0 sm:mr-2" />  <span className="hidden sm:inline">Ajouter au panier</span>
