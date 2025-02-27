@@ -355,7 +355,7 @@ const TableauExpense = ({ data , Confirm , ChangeFundSource }) => {
                           funds.filter(fund => fund.name !== oldFund)
                             .map((fund) => (
                               <SelectItem key={fund.id} value={fund.id}>
-                                {fund.name}
+                                {fund.name} ({fund.sku})
                               </SelectItem>
                             ))
                         ) : (

@@ -13,7 +13,6 @@ const Cart = React.memo(({ showCart }) => {
     const {cart, updateCartItemQuantity, removeFromCart, clearCart} = useServeurContext();
     const [isLoading, setIsLoading] = useState(true);
 
-
     useEffect(() => {
         if (cart !== undefined) {
           setIsLoading(false);
@@ -106,10 +105,10 @@ const Cart = React.memo(({ showCart }) => {
                             {/* Supplements */}
                             {item.supplements.length > 0 && (
                                 <>
-                                    <p className="text-xs font-medium">Suppléments:</p>
+                                    {/* <p className="text-xs font-medium">Suppléments:</p> */}
                                     <div className="flex flex-wrap gap-1 mt-1">
                                         {item.supplements.map((supplement) => (
-                                        <Badge key={supplement.id} variant="outline" className="text-xs bg-background rounded-full">
+                                        <Badge key={supplement.id} variant="outline" className="text-xs rounded-full">
                                             {supplement.name}
                                             {supplement.price > 0 && ` (+${supplement.price} Dh)`}
                                         </Badge>
