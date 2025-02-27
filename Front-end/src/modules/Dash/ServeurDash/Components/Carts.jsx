@@ -7,10 +7,12 @@ import { Loader , Minus, Plus } from 'lucide-react';
 import { Badge } from '@/components/ui/badge';
 import { Label } from '@/components/ui/label';
 import { Input } from '@/components/ui/input';
+import { useSendOrder } from '../hooks/UseSendOrder';
+import { toast } from 'react-toastify';
 
 const Cart = React.memo(({ showCart }) => {
 
-    const {cart, updateCartItemQuantity, removeFromCart, clearCart} = useServeurContext();
+    const {cart, updateCartItemQuantity, removeFromCart, clearCart ,setCart} = useServeurContext();
     const [isLoading, setIsLoading] = useState(true);
 
     useEffect(() => {
@@ -41,6 +43,55 @@ const Cart = React.memo(({ showCart }) => {
         return cart.reduce((total, item) => {
           return total + item.price * item.quantity;
         }, 0);
+    };
+
+
+    //send order
+    const { loading, error, sendOrder } = useSendOrder();
+
+    const transformCartData = () => {
+        const transformedCart = {
+          totalAmount: calculateTotal(),
+          // numberOfSeats: 4, 
+          // totalAditionalPrice: 20.00, 
+          tableId: "00955e03-7c92-42ef-94ef-596bb1e68dde", 
+          items: cart.map(item => ({
+            productId: item.productId,
+            type: item.type,
+            quantity: item.quantity,
+            price: item.price,
+            total: item.total
+          }))
+        };
+        console.log(transformedCart)
+        return transformedCart;
+    };
+
+    const handleSendOrder = async () => {
+        const orderData = transformCartData();
+        const response = await sendOrder(orderData);
+        if (response?.status === 201) {
+            if (localStorage.getItem('cart')) {
+                localStorage.removeItem('cart');
+            }
+            toast.success('Commande enregistrée avec succès' , {
+                position: "top-right",
+                autoClose: 1200,
+                hideProgressBar: false,
+                closeOnClick: true,
+                pauseOnHover: true,
+                draggable: true,
+                progress: undefined,
+                theme: "colored",
+            });
+            setCart([]);
+        }
+        else {
+            toast.error(response?.data?.message  , {
+                position: "top-right",
+                autoClose: 1200,
+            });
+        }
     };
 
 
@@ -158,9 +209,10 @@ const Cart = React.memo(({ showCart }) => {
 
 
         <div className={styles.DivButton}> 
-            <button className={styles.paymentButton}>
-                Enregistrer la commande
+            <button className={`${styles.paymentButton} ${loading ? 'opacity-50' : ''}`} onClick={handleSendOrder} disabled={loading}>
+                {loading ? <Loader className="h-6 w-6 animate-spin" /> : 'Enregistrer la commande'}
             </button>
+
             <button className={styles.CleanButton} onClick={clearCart}>
                 <Trash2 />
             </button>

@@ -36,7 +36,7 @@ const Tableau = ({ orders }) => {
                         <TableBody>
                             {orders?.length > 0 ? (
                                 orders.map((order) => (
-                                    <TableRow key={order.id} className="font-sans">
+                                    <TableRow key={order.id} className="font-sans" onClick={() => showOrderDetails(order)}>
                                         <TableCell className="text-center p-4 border text-nowrap">{order.orderNumber}</TableCell>
                                         <TableCell className="text-center p-4 border  text-nowrap"> <Badge variant="secondary" className='text-sm rounded-full '>{Number(order.totalAmount)} Dh</Badge> </TableCell>
                                         <TableCell className="text-center p-4 border">{order.orderStatus}</TableCell>
