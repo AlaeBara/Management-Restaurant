@@ -10,17 +10,18 @@ import { Button } from '@/components/ui/button';
 import { useSendOrder } from '../hooks/UseSendOrder';
 import { toast } from 'react-toastify';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter , DialogClose } from '@/components/ui/dialog';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
+import image from './tablesimage.png'
 
 
-
-
-const Cart = React.memo(({ showCart }) => {
+const Cart = React.memo(({ showCart  , tables}) => {
 
     const {cart, updateCartItemQuantity, removeFromCart, clearCart ,setCart} = useServeurContext();
     const [isLoading, setIsLoading] = useState(true);
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tableNumber, setTableNumber] = useState('');
     const [orderNote, setOrderNote] = useState('');
+
 
     useEffect(() => {
         if (cart !== undefined) {
@@ -50,6 +51,7 @@ const Cart = React.memo(({ showCart }) => {
           return total + item.price * item.quantity;
         }, 0);
     };
+
 
     //send order
     const { loading, error, sendOrder } = useSendOrder();
@@ -99,8 +101,7 @@ const Cart = React.memo(({ showCart }) => {
     };
 
 
-
-
+    
 
   return (
 
@@ -205,7 +206,7 @@ const Cart = React.memo(({ showCart }) => {
 
 
             <div className={styles.DivButton}> 
-                <button className={`${styles.paymentButton} ${loading ? 'opacity-50' : ''}`} onClick={handleSendOrder} disabled={loading}>
+                <button className={`${styles.paymentButton} ${loading || cart.length === 0 ? '!cursor-not-allowed opacity-50' : ''}`} onClick={handleSendOrder} disabled={loading || cart.length === 0}>
                     {loading ? <Loader className="h-6 w-6 animate-spin" /> : 'Enregistrer la commande'}
                 </button>
 
@@ -216,40 +217,87 @@ const Cart = React.memo(({ showCart }) => {
         </div>
 
 
-        {/* Table and Note Modal */}
-        <Dialog open={isModalOpen} onOpenChange={setIsModalOpen} >
-            <DialogContent className="sm:w-full w-80 rounded-lg">
-                <DialogHeader>
-                    <DialogTitle>Détails de la commande</DialogTitle>
-                    <DialogDescription>
-                    Ajoutez le numéro de table et des notes spéciales pour cette commande.
-                    </DialogDescription>
-                </DialogHeader>
-                <div className="grid gap-4 py-4">
-                    <div className="grid gap-2">
-                        <Label htmlFor="table-number">Numéro de table</Label>
-                        <Input
-                            id="table-number"
-                            value={tableNumber}
-                            onChange={(e) => setTableNumber(e.target.value)}
-                            placeholder="Ex: 12"
-                        />
+
+
+        
+
+
+        {isModalOpen && (
+            <div 
+                className="fixed inset-0 z-50 flex items-center justify-center"
+                role="dialog"
+                aria-modal="true"
+            >
+                <div 
+                    className="fixed inset-0 bg-black/50 transition-opacity"
+                    onClick={() => setIsModalOpen(false)}
+                />
+
+                <div 
+                    className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
+                    onClick={(e) => e.stopPropagation()}
+                >
+                    <div className="mb-4">
+                        <h3 className="text-lg font-semibold text-gray-800">Détails de la commande</h3>
+                        <p className="mt-2 text-sm text-gray-600">
+                            Ajoutez le numéro de table et des notes spéciales pour cette commande.
+                        </p>
                     </div>
-                    <div className="grid gap-2">
-                        <Label htmlFor="order-note">Note spéciale</Label>
-                        <Input
-                            id="order-note"
-                            value={orderNote}
-                            onChange={(e) => setOrderNote(e.target.value)}
-                            placeholder="Ex: Sans gluten, allergies, etc."
-                        />
+
+                    <div className="grid gap-4 py-4">
+                        <div className="grid gap-2">
+                            <Label htmlFor="table-number">Numéro de table</Label>
+                            <div className={`overflow-y-auto max-h-60 border rounded-lg p-2 ${styles.ScrolltableItem}`}>
+                                <div className={`grid grid-cols-4 gap-2`}>
+                                    {tables.length > 0 ? (
+                                        tables.map((table, index) => (
+                                            <div
+                                                key={index}
+                                                className={`flex flex-col items-center justify-center p-2 border rounded-lg cursor-pointer  ${
+                                                    tableNumber === table.id
+                                                        ? "bg-[#2d3748] border-[#2d3748] text-white"
+                                                        : "hover:bg-gray-100"
+                                                }`}
+                                                onClick={() => setTableNumber(table.id)}
+                                            >
+                                                <img src={image} alt="table" className="w-10 h-10" />
+                                                <span className="text-sm mt-1 text-center">{table.tableName}</span>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="col-span-4 text-center text-gray-500">
+                                            Aucune table disponible
+                                        </div>
+                                    )}
+                                </div>
+                            </div>
+                        </div>
+
+                        {/* Special Note Input */}
+                        <div className="grid gap-2">
+                            <Label htmlFor="order-note">Note spéciale</Label>
+                            <Input
+                                id="order-note"
+                                value={orderNote}
+                                onChange={(e) => setOrderNote(e.target.value)}
+                                placeholder="Ex: Sans gluten, allergies, etc."
+                            />
+                        </div>
+
+                        {/* Buttons */}
+                        <div className="flex justify-end gap-2">
+                            <Button type="button" onClick={() => setIsModalOpen(false)}>
+                                Enregistrer
+                            </Button>
+                            <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
+                                Annuler
+                            </Button>
+                        </div>
                     </div>
                 </div>
-                <DialogFooter>
-                    <Button type="button">Enregistrer</Button>
-                </DialogFooter>
-            </DialogContent>
-        </Dialog>
+            </div>
+        )}
+
 
     </>
   );

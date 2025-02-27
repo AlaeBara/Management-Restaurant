@@ -97,6 +97,30 @@
 }
 
 
+/* Custom scrollbar for WebKit browsers */
+.ScrolltableItem::-webkit-scrollbar {
+    width: 5px; /* Width of the scrollbar */
+}
+
+.ScrolltableItem::-webkit-scrollbar-track {
+    background: #ffffff; /* Color of the track */
+    border-radius: 5px; /* Rounded corners for the track */
+}
+
+.ScrolltableItem::-webkit-scrollbar-thumb {
+    background: #2d3748; /* Color of the scroll thumb */
+    border-radius: 5px; /* Rounded corners for the thumb */
+}
+
+.ScrolltableItem::-webkit-scrollbar-thumb:hover {
+    background: #555; /* Color of the scroll thumb on hover */
+}
+
+
+
+
+
+
 @media (min-width: 769px) {
     .cartSection {
         position: fixed;

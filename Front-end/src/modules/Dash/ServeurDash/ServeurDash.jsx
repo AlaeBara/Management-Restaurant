@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ServeurDash.module.css';
 import Cart from './components/Carts'; 
-import { X, ShoppingBasket, MoveUp } from 'lucide-react';
+import { X, ShoppingBasket, MoveUp , Loader} from 'lucide-react';
 import Main from './components/Main';
 import {Input}from '@/components/ui/input';
 import {Search}from 'lucide-react';
-
+import { useFetchAllTables } from './hooks/UseFetchAllTables';
 
 const ServeurDash = () => {
     const [showCart, setShowCart] = useState(false);
@@ -42,6 +42,23 @@ const ServeurDash = () => {
         return () => window.removeEventListener('resize', handleResize);
     }, []);
 
+
+    //fetch all tables
+    const { tables, loading,fetchAllTables } = useFetchAllTables();
+
+    useEffect(() => {
+        fetchAllTables({fetchAll: true});
+    }, [fetchAllTables]);
+
+
+    if (loading) {
+        return  <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
+                    <Loader className="h-6 w-6 animate-spin" />
+                    <p>Chargement des articles...</p>
+                </div>;
+    }
+
+
   return (
     <div className={styles.container}>
         <dir className={`grid grid-cols-1 sm:grid-cols-2 gap-4 p-0 m-0`}>
@@ -65,7 +82,7 @@ const ServeurDash = () => {
         <Main />
         
         {/* Cart Section */}
-        <Cart showCart={showCart} />
+        <Cart showCart={showCart} tables={tables} />
 
         {/* Floating Toggle Button */}
         <button className={`${styles.toggleButton} ${showCart ? styles.toggleButtonActive : ''}`} onClick={toggleCart}>

@@ -27,9 +27,10 @@ export const useFetchTableOfZone = () => {
               headers: { Authorization: `Bearer ${token}` },
             });
             
+            const { data, total } = response.data;
             allTables.push(...response.data.data);
 
-            if (allZones.length >= total) break;
+            if (allTables.length >= total) break;
             currentPage++;
           }
 
