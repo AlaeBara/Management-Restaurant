@@ -23,6 +23,7 @@ import { PublicCreateOrderDto } from "src/order-management/dtos/public/order/cre
 import { OrderActionService } from "../order-action.service";
 import { OrderResponsePublicDto } from "src/order-management/dtos/public/order/order-response.public.dto";
 import { plainToInstance } from "class-transformer";
+import { OrderItemChoicesService } from "../order-item-choices.service";
 
 export class OrderPublicService extends GenericService<Order> {
 
@@ -46,7 +47,9 @@ export class OrderPublicService extends GenericService<Order> {
         private menuItemService: MenuItemService,
         private eventEmitter: EventEmitter2,
         @Inject(OrderActionService)
-        private orderActionService: OrderActionService
+        private orderActionService: OrderActionService,
+        @Inject(OrderItemChoicesService)
+        private orderItemChoicesService: OrderItemChoicesService
     ) {
         super(dataSource, Order, 'commande');
     }
@@ -72,7 +75,12 @@ export class OrderPublicService extends GenericService<Order> {
             const savedOrder = await queryRunner.manager.save(order);
 
             order.orderItems = await Promise.all(createOrderDto.items.map(async (orderItem) => {
-                return await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
+                const savedOrderItem = await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
+                if (orderItem.menuItemChoices) {
+                    savedOrderItem.choices = await this.orderItemChoicesService.insertBatchChoicesToOrderItem(savedOrderItem, orderItem.menuItemChoices, queryRunner);
+                } 
+                await this.orderItemService.updateOrderItemLabel(savedOrderItem.id, queryRunner);
+                return savedOrderItem;
             }));
             
             await this.orderActionService.createOrderAction(req, savedOrder, 'CREATED_BY_CLIENT', queryRunner);

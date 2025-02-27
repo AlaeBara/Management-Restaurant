@@ -1,5 +1,5 @@
 import { UlidBaseEntity } from "src/common/entities/ulid-base.entity";
-import { BeforeInsert, Column, Entity, Index, JoinColumn, ManyToOne } from "typeorm";
+import { BeforeInsert, Column, Entity, Index, JoinColumn, JoinTable, ManyToMany, ManyToOne } from "typeorm";
 import { Order } from "./order.entity";
 import { MenuItem } from "src/menu-item-management/entities/menu-item.entity";
 import { User } from "src/user-management/entities/user.entity";
@@ -18,16 +18,26 @@ export class OrderItem extends UlidBaseEntity {
     @Column({ type: 'text', nullable: true })
     fullLabel: string | null;
 
-    @ManyToOne(() => MenuItem, (product) => product.id)
+    @ManyToOne(() => MenuItem, (product) => product.id, { eager: true })
     @JoinColumn({ name: 'product_id' })
     product: MenuItem;
 
     @Column({ type: 'int', enum: OrderItemType, default: OrderItemType.NORMAL })
     type: OrderItemType;
 
-    @ManyToOne(() => MenuItemChoices, (choices) => choices.id, { nullable: true })
-    @JoinColumn({ name: 'choices_id' })
-    choices: MenuItemChoices | null;
+    @ManyToMany(() => MenuItemChoices)
+    @JoinTable({
+        name: 'order_item_choices',
+        joinColumn: {
+            name: 'order_item_id',
+            referencedColumnName: 'id'
+        },
+        inverseJoinColumn: {
+            name: 'choices_id',
+            referencedColumnName: 'id'
+        }
+    })
+    choices: MenuItemChoices[];
 
     @Column({ type: 'decimal', precision: 10, scale: 2, nullable: true })
     price: number;

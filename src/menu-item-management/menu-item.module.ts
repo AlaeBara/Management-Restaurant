@@ -82,7 +82,10 @@ import { OrderManagementModule } from 'src/order-management/order-management.mod
     MenuItemService,
     MenuItemTranslationService,
     MenuItemEmitter,
-    MenuItemRecipeService
+    MenuItemRecipeService,
+    MenuItemChoiceService
   ],
 })
+
 export class MenuItemModule { }
+

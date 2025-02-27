@@ -80,7 +80,8 @@ export class CreateOrderDto {
 
     @ApiProperty({ type: [CreateOrderItemDto], description: 'Order items' })
     @IsArray()
-    @ValidateNested({ each: true })
+    //@ValidateNested({ each: true })
     @Type(() => CreateOrderItemDto)
     items: CreateOrderItemDto[];
+    
 }

@@ -27,6 +27,7 @@ import { OrderAction } from './entities/order-action.entity';
 import { OrderActionService } from './services/order-action.service';
 import { OrderStatusController } from './controllers/orderStatus.controller';
 import { OrderStatusService } from './services/order-status.service';
+import { OrderItemChoicesService } from './services/order-item-choices.service';
 
 @Module({
   imports: [
@@ -61,7 +62,8 @@ import { OrderStatusService } from './services/order-status.service';
     OrderActionService,
     OrderEmitterEvent,
     OrderEventService,
-    OrderStatusService
+    OrderStatusService,
+    OrderItemChoicesService
   ],
   exports: [],
 })

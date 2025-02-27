@@ -16,7 +16,6 @@ import {
 import { OrderService } from "../services/order.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Order } from "../entities/order.entity";
-import { ParseULIDPipe } from "src/common/pipes/parse-ulid.pipe";
 import { CreateOrderDto } from "../dtos/order/create-order.dto";
 
 @Controller('api/orders')
@@ -26,7 +25,7 @@ export class OrderController {
 
     constructor(
         @Inject(OrderService)
-        private readonly orderService: OrderService
+        private readonly orderService: OrderService,
     ) { }
 
     @Get()
@@ -65,6 +64,8 @@ export class OrderController {
     @Permissions('create-order')
     @ApiOperation({ summary: 'Create a new order' })
     async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() req: Request) {
+        //console.log(createOrderDto);
         return this.orderService.createOrderByStaff(createOrderDto, req);
     }
+
 }

@@ -25,6 +25,7 @@ import { OrderActionService } from "./order-action.service";
 import { plainToInstance } from "class-transformer";
 import { OrderResponsePublicDto } from "../dtos/public/order/order-response.public.dto";
 import { OrderStatus } from "../enums/order-status.enum";
+import { OrderItemChoicesService } from "./order-item-choices.service";
 
 export class OrderService extends GenericService<Order> {
 
@@ -48,6 +49,8 @@ export class OrderService extends GenericService<Order> {
         private menuItemService: MenuItemService,
         @Inject(OrderActionService)
         private orderActionService: OrderActionService,
+        @Inject(OrderItemChoicesService)
+        private orderItemChoicesService: OrderItemChoicesService,
         private eventEmitter: EventEmitter2,
     ) {
         super(dataSource, Order, 'commande');
@@ -62,19 +65,24 @@ export class OrderService extends GenericService<Order> {
 
     async createOrderByStaff(createOrderDto: CreateOrderDto, req: Request) {
         const queryRunner = await this.inizializeQueryRunner();
-
+       
         try {
             const order = this.orderRepository.create(createOrderDto);
 
             const [table] = await Promise.all([
-                this.tableService.findOneByIdWithOptions(createOrderDto.tableId),
+                this.tableService.getTableByIdForOrder(createOrderDto.tableId),
             ]);
 
             order.table = table;
             const savedOrder = await queryRunner.manager.save(order);
-
+            
             order.orderItems = await Promise.all(createOrderDto.items.map(async (orderItem) => {
-                return await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
+                const savedOrderItem = await this.orderItemService.createOrderItem(orderItem, savedOrder, queryRunner);
+                if (orderItem.menuItemChoices) {
+                    savedOrderItem.choices = await this.orderItemChoicesService.insertBatchChoicesToOrderItem(savedOrderItem, orderItem.menuItemChoices, queryRunner);
+                } 
+                await this.orderItemService.updateOrderItemLabel(savedOrderItem.id, queryRunner);
+                return savedOrderItem;
             }));
 
             await this.orderActionService.createOrderAction(req, savedOrder, 'CREATED_BY_WAITER', queryRunner);

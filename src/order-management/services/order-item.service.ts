@@ -4,6 +4,7 @@ import {
 } from "@nestjs/typeorm";
 import {
     DataSource,
+    DeepPartial,
     QueryRunner,
     Repository,
 } from "typeorm";
@@ -18,6 +19,7 @@ import { MenuItemService } from "src/menu-item-management/services/menu-item.ser
 import { Inject } from "@nestjs/common";
 import { InventoryMovementService } from "src/inventory-managemet/services/inventory-movement.service";
 import { MenuItemRecipeService } from "src/menu-item-management/services/menu-item-recipe.service";
+import { PublicCreateOrderItemDto } from "../dtos/public/order-item/create-order-item.public.dto";
 
 export class OrderItemService extends GenericService<OrderItem> {
 
@@ -35,19 +37,43 @@ export class OrderItemService extends GenericService<OrderItem> {
         super(dataSource, OrderItem, 'article de commande');
     }
 
-    async createOrderItem(createOrderItemDto: CreateOrderItemDto, order: Order, queryRunner: QueryRunner) {
+    async createOrderItem(createOrderItemDto: CreateOrderItemDto | PublicCreateOrderItemDto, order: Order, queryRunner: QueryRunner): Promise<OrderItem> {
         const orderItem = this.orderItemRepository.create(createOrderItemDto);
-        
+
         orderItem.order = order;
         orderItem.product = await this.menuItemService.findOneByIdWithOptions(createOrderItemDto.productId);
-        orderItem.fullLabel = await this.getItemLabel(orderItem);
-        await queryRunner.manager.save(OrderItem, orderItem);
 
-        return orderItem;
+        return await queryRunner.manager.save(OrderItem, orderItem);
     }
 
     async getItemLabel(orderItem: OrderItem): Promise<string> {
-        return orderItem.choices ? orderItem.product.name + " - " + orderItem.choices.choice.value : orderItem.product.name;
+        return orderItem.choices ? orderItem.product.name + " (" + orderItem.choices.map(choice => choice.choice.value).join(', ') + ")" : orderItem.product.name;
+    }
+
+    async updateOrderItemLabel(id: string, queryRunner: QueryRunner) {
+        const orderItem = await queryRunner.manager.findOne(OrderItem, { 
+            where: { id }, 
+            relations: ['choices', 'choices.choice', 'product'] 
+        });
+        
+        if (!orderItem) {
+            throw new Error(`Order item with id ${id} not found`);
+        }
+        
+        // Get valid choice values (filter out undefined/null values)
+        const choiceValues = orderItem.choices
+            ?.map(choice => choice.choice?.value)
+            .filter(value => value) || [];
+        
+        // Only create the choices string if there are actual values
+        let label = orderItem.product.name;
+        
+        if (choiceValues.length > 0) {
+            label += ` (${choiceValues.join(', ')})`;
+        }
+        
+        orderItem.fullLabel = label;
+        return await queryRunner.manager.save(orderItem);
     }
 
     /* async updateMenuItemQuantity(orderItem: OrderItem, order: Order, queryRunner: QueryRunner) {

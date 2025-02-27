@@ -240,4 +240,21 @@ export class TableService extends GenericService<Table> {
     return table;
   }
 
+  async getTableByIdForOrder(tableId: string) {
+    const table = await this.tableRepository.findOneBy({
+      id: tableId,
+      isActive: true
+    });
+
+    if (!table) {
+      throw new NotFoundException('La Table est obligatoire pour passer votre commande');
+    }
+
+    if (table.tableStatus !== TableStatus.AVAILABLE) {
+      throw new BadRequestException('La table n\'est pas disponible');
+    }
+
+    return table;
+  }
+
 }

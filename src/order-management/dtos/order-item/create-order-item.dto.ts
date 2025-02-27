@@ -1,9 +1,9 @@
 import { IsString, IsNumber, IsOptional, IsUUID, Min, IsDecimal, IsEnum, IsNotEmpty } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
-import { IsULID } from 'src/common/decorators/is-ulid.decorator';
 import { OrderItemType } from 'src/order-management/enums/order-item-type.enum';
 import { Transform } from 'class-transformer';
-
+import { IsArray } from 'class-validator';
+import { IsULID } from 'src/common/decorators/is-ulid.decorator';
 export class CreateOrderItemDto {
 
     @ApiPropertyOptional({ description: 'Full label of the order item' })
@@ -34,4 +34,9 @@ export class CreateOrderItemDto {
     @ApiProperty({ description: 'Total price for the items' })
     @IsNumber({ maxDecimalPlaces: 2 })
     total: number;
+    
+    @ApiProperty({ description: 'Order items choices IDs' })
+    @IsArray()
+    @IsULID({ each: true })
+    menuItemChoices: string[];
 }

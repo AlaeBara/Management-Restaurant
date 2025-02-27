@@ -116,7 +116,6 @@ export class MenuItem extends BaseEntity {
     @AfterLoad()
     async transformChoices() {
         if (this.choices && Array.isArray(this.choices)) {
-            console.log('Transforming choices:', this.choices);
 
             // Safely map choices, ensuring no null or undefined values are processed
             const transformedChoices = this.choices
