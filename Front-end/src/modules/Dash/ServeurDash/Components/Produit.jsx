@@ -12,7 +12,7 @@ const Produit = ({ produit ,  handleProductClick , handleIncrement , handleDecre
         </div>
         <div className="w-1/2 sm:w-full flex flex-col justify-between pl-2 sm:pl-0">
             <div className="space-y-2">
-                <h3 className="text-lg font-medium">{produit.name}</h3>
+                <h3 className="text-lg font-medium text-center sm:text-left">{produit.name}</h3>
             </div>
 
             <div className="mt-4">
@@ -77,6 +77,7 @@ const Produit = ({ produit ,  handleProductClick , handleIncrement , handleDecre
                     </p>
                 </div>
             </div>
+            
             <button
                 className="w-full bg-[#f3f4f6] hover:bg-[#2d3748] hover:text-white transition-all duration-700 text-[#2d3748] px-3 py-2 rounded-md flex items-center justify-center mt-4"
                 title="Ajouter au panier"

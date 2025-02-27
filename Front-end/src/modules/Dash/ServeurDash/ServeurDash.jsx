@@ -1,28 +1,34 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import styles from './ServeurDash.module.css';
 import Cart from './components/Carts'; 
-import { X } from 'lucide-react';
+import { X, ShoppingBasket, MoveUp } from 'lucide-react';
 import Main from './components/Main';
 import {Input}from '@/components/ui/input';
 import {Search}from 'lucide-react';
 
 
-
 const ServeurDash = () => {
     const [showCart, setShowCart] = useState(false);
     const [isMobile, setIsMobile] = useState(window.innerWidth <= 768);
+    const [isInCarts, setIsInCarts] = useState(false);
 
-    // Toggle cart visibility
     const toggleCart = useCallback(() => {
-        if (isMobile) {
-            // Scroll to cart in responsive mode
-            const cartSection = document.getElementById('cartSection');
-            cartSection.scrollIntoView({ behavior: 'smooth' });
+        const cartSection = document.getElementById('cartSection');
+        if (isMobile && cartSection) {
+            const cartRect = cartSection.getBoundingClientRect();
+            const isInCart = cartRect.top < window.innerHeight && cartRect.bottom > 0;
+            if (isInCart) {
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+                setIsInCarts(false);
+            } else {
+                cartSection.scrollIntoView({ behavior: 'smooth' });
+                setIsInCarts(true);
+            }
         } else {
             setShowCart((prev) => !prev);
         }
     }, [isMobile]);
-    
+
     // Handle window resize for responsiveness
     useEffect(() => {
         const handleResize = () => {
@@ -35,7 +41,6 @@ const ServeurDash = () => {
         window.addEventListener('resize', handleResize);
         return () => window.removeEventListener('resize', handleResize);
     }, []);
-
 
   return (
     <div className={styles.container}>
@@ -64,7 +69,9 @@ const ServeurDash = () => {
 
         {/* Floating Toggle Button */}
         <button className={`${styles.toggleButton} ${showCart ? styles.toggleButtonActive : ''}`} onClick={toggleCart}>
-            <span role="img" aria-label="cart">{showCart ? <X /> : '🛒'}</span>
+            <span role="img" aria-label="cart">
+                {isInCarts ? <MoveUp /> : showCart ? <X /> : <ShoppingBasket /> }
+            </span>
         </button>
     </div>
   );
