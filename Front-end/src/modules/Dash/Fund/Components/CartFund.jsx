@@ -34,8 +34,8 @@ const CartFund = ({ fund,Delete }) => {
                             <Wallet className="h-5 w-5 text-muted-foreground" />
                         </div>
 
-    
-                        <p className={style.zoneLabel}>{fund.sku} </p>
+                        <p className={style.titlename}>{fund.name} </p>
+                        {/* <p className={style.zoneLabel}>{fund.sku} </p> */}
                         <h3 className={style.zoneTitle}> {fund.balance} Dh </h3>
                         <p className={style.zoneLabel}>Cliquez pour voir les transactions</p>
 

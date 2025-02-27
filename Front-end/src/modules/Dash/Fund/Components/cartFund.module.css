@@ -40,6 +40,16 @@
     font-family: "Poppins", sans-serif;
 }
 
+.titlename{
+    display: flex;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-transform: capitalize;
+    font-family: "Poppins", sans-serif;
+    margin-bottom: 12px;
+}
+
 .zoneLabel {
     font-size: 14px;
     color: #666;

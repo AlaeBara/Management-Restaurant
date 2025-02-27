@@ -31,6 +31,15 @@
     flex: 1;
 }
 
+.titlename{
+    display: flex;
+    font-size: 18px;
+    font-weight: 600;
+    color: #333;
+    text-transform: capitalize;
+    font-family: "Poppins", sans-serif;
+}
+
 .zoneTitle {
     display: flex;
     font-size: 28px;
