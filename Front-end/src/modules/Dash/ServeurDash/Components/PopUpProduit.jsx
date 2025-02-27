@@ -122,8 +122,7 @@ const PopUpProduct = memo(({ product, onClose}) => {
 
                 {/* Supplements Section */}
                 <div className="mb-6">
-                    <h3 className="text-lg font-semibold mb-4">Suppléments</h3>
-
+                
                     {!groupedChoices || Object.keys(groupedChoices).length === 0 ? (
                         <p className="text-gray-500 text-center">Aucun supplément disponible</p>
                     ) : (

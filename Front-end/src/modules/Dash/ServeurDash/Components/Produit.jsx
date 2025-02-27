@@ -13,7 +13,6 @@ const Produit = ({ produit ,  handleProductClick , handleIncrement , handleDecre
         <div className="w-1/2 sm:w-full flex flex-col justify-between pl-2 sm:pl-0">
             <div className="space-y-2">
                 <h3 className="text-lg font-medium">{produit.name}</h3>
-                <p className="text-xs text-gray-500">{produit.description}</p>
             </div>
 
             <div className="mt-4">

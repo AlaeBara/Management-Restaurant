@@ -33,7 +33,6 @@ const Cart = React.memo(({ showCart }) => {
             updateCartItemQuantity(productId, newQuantity, supplements);
         }
     };
-
     const handleDelete = (productId, supplements) => {
         removeFromCart(productId, supplements); 
     };
@@ -45,19 +44,18 @@ const Cart = React.memo(({ showCart }) => {
         }, 0);
     };
 
-
     //send order
     const { loading, error, sendOrder } = useSendOrder();
-
     const transformCartData = () => {
         const transformedCart = {
-          totalAmount: calculateTotal(),
-          // numberOfSeats: 4, 
-          // totalAditionalPrice: 20.00, 
-          tableId: "00955e03-7c92-42ef-94ef-596bb1e68dde", 
-          items: cart.map(item => ({
+            totalAmount: calculateTotal(),
+            // numberOfSeats: 4, 
+            // totalAditionalPrice: 20.00, 
+            tableId: "00955e03-7c92-42ef-94ef-596bb1e68dde", 
+            items: cart.map(item => ({
             productId: item.productId,
             type: item.type,
+            // supplements: item.supplements,
             quantity: item.quantity,
             price: item.price,
             total: item.total
@@ -66,7 +64,6 @@ const Cart = React.memo(({ showCart }) => {
         console.log(transformedCart)
         return transformedCart;
     };
-
     const handleSendOrder = async () => {
         const orderData = transformCartData();
         const response = await sendOrder(orderData);
@@ -87,12 +84,15 @@ const Cart = React.memo(({ showCart }) => {
             setCart([]);
         }
         else {
-            toast.error(response?.data?.message  , {
+            toast.error(response?.data?.message || error , {
                 position: "top-right",
                 autoClose: 1200,
             });
         }
     };
+
+
+    
 
 
   return (
@@ -192,7 +192,7 @@ const Cart = React.memo(({ showCart }) => {
                 <Label htmlFor="table" className="text-xs">
                     Numéro de table
                 </Label>
-                <Input id="table" value={1} onChange={(e) => setTableNumber(e.target.value)} className="h-9 bg-white" />
+                <Input id="table" value={1}  readOnly   onChange={(e) => setTableNumber(e.target.value)} className="h-9 bg-white" />
             </div>
             <div>
                 <Label htmlFor="note" className="text-xs">
@@ -203,6 +203,7 @@ const Cart = React.memo(({ showCart }) => {
                     placeholder="Note spéciale"
                     value="order Ayoub Baraoui"
                     className="h-9 bg-white"
+                    readOnly  
                 />
             </div>
         </div>
