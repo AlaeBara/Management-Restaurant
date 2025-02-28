@@ -22,14 +22,6 @@ export default function Component() {
     const { formData, setFormData, initialData, setInitialData, message, loading } = useFetchOneProduct(id);
     const { errors, updateProduct,alert} = useUpdateProduct(id, formData, setFormData, initialData, setInitialData);
 
-    const { units, fetchUnits  } = useFetchUnits()
-
-    useEffect(() => {
-        fetchUnits({fetchAll: true});
-    }, []);
-
-   
-
     const handleChange = (e) => {
         setFormData({ ...formData, [e.target.name]: e.target.value });
     };
@@ -38,7 +30,6 @@ export default function Component() {
         setFormData({ ...formData, [field]: value });
     };
 
-    
   return (
     <>
         <ToastContainer />
@@ -157,43 +148,6 @@ export default function Component() {
                             <p className="text-xs text-red-500 mt-1">{errors.isOffered}</p>
                             )}
                         </div>
-                    </div>
-
-                    <div className="space-y-2">
-                        <Label htmlFor="unitId">Identifiant de l'unité</Label>
-                        <Select
-                            id="unitId"
-                            name="unitId"
-                            value={formData.unitId || ""}
-                            onValueChange={(value) => handleChange({ target: { name: 'unitId', value } })}
-                        >
-                            <SelectTrigger>
-                            <SelectValue
-                                placeholder={
-                                    units.find((unit) => unit.id === formData.unitId)?.baseUnit ||
-                                    "Sélectionner l'unité"
-                                }
-                            />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {units.length > 0 ? (
-                                    units
-                                        .map((unit) => (
-                                            <SelectItem key={unit.id} value={unit.id}>
-                                                {unit.unit} {unit.baseUnit && `→ ${unit.baseUnit}`} {unit.conversionFactorToBaseUnit && `(${unit.conversionFactorToBaseUnit} par ${unit.unit})`}
-                                            </SelectItem>
-                                        ))
-                                ) : (
-                                    <p>Aucune donnée disponible</p>
-                                )}
-                            </SelectContent>
-                        </Select>
-                        <p className="text-xs text-gray-600 mt-0">
-                            Sélectionnez une zone parent si cette zone doit être rattachée à une zone existante. Cette hiérarchisation permet d'organiser les zones de manière structurée.
-                        </p>
-                        {errors.parentZone && (
-                            <p className="text-xs text-red-500 mt-1">{errors.parentZoneUUID}</p>
-                        )}
                     </div>
 
 

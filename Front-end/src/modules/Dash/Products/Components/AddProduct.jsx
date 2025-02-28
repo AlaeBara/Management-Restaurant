@@ -10,7 +10,6 @@ import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { z } from 'zod';
 import { useNavigate, useParams } from 'react-router-dom';
-import {useFetchUnits} from '../../Units/Hooks/useFetchUnits'
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {Loader} from 'lucide-react'
 
@@ -36,17 +35,12 @@ const ProductAddSchema = z.object({
         required_error: "Le type de produit est requis.",
         }).min(1, "Le produit type ne peut pas être vide."),
 
-    unitId: z.string().nullable().optional()
 });
 
 export default function Component() {
 
     const navigate = useNavigate();
 
-    const { units, fetchUnits  } = useFetchUnits()
-    useEffect(() => {
-        fetchUnits({fetchAll: true});
-    }, []);
 
     const [formData, setFormData] = useState({
         productSKU: '',
@@ -54,7 +48,6 @@ export default function Component() {
         productDescription: "",
         isOffered: true,
         productType: "",
-        unitId: null
     });
 
     const [errors, setErrors] = useState({});
@@ -84,8 +77,7 @@ export default function Component() {
                 productName: '',
                 productDescription: "",
                 isOffered: true,
-                productType: "",
-                unitId: null
+                productType: ""
             });
             setErrors({});
             setAlert({
@@ -227,37 +219,6 @@ export default function Component() {
                         </div>
                     </div>
 
-                    <div className="space-y-2">
-                        <Label htmlFor="unitId">Identifiant de l'unité</Label>
-                        <Select
-                            id="unitId"
-                            name="unitId"
-                            value={formData.unitId || ""}
-                            onValueChange={(value) => handleChange({ target: { name: 'unitId', value } })}
-                        >
-                            <SelectTrigger>
-                                <SelectValue placeholder="Sélectionner l'unité" />
-                            </SelectTrigger>
-                            <SelectContent>
-                                {units.length > 0 ? (
-                                    units
-                                        .map((unit) => (
-                                            <SelectItem key={unit.id} value={unit.id}>
-                                               {unit.unit} {unit.baseUnit && `→ ${unit.baseUnit}`} {unit.conversionFactorToBaseUnit && `( ${unit.unit} → ${unit.conversionFactorToBaseUnit}${unit.baseUnit} )`}
-                                            </SelectItem>
-                                        ))
-                                ) : (
-                                    <p className='text-sm'>Aucune donnée disponible</p>
-                                )}
-                            </SelectContent>
-                        </Select>
-                        <p className="text-xs text-gray-600 mt-0">
-                            Sélectionnez une zone parent si cette zone doit être rattachée à une zone existante. Cette hiérarchisation permet d'organiser les zones de manière structurée.
-                        </p>
-                        {errors.parentZone && (
-                            <p className="text-xs text-red-500 mt-1">{errors.parentZoneUUID}</p>
-                        )}
-                    </div>
 
 
                     <div className="flex gap-4">

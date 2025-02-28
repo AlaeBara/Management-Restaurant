@@ -7,13 +7,15 @@ export function useFetchOneInventory(id) {
         sku: '',
         warningQuantity: null,
         storageId: null,
-        productId : null
+        productId : null,
+        unitId: null
     });
     const [initialData, setInitialData] = useState({ 
         sku: '',
         warningQuantity: null,
         storageId: null,
-        productId : null
+        productId : null,
+        unitId: null
     }); 
 
     const [message , setmessage] = useState(null);
@@ -32,15 +34,18 @@ export function useFetchOneInventory(id) {
             setFormData({
                 sku: response.data.sku,
                 warningQuantity: response.data.warningQuantity,
-                storageId: response.data.storageId || null,
-                productId : response.data.productId || null
+                storageId: response.data.storage?.id || null,
+                productId : response.data.productId || null,
+                unitId: response.data.unit?.id || null
             });
             setInitialData({
                 sku: response.data.sku,
                 warningQuantity: response.data.warningQuantity,
-                storageId: response.data.storageId || null,
-                productId : response.data.productId || null
+                storageId: response.data.storage?.id || null,
+                productId : response.data.productId || null,
+                unitId: response.data.unit?.id || null
             });
+            
             setLoading(false);
             } catch (error) {
                 console.error('Error fetching inventory data:', error.response?.data?.message || error.message);

@@ -70,7 +70,7 @@ const Login = () => {
       }
     } catch (error) {
       if (error.response) {
-        toast.error("Identifiants invalides");
+        toast.error(error.response?.data?.message);
       } else {
         toast.error("Une erreur est survenue. Veuillez réessayer.");
       }

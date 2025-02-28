@@ -14,6 +14,7 @@ import {useFetchProduct} from '../../../Products/Hooks/useFetchProduct'
 import {useFetchStorages} from '../../../Suplier&Stockage/Stockage/Hooks/useFetchStorages'
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import {Loader} from 'lucide-react'
+import {useFetchUnits} from '../../../Units/Hooks/useFetchUnits'
 
 
 // Zod schema for form validation
@@ -33,6 +34,8 @@ const InventorySchema = z.object({
     productId: z
         .string()
         .nonempty({ message: "Le Produit associé est obligatoire." }),
+
+    unitId: z.string().nullable().optional()
     
 });
 
@@ -43,9 +46,12 @@ export default function Component() {
 
     const { product, fetchProduct  } = useFetchProduct()
     const { Storages, fetchStorage  } = useFetchStorages()
+    const { units, fetchUnits  } = useFetchUnits()
+   
     useEffect(() => {
         fetchProduct({fetchAll: true});
         fetchStorage({fetchAll: true});
+        fetchUnits({fetchAll: true});
     }, []);
 
 
@@ -53,7 +59,8 @@ export default function Component() {
         sku: '',
         warningQuantity: null,
         storageId: '',
-        productId : ''
+        productId : '',
+        unitId: null
     });
     const [errors, setErrors] = useState({});
 
@@ -82,7 +89,8 @@ export default function Component() {
                 sku: '',
                 warningQuantity: null,
                 storageId: '',
-                productId : ''
+                productId : '',
+                unitId: null
             });
             setErrors({});
             setAlert({
@@ -235,6 +243,36 @@ export default function Component() {
                                     <p className="text-xs text-red-500 mt-1">{errors.productId}</p>
                                 )}
                             </div>
+
+
+                            <div className="space-y-2">
+                                <Label htmlFor="unitId">Identifiant de l'unité</Label>
+                                <Select
+                                    id="unitId"
+                                    name="unitId"
+                                    value={formData.unitId || ""}
+                                    onValueChange={(value) => handleChange({ target: { name: 'unitId', value } })}
+                                >
+                                    <SelectTrigger>
+                                        <SelectValue placeholder="Sélectionner l'unité" />
+                                    </SelectTrigger>
+                                    <SelectContent>
+                                        {units.length > 0 ? (
+                                            units
+                                                .map((unit) => (
+                                                    <SelectItem key={unit.id} value={unit.id}>
+                                                    {unit.unit} {unit.baseUnit && `→ ${unit.baseUnit}`} {unit.conversionFactorToBaseUnit && `( ${unit.unit} → ${unit.conversionFactorToBaseUnit}${unit.baseUnit} )`}
+                                                    </SelectItem>
+                                                ))
+                                        ) : (
+                                            <p className='text-sm'>Aucune donnée disponible</p>
+                                        )}
+                                    </SelectContent>
+                                </Select>
+                                {errors.unitId && (
+                                    <p className="text-xs text-red-500 mt-1">{errors.unitId}</p>
+                                )}
+                            </div> 
                        
                             <div className='flex gap-4'>
 
