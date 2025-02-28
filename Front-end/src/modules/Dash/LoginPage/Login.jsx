@@ -86,8 +86,8 @@ const Login = () => {
           onSubmit={form.handleSubmit(onSubmit)}
           className="w-full max-w-sm space-y-6 bg-white p-8 rounded-md"
         >
-          <h1 className="text-3xl font-bold mx-0 font-custom">
-           
+          <h1 className="text-3xl font-bold mx-0 font-custom text-center">
+            Bienvenue ! 
           </h1>
 
           <FormField
@@ -159,6 +159,19 @@ const Login = () => {
           </Button>
         </form>
       </Form>
+
+
+      <div className="flex flex-col items-center justify-center gap-2">
+        <p className="text-sm text-gray-500">
+          Copyright © 2025 - Tous droits réservés
+        </p>
+        <p className="text-sm text-gray-500">
+          Abdelrahim & Wiicode Team
+        </p>
+        <p className="text-xs text-center text-gray-500">
+          Version 1.0.0
+        </p>
+      </div>
     </div>
   );
 };
