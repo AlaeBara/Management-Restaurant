@@ -171,7 +171,7 @@ export default function Component() {
                             <SelectValue
                                 placeholder={
                                     units.find((unit) => unit.id === formData.unitId)?.baseUnit ||
-                                    "Sélectionner la zone parent"
+                                    "Sélectionner l'unité"
                                 }
                             />
                             </SelectTrigger>
@@ -180,7 +180,7 @@ export default function Component() {
                                     units
                                         .map((unit) => (
                                             <SelectItem key={unit.id} value={unit.id}>
-                                                {unit.unit} → {unit.baseUnit} {unit.conversionFactorToBaseUnit && `(${unit.conversionFactorToBaseUnit} par ${unit.unit})`}
+                                                {unit.unit} {unit.baseUnit && `→ ${unit.baseUnit}`} {unit.conversionFactorToBaseUnit && `(${unit.conversionFactorToBaseUnit} par ${unit.unit})`}
                                             </SelectItem>
                                         ))
                                 ) : (

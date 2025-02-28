@@ -243,7 +243,7 @@ export default function Component() {
                                     units
                                         .map((unit) => (
                                             <SelectItem key={unit.id} value={unit.id}>
-                                               {unit.unit} → {unit.baseUnit} {unit.conversionFactorToBaseUnit && `( ${unit.unit} → ${unit.conversionFactorToBaseUnit}${unit.baseUnit} )`}
+                                               {unit.unit} {unit.baseUnit && `→ ${unit.baseUnit}`} {unit.conversionFactorToBaseUnit && `( ${unit.unit} → ${unit.conversionFactorToBaseUnit}${unit.baseUnit} )`}
                                             </SelectItem>
                                         ))
                                 ) : (

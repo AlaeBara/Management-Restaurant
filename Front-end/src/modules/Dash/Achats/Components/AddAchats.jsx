@@ -111,7 +111,9 @@ export default function AchatCreationForm() {
         fetchFunds({fetchAll:true})
         fetchProduct({fetchAll:true})
         fetchIventory({fetchAll:true})
-    },[fetchSupliers,fetchFunds,fetchProduct])
+    },[fetchSupliers,fetchFunds,fetchProduct,fetchIventory])
+
+
 
     const [formData, setFormData] = useState({
         supplierId: '',
@@ -680,14 +682,28 @@ export default function AchatCreationForm() {
 
                                     <div className="space-y-2">
                                         <Label>Quantité <span className='text-red-500 text-base'>*</span></Label>
-                                        <Input
-                                            type="number"
-                                            name="quantity"
-                                            value={product.quantity  || ''}
-                                            onChange={(e) => handleChangee(e.target.value, index, 'quantity')}
-                                            placeholder="Example : 5"
-                                            min="0"
-                                        />
+
+                                        <div className='flex gap-2'>
+                                            <Input
+                                                type="number"
+                                                name="quantity"
+                                                value={product.quantity  || ''}
+                                                onChange={(e) => handleChangee(e.target.value, index, 'quantity')}
+                                                placeholder="Example : 5"
+                                                min="0"
+                                            />
+
+                                            <Input
+                                                name="unit"
+                                                value={product.inventoryId && inventorys.find(inventory => inventory.id === product.inventoryId)?.unit?.unit   || ''}
+                                                readOnly
+                                                className='w-2/5 p-1'
+                                                placeholder='Unité'
+                                                disabled
+                                            />
+                                           
+                                        </div>
+
                                         {errors.items && errors.items[index] && errors.items[index].quantity && (
                                             <p className="text-xs text-red-500 mt-1">
                                                 {errors.items[index].quantity}
