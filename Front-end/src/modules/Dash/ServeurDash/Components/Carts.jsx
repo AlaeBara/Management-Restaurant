@@ -9,8 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Button } from '@/components/ui/button';
 import { useSendOrder } from '../hooks/UseSendOrder';
 import { toast } from 'react-toastify';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter , DialogClose } from '@/components/ui/dialog';
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import image from './tablesimage.png'
 
 
@@ -21,7 +19,6 @@ const Cart = React.memo(({ showCart  , tables}) => {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [tableNumber, setTableNumber] = useState('');
     const [orderNote, setOrderNote] = useState('');
-
 
     useEffect(() => {
         if (cart !== undefined) {
@@ -54,28 +51,31 @@ const Cart = React.memo(({ showCart  , tables}) => {
 
 
     //send order
+
     const { loading, error, sendOrder } = useSendOrder();
+
     const transformCartData = () => {
         const transformedCart = {
             totalAmount: calculateTotal(),
             // numberOfSeats: 4, 
             // totalAditionalPrice: 20.00, 
-            tableId: "00955e03-7c92-42ef-94ef-596bb1e68dde", 
+            tableId: tableNumber || null, 
             items: cart.map(item => ({
-            productId: item.productId,
-            type: item.type,
-            // supplements: item.supplements,
-            quantity: item.quantity,
-            price: item.price,
-            total: item.total
-          }))
+                productId: item.productId,
+                type: item.type,
+                menuItemChoices: item.supplements.map(supplement => supplement.id),
+                quantity: item.quantity,
+                price: item.price,
+                total: item.total
+            }))
         };
-        console.log(transformedCart)
         return transformedCart;
     };
+
     const handleSendOrder = async () => {
         const orderData = transformCartData();
-        const response = await sendOrder(orderData);
+        const { response, error: sendOrderError } = await sendOrder(orderData);
+       
         if (response?.status === 201) {
             if (localStorage.getItem('cart')) {
                 localStorage.removeItem('cart');
@@ -91,9 +91,10 @@ const Cart = React.memo(({ showCart  , tables}) => {
                 theme: "colored",
             });
             setCart([]);
+            setTableNumber('');
         }
         else {
-            toast.error(response?.data?.message || error , {
+            toast.error(sendOrderError, {
                 position: "top-right",
                 autoClose: 1200,
             });
@@ -210,16 +211,12 @@ const Cart = React.memo(({ showCart  , tables}) => {
                     {loading ? <Loader className="h-6 w-6 animate-spin" /> : 'Enregistrer la commande'}
                 </button>
 
-                <button className={styles.CleanButton} onClick={clearCart}>
+                <button className={styles.CleanButton} onClick={() => {clearCart(); setTableNumber('')}}>
                     <Trash2 />
                 </button>
             </div>
         </div>
 
-
-
-
-        
 
 
         {isModalOpen && (
@@ -234,7 +231,7 @@ const Cart = React.memo(({ showCart  , tables}) => {
                 />
 
                 <div 
-                    className="relative w-full max-w-md rounded-lg bg-white p-6 shadow-xl mx-4"
+                    className="relative w-full max-w-md rounded-lg bg-white px-6 py-4 shadow-xl mx-4"
                     onClick={(e) => e.stopPropagation()}
                 >
                     <div className="mb-4">
@@ -285,12 +282,9 @@ const Cart = React.memo(({ showCart  , tables}) => {
                         </div>
 
                         {/* Buttons */}
-                        <div className="flex justify-end gap-2">
-                            <Button type="button" onClick={() => setIsModalOpen(false)}>
-                                Enregistrer
-                            </Button>
+                        <div className="flex justify-end mt-4">
                             <Button type="button" variant="outline" onClick={() => setIsModalOpen(false)}>
-                                Annuler
+                                Fermer
                             </Button>
                         </div>
                     </div>
