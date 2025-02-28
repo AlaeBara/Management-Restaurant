@@ -1,21 +1,18 @@
-import { Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
+import { Controller, Get, Inject, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { LanguageService } from "../services/langague.service";
-import { Permissions, Public } from "src/user-management/decorators/auth.decorator";
+import { Public } from "src/user-management/decorators/auth.decorator";
 import { Language } from "../entities/language.entity";
-
 
 @Controller('api/languages')
 @ApiTags('language')
 @ApiBearerAuth()
 export class LanguageController {
     constructor(
-        @Inject()
+        @Inject(LanguageService)
         private readonly languageService: LanguageService
-    ) {
-    }
-
+    ) { }
 
     @Get()
     @Public()

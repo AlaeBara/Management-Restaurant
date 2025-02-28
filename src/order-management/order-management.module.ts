@@ -28,6 +28,7 @@ import { OrderActionService } from './services/order-action.service';
 import { OrderStatusController } from './controllers/orderStatus.controller';
 import { OrderStatusService } from './services/order-status.service';
 import { OrderItemChoicesService } from './services/order-item-choices.service';
+import { OrderPermissionSeeder } from './seeders/order-permission.seeder';
 
 @Module({
   imports: [
@@ -63,9 +64,12 @@ import { OrderItemChoicesService } from './services/order-item-choices.service';
     OrderEmitterEvent,
     OrderEventService,
     OrderStatusService,
-    OrderItemChoicesService
+    OrderItemChoicesService,
+    OrderPermissionSeeder
   ],
-  exports: [],
+  exports: [
+    OrderPermissionSeeder
+  ],
 })
 
 export class OrderManagementModule { }

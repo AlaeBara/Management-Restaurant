@@ -1,10 +1,9 @@
 import { Body, Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
-import { MenuItemTagService } from "../services/menu-item-tag.service";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Inventory } from "src/inventory-managemet/entities/inventory.entity";
+
+import { MenuItemTagService } from "../services/menu-item-tag.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { MenuItemTag } from "../entities/menu-item-tag.entity";
-import { UpdateInventoryDto } from "src/inventory-managemet/dtos/inventory/update-inventory.dto";
 import { CreateMenuItemTagDto } from "../dtos/menu-item-tag/create-menu-item-tag.dto";
 import { UpdateMenuItemTagDto } from "../dtos/menu-item-tag/update-menu-item-tag.dto";
 
@@ -20,7 +19,7 @@ export class MenuItemTagController {
     }
 
     @Get()
-    @Permissions('view-menu-item-tags')
+    @Permissions('view-tag')
     @ApiOperation({ summary: 'Get all menu item tags' })
     async findAll(
         @Query('page') page?: number,
@@ -45,7 +44,7 @@ export class MenuItemTagController {
     }
 
     @Get(':id')
-    @Permissions('view-menu-item-tags')
+    @Permissions('view-tag')
     @ApiOperation({ summary: 'Get a menu item tag by id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
@@ -65,7 +64,7 @@ export class MenuItemTagController {
     }
 
     @Post()
-    @Permissions('create-menu-item-tag')
+    @Permissions('manage-tag')
     @ApiOperation({ summary: 'Create a menu item tag' })
     async create(@Body() createMenuItemTagDto: CreateMenuItemTagDto) {
         await this.menuItemTagService.createMenuItemTag(createMenuItemTagDto);
@@ -73,7 +72,7 @@ export class MenuItemTagController {
     }
 
     @Put(':id')
-    @Permissions('update-menu-item-tag')
+    @Permissions('manage-tag')
     @ApiOperation({ summary: 'Update a menu item tag' })
     async update(
         @Param('id', ParseUUIDPipe) id: string,
@@ -84,7 +83,7 @@ export class MenuItemTagController {
     }
 
     @Delete(':id')
-    @Permissions('delete-menu-item-tag')
+    @Permissions('manage-tag')
     @ApiOperation({ summary: 'Delete a menu item tag' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemTagService.deleteMenuItemTag(id);
@@ -92,7 +91,7 @@ export class MenuItemTagController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-menu-item-tag')
+    @Permissions('manage-tag')
     @ApiOperation({ summary: 'Restore a menu item tag' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemTagService.restoreByUUID(id, true, ['tag']);

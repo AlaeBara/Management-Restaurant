@@ -1,6 +1,7 @@
-import { Supplier } from '../entities/supplier.entity';
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query, Req, Request, UploadedFile, UseInterceptors } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { Supplier } from '../entities/supplier.entity';
 import { CreateSupplierDto } from '../dto/create-supplier.dto';
 import { SupplierService } from '../services/supplier.service';
 import { Permissions } from 'src/user-management/decorators/auth.decorator';
@@ -13,18 +14,8 @@ import { FileInterceptor } from '@nestjs/platform-express';
 export class SupplierController {
   constructor(private readonly supplierService: SupplierService) { }
 
-  /* private supplierPermissions = [
-    { name: 'view-suppliers', label: 'Voir tous les fournisseurs', resource: 'supplier' },
-    { name: 'create-supplier', label: 'Créer un nouveau fournisseur', resource: 'supplier' },
-    { name: 'view-supplier', label: 'Voir un fournisseur spécifique', resource: 'supplier' },
-    { name: 'update-supplier', label: 'Mettre à jour un fournisseur existant', resource: 'supplier' },
-    { name: 'delete-supplier', label: 'Supprimer un fournisseur', resource: 'supplier' },
-    { name: 'restore-supplier', label: 'Restaurer un fournisseur supprimé', resource: 'supplier' }
-  ]; */
-
-
   @Get()
-  @Permissions('view-suppliers')
+  @Permissions('view-supplier')
   @ApiOperation({ summary: 'Get all suppliers' })
   async findAll(
     @Query('page') page?: number,
@@ -49,7 +40,7 @@ export class SupplierController {
   }
 
   @Post()
-  @Permissions('create-supplier')
+  @Permissions('manage-supplier')
   @ApiOperation({ summary: 'Create a new supplier' })
   @UseInterceptors(FileInterceptor('avatar'))
   async createSupplier(
@@ -82,7 +73,7 @@ export class SupplierController {
   }
 
   @Put(':id')
-  @Permissions('update-supplier')
+  @Permissions('manage-supplier')
   @ApiOperation({ summary: 'Update a supplier' })
   @UseInterceptors(FileInterceptor('avatar'))
   async updateSupplier(@Param('id', ParseUUIDPipe) id: string, @Body() updateSupplierDto: UpdateSupplierDto,@UploadedFile() file: Express.Multer.File,@Req() req:Request) {
@@ -95,7 +86,7 @@ export class SupplierController {
   }
 
   @Delete(':id')
-  @Permissions('delete-supplier')
+  @Permissions('manage-supplier')
   @ApiOperation({ summary: 'Delete a supplier' })
   async deleteSupplier(@Param('id', ParseUUIDPipe) id: string) {
     await this.supplierService.deleteSupplier(id);
@@ -103,7 +94,7 @@ export class SupplierController {
   }
 
   @Patch(':id/restore')
-  @Permissions('delete-supplier')
+  @Permissions('manage-supplier')
   @ApiOperation({ summary: 'Restore a supplier' })
   async restoreSupplier(@Param('id', ParseUUIDPipe) id: string) {
     await this.supplierService.restoreSupplier(id);
@@ -111,7 +102,7 @@ export class SupplierController {
   }
 
   @Get(':id/purchases')
-  @Permissions('view-all-purchase-supplier')
+  @Permissions('view-supplier')
   @ApiOperation({ summary: 'Get all Supplier Purchases' })
   async getPurchaseBySupplier(@Param('id', ParseUUIDPipe) id: string) {
       return this.supplierService.getRemainingAmount(id);

@@ -14,18 +14,12 @@ export class PermissionPermissionsSeeder {
 
     private async seedPermissionPermissions() {
 
-
         const permissionPermissions = [
-            { name: 'view-permissions', label: 'Voir toutes les permissions', resource: 'permission' },
-            { name: 'create-permission', label: 'Créer une nouvelle permission', resource: 'permission' },
-            { name: 'view-permission', label: 'Voir une permission spécifique', resource: 'permission' },
-            { name: 'update-permission', label: 'Mettre à jour une permission existante', resource: 'permission' },
-            { name: 'delete-permission', label: 'Supprimer une permission', resource: 'permission' },
-            { name: 'restore-permission', label: 'Restaurer une permission supprimée', resource: 'permission' },
+            { name: 'view-permission', label: 'Voir toutes les permissions', resource: 'permission' },
+            { name: 'manage-permission', label: 'Gérer une permission (créer, modifier, supprimer)', resource: 'permission' },
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);
-        //await permissionRepository.save(permissionPermissions);
 
         for (const permissionData of permissionPermissions) {
             const existingPermission = await permissionRepository.findOne({

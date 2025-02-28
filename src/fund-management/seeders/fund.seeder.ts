@@ -15,13 +15,12 @@ export class FundPermissionSeeder {
     private async seedFundPermissions() {
 
         const fundPermissions =  [
-            { name: 'view-funds', label: 'Voir tous les fonds', resource: 'fonds' },
-            { name: 'view-fund', label: 'Voir un fonds unique', resource: 'fonds' },
-            { name: 'create-fund', label: 'Créer un nouveau fonds', resource: 'fonds' },    
-            { name: 'update-fund', label: 'Mettre à jour un fonds', resource: 'fonds' },
-            { name: 'delete-fund', label: 'Supprimer un fonds', resource: 'fonds' },
-            { name: 'restore-fund', label: 'Restaurer un fonds supprimé', resource: 'fonds' },
-            { name: 'view-fund-operations', label: 'Voir historique des opérations de fonds', resource: 'fonds' }
+            { name: 'view-fund', label: 'Voir une ou plusieurs caisses', resource: 'caisse' },
+            { name: 'view-fund-operation', label: 'Voir historique des opérations de caisse', resource: 'caisse' },
+            { name: 'view-expense', label: 'Voir une ou plusieurs dépenses', resource: 'caisse' },
+            { name: 'manage-fund', label: 'Créer, modifier ou supprimer une caisse', resource: 'caisse' },
+            { name: 'manage-fund-operation', label: 'Créer, modifier ou supprimer une opération de caisse', resource: 'caisse' },
+            { name: 'manage-expense', label: 'Créer, modifier ou supprimer une dépense', resource: 'caisse' }
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);

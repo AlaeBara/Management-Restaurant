@@ -1,17 +1,5 @@
-import {
-    Body,
-    Controller,
-    Delete, Get, Patch, Post, Put,
-    Inject,
-    Param,
-    Query,
-    Req
-} from "@nestjs/common";
-import {
-    ApiBearerAuth,
-    ApiOperation,
-    ApiTags
-} from "@nestjs/swagger";
+import { Body, Controller, Get, Inject, Param, Post, Query, Req } from "@nestjs/common";
+import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
 
 import { OrderService } from "../services/order.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
@@ -29,7 +17,7 @@ export class OrderController {
     ) { }
 
     @Get()
-    @Permissions('read-order')
+    @Permissions('view-order')
     @ApiOperation({ summary: 'Get all orders' })
     async findAll(
         @Query('page') page?: number,
@@ -54,18 +42,16 @@ export class OrderController {
     }
 
     @Get(':idOrOrderNumber')
-    @Permissions('read-order')
+    @Permissions('view-order')
     @ApiOperation({ summary: 'Get a order by id or order number' })
     async getOrder(@Param('idOrOrderNumber') idOrOrderNumber: string) {
         return this.orderService.findOrderByIdOrOrderNumber(idOrOrderNumber);
     }
 
     @Post()
-    @Permissions('create-order')
+    @Permissions('manage-order')
     @ApiOperation({ summary: 'Create a new order' })
     async createOrder(@Body() createOrderDto: CreateOrderDto, @Req() req: Request) {
-        //console.log(createOrderDto);
         return this.orderService.createOrderByStaff(createOrderDto, req);
     }
-
 }

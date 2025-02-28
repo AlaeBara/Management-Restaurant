@@ -1,20 +1,6 @@
-import {
-  Controller,
-  Get,
-  Post,
-  Body,
-  Patch,
-  Param,
-  Query,
-  Put,
-  UseGuards,
-  ParseIntPipe,
-  Req,
-  Inject,
-  forwardRef,
-  UploadedFile,
-  UseInterceptors,
-} from '@nestjs/common';
+import { Controller, Get, Post, Body, Patch, Param, Query, Put, UseGuards, ParseIntPipe, Req, UploadedFile, UseInterceptors } from '@nestjs/common';
+import { FileInterceptor } from '@nestjs/platform-express';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 import { CreateUserDto } from '../dto/user/create-user.dto';
 import { UpdateUserDto } from '../dto/user/update-user.dto';
@@ -25,10 +11,6 @@ import { JwtAuthGuard } from '../guards/jwt.guard';
 import { RoleService } from '../services/role/role.service';
 import { RolesGuard } from '../guards/roles.guard';
 import { PermissionsGuard } from '../guards/permission.guard';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { FileInterceptor } from '@nestjs/platform-express';
-
-
 
 @ApiTags('users')
 @Controller('api/users')
@@ -40,18 +22,8 @@ export class UserController {
     private readonly roleService: RoleService
   ) { }
 
-  /* private readonly userPermissions = [
-    { permission: 'view-users', label: 'View all users' },
-    { permission: 'create-user', label: 'Create a new user' },
-    { permission: 'view-user', label: 'View a specific user' },
-    { permission: 'update-user', label: 'Update an existing user' },
-    { permission: 'delete-user', label: 'Delete a user' },
-    { permission: 'restore-user', label: 'Restore a deleted user' },
-    { permission: 'grant-user-role', label: 'Accorder un rôle à un utilisateur' },
-  ]; */
-
   @Get()
-  @Permissions('view-users')
+  @Permissions('view-user')
   @ApiOperation({ summary: 'Get all users' })
   async findAll(
     @Query('page') page?: number,
@@ -76,7 +48,7 @@ export class UserController {
   }
 
   @Post()
-  @Permissions('create-user')
+  @Permissions('manage-user')
   @ApiOperation({ summary: 'Create a new user' })
   @UseInterceptors(FileInterceptor('avatar'))
   async create(@Body() createUserDto: CreateUserDto, @UploadedFile() file: Express.Multer.File, @Req() request: Request): Promise<any> {
@@ -101,7 +73,7 @@ export class UserController {
   }
 
   @Put(':id')
-  @Permissions('update-user')
+  @Permissions('manage-user')
   @ApiOperation({ summary: 'Update an existing user' })
   @UseInterceptors(FileInterceptor('avatar'))
   async update(
@@ -120,7 +92,7 @@ export class UserController {
   }
 
   @Post(':id/roles/:roleid')
-  @Permissions('grant-user-role')
+  @Permissions('manage-user')
   @ApiOperation({ summary: 'Grant a role to a user' })
   async grantRoleToUser(
     @Param('id', ParseIntPipe) id: number,

@@ -1,23 +1,9 @@
-import {
-  Body,
-  Controller,
-  Delete,
-  Get,
-  NotFoundException,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { Table } from '../entities/table.entity';
 import { TableService } from '../services/table.service';
-import {
-  Permissions,
-  Public,
-} from 'src/user-management/decorators/auth.decorator';
+import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
 import { CreateTableDto } from '../dtos/table/create-table.dto';
 import { UpdateTableDto } from '../dtos/table/update-table.dto';
 import { CreateManyTablesDto } from '../dtos/table/create-many-tables.dto';
@@ -28,17 +14,8 @@ import { CreateManyTablesDto } from '../dtos/table/create-many-tables.dto';
 export class TableController {
   constructor(private readonly tableService: TableService) { }
 
-  /* private readonly PERMISSIONS = [
-    { name: 'view-tables', label: 'Consulter toutes les tables', resource: 'table' },
-    { name: 'view-table', label: 'Consulter une table spécifique', resource: 'table' },
-    { name: 'create-table', label: 'Ajouter une nouvelle table', resource: 'table' },
-    { name: 'update-table', label: 'Modifier une table', resource: 'table' },
-    { name: 'delete-table', label: 'Supprimer une table', resource: 'table' },
-    { name: 'restore-table', label: 'Récupérer une table supprimée', resource: 'table' }
-  ]; */
-
   @Get()
-  @Permissions('view-tables')
+  @Permissions('view-table')
   @ApiOperation({ summary: 'Get all tables' })
   async findAll(
     @Query('page') page?: number,
@@ -63,14 +40,14 @@ export class TableController {
   }
 
   @Get('group-by-zone')
-  @Permissions('view-tables')
+  @Permissions('view-table')
   @ApiOperation({ summary: 'Get all tables grouped by zone' })
   async findAllGroupByZone() {
     return this.tableService.findAllGroupByZone();
   }
 
   @Get('find/:idOrTableCode')
-  @Permissions('read-table')
+  @Permissions('view-table')
   @ApiOperation({ summary: 'Get a table by id or table code' })
   async getTableByIdOrTableCode(@Param('idOrTableCode') idOrTableCode: string) {
     return this.tableService.getTableByIdOrTableCode(idOrTableCode);
@@ -97,7 +74,7 @@ export class TableController {
   }
 
   @Post()
-  @Permissions('create-table')
+  @Permissions('manage-table')
   @ApiOperation({ summary: 'Create a table' })
   async create(@Body() createTableDto: CreateTableDto) {
     await this.tableService.createTable(createTableDto);
@@ -105,7 +82,7 @@ export class TableController {
   }
 
   @Put(':id')
-  @Permissions('update-table')
+  @Permissions('manage-table')
   @ApiOperation({ summary: 'Update a table' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -116,7 +93,7 @@ export class TableController {
   }
 
   @Delete(':id')
-  @Permissions('delete-table')
+  @Permissions('manage-table')
   @ApiOperation({ summary: 'Delete a table' })
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOrThrowByUUID(id);
@@ -125,7 +102,7 @@ export class TableController {
   }
 
   @Patch(':id/restore')
-  @Permissions('restore-table')
+  @Permissions('manage-table')
   @ApiOperation({ summary: 'Restore a table' })
   async restore(@Param('id', ParseUUIDPipe) id: string) {
     await this.tableService.findOneByIdWithOptions(id, { onlyDeleted: true });
@@ -142,12 +119,10 @@ export class TableController {
   }
 
   @Post('generate-tables')
-  @Permissions('create-table')
+  @Permissions('manage-table')
   @ApiOperation({ summary: 'Create multiple tables' })
   async generateTables(@Body() createTablesDto: CreateManyTablesDto) {
     await this.tableService.createManyTables(createTablesDto);
     return { message: 'Super! Chaque table a été créée avec succès', status: 201 };
   }
-
-  
 }

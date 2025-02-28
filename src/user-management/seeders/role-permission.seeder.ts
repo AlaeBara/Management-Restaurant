@@ -14,16 +14,9 @@ export class RolePermissionSeeder {
 
   private async seedRolePermissions() {
 
-
     const rolePermissions = [
-      { name: 'view-roles', label: 'Voir tous les rôles', resource: 'role' },
-      { name: 'create-role', label: 'Créer un nouveau rôle', resource: 'role' },
-      { name: 'view-role', label: 'Voir un rôle spécifique', resource: 'role' },
-      { name: 'update-role', label: 'Mettre à jour un rôle existant', resource: 'role' },
-      { name: 'delete-role', label: 'Supprimer un rôle', resource: 'role' },
-      { name: 'restore-role', label: 'Restaurer un rôle supprimé', resource: 'role' },
-      { name: 'view-role-permissions', label: 'Voir les permissions d\'un rôle', resource: 'role' },
-      { name: 'grant-role-permission', label: 'Accorder une permission à un rôle', resource: 'role' },
+      { name: 'view-role', label: 'Voir un rôle', resource: 'role' },
+      { name: 'manage-role', label: 'Gérer un rôle (créer, modifier, supprimer)', resource: 'role' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

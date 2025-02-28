@@ -1,9 +1,10 @@
 import { Body, Controller, Post } from '@nestjs/common';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { EmailVerificationService } from '../services/authentication/email-verification.service';
 import { SendVerificationEmailDto } from '../dto/authentication/send-verification-email.dto';
 import { Public } from '../decorators/auth.decorator';
 import { VerifyEmailDto } from '../dto/authentication/verify-token-email.dto';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @Controller('api/users/verification')
 @ApiTags('User Verification')

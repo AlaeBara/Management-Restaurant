@@ -1,17 +1,7 @@
-import { UnitService } from '../services/unit.service';
-import {
-  Controller,
-  Post,
-  Get,
-  Query,
-  ParseUUIDPipe,
-  Put,
-  Param,
-  Body,
-  Delete,
-  Patch,
-} from '@nestjs/common';
+import { Controller, Get, Post, Query, ParseUUIDPipe, Put, Param, Body, Delete, Patch } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
+import { UnitService } from '../services/unit.service';
 import { Permissions } from 'src/user-management/decorators/auth.decorator';
 import { Unit } from '../entities/unit.entity';
 import { UpdateUnitDto } from '../dto/update-unit.dto';
@@ -23,17 +13,8 @@ import { CreateUnitDto } from '../dto/create-unit.dto';
 export class UnitController {
   constructor(private unitService: UnitService) { }
 
-  /* private unitPermissions = [
-    { name: 'view-units', label: 'Voir toutes les unités', resource: 'unit' },
-    { name: 'create-unit', label: 'Créer une nouvelle unité', resource: 'unit' },
-    { name: 'view-unit', label: 'Voir une unité spécifique', resource: 'unit' },
-    { name: 'update-unit', label: 'Mettre à jour une unité existante', resource: 'unit' },
-    { name: 'delete-unit', label: 'Supprimer une unité', resource: 'unit' },
-    { name: 'restore-unit', label: 'Restaurer une unité supprimée', resource: 'unit' }
-  ]; */
-
   @Get()
-  @Permissions('view-units')
+  @Permissions('view-unit')
   @ApiOperation({ summary: 'Get all units' })
   async findAll(
     @Query('page') page?: number,
@@ -58,7 +39,7 @@ export class UnitController {
   }
 
   @Post()
-  @Permissions('create-unit')
+  @Permissions('manage-unit')
   @ApiOperation({ summary: 'Create a unit' })
   async createUnits(@Body() createUnitDto: CreateUnitDto) {
     await this.unitService.createUnit(createUnitDto);
@@ -80,7 +61,7 @@ export class UnitController {
   }
 
   @Put(':id')
-  @Permissions('update-unit')
+  @Permissions('manage-unit')
   @ApiOperation({ summary: 'Update a unit' })
   async updateUnits(
     @Param('id', ParseUUIDPipe) id: string,
@@ -91,7 +72,7 @@ export class UnitController {
   }
 
   @Delete(':id')
-  @Permissions('delete-unit')
+  @Permissions('manage-unit')
   @ApiOperation({ summary: 'Delete a unit' })
   async deleteUnits(@Param('id', ParseUUIDPipe) id: string) {
     await this.unitService.findOneByIdWithOptions(id, { findOrThrow: true });
@@ -100,7 +81,7 @@ export class UnitController {
   }
 
   @Patch(':id/restore')
-  @Permissions('restore-unit')
+  @Permissions('manage-unit')
   @ApiOperation({ summary: 'Restore a unit' })
   async restoreUnits(@Param('id', ParseUUIDPipe) id: string) {
     await this.unitService.restoreByUUID(id, true);

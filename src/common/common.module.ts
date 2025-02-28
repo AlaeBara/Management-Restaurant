@@ -18,6 +18,7 @@ import { CategoryModule } from 'src/category-management/category.module';
 import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
 import { IsULID } from './decorators/is-ulid.decorator';
 import { PaymentModule } from 'src/payment-management/payment.module';
+import { OrderManagementModule } from 'src/order-management/order-management.module';
 
 @Global()
 @Module({
@@ -36,7 +37,8 @@ import { PaymentModule } from 'src/payment-management/payment.module';
     forwardRef(() => LanguageModule),
     forwardRef(() => CategoryModule),
     forwardRef(() => MenuItemModule),
-    forwardRef(() => PaymentModule)
+    forwardRef(() => PaymentModule),
+    forwardRef(() => OrderManagementModule)
   ],
   controllers: [],
   providers: [

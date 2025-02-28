@@ -15,16 +15,11 @@ export class UnitPermissionsSeeder {
     private async seedUnitPermissions() {
 
         const permissionPermissions = [
-            { name: 'view-units', label: 'Voir toutes les unités', resource: 'unit' },
-            { name: 'create-unit', label: 'Créer une nouvelle unité', resource: 'unit' },
-            { name: 'view-unit', label: 'Voir une unité spécifique', resource: 'unit' },
-            { name: 'update-unit', label: 'Mettre à jour une unité existante', resource: 'unit' },
-            { name: 'delete-unit', label: 'Supprimer une unité', resource: 'unit' },
-            { name: 'restore-unit', label: 'Restaurer une unité supprimée', resource: 'unit' }
+            { name: 'view-unit', label: 'Voir une ou plusieurs unités', resource: 'unit' },
+            { name: 'manage-unit', label: 'Créer, modifier ou supprimer une unité', resource: 'unit' }
         ];
 
         const permissionRepository = this.connection.getRepository(Permission);
-        //await permissionRepository.save(permissionPermissions);
 
         for (const permissionData of permissionPermissions) {
             const existingPermission = await permissionRepository.findOne({

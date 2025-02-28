@@ -1,31 +1,26 @@
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { FundService } from "../services/fund.service";
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
+
+import { FundService } from "../services/fund.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Fund } from "../entities/fund.entity";
 import { CreateFundDto } from "../dtos/fund/create-fund.dto";
 import { UpdateFundDto } from "../dtos/fund/update-fund.dto";
 import { FundOperationService } from "../services/fund-operation.service";
 import { FundOperationEntity } from "../entities/fund-operation.entity";
+
 @Controller('api/funds')
 @ApiTags('Fund Management - Funds')
 @ApiBearerAuth()
 export class FundController {
 
-    constructor(private readonly fundService: FundService, private readonly fundOperationService: FundOperationService) { }
-
-    /* private fundPermissions =  [
-        { name: 'view-funds', label: 'View all funds', resource: 'fund / caisse' },
-        { name: 'view-fund', label: 'View single fund', resource: 'fund / Caisse' },
-        { name: 'create-fund', label: 'Create new fund', resource: 'fund / Caisse' },    
-        { name: 'update-fund', label: 'Update fund', resource: 'fund / Caisse' },
-        { name: 'delete-fund', label: 'Delete fund', resource: 'fund / Caisse' },
-        { name: 'restore-fund', label: 'Restore deleted fund', resource: 'fund / Caisse' },
-        { name: 'view-fund-operations', label: 'View fund operations', resource: 'fund / Caisse' }
-    ]; */
+    constructor(
+        private readonly fundService: FundService,
+        private readonly fundOperationService: FundOperationService
+    ) { }
 
     @Get()
-    @Permissions('view-funds')
+    @Permissions('view-fund')
     @ApiOperation({ summary: 'Get all funds' })
     async findAll(
         @Query('page') page?: number,
@@ -70,7 +65,7 @@ export class FundController {
     }
 
     @Post()
-    @Permissions('create-fund')
+    @Permissions('manage-fund')
     @ApiOperation({ summary: 'Create a fund' })
     async create(@Body() createFundDto: CreateFundDto) {
         await this.fundService.createFund(createFundDto);
@@ -78,7 +73,7 @@ export class FundController {
     }
 
     @Put(':id')
-    @Permissions('update-fund')
+    @Permissions('manage-fund')
     @ApiOperation({ summary: 'Update a fund' })
     async update(
         @Param('id', ParseUUIDPipe) id: string,
@@ -89,7 +84,7 @@ export class FundController {
     }
 
     @Delete(':id')
-    @Permissions('delete-fund')
+    @Permissions('manage-fund')
     @ApiOperation({ summary: 'Delete a fund' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.fundService.deleteFund(id);
@@ -97,7 +92,7 @@ export class FundController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-fund')
+    @Permissions('manage-fund')
     @ApiOperation({ summary: 'Restore a fund' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.fundService.findOneByIdWithOptions(id, { onlyDeleted: true });
@@ -106,7 +101,7 @@ export class FundController {
     }
 
     @Get(':id/operations')
-    @Permissions('view-fund-operations')
+    @Permissions('view-fund-operation')
     @ApiOperation({ summary: 'Get all Operation by Fund id' })
     async findAllByInventoryId(
         @Param('id', ParseUUIDPipe) id: string,

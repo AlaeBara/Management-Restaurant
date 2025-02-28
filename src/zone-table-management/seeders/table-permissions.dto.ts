@@ -16,13 +16,9 @@ export class TablePermissionSeeder {
 
 
     const tablePermissions = [
-        { name: 'view-tables', label: 'Consulter toutes les tables', resource: 'table' },
-        { name: 'view-table', label: 'Consulter une table spécifique', resource: 'table' },
-        { name: 'create-table', label: 'Ajouter une nouvelle table', resource: 'table' },
-        { name: 'update-table', label: 'Modifier une table', resource: 'table' },
-        { name: 'delete-table', label: 'Supprimer une table', resource: 'table' },
-        { name: 'restore-table', label: 'Récupérer une table supprimée', resource: 'table' }
-      ];
+        { name: 'view-table', label: 'Consulter une ou plusieurs tables', resource: 'table' },
+        { name: 'manage-table', label: 'Gérer une table (créer, modifier, supprimer)', resource: 'table' },
+    ];
 
     const permissionRepository = this.connection.getRepository(Permission);
     //await permissionRepository.save(rolePermissions);

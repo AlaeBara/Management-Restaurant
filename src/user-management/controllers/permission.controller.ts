@@ -1,22 +1,9 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Put,
-  Query,
-  Req
-} from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { PermissionService } from '../services/permission/permission.service';
 import { Permission } from '../entities/permission.entity';
-import { UpdateResult } from 'typeorm';
 import { Permissions, Public } from '../decorators/auth.decorator';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 
 @ApiTags('permissions')
 @Controller('api/permissions')
@@ -24,17 +11,8 @@ import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 export class PermissionController {
   constructor(private readonly permissionService: PermissionService) { }
 
-  /* private readonly permissionPermissions = [
-    { name: 'view-permissions', label: 'View all permissions' },
-    { name: 'create-permission', label: 'Create a new permission' },
-    { name: 'view-permission', label: 'View a specific permission' },
-    { name: 'update-permission', label: 'Update an existing permission' },
-    { name: 'delete-permission', label: 'Delete a permission' },
-    { name: 'restore-permission', label: 'Restore a deleted permission' },
-  ]; */
-
   @Get()
-  @Permissions('view-permissions')
+  @Permissions('view-permission')
   @ApiOperation({ summary: 'Get all permissions' })
   async findAll(
     @Query('page') page?: number,
@@ -64,7 +42,7 @@ export class PermissionController {
   }
 
   @Post()
-  @Permissions('create-permission')
+  @Permissions('manage-permission')
   @ApiOperation({ summary: 'Create a new permission' })
   async create(
     @Body() permission: Permission,
@@ -84,7 +62,7 @@ export class PermissionController {
   }
 
   @Put(':id')
-  @Permissions('update-permission')
+  @Permissions('manage-permission')
   @ApiOperation({ summary: 'Update an existing permission' })
   async update(
     @Param('id', ParseIntPipe) id: number,
@@ -95,7 +73,7 @@ export class PermissionController {
   }
 
   @Delete(':id')
-  @Permissions('delete-permission')
+  @Permissions('manage-permission')
   @ApiOperation({ summary: 'Delete a permission' })
   async delete(@Param('id', ParseIntPipe) id: number) {
     await this.permissionService.findOrThrow(id);
@@ -110,7 +88,7 @@ export class PermissionController {
   }
 
   @Patch(':id/restore')
-  @Permissions('restore-permission')
+  @Permissions('manage-permission')
   @ApiOperation({ summary: 'Restore a deleted permission' })
   async restore(@Param('id', ParseIntPipe) id: number) {
     const permission = await this.permissionService.findOrThrow(id, [], true);

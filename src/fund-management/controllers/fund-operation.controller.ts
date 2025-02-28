@@ -1,6 +1,7 @@
-import { FundOperationService } from "../services/fund-operation.service";
 import { Body, Controller, Delete, Get, Param, Patch, Post, Query, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
+import { FundOperationService } from "../services/fund-operation.service";
 import { FundOperationEntity } from "../entities/fund-operation.entity";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { CreateFundOperationDto } from "../dtos/fund-operation/create-fund-operation.dto";
@@ -15,20 +16,8 @@ export class FundOperationController {
 
     constructor(private readonly fundOperationService: FundOperationService) { }
 
-    /**
-     * Permissions for this controlleق
-    private fundOperationPermissions = [
-        { name: 'view-funds-operations', label: 'Voir toutes les op rations des caisses', resource: 'operation' },
-        { name: 'create-fund-operation', label: 'Cr er une nouvelle op ration de caisse', resource: 'operation' },
-        { name: 'create-expense', label: 'Cr er une nouvelle d pense', resource: 'operation' },
-        { name: 'approve-fund-operation', label: 'Approuver une op ration de caisse', resource: 'operation' },
-        { name: 'approve-transfer-fund-operation', label: 'Approuver operation de transfert de fonds', resource: 'operation' },
-        { name: 'create-transfer-fund-operation', label: 'Créer une opération de transfert de fonds', resource: 'operation' },
-    ];*/
-
-
     @Get()
-    @Permissions('view-funds-operations')
+    @Permissions('view-fund-operation')
     @ApiOperation({ summary: 'Get all funds operations' })
     async findAll(
         @Query('page') page?: number,
@@ -53,7 +42,7 @@ export class FundOperationController {
     }
 
     @Post()
-    @Permissions('create-fund-operation')
+    @Permissions('manage-fund-operation')
     @ApiOperation({ summary: 'Create a fund operation' })
     async create(@Body() createFundOperationDto: CreateFundOperationDto, @Req() req: Request) {
         await this.fundOperationService.createOperation(createFundOperationDto, req);
@@ -61,7 +50,7 @@ export class FundOperationController {
     }
 
     @Post('expense')
-    @Permissions('create-expense')
+    @Permissions('manage-expense')
     @ApiOperation({ summary: 'Create a expense' })
     async createExpense(@Body() createExpenseDto: CreateExpenseDto, @Req() req: Request) {
         await this.fundOperationService.createExpense(createExpenseDto, req);
@@ -69,7 +58,7 @@ export class FundOperationController {
     }
 
     @Patch(':id/approve')
-    @Permissions('approve-fund-operation')
+    @Permissions('manage-fund-operation')
     @ApiOperation({ summary: 'Approve a fund operation' })
     async approveOperation(@Param('id') id: string, @Req() req: Request) {
         await this.fundOperationService.approveOperation(id, req);
@@ -77,7 +66,7 @@ export class FundOperationController {
     }
 
     @Patch('transfer/:id/approve')
-    @Permissions('approve-transfer-fund-operation')
+    @Permissions('manage-fund-operation')
     @ApiOperation({ summary: 'Approve a transfer fund operation' })
     async approveTransferOperation(@Param('id') id: string, @Req() req: Request) {
         await this.fundOperationService.approveTransferOperation(id, req);
@@ -85,7 +74,7 @@ export class FundOperationController {
     }
 
     @Post('transfer/create')
-    @Permissions('create-transfer-fund-operation')
+    @Permissions('manage-fund-operation')
     @ApiOperation({ summary: 'Create a transfer fund operation' })
     async createTransferOperation(@Body() operationDto: CreateTransferOperationDto, @Req() req: Request) {
         await this.fundOperationService.trasfertOperation(operationDto, req);
@@ -93,7 +82,7 @@ export class FundOperationController {
     }
 
     @Delete(':id')
-    @Permissions('delete-fund-operation')
+    @Permissions('manage-fund-operation')
     @ApiOperation({ summary: 'Delete a fund operation' })
     async deleteOperation(@Param('id') id: string) {
         await this.fundOperationService.deleteOperation(id);
@@ -101,7 +90,7 @@ export class FundOperationController {
     }
 
     @Patch('change-fund-source')
-    @Permissions('write-fund-operation')
+    @Permissions('manage-fund-operation')
     @ApiOperation({ summary: 'Change the fund source of a fund operation' })
     async changeFundSource(@Body() changeFundSourceDto: ChangeFundSourceDto) {
         await this.fundOperationService.changeFundSource(changeFundSourceDto);

@@ -1,5 +1,6 @@
 import { Body, Controller, Get, Param, ParseUUIDPipe, Post, Query, Req } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
 import { InventoryMovementService } from "../services/inventory-movement.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { InventoryMovement } from "../entities/inventory-movement.entity";
@@ -13,13 +14,8 @@ export class InvetoryMovementController {
 
     constructor(private readonly inventoryMovementService: InventoryMovementService) { }
 
-    /*  private inventoryMovementPermissions = [
-         { name: 'view-inventories-movements', label: 'View all inventory movements', resource: 'inventory-movement' },
-         { name: 'create-inventory-movement', label: 'Create new inventory movement', resource: 'inventory-movement' },
-     ]; */
-
     @Get()
-    @Permissions('view-inventories-movements')
+    @Permissions('view-inventory-movement')
     @ApiOperation({ summary: 'Get all inventories Movements' })
     async findAll(
         @Query('page') page?: number,
@@ -44,7 +40,7 @@ export class InvetoryMovementController {
     }
 
     @Get('by-inventory/:id')
-    @Permissions('view-inventories-movements')
+    @Permissions('view-inventory-movement')
     @ApiOperation({ summary: 'Get all inventories Movements by inventory id' })
     async findAllByInventoryId(
         @Param('id', ParseUUIDPipe) id: string,
@@ -74,7 +70,7 @@ export class InvetoryMovementController {
     }
 
     @Post()
-    @Permissions('create-inventory-movement')
+    @Permissions('manage-inventory-movement')
     @ApiOperation({ summary: 'Create a inventory movement' })
     async create(@Body() createInventoryMovementDto: CreateInventoryMovementDto, @Req() request: Request) {
         await this.inventoryMovementService.createInvenotryMovement(createInventoryMovementDto, request);
@@ -82,7 +78,7 @@ export class InvetoryMovementController {
     }
 
     @Post('transfer')
-    @Permissions('create-transfer-inventory-movement')
+    @Permissions('manage-inventory-movement')
     @ApiOperation({ summary: 'Create Transfer inventory movement' })
     async createTransfer(@Body() createInvenotryTransfer: CreateInvenotryTransfer, @Req() request: Request) {
         await this.inventoryMovementService.createTransfer(createInvenotryTransfer, request);

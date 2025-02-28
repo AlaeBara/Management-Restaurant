@@ -1,9 +1,9 @@
 import { Body, Controller, Post, Req, Request } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
-import { Permissions, Public } from "src/user-management/decorators/auth.decorator";
+
+import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { ShiftZoneService } from "../services/shift-zone.service";
 import { StartShiftDTO } from "../dtos/start-Shift.dto";
-import { MailerService } from "@nestjs-modules/mailer";
 import { EndShiftDTO } from "../dtos/end-shift.dto";
 import { ReassignmentShiftDTO } from "../dtos/reassignment-shift.dto";
 import { ResponseReassignmentRequestDTO } from "../dtos/response-reassignment-request.dto";
@@ -14,15 +14,6 @@ import { ResponseReassignmentRequestDTO } from "../dtos/response-reassignment-re
 export class ShiftZoneController {
 
     constructor(private readonly shiftZoneService: ShiftZoneService) { }
-
-
-    /* const permission = [
-        { name: 'start-shift', label: 'Start a shift for a waiter', resource: 'shift-zone' },
-        { name: 'end-shift', label: 'End a shift for a waiter', resource: 'shift-zone' },
-        { name: 'request-shift-reassignment', label: 'Request shift reassignment', resource: 'shift-zone' }
-        { name: 'response-reassignment-shift-request-by-waiter-or-responsable', label: 'Response to shift reassignment request', resource: 'shift-zone' }
-    ]; */
-
 
     @Post('start-shift-by-waiter')
     @Permissions('start-shift-by-waiter')

@@ -1,21 +1,10 @@
-import {
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  ParseUUIDPipe,
-  Patch,
-  Post,
-  Put,
-  Query,
-} from '@nestjs/common';
+import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { ZoneService } from '../services/zone.service';
 import { CreateZoneDto } from '../dtos/zone/create-zone.dto';
-import { Body } from '@nestjs/common';
 import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
 import { Zone } from '../entities/zone.entity';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
 import { UpdateZoneDto } from '../dtos/zone/update-zone.dto';
 import { ReassignZoneDto } from '../dtos/zone/reassign-zone.dto';
 import { TableService } from '../services/table.service';
@@ -29,18 +18,8 @@ export class ZoneController {
     private readonly tableService: TableService,
   ) { }
 
-  /* private readonly PERMISSIONS = [
-    { name: 'view-zones', label: 'Consulter toutes les zones', resource: 'zone' },
-    { name: 'view-zone', label: 'Consulter une zone spécifique', resource: 'zone' },
-    { name: 'create-zone', label: 'Ajouter une nouvelle zone', resource: 'zone' },
-    { name: 'update-zone', label: 'Modifier une zone', resource: 'zone' },
-    { name: 'delete-zone', label: 'Supprimer une zone', resource: 'zone' },
-    { name: 'restore-zone', label: 'Récupérer une zone supprimée', resource: 'zone' },
-    { name: 'reassign-zone', label: 'Réorganiser les zones', resource: 'zone' },
-  ]; */
-
   @Get()
-  @Permissions('view-zones')
+  @Permissions('view-zone')
   @ApiOperation({ summary: 'Get all zones' })
   async findAll(
     @Query('page') page?: number,
@@ -76,7 +55,7 @@ export class ZoneController {
   }
 
   @Post()
-  @Permissions('create-zone')
+  @Permissions('manage-zone')
   @ApiOperation({ summary: 'Create a zone' })
   async create(@Body() zoneDto: CreateZoneDto) {
     await this.zoneService.createZone(zoneDto);
@@ -84,7 +63,7 @@ export class ZoneController {
   }
 
   @Put(':id')
-  @Permissions('update-zone')
+  @Permissions('manage-zone')
   @ApiOperation({ summary: 'Update a zone' })
   async update(
     @Param('id', ParseUUIDPipe) id: string,
@@ -95,7 +74,7 @@ export class ZoneController {
   }
 
   @Delete(':id')
-  @Permissions('delete-zone')
+  @Permissions('manage-zone')
   @ApiOperation({ summary: 'Delete a zone' })
   async delete(@Param('id', ParseUUIDPipe) id: string) {
     await this.zoneService.deleteZoneByUUID(id);
@@ -103,7 +82,7 @@ export class ZoneController {
   }
 
   @Patch(':id/restore')
-  @Permissions('restore-zone')
+  @Permissions('manage-zone')
   @ApiOperation({ summary: 'Restore a zone' })
   async restore(@Param('id', ParseUUIDPipe) id: string) {
     await this.zoneService.restoreByUUID(id, true, ['zoneCode']);
@@ -111,7 +90,7 @@ export class ZoneController {
   }
 
   @Patch(':id/reassign')
-  @Permissions('reassign-zone')
+  @Permissions('manage-zone')
   @ApiOperation({ summary: 'Reassign a zone' })
   async reassign(
     @Param('id', ParseUUIDPipe) id: string,
@@ -122,9 +101,8 @@ export class ZoneController {
   }
 
   @Get(':id/tables')
-  @Permissions('view-tables')
+  @Permissions('view-table')
   @ApiOperation({ summary: 'Get all tables of a zone' })
-
   async findTables(@Param('id', ParseUUIDPipe) id: string,
     @Query('page') page?: number,
     @Query('limit') limit?: number,

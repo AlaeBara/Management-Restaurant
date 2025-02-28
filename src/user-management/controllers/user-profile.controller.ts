@@ -1,18 +1,8 @@
-import {
-  BadRequestException,
-  Body,
-  Controller,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Body, Controller, Get, Param, ParseIntPipe, Patch, Query, Req } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { Permissions, Roles } from '../decorators/auth.decorator';
 import { UserService } from '../services/user/user.service';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { NumericType } from 'typeorm';
 import { UpdateUsernameDto } from '../dto/user/update-username.dto';
 import { UpdatePasswordDto } from '../dto/user/update-password.dto';
 
@@ -20,16 +10,12 @@ import { UpdatePasswordDto } from '../dto/user/update-password.dto';
 @Controller('api/users/profile')
 @ApiBearerAuth()
 export default class UserProfileController {
+
   constructor(private userService: UserService) {}
-  //public async updateEmail(req: Request, res: Response) // in progress
-  //public async updateUsernameById(@Param('id', ParseIntPipe) id: number,@Body() updateUsernameDto: UpdateUsernameDto,) // done
-  //async updateUsernameByUser( @Req() request: Request,@Body() updateUsernameDto: UpdateUsernameDto,) // done
-  //public async updatePassword(req: Request, res: Response) // in progress
-  //async profile(@Req() request: Request) // done
 
   @Patch(':id/username')
   @Roles('superadmin')
-  @Permissions('update-user-username')
+  @Permissions('manage-user')
   @ApiOperation({ summary: 'Update the username of a user by their ID' })
   async updateUsernameById(
     @Param('id', ParseIntPipe) id: number,
@@ -40,7 +26,7 @@ export default class UserProfileController {
   }
 
   @Patch('username')
-  @Permissions('update-user-username')
+  @Permissions('manage-user')
   @ApiOperation({ summary: 'Update the username of the authenticated user' })
   async updateUsernameByUser(
     @Req() request: Request,
@@ -68,7 +54,7 @@ export default class UserProfileController {
   }
 
   @Patch('password')
-  @Permissions('update-user-password')
+  @Permissions('manage-user')
   @ApiOperation({ summary: 'Update the password of the authenticated user' })
   async updatePassword(@Req() request: Request, @Body() updatePasswordDto: UpdatePasswordDto) {
      await this.userService.updatePasswordByProfile(request, updatePasswordDto);

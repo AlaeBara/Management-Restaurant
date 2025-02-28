@@ -34,6 +34,7 @@ import { MenuItemChoiceService } from './services/menu-item-choice.service';
 import { OutboxModule } from 'src/outbox-module/outbox.module';
 import { MenuItemEmitter } from './emitters/menu-item.emitter';
 import { OrderManagementModule } from 'src/order-management/order-management.module';
+import { MenuItemSeeder } from './seeders/menu-item.seeder';
 
 @Module({
   imports: [
@@ -75,7 +76,8 @@ import { OrderManagementModule } from 'src/order-management/order-management.mod
     ChoiceAttributeService,
     ChoiceService,
     MenuItemChoiceService,
-    MenuItemEmitter
+    MenuItemEmitter,
+    MenuItemSeeder
   ],
   exports: [
     TagSeeder,
@@ -83,7 +85,8 @@ import { OrderManagementModule } from 'src/order-management/order-management.mod
     MenuItemTranslationService,
     MenuItemEmitter,
     MenuItemRecipeService,
-    MenuItemChoiceService
+    MenuItemChoiceService,
+    MenuItemSeeder
   ],
 })
 

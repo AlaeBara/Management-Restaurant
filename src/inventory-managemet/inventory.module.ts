@@ -10,7 +10,6 @@ import { InventoryMovement } from './entities/inventory-movement.entity';
 import { UserManagementModule } from 'src/user-management/user-management.module';
 import { InvetoryMovementController } from './controllers/inventory-movement.controller';
 import { InventoryMovementService } from './services/inventory-movement.service';
-import { InventoryMovementPermissionSeeder } from './seeders/inventory-movement-permissions.seeder';
 import { InventoryPermissionSeeder } from './seeders/inventory-permission.seeder';
 import { OutboxModule } from 'src/outbox-module/outbox.module';
 import { MenuItemModule } from 'src/menu-item-management/menu-item.module';
@@ -36,7 +35,6 @@ import { InventoryMovementEmitter } from './emitters/inventory-movement.emitter'
     InventoryMovementService,
     Inventory,
     InventoryPermissionSeeder,
-    InventoryMovementPermissionSeeder,
     InventoryMovementEmitter
   ],
   exports: [
@@ -44,7 +42,6 @@ import { InventoryMovementEmitter } from './emitters/inventory-movement.emitter'
     InventoryMovementService,
     Inventory,
     InventoryPermissionSeeder,
-    InventoryMovementPermissionSeeder,
     InventoryMovementEmitter
   ],
 })

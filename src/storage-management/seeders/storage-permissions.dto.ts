@@ -15,16 +15,12 @@ export class StoragePermissionSeeder {
   private async seedUsers() {
 
     const storagePermissions = [
-      { name: 'view-storages', label: 'Voir tous les Location de stockage', resource: 'placement de stockage' },
-      { name: 'view-storage', label: 'Voir une Location de stockage spécifique', resource: 'placement de stockage' }, 
-      { name: 'create-storage', label: 'Créer une nouvelle Location de stockage', resource: 'placement de stockage' },
-      { name: 'update-storage', label: 'Modifier une Location de stockage', resource: 'placement de stockage' },
-      { name: 'delete-storage', label: 'Supprimer une Location de stockage', resource: 'placement de stockage' },
-      { name: 'restore-storage', label: 'Restaurer une Location de stockage supprimée', resource: 'placement de stockage' }
+      { name: 'view-location-storage', label: 'Voir tous les Location de stockage', resource: 'placement de stockage' }, 
+      { name: 'manage-location-storage', label: 'Créer, modifier ou supprimer une Location de stockage', resource: 'placement de stockage' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);
-    //await permissionRepository.save(rolePermissions);
+    
     for (const permissionData of storagePermissions) {
         const existingPermission = await permissionRepository.findOne({
             where: { name: permissionData.name },

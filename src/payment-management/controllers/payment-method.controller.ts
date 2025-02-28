@@ -30,7 +30,7 @@ export class PaymentMethodController {
     ) { }
 
     @Get()
-    @Permissions('view-payment-methods')
+    @Permissions('view-payment-method')
     @ApiOperation({ summary: 'Get all payment methods' })
     async findAll(
         @Query('page') page?: number,
@@ -75,7 +75,7 @@ export class PaymentMethodController {
     }
 
     @Post()
-    @Permissions('create-payment-method')
+    @Permissions('manage-payment-method')
     @ApiOperation({ summary: 'Create a payment method' })
     async create(@Body() createPaymentMethodDto: CreatePaymentMethodDto) {
         await this.paymentMethodService.createPaymentMethod(createPaymentMethodDto);
@@ -84,7 +84,7 @@ export class PaymentMethodController {
     }
 
     @Put(':id')
-    @Permissions('update-payment-method')
+    @Permissions('manage-payment-method')
     @ApiOperation({ summary: 'Update a payment method' })
     async update(@Param('id', ParseULIDPipe) id: string, @Body() updatePaymentMethodDto: UpdatePaymentMethodDto) {
         await this.paymentMethodService.updatePaymentMethod(id, updatePaymentMethodDto);
@@ -93,7 +93,7 @@ export class PaymentMethodController {
     }
 
     @Delete(':id')
-    @Permissions('delete-payment-method')
+    @Permissions('manage-payment-method')
     @ApiOperation({ summary: 'Delete a payment method' })
     async delete(@Param('id', ParseULIDPipe) id: string) {
         await this.paymentMethodService.deletePaymentMethod(id);
@@ -102,7 +102,7 @@ export class PaymentMethodController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-payment-method')
+    @Permissions('manage-payment-method')
     @ApiOperation({ summary: 'Restore a payment method' })
     async restore(@Param('id', ParseULIDPipe) id: string) {
         await this.paymentMethodService.restoreByUUID(id, true, ['paymentMethod']);

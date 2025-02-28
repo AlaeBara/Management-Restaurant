@@ -15,10 +15,9 @@ export class OrderStatusController {
     ) { }
 
     @Put(':orderId/validate')
-    @Permissions('validate-order')
+    @Permissions('manage-order')
     @ApiOperation({ summary: 'validate Order' })
     async validateOrder(@Param('orderId') orderId: string, @Req() req: Request) {
         return this.orderStatusService.validateOrder(orderId, req);
     }
-
 }

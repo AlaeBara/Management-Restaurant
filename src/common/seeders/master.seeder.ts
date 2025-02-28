@@ -10,17 +10,17 @@ import { UserPermissionSeeder } from 'src/user-management/seeders/user-permissio
 import { TablePermissionSeeder } from 'src/zone-table-management/seeders/table-permissions.dto';
 import { ZonePermissionSeeder } from 'src/zone-table-management/seeders/zone-permissions.dto';
 import { StoragePermissionSeeder } from 'src/storage-management/seeders/storage-permissions.dto';
-import { InventoryMovementPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-movement-permissions.seeder';
 import { InventoryPermissionSeeder } from 'src/inventory-managemet/seeders/inventory-permission.seeder';
 import { ProductPermissionSeeder } from 'src/product-management/seeders/product-permission.seeder';
 import { ShiftZonePermissionSeeder } from 'src/shift-zone-management/seeders/shift.permission';
 import { FundPermissionSeeder } from 'src/fund-management/seeders/fund.seeder';
-import { OperationsPermissionSeeder } from 'src/fund-management/seeders/operation.seeder';
 import { PurchasePermissionSeeder } from 'src/purchase-management/seeders/purchase.seeder';
-import { LanguageSeeder } from 'src/language-management/seeders/language.seeder';
 import { CategoryPermissionSeeder } from 'src/category-management/seeders/category-permission.seeder';
 import { TagSeeder } from 'src/menu-item-management/seeders/tag.seeder';
 import { PaymentMethodSeeder } from 'src/payment-management/seeders/payment-method.seeder';
+import { MenuItemSeeder } from 'src/menu-item-management/seeders/menu-item.seeder';
+import { OrderPermissionSeeder } from 'src/order-management/seeders/order-permission.seeder';
+import { PaymentMethodPermissionSeeder } from 'src/payment-management/seeders/payment-method.permission.seeder';
 @Injectable()
 export class MasterSeeder {
 
@@ -36,17 +36,16 @@ export class MasterSeeder {
         private readonly supplierPermissionsSeeder: SupplierPermissionsSeeder,
         private readonly storagePermissionSeeder: StoragePermissionSeeder,
         private readonly inventoryPermissionSeeder: InventoryPermissionSeeder,
-        private readonly inventoryMovementPermissionSeeder: InventoryMovementPermissionSeeder,
         private readonly categoryPermissionSeeder: CategoryPermissionSeeder,
         private readonly productPermissionSeeder: ProductPermissionSeeder,
         private readonly shiftZonePermissionSeeder: ShiftZonePermissionSeeder,
         private readonly fundPermissionSeeder: FundPermissionSeeder,
-        private readonly operationsPermissionSeeder: OperationsPermissionSeeder,
         private readonly purchasePermissionSeeder: PurchasePermissionSeeder,
-        private readonly languageSeeder: LanguageSeeder,
         private readonly tagSeeder: TagSeeder,
-        private readonly paymentMethodSeeder: PaymentMethodSeeder
-
+        private readonly paymentMethodSeeder: PaymentMethodSeeder,
+        private readonly menuItemSeeder: MenuItemSeeder,
+        private readonly orderPermissionSeeder: OrderPermissionSeeder,
+        private readonly paymentMethodPermissionSeeder: PaymentMethodPermissionSeeder
     ) { }
 
     async seedAll() {
@@ -61,16 +60,16 @@ export class MasterSeeder {
         await this.supplierPermissionsSeeder.seed();
         await this.storagePermissionSeeder.seed();
         await this.inventoryPermissionSeeder.seed();
-        await this.inventoryMovementPermissionSeeder.seed();
         await this.categoryPermissionSeeder.seed();
         await this.productPermissionSeeder.seed();
         await this.shiftZonePermissionSeeder.seed();
         await this.fundPermissionSeeder.seed();
-        await this.operationsPermissionSeeder.seed();
         await this.purchasePermissionSeeder.seed();
-        await this.languageSeeder.seed();
         await this.tagSeeder.seed();
         await this.paymentMethodSeeder.seed();
+        await this.menuItemSeeder.seed();
+        await this.orderPermissionSeeder.seed();
+        await this.paymentMethodPermissionSeeder.seed();
         console.log('All seeders executed');
     }
 }

@@ -1,41 +1,19 @@
-import { ClientService } from '../services/client.service';
-import {
-  BadRequestException,
-  Controller,
-  Delete,
-  Param,
-  ParseUUIDPipe,
-  Patch,
-  Put,
-  Query,
-  Req,
-} from '@nestjs/common';
+import { Controller, Delete, Param, ParseUUIDPipe, Patch, Put, Query, Req } from '@nestjs/common';
 import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-import { createClientDto } from '../dto/create-client.dto';
 import { Body, Get, Post } from '@nestjs/common';
-import {
-  Permissions,
-  Public,
-} from 'src/user-management/decorators/auth.decorator';
+
+import { ClientService } from '../services/client.service';
+import { createClientDto } from '../dto/create-client.dto';
+import { Permissions, Public } from 'src/user-management/decorators/auth.decorator';
 import { UpdateClientDto } from '../dto/update-client.dto';
 import { LoginClientDto } from '../dto/login-client.dto';
 import { Client } from '../entities/client.entity';
-import { statusClient } from '../enums/client.enum';
 
 @Controller('api/clients')
 @ApiTags('Client')
 @ApiBearerAuth()
 export class ClientController {
-  constructor(private clientService: ClientService) {}
-
-  /* private clientPermissions = [
-    { name: 'view-clients', label: 'Voir tous les clients', resource: 'client' },
-    { name: 'view-client', label: 'Voir un client spécifique', resource: 'client' },
-    { name: 'create-client', label: 'Créer un nouveau client', resource: 'client' },
-    { name: 'update-client', label: 'Mettre à jour un client existant', resource: 'client' },
-    { name: 'delete-client', label: 'Supprimer un client', resource: 'client' },
-    { name: 'restore-client', label: 'Restaurer un client supprimé', resource: 'client' }
-  ]; */
+  constructor(private clientService: ClientService) { }
 
   @Get()
   @Permissions('view-clients')
@@ -79,7 +57,7 @@ export class ClientController {
   }
 
   @Post()
-  @Permissions('create-client')
+  @Permissions('manage-client')
   @ApiOperation({ summary: 'Create a client' })
   async createClient(@Body() createClientDto: createClientDto) {
     await this.clientService.createClientByAccess(createClientDto);
@@ -98,7 +76,7 @@ export class ClientController {
   }
 
   @Put(':id')
-  @Permissions('update-client')
+  @Permissions('manage-client')
   @ApiOperation({ summary: 'Update a client' })
   async updateClient(
     @Param('id', ParseUUIDPipe) id: string,
@@ -109,7 +87,7 @@ export class ClientController {
   }
 
   @Delete(':id')
-  @Permissions('delete-client')
+  @Permissions('manage-client')
   @ApiOperation({ summary: 'Delete a client' })
   async deleteClient(@Param('id', ParseUUIDPipe) id: string, @Req() request: Request) {
     await this.clientService.deleteClient(id, request);
@@ -117,7 +95,7 @@ export class ClientController {
   }
 
   @Patch(':id/restore')
-  @Permissions('restore-client')
+  @Permissions('manage-client')
   @ApiOperation({ summary: 'Restore a client' })
   async restoreClient(@Param('id', ParseUUIDPipe) id: string) {
     await this.clientService.restoreClient(id);

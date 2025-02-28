@@ -4,20 +4,19 @@ import { Connection } from 'typeorm';
 import { Permission } from '../../user-management/entities/permission.entity';
 
 @Injectable()
-export class ClientPermissionSeeder {
+export class OrderPermissionSeeder {
   constructor(private readonly connection: Connection) { }
 
   async seed() {
-    await this.seedClientPermissions();
-    console.log('Client Permission Seeding completed!');
+    await this.seedOrderPermissions();
+    console.log('Order Permission Seeding completed!');
   }
 
-  private async seedClientPermissions() {
-
+  private async seedOrderPermissions() {
 
     const rolePermissions = [
-      { name: 'view-clients', label: 'Voir une ou plusieurs clients', resource: 'client' },
-      { name: 'manage-client', label: 'Gérer un client (créer, modifier, supprimer)', resource: 'client' },
+      { name: 'view-order', label: 'Voir une ou plusieurs commandes', resource: 'order' },
+      { name: 'manage-order', label: 'Gérer une commande (créer, modifier, supprimer)', resource: 'order' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

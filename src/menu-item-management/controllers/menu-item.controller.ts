@@ -1,10 +1,11 @@
 import { Body, Controller, Delete, forwardRef, Get, Inject, Param, ParseUUIDPipe, Patch, Post, Query, Req, UploadedFiles, UseInterceptors } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+import { FilesInterceptor } from "@nestjs/platform-express";
+
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { MenuItemService } from "../services/menu-item.service";
 import { MenuItem } from "../entities/menu-item.entity";
 import { CreateMenuItemDto } from "../dtos/menu-item/create-menu-item.dto";
-import { FilesInterceptor } from "@nestjs/platform-express";
 import { AddChoiceToMenuItemDto } from "../dtos/menu-item-choices/add-choice-to-menu-item.dto";
 import { MenuItemChoiceService } from "../services/menu-item-choice.service";
 import { MenuItemRecipeService } from "../services/menu-item-recipe.service";
@@ -23,7 +24,7 @@ export class MenuItemController {
     ) { }
 
     @Get()
-    @Permissions('view-menu-item-tags')
+    @Permissions('view-menu-item')
     @ApiOperation({ summary: 'Get all menu item tags' })
     async findAll(
         @Query('page') page?: number,
@@ -48,7 +49,7 @@ export class MenuItemController {
     }
 
     @Post()
-    @Permissions('create-menu-item')
+    @Permissions('manage-menu-item')
     @ApiOperation({ summary: 'Create a menu item' })
     @UseInterceptors(FilesInterceptor('images', 10))
     async createMenuItem(@Body() createMenuItemDto: CreateMenuItemDto, @UploadedFiles() images: Array<Express.Multer.File>, @Req() req: Request) {
@@ -65,7 +66,7 @@ export class MenuItemController {
     }
 
     @Delete(':id')
-    @Permissions('delete-menu-item')
+    @Permissions('manage-menu-item')
     @ApiOperation({ summary: 'Delete a menu item' })
     async deleteMenuItem(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemService.deleteMenuItem(id);
@@ -73,7 +74,7 @@ export class MenuItemController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-menu-item')
+    @Permissions('manage-menu-item')
     @ApiOperation({ summary: 'Restore a menu item' })
     async restoreMenuItem(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemService.restoreMenuItem(id);
@@ -81,7 +82,7 @@ export class MenuItemController {
     }
 
     @Post('choices')
-    @Permissions('add-choice-to-menu-item')
+    @Permissions('manage-choice')
     @ApiOperation({ summary: 'Add a choice to a menu item' })
     async addChoiceToMenuItem(@Body() addChoiceToMenuItemDto: AddChoiceToMenuItemDto) {
         await this.menuItemChoiceService.addChoiceToMenuItem(addChoiceToMenuItemDto);
@@ -89,7 +90,7 @@ export class MenuItemController {
     }
 
     @Patch(':id/toggle-hidden-state')
-    @Permissions('toggle-hidden-state-menu-item')
+    @Permissions('manage-menu-item')
     @ApiOperation({ summary: 'Toggle hidden state of a menu item' })
     async toggleHiddenState(@Param('id', ParseUUIDPipe) id: string) {
         const message = await this.menuItemService.toggleMenuItemHiddenState(id);
@@ -97,7 +98,7 @@ export class MenuItemController {
     }
 
     @Post(':id/recalculate-quantity')
-    @Permissions('recalculate-quantity-menu-item')
+    @Permissions('manage-menu-item')
     @ApiOperation({ summary: 'Recalculate quantity of a menu item' })
     async recalculateQuantity(@Param('id', ParseUUIDPipe) id: string) {
         const menuItem = await this.menuItemService.findOneByIdOrFail(id);
@@ -106,7 +107,7 @@ export class MenuItemController {
     }
 
     @Get('tags/:tag')
-    @Permissions('view-menu-item-tags')
+    @Permissions('view-menu-item')
     @ApiOperation({ summary: 'Get all menu items by tag' }) 
     async getMenuItemsByTag(@Param('tag') tag: string) {
         return this.menuItemService.getMenuItemsByTag(tag);

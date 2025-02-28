@@ -15,13 +15,8 @@ export class PurchasePermissionSeeder {
   private async seedPurchasePermissions() {
 
     const purchasePermissions = [
-        { name: 'view-purchases', label: 'Voir toutes les commandes d\'achat', resource: 'achat' },
-        { name: 'view-purchase', label: 'Voir une commande d\'achat spécifique', resource: 'achat' },
-        { name: 'create-purchase', label: 'Créer une nouvelle commande d\'achat', resource: 'achat' },
-        { name: 'delete-purchase', label: 'Supprimer une commande d\'achat', resource: 'achat' },
-        { name: 'create-purchase-item', label: 'Créer une ligne de commande d\'achat', resource: 'achat' },
-        { name: 'delete-purchase-item', label: 'Supprimer une ligne de commande d\'achat', resource: 'achat' },
-        { name: 'execute-purchase-movement', label: 'Exécuter un déplacement de ligne de commande d\'achat', resource: 'achat' }
+        { name: 'view-purchase', label: 'Voir une ou plusieurs commandes d\'achat', resource: 'achat' },
+        { name: 'manage-purchase', label: 'Gérer une commandes d\'achat (créer, modifier, supprimer)', resource: 'achat' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

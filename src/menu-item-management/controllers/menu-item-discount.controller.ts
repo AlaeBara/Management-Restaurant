@@ -1,24 +1,24 @@
 import { Body, Controller, Delete, Get, HttpCode, Inject, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { MenuItemDiscount } from "../entities/menu-item-discount.entity";
 import { MenuItemDiscountService } from "../services/menu-item-discount.service";
 import { CreateDiscountDto } from "../dtos/menu-item-discount/create-discount.dto";
 import { UpdateDiscountDto } from "../dtos/menu-item-discount/update-discount.dto";
 
-
 @Controller('api/menu-item-discounts')
 @ApiTags('menu-item-discount')
 @ApiBearerAuth()
 export class MenuItemDiscountController {
     constructor(
-        @Inject()
+        @Inject(MenuItemDiscountService)
         private readonly menuItemDiscountService: MenuItemDiscountService
     ) {
     }
 
     @Get()
-    @Permissions('view-menu-item-discounts')
+    @Permissions('view-discount')
     @ApiOperation({ summary: 'Get all discounts' })
     async findAll(
         @Query('page') page?: number,
@@ -43,7 +43,7 @@ export class MenuItemDiscountController {
     }
 
     @Get(':id')
-    @Permissions('view-menu-item-discounts')
+    @Permissions('view-discount')
     @ApiOperation({ summary: 'Get a discount by id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
@@ -63,7 +63,7 @@ export class MenuItemDiscountController {
     }
 
     @Post()
-    @Permissions('create-discount')
+    @Permissions('manage-discount')
     @ApiOperation({ summary: 'Create a discount' })
     async createDiscount(@Body() createDiscountDto: CreateDiscountDto) {
         await this.menuItemDiscountService.createDiscount(createDiscountDto);
@@ -74,7 +74,7 @@ export class MenuItemDiscountController {
     }
 
     @Put(':id')
-    @Permissions('update-discount')
+    @Permissions('manage-discount')
     @ApiOperation({ summary: 'Update a discount' })
     async updateDiscount(@Param('id', ParseUUIDPipe) id: string, @Body() updateDiscountDto: UpdateDiscountDto) {
         await this.menuItemDiscountService.updateDiscount(id, updateDiscountDto);
@@ -82,7 +82,7 @@ export class MenuItemDiscountController {
     }
 
     @Delete(':id')
-    @Permissions('delete-discount')
+    @Permissions('manage-discount')
     @ApiOperation({ summary: 'Delete a discount' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemDiscountService.deleteDiscount(id);
@@ -90,7 +90,7 @@ export class MenuItemDiscountController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-menu-item-tag')
+    @Permissions('manage-discount')
     @ApiOperation({ summary: 'Restore a menu item tag' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.menuItemDiscountService.restoreByUUID(id, true, ['discountSku']);

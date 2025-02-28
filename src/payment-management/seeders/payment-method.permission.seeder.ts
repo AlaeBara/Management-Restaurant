@@ -4,25 +4,24 @@ import { Connection } from 'typeorm';
 import { Permission } from '../../user-management/entities/permission.entity';
 
 @Injectable()
-export class ClientPermissionSeeder {
+export class PaymentMethodPermissionSeeder {
   constructor(private readonly connection: Connection) { }
 
   async seed() {
-    await this.seedClientPermissions();
-    console.log('Client Permission Seeding completed!');
+    await this.seedPaymentMethodPermissions();
+    console.log('Payment Method Permission Seeding completed!');
   }
 
-  private async seedClientPermissions() {
+  private async seedPaymentMethodPermissions() {
 
-
-    const rolePermissions = [
-      { name: 'view-clients', label: 'Voir une ou plusieurs clients', resource: 'client' },
-      { name: 'manage-client', label: 'Gérer un client (créer, modifier, supprimer)', resource: 'client' },
+    const paymentMethodPermissions = [
+      { name: 'view-payment-method', label: 'Voir un mode de paiement', resource: 'payment-method' },
+      { name: 'manage-payment-method', label: 'Gérer un mode de paiement (créer, modifier, supprimer)', resource: 'payment-method' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);
     //await permissionRepository.save(rolePermissions);
-    for (const permissionData of rolePermissions) {
+    for (const permissionData of paymentMethodPermissions) {
         const existingPermission = await permissionRepository.findOne({
             where: { name: permissionData.name },
             withDeleted: true

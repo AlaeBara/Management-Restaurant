@@ -1,20 +1,10 @@
-import {
-  Body,
-  Controller,
-  Get,
-  Inject,
-  InternalServerErrorException,
-  Post,
-  Req,
-  UnauthorizedException,
-  UseGuards
-} from '@nestjs/common';
+import { Body, Controller, Post, Req } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
+import { ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { AuthenticationService } from '../services/authentication/authentication.service';
 import { LoginDto } from '../dto/authentication/login.dto';
-import { Public, Roles } from 'src/user-management/decorators/auth.decorator';
-import { JwtService } from '@nestjs/jwt';
-import { UserService } from '../services/user/user.service';
-import { ApiOperation, ApiTags } from '@nestjs/swagger';
+import { Public } from 'src/user-management/decorators/auth.decorator';
 
 @ApiTags('authentication')
 @Controller('api/authentication')

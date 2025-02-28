@@ -1,5 +1,6 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
 import { CategoryService } from "../services/category.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Category } from "../entities/category.entity";
@@ -13,17 +14,8 @@ export class CategoryController {
 
     constructor(private readonly categoryService: CategoryService) { }
 
-    /* PERMISSIONS = [
-        { name: 'view-categories', label: 'Voir toutes les catégories', resource: 'category' },
-        { name: 'view-category', label: 'Voir une catégorie spécifique', resource: 'category' },
-        { name: 'create-category', label: 'Créer une nouvelle catégorie', resource: 'category' },
-        { name: 'update-category', label: 'Modifier une catégorie', resource: 'category' },
-        { name: 'delete-category', label: 'Supprimer une catégorie', resource: 'category' },
-        { name: 'restore-category', label: 'Restaurer une catégorie supprimée', resource: 'category' }
-    ]; */
-
     @Get()
-    @Permissions('view-categories')
+    @Permissions('view-category')
     @ApiOperation({ summary: 'Get all Categories' })
     async findAll(
         @Query('page') page?: number,
@@ -68,7 +60,7 @@ export class CategoryController {
     }
 
     @Post()
-    @Permissions('create-category')
+    @Permissions('manage-category')
     @ApiOperation({ summary: 'Create a category' })
     async create(@Body() createCategoryDto: CreateCategoryDto) {
         await this.categoryService.createCategory(createCategoryDto);
@@ -76,7 +68,7 @@ export class CategoryController {
     }
 
     @Put(':id')
-    @Permissions('update-category')
+    @Permissions('manage-category')
     @ApiOperation({ summary: 'Update a category' })
     async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateCategoryDto: UpdateCategoryDto) {
         await this.categoryService.updateCategory(id, updateCategoryDto);
@@ -84,14 +76,14 @@ export class CategoryController {
     }
 
     @Delete(':id')
-    @Permissions('delete-category')
+    @Permissions('manage-category')
     @ApiOperation({ summary: 'Delete a category' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.categoryService.deleteCategory(id);
         return { message: 'Super! Votre catégorie a été supprimée avec succès', status: 200 };
     }
     @Patch(':id/restore')
-    @Permissions('restore-category')
+    @Permissions('manage-category')
     @ApiOperation({ summary: 'Restore a category' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.categoryService.restoreByUUID(id, true, ['categoryCode']);

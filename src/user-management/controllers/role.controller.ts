@@ -1,26 +1,12 @@
-import {
-  Body,
-  ConflictException,
-  Controller,
-  Delete,
-  Get,
-  Param,
-  ParseIntPipe,
-  Patch,
-  Post,
-  Put,
-  Query,
-  UnauthorizedException,
-  UseGuards,
-} from '@nestjs/common';
+import { Body, ConflictException, Controller, Delete, Get, Param, ParseIntPipe, Patch, Post, Put, Query, UnauthorizedException } from '@nestjs/common';
+import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
+
 import { Role } from '../entities/role.entity';
 import { RoleService } from '../services/role/role.service';
 import { CreateRoleDto } from '../dto/role/create.dto';
 import { UpdateRoleDto } from '../dto/role/update.dto';
 import { PermissionService } from '../services/permission/permission.service';
 import { Permissions, Roles } from '../decorators/auth.decorator';
-import { ApiBearerAuth, ApiOperation, ApiTags } from '@nestjs/swagger';
-
 
 @ApiTags('roles')
 @Controller('api/roles')
@@ -31,19 +17,8 @@ export class RoleController {
     private readonly PermissionService: PermissionService,
   ) { }
 
-  /* private readonly rolePermissions = [
-    { permission: 'view-roles', label: 'View all roles' },
-    { permission: 'create-role', label: 'Create a new role' },
-    { permission: 'view-role', label: 'View a specific role' },
-    { permission: 'update-role', label: 'Update an existing role' },
-    { permission: 'delete-role', label: 'Delete a role' },
-    { permission: 'restore-role', label: 'Restore a deleted role' },
-    { permission: 'view-role-permissions', label: 'View permissions for a role' },
-    { permission: 'grant-role-permission', label: 'Grant a permission to a role' },
-  ]; */
-
   @Get()
-  @Permissions('view-roles')
+  @Permissions('view-role')
   @ApiOperation({ summary: 'Get all roles' })
   async findAll(
     @Query('page') page?: number,
@@ -70,7 +45,7 @@ export class RoleController {
   }
 
   @Post()
-  @Permissions('create-role')
+  @Permissions('manage-role')
   @ApiOperation({ summary: 'Create a new role' })
   async create(
     @Body() role: CreateRoleDto,
@@ -107,7 +82,7 @@ export class RoleController {
   }
 
   @Delete(':id')
-  @Permissions('delete-role')
+  @Permissions('manage-role')
   @ApiOperation({ summary: 'Delete a role' })
   async delete(@Param('id', ParseIntPipe) id: number) {
     const role = await this.roleService.findOrThrow(id);
@@ -120,7 +95,7 @@ export class RoleController {
   }
 
   @Patch(':id/restore')
-  @Permissions('restore-role')
+  @Permissions('manage-role')
   @ApiOperation({ summary: 'Restore a deleted role' })
   async restore(@Param('id', ParseIntPipe) id: number) {
     const role = await this.roleService.findOrThrow(id, [], true);
@@ -132,7 +107,7 @@ export class RoleController {
   }
 
   @Get(':id/permissions')
-  @Permissions('view-role-permissions')
+  @Permissions('view-role-permission')
   @ApiOperation({ summary: 'Get permissions for a specific role' })
   async getPermissionsByRoleId(
     @Param('id', ParseIntPipe) id: number,
@@ -143,7 +118,7 @@ export class RoleController {
 
   @Post(':id/permissions/:permissionId')
   @Roles('superadmin', 'admin')
-  @Permissions('grant-role-permission')
+  @Permissions('manage-role-permission')
   @ApiOperation({ summary: 'Grant a permission to a role' })
   async grantPermissionToRole(
     @Param('id', ParseIntPipe) id: number,
@@ -157,7 +132,7 @@ export class RoleController {
 
   @Delete(':id/permissions/:permissionId')
   @Roles('superadmin', 'admin')
-  @Permissions('revoke-role-permission')
+  @Permissions('manage-role-permission')
   @ApiOperation({ summary: 'Revoke a permission from a role' })
   async revokePermissionFromRole(
     @Param('id', ParseIntPipe) id: number,
@@ -170,7 +145,7 @@ export class RoleController {
   }
 
   @Get(':id/permissions/group-by-resource')
-  @Permissions('view-role-permissions')
+  @Permissions('view-role-permission')
   @ApiOperation({ summary: 'Get permissions for a specific role grouped by resource' })
   async findAndGroupPermissionsWithRoleAccess(@Param('id', ParseIntPipe) id: number): Promise<any> {
     const role = await this.roleService.findOrThrow(id, ['permissions']);

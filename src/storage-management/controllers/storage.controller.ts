@@ -1,11 +1,12 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation } from "@nestjs/swagger";
+import { ApiTags } from "@nestjs/swagger";
+
 import { StorageService } from "../services/storage.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Storage } from "../entities/storage.entity";
 import { CreateStorageDto } from "../dtos/create-storage.dto";
 import { UpdateStorageDto } from "../dtos/update-storage.dto";
-import { ApiTags } from "@nestjs/swagger";
 import { AssignParentStorageDto } from "../dtos/assign-parentStorage.dto";
 
 @Controller('api/storages')
@@ -15,17 +16,8 @@ export class StorageController {
 
     constructor(private readonly storageService: StorageService) { }
 
-    /* private readonly PERMISSIONS = [
-      { name: 'view-storages', label: 'Voir tous les Location de stockage', resource: 'storage' },
-      { name: 'view-storage', label: 'Voir une Location de stockage spécifique', resource: 'storage' }, 
-      { name: 'create-storage', label: 'Créer une nouvelle Location de stockage', resource: 'storage' },
-      { name: 'update-storage', label: 'Modifier une Location de stockage', resource: 'storage' },
-      { name: 'delete-storage', label: 'Supprimer une Location de stockage', resource: 'storage' },
-      { name: 'restore-storage', label: 'Restaurer une Location de stockage supprimée', resource: 'storage' }
-    ]; */
-
     @Get()
-    @Permissions('view-storages')
+    @Permissions('view-location-storage')
     @ApiOperation({ summary: 'Get all storages' })
     async findAll(
         @Query('page') page?: number,
@@ -51,7 +43,7 @@ export class StorageController {
 
 
     @Get(':id')
-    @Permissions('view-storage')
+    @Permissions('view-location-storage')
     @ApiOperation({ summary: 'Get a storage by id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
@@ -71,7 +63,7 @@ export class StorageController {
     }
 
     @Post()
-    @Permissions('create-storage')
+    @Permissions('manage-location-storage')
     @ApiOperation({ summary: 'Create a storage' })
     async create(@Body() createStorageDto: CreateStorageDto) {
         await this.storageService.createStorage(createStorageDto);
@@ -79,7 +71,7 @@ export class StorageController {
     }
 
     @Put(':id')
-    @Permissions('update-storage')
+    @Permissions('manage-location-storage')
     @ApiOperation({ summary: 'Update a storage' })
     async update(
         @Param('id', ParseUUIDPipe) id: string,
@@ -90,7 +82,7 @@ export class StorageController {
     }
 
     @Delete(':id')
-    @Permissions('delete-storage')
+    @Permissions('manage-location-storage')
     @ApiOperation({ summary: 'Delete a storage' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.storageService.deleteStorage(id);
@@ -98,7 +90,7 @@ export class StorageController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-storage')
+    @Permissions('manage-location-storage')
     @ApiOperation({ summary: 'Restore a storage' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.storageService.findOneByIdWithOptions(id, { onlyDeleted: true });
@@ -107,7 +99,7 @@ export class StorageController {
     }
 
     @Patch(':id/assign-sub-storage')
-    @Permissions('assign-sub-storage')
+    @Permissions('manage-location-storage')
     @ApiOperation({ summary: 'Assign a sub-storage to a storage' })
     async assignParentStorage(@Param('id', ParseUUIDPipe) id: string, @Body() assignParentStorageDto: AssignParentStorageDto) {
         await this.storageService.assignParentStorage(id, assignParentStorageDto);

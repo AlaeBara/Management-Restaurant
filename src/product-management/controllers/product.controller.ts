@@ -1,11 +1,11 @@
 import { Body, Controller, Delete, Get, Param, ParseUUIDPipe, Patch, Post, Put, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
 import { ProductService } from "../services/product.service";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { Product } from "../entities/product.entity";
 import { CreateProductDto } from "../dtos/product/create-product.dto";
 import { UpdateProductDto } from "../dtos/product/update-product.dto";
-import { plainToInstance } from "class-transformer";
 import { InventoryService } from "src/inventory-managemet/services/inventory.service";
 
 @Controller('api/products')
@@ -13,18 +13,13 @@ import { InventoryService } from "src/inventory-managemet/services/inventory.ser
 @ApiBearerAuth()
 export class ProductController {
 
-    constructor(private readonly productService: ProductService, private readonly inventoryService: InventoryService) { }
-    /* PERMISSIONS = [
-        { name: 'view-products', label: 'Voir tous les produits', resource: 'product' },
-        { name: 'view-product', label: 'Voir un produit spécifique', resource: 'product' },
-        { name: 'create-product', label: 'Créer un nouveau produit', resource: 'product' },
-        { name: 'update-product', label: 'Modifier un produit', resource: 'product' },
-        { name: 'delete-product', label: 'Supprimer un produit', resource: 'product' },
-        { name: 'restore-product', label: 'Restaurer un produit supprimé', resource: 'product' }
-    ]; */
+    constructor(
+        private readonly productService: ProductService,
+        private readonly inventoryService: InventoryService
+    ) { }
 
     @Get()
-    @Permissions('view-products')
+    @Permissions('view-product')
     @ApiOperation({ summary: 'Get all Products' })
     async findAll(
         @Query('page') page?: number,
@@ -67,7 +62,7 @@ export class ProductController {
     }
 
     @Post()
-    @Permissions('create-product')
+    @Permissions('manage-product')
     @ApiOperation({ summary: 'Create a product' })
     async create(@Body() createProductDto: CreateProductDto) {
         await this.productService.createProduct(createProductDto);
@@ -75,7 +70,7 @@ export class ProductController {
     }
 
     @Put(':id')
-    @Permissions('update-product')
+    @Permissions('manage-product')
     @ApiOperation({ summary: 'Update a product' })
     async update(@Param('id', ParseUUIDPipe) id: string, @Body() updateProductDto: UpdateProductDto) {
         await this.productService.updateProduct(id, updateProductDto);
@@ -83,7 +78,7 @@ export class ProductController {
     }
 
     @Delete(':id')
-    @Permissions('delete-product')
+    @Permissions('manage-product')
     @ApiOperation({ summary: 'Delete a product' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.productService.findOneByIdWithOptions(id);
@@ -92,7 +87,7 @@ export class ProductController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-product')
+    @Permissions('manage-product')
     @ApiOperation({ summary: 'Restore a product' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.productService.restoreByUUID(id, true, ['productSKU']);

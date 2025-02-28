@@ -1,6 +1,7 @@
-import { Controller, Delete, Get, Inject, Param, ParseUUIDPipe, Patch, Query } from "@nestjs/common";
-import { MediaLibraryService } from "../services/media-library.service";
+import { Controller, Get, Inject, Param, ParseUUIDPipe, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
+import { MediaLibraryService } from "../services/media-library.service";
 import { MediaLibrary } from "../entities/media-library.entity";
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 
@@ -15,7 +16,7 @@ export class MediaLibraryController {
     }
 
     @Get()
-    @Permissions('view-media-library')
+    @Permissions('view-user')
     @ApiOperation({ summary: 'Get all media libraries' })
     async findAll(
         @Query('page') page?: number,
@@ -40,7 +41,7 @@ export class MediaLibraryController {
     }
 
     @Get(':id')
-    @Permissions('view-media-library')
+    @Permissions('view-user')
     @ApiOperation({ summary: 'Get a media library by id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
@@ -58,20 +59,4 @@ export class MediaLibraryController {
             findOrThrow,
         });
     }
-
-    /* @Delete(':id')
-    @Permissions('delete-discount')
-    @ApiOperation({ summary: 'Delete a discount' })
-    async delete(@Param('id', ParseUUIDPipe) id: string) {
-        await this.mediaLibraryService.softDelete(id);
-        return { message: 'Super! Votre média a été supprimé avec succès', status: 200 };
-    }
-
-    @Patch(':id/restore')
-    @Permissions('restore-menu-item-tag')
-    @ApiOperation({ summary: 'Restore a menu item tag' })
-    async restore(@Param('id', ParseUUIDPipe) id: string) {
-        await this.mediaLibraryService.restoreByUUID(id, true, ['discountSku']);
-        return { message: 'Super! Votre média a été restauré avec succès', status: 200 };
-    } */
 }

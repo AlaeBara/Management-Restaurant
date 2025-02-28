@@ -14,18 +14,8 @@ export class ExpenseTypeController {
 
     constructor(private readonly expenseTypeService: ExpenseTypeService) { }
 
-    /* private fundPermissions =  [
-        { name: 'view-expense-types', label: 'View all expense types', resource: 'expense type' },
-        { name: 'view-expense-type', label: 'View single expense type', resource: 'expense type' },
-        { name: 'create-expense-type', label: 'Create new expense type', resource: 'expense type' },    
-        { name: 'update-expense-type', label: 'Update expense type', resource: 'expense type' },
-        { name: 'delete-expense-type', label: 'Delete expense type', resource: 'expense type' },
-        { name: 'restore-expense-type', label: 'Restore deleted expense type', resource: 'expense type' },
-        { name: 'view-expense-type-operations', label: 'View expense type operations', resource: 'expense type' }
-    ]; */
-
     @Get()
-    @Permissions('view-expense-types')
+    @Permissions('view-expense')
     @ApiOperation({ summary: 'Get all expense types' })
     async findAll(
         @Query('page') page?: number,
@@ -50,7 +40,7 @@ export class ExpenseTypeController {
     }
 
     @Get(':id')
-    @Permissions('view-expense-type')
+    @Permissions('view-expense')
     @ApiOperation({ summary: 'Get a expense type by id' })
     async findOne(
         @Param('id', ParseUUIDPipe) id: string,
@@ -70,7 +60,7 @@ export class ExpenseTypeController {
     }
 
     @Post()
-    @Permissions('create-expense-type')
+    @Permissions('manage-expense')
     @ApiOperation({ summary: 'Create a expense type' })
     async create(@Body() createExpenseTypeDto: CreateExpenseTypeDto) {
         const expenseType = await this.expenseTypeService.createExpenseType(createExpenseTypeDto);
@@ -82,7 +72,7 @@ export class ExpenseTypeController {
     }
 
     @Put(':id')
-    @Permissions('update-fund')
+    @Permissions('manage-expense')
     @ApiOperation({ summary: 'Update a fund' })
     async update(
         @Param('id', ParseUUIDPipe) id: string,
@@ -93,7 +83,7 @@ export class ExpenseTypeController {
     }
 
     @Delete(':id')
-    @Permissions('delete-expense-type')
+    @Permissions('manage-expense')
     @ApiOperation({ summary: 'Delete a expense type' })
     async delete(@Param('id', ParseUUIDPipe) id: string) {
         await this.expenseTypeService.deleteExpenseType(id);
@@ -101,7 +91,7 @@ export class ExpenseTypeController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-expense-type')
+    @Permissions('manage-expense')
     @ApiOperation({ summary: 'Restore a expense type' })
     async restore(@Param('id', ParseUUIDPipe) id: string) {
         await this.expenseTypeService.findOneByIdWithOptions(id, { onlyDeleted: true });

@@ -16,13 +16,8 @@ export class ZonePermissionSeeder {
 
 
     const tablePermissions = [
-      { name: 'view-zones', label: 'Consulter toutes les zones', resource: 'zone' },
-      { name: 'view-zone', label: 'Consulter une zone spécifique', resource: 'zone' },
-      { name: 'create-zone', label: 'Ajouter une nouvelle zone', resource: 'zone' },
-      { name: 'update-zone', label: 'Modifier une zone', resource: 'zone' },
-      { name: 'delete-zone', label: 'Supprimer une zone', resource: 'zone' },
-      { name: 'restore-zone', label: 'Récupérer une zone supprimée', resource: 'zone' },
-      { name: 'reassign-zone', label: 'Réorganiser les zones', resource: 'zone' },
+      { name: 'manage-zone', label: 'Gérer une zone (créer, modifier, supprimer)', resource: 'zone' },
+      { name: 'view-zone', label: 'Consulter une zone', resource: 'zone' },
     ];
 
     const permissionRepository = this.connection.getRepository(Permission);

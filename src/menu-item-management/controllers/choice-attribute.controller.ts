@@ -1,12 +1,12 @@
 import { Body, Controller, Delete, Get, Inject, Param, Patch, Post, Put, Query } from "@nestjs/common";
 import { ApiBearerAuth, ApiOperation, ApiTags } from "@nestjs/swagger";
+
 import { Permissions } from "src/user-management/decorators/auth.decorator";
 import { ChoiceAttributeService } from "../services/choice/choice-attribute.service";
 import { ChoiceAttribute } from "../entities/choices/choice-attribute.entity";
 import { CreateChoiceAttributeDto } from "../dtos/choices/create-choice-attribute.dto";
 import { UpdateChoiceAttributeDto } from "../dtos/choices/update-choice-attribute.dto";
 import { ParseULIDPipe } from "src/common/pipes/parse-ulid.pipe";
-
 
 @Controller('api/choice-attributes')
 @ApiTags('choice-attribute')
@@ -19,7 +19,7 @@ export class ChoiceAttributeController {
     ) {}
 
     @Get()
-    @Permissions('view-choice-attributes')
+    @Permissions('view-choice')
     @ApiOperation({ summary: 'Get all choice attributes' })
     async findAll(
         @Query('page') page?: number,
@@ -44,7 +44,7 @@ export class ChoiceAttributeController {
     }
 
     @Get(':id')
-    @Permissions('view-choice-attributes')
+    @Permissions('view-choice')
     @ApiOperation({ summary: 'Get a choice attribute by id' })
     async findOne(
         @Param('id', ParseULIDPipe) id: string,
@@ -64,7 +64,7 @@ export class ChoiceAttributeController {
     }
 
     @Post()
-    @Permissions('create-choice-attribute')
+    @Permissions('manage-choice')
     @ApiOperation({ summary: 'Create a choice attribute' })
     async create(@Body() createChoiceAttributeDto: CreateChoiceAttributeDto) {
         await this.choiceAttributeService.createAttribute(createChoiceAttributeDto);
@@ -72,7 +72,7 @@ export class ChoiceAttributeController {
     }
 
     @Put(':id')
-    @Permissions('update-choice-attribute')
+    @Permissions('manage-choice')
     @ApiOperation({ summary: 'Update a choice attribute' })
     async update(
         @Param('id', ParseULIDPipe) id: string,
@@ -83,7 +83,7 @@ export class ChoiceAttributeController {
     }
 
     @Delete(':id')
-    @Permissions('delete-choice-attribute')
+    @Permissions('manage-choice')
     @ApiOperation({ summary: 'Delete a choice attribute' })
     async delete(@Param('id', ParseULIDPipe) id: string) {
         await this.choiceAttributeService.softDelete(id, true);
@@ -91,7 +91,7 @@ export class ChoiceAttributeController {
     }
 
     @Patch(':id/restore')
-    @Permissions('restore-choice-attribute')
+    @Permissions('manage-choice')
     @ApiOperation({ summary: 'Restore a choice attribute' })
     async restore(@Param('id', ParseULIDPipe) id: string) {
         await this.choiceAttributeService.restoreByUUID(id, true, ['attribute']);
