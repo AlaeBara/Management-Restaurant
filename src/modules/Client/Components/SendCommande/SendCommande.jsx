@@ -41,10 +41,11 @@ const SendCommande = memo(({ previousStep }) => {
       totalAmount: calculateTotal(),
       // numberOfSeats: 4, 
       // totalAditionalPrice: 20.00, 
-      tableId: qrcode || "00955e03-7c92-42ef-94ef-596bb1e68dde", 
+      tableId: qrcode, 
       items: cart.map(item => ({
         productId: item.productId,
         type: item.type,
+        menuItemChoices: item.supplements.map(supplement => supplement.id),
         quantity: item.quantity,
         price: item.price,
         total: item.total
@@ -119,8 +120,8 @@ const SendCommande = memo(({ previousStep }) => {
                 <p>{t('loading_cart')}</p>
               </div>
             ) : cart.length > 0 ? (
-              cart.map((item) => (
-                <div key={item.productId} className={styles.invoiceRow}>
+              cart.map((item,index ) => (
+                <div key={index} className={styles.invoiceRow}>
                   <div className={styles.item}>
                     {item.name || `Item ${item.productId}`} 
                   </div>
