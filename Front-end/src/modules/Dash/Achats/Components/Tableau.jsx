@@ -94,10 +94,10 @@ const TableauTransfert = ({ data }) => {
       <td className="p-3 text-sm">{formatDate(purchase.createdAt)}</td>
       <td className="p-3 text-sm">
         <div className='flex gap-5'>
-          <button onClick={() => handleGeneratePDF(purchase)}>
+          <button onClick={() => handleGeneratePDF(purchase)} title='Imprimer'>
             <Printer className='w-5 h-5' />
           </button>
-          <button onClick={()=>navigate(`/dash/achats/detail/${purchase.id}`)}>
+          <button onClick={()=>navigate(`/dash/achats/detail/${purchase.id}`)} title='Voir les détails'>
             <ExternalLink className='w-5 h-5' />
           </button>
         </div>

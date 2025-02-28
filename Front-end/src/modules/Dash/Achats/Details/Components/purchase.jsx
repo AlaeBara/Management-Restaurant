@@ -13,6 +13,11 @@ import {useFetchProduct} from '../../Hooks/useFetchALLProducts'
 import {useFetchIventory} from '../../Hooks/useFetchInventorys'
 import {useAddItem} from '../hooks/useAddItem'
 import { useParams } from 'react-router-dom';
+import generatePDF from '../../Components/Genreratepdf/PDFPurchase';
+
+
+
+
 
 const purchase = ({purchase , fetchData}) => {
 
@@ -157,14 +162,23 @@ const purchase = ({purchase , fetchData}) => {
     const {isssLoading, alertt, errorss, fetchAddItem, resetErrorss} = useAddItem(id,formData2, CloseModelCreation,fetchData)
 
 
+    const handleGeneratePDF = async (purchase) => {
+        try {
+          await generatePDF(purchase);
+        } catch (err) {
+          console.error("An unexpected error occurred:", err);
+        }
+    };
+
+
   return (
     <>
         <Card className='shadow-lg hover:shadow-xl transition-shadow duration-300 h-fit rounded-2xl'>
             <CardHeader className='flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 sm:gap-0 border-b border-gray-100 bg-gray-50 rounded-tl-2xl rounded-tr-2xl p-4 mb-5'>
                 <CardTitle className='text-lg sm:text-xl lg:text-2xl font-bold text-gray-800 flex items-center'>
                     <ChevronRight className='mr-2 text-primary' />
-                    Détails de l'achat 
-                    <span className="ml-2 p-2 border border-black bg-black rounded  cursor-pointer">
+                        Détails de l'achat 
+                    <span className="ml-2 p-2 border border-black bg-black rounded cursor-pointer" onClick={() => handleGeneratePDF(purchase)} title='Imprimer'>
                         <Download className="w-4 h-4" stroke="white" />
                     </span>
                 </CardTitle>
