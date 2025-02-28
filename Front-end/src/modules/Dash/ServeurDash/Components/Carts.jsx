@@ -53,7 +53,6 @@ const Cart = React.memo(({ showCart  , tables}) => {
     //send order
 
     const { loading, error, sendOrder } = useSendOrder();
-
     const transformCartData = () => {
         const transformedCart = {
             totalAmount: calculateTotal(),
@@ -71,7 +70,6 @@ const Cart = React.memo(({ showCart  , tables}) => {
         };
         return transformedCart;
     };
-
     const handleSendOrder = async () => {
         const orderData = transformCartData();
         const { response, error: sendOrderError } = await sendOrder(orderData);
