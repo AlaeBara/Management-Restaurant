@@ -88,6 +88,7 @@ const Profile = lazy(()=> import('@/modules/Dash/Profile/Profile'))
 const NotFound =lazy(()=> import('@/components/404/PageNotFounds'))
 const Orders = lazy(()=> import('@/modules/Dash/Orders/Orders'))
 const Serveur = lazy(()=> import('@/modules/Dash/ServeurDash/ServeurDash'))
+const ManagmentsOrders = lazy(()=> import('@/modules/Dash/Order Management/OrderManagments'))
 
 const ClientRoutes = () => {
   return (
@@ -993,7 +994,6 @@ const ClientRoutes = () => {
           } 
         />
 
-
         <Route 
           path="/serveur" 
           element={
@@ -1005,9 +1005,18 @@ const ClientRoutes = () => {
           } 
         />
 
+        <Route 
+          path="/gestion-des-commandes" 
+          element={
+            <ProtectedRoute>
+              <MainLayout>
+                <ManagmentsOrders/> 
+              </MainLayout>
+            </ProtectedRoute>
+          } 
+        />
         
-        
-        
+
       </Routes>
     </Suspense>
   );

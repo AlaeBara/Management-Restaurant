@@ -5,6 +5,7 @@ import {
   ShoppingCart,
   SquareMenu ,
   Utensils,
+  ListOrdered,
   HandPlatter,
   Tag,
   BadgeCheck,
@@ -103,6 +104,13 @@ const SideBar = () => {
         title: "Serveur",
         icon: HandPlatter,
         url: "/dash/serveur",
+        permissions: ["access-granted", "view-users", "view-roles"],
+      },
+      {
+        title: "Gestion des commandes",
+        icon: ListOrdered,
+        url: "/dash/gestion-des-commandes",
+        permissions: ["access-granted", "view-users", "view-roles"],
       },
       {
         title: "Comptes et Access",
