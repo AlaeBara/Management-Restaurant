@@ -166,7 +166,7 @@ const Login = () => {
           Copyright © 2025 - Tous droits réservés
         </p>
         <p className="text-sm text-gray-500">
-          Abdelrahim & Wiicode Team
+          Abderrahim & Wiicode Team
         </p>
         <p className="text-xs text-center text-gray-500">
           Version 1.0.0

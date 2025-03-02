@@ -16,7 +16,7 @@ const ProcessingCart = () => {
         <div className="flex flex-col" onClick={toggleItemsVisibility}>
         
             <div className="absolute top-3 right-3 flex items-center gap-2">
-                <Badge className="bg-primary/10 text-primary hover:bg-primary/20 transition-colors">
+                <Badge className="bg-amber-500 text-white hover:bg-amber-600 transition-colors">
                     <CircleDot className="w-3 h-3 mr-1 animate-pulse" />
                     En Cours
                 </Badge>
