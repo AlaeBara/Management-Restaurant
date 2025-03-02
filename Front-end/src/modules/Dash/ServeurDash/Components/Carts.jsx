@@ -73,6 +73,7 @@ const Cart = React.memo(({ showCart  , tables}) => {
     const handleSendOrder = async () => {
         const orderData = transformCartData();
         const { response, error: sendOrderError } = await sendOrder(orderData);
+
        
         if (response?.status === 201) {
             if (localStorage.getItem('cart')) {
@@ -111,6 +112,8 @@ const Cart = React.memo(({ showCart  , tables}) => {
                 <h2 className={`text-2xl font-bold ${styles.Title}`}>Commande actuelle</h2>
                 <p className='text-ms text-gray-500'>Date : {formatDate(new Date())}</p>
             </div>
+
+
         
             <div className={styles.cartItems}>
                 <div className="space-y-2 my-4">
@@ -165,7 +168,6 @@ const Cart = React.memo(({ showCart  , tables}) => {
                                 {/* Supplements */}
                                 {item.supplements.length > 0 && (
                                     <>
-                                        {/* <p className="text-xs font-medium">Suppléments:</p> */}
                                         <div className="flex flex-wrap gap-1 mt-1">
                                             {item.supplements.map((supplement) => (
                                             <Badge key={supplement.id} variant="outline" className="text-xs rounded-full">
@@ -196,13 +198,16 @@ const Cart = React.memo(({ showCart  , tables}) => {
             </div>
 
 
-            <div className={`${styles.boxInputs}  flex justify-center  my-2`}>
+            <div className={`${styles.boxInputs}  flex justify-center flex-wrap my-2 gap-2`}>
                 <Button variant="outline" className='w-fit' onClick={() => setIsModalOpen(true)}>
                     <Plus size={20} /> 
                     <p>Ajouter la table ou la note</p>
                 </Button>
+                <Button variant="outline" className='w-fit'>
+                    <Plus size={20} /> 
+                    <p>Remise</p>
+                </Button>
             </div>
-
 
             <div className={styles.DivButton}> 
                 <button className={`${styles.paymentButton} ${loading || cart.length === 0 ? '!cursor-not-allowed opacity-50' : ''}`} onClick={handleSendOrder} disabled={loading || cart.length === 0}>
@@ -214,7 +219,6 @@ const Cart = React.memo(({ showCart  , tables}) => {
                 </button>
             </div>
         </div>
-
 
 
         {isModalOpen && (

@@ -54,7 +54,7 @@ const ServeurDash = () => {
     if (loading) {
         return  <div className="flex flex-col items-center justify-center h-40 text-muted-foreground">
                     <Loader className="h-6 w-6 animate-spin" />
-                    <p>Chargement des tableau bord...</p>
+                    <p>Chargement de tableau bord ...</p>
                 </div>;
     }
 
