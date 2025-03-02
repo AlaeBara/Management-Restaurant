@@ -1,5 +1,5 @@
 import { useState } from "react"
-import { Clock, ChevronDown, ChevronUp, Receipt, User, Pizza, Salad, UtensilsCrossed, CircleDot } from "lucide-react"
+import { Clock, ChevronDown, ChevronUp, Receipt, User, Pizza, Salad, UtensilsCrossed, CheckCircle, Table2 } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
 import { Card } from "@/components/ui/card"
 
@@ -14,11 +14,19 @@ const ServedCart = () => {
     <Card className="relative p-4 m-4 w-80 h-fit cursor-pointer group transition-all duration-300 hover:shadow-lg border-l-[5px] border-l-blue-500">
         <div className="flex flex-col" onClick={toggleItemsVisibility}>
         
-            <div className="absolute top-3 right-3 flex items-center gap-2">
-                <Badge className="bg-blue-500 text-white hover:bg-blue-600 transition-colors">
-                    <CircleDot className="w-3 h-3 mr-1 animate-pulse" />
-                    Servi
-                </Badge>
+            <div className="flex justify-between items-center mb-3">
+                <div className="flex items-center gap-2">
+                    <Badge variant="outline" className='ml-auto'>
+                        No paiement
+                    </Badge>
+                </div>
+
+                <div className="flex items-center gap-2">
+                    <Badge className="bg-blue-500 text-white hover:bg-blue-600 transition-colors">
+                        <CheckCircle className="w-3 h-3 mr-1 animate-pulse" />
+                        Servi
+                    </Badge>
+                </div>
             </div>
 
             {/* Order Time */}
@@ -34,7 +42,12 @@ const ServedCart = () => {
             </div>
 
             {/* Customer Info */}
-            <div className="mt-4 space-y-2">
+            <div className="mt-4 space-y-1">
+                <div className="flex items-center gap-2 text-muted-foreground font-semibold">
+                    <Table2 className="w-4 h-4" />
+                    <span>Table 1</span>
+                </div>
+
                 <div className="flex items-center gap-2 text-muted-foreground">
                     <User className="w-4 h-4" />
                     <span>John Smith</span>
